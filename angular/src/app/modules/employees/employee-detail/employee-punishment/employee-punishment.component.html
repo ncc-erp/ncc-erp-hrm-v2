@@ -1,0 +1,75 @@
+<div class="row pt-2" *ngIf="isAllowViewTabPunishment()">
+    <div class="d-flex w-100 align-items-center pb-2 my-2">
+        <div class="p-0 d-flex col-12">
+            <div class="col-6 center-flex px-0 pr-4">
+                <app-search [placeholder]="'Search by name, note'" [seachText]="searchText"
+                    (onSearch)="onSearchEnter($event)">
+                </app-search>
+            </div>
+            <div class="col-3">
+                <table-filter [searchable]="true" [filterType]="filterTypeEnum.Dropdown" [dropdownData]="listDate"
+                    [placeholder]="'Apply Month'" [defaultValue]="DEFAULT_FILTER.applyMonth"
+                    (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown, $event, 'applyMonth')">
+                </table-filter>
+            </div>
+            <div class="col-3">
+                <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="punishmentStatusList"
+                    [placeholder]="'Is Active'" [defaultValue]="DEFAULT_FILTER.isActive"
+                    (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown, $event, 'isActive')">
+                </table-filter>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <div class="fixTableHead">
+            <table class="table table-striped table-hover" [busy]="isLoading">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Id</th>
+                        <th (click)="onSortChange('punishmentName')">Punishment name
+                            <sortable [name]="'punishmentName'" [sortProperty]="sortProperty"
+                                [sortDirection]="sortDirection"></sortable>
+                        </th>
+                        <th (click)="onSortChange('money')"> Money
+                            <sortable [sortProperty]="sortProperty" [sortDirection]="sortDirection" [name]="'money'">
+                            </sortable>
+                        </th>
+                        <th>Status</th>
+                        <th (click)="onSortChange('applyMonth')">Apply Month
+                            <sortable [name]="'applyMonth'" [sortProperty]="sortProperty"
+                                [sortDirection]="sortDirection"></sortable>
+                        </th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let punishment of listPunishmentOfEmployee | paginate: {
+                        id: 'server',
+                        itemsPerPage: pageSize,
+                        currentPage: pageNumber,
+                        totalItems: totalItems
+                };let i = index">
+                        <td class="text-center align-middle">{{(pageNumber-1)*pageSize+i+1}}</td>
+                        <td class="text-center align-middle">{{punishment.id}}</td>
+                        <td class="align-middle">
+                            <p class="hyperlink mt-3" (click)="showPunishDetail(punishment)">
+                                {{punishment.punishmentName}}</p>
+                        </td>
+                        <td class="text-left align-middle">
+                            {{punishment.money |number:'1.0':'en-US'}}
+                        </td>
+                        <td class="text-center align-middle"><span><i class="fa-solid fa-check text-success fa-lg"
+                                    *ngIf="punishment.isActive"></i></span></td>
+                        <td class="text-center align-middle">{{punishment.applyMonth | date: "MM/yyyy"}}</td>
+                        <td class="note align-middle">{{punishment.note}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container-fluid p-0">
+        <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+            (pageAction)="pageControlActions($event)"></pagination-control>
+    </div>
+</div>

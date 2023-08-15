@@ -1,0 +1,192 @@
+<div class="row pt-2" *ngIf="isAllowViewTabBenefit()">
+    <div class="d-flex w-100 align-items-center pb-2">
+        <div class="col-9 p-0 d-flex">
+            <app-search
+                class="col-3 pl-0"
+                [placeholder]="'Search by Name'"
+                [seachText]="searchText"
+                (onSearch)="onSearchEnter($event)"
+              ></app-search>
+            <table-filter class="col-3" [dropdownData]="listBenefitStatus" [filterType]="filterTypeEnum.Dropdown"
+                (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown,$event,'status')" [placeholder]="'Status'"
+                [defaultValue]="DEFAULT_FILTER_VALUE.status">
+            </table-filter>
+            <table-filter class="col-3" [dropdownData]="listBenefitType" [filterType]="filterTypeEnum.Dropdown"
+                (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown,$event,'benefitType')"
+                [placeholder]="'Benefit type'" [defaultValue]="DEFAULT_FILTER_VALUE.benefitType">
+            </table-filter>
+        </div>
+        <div class="col-3 p-0 d-flex justify-content-end">
+            <button *ngIf="isShowAddBtn() && choosableBenefits.length" (click)="addNewBenefitToEmployee()" class="btn btn-primary">Add</button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <div class="fixTableHead">
+            <table class="table table-striped table-hover" [busy]="isLoading">
+                <thead>
+                    <tr>
+                        <th class="col-stt">#</th>
+                        <th class="benefit-name">
+                            Benefit name
+                            <sortable [sortProperty]="sortProperty" [sortDirection]="sortDirection" [name]="'money'"
+                                (click)="onSortChange('money')"></sortable>
+                        </th>
+                        <th>Benefit type</th>
+                        <th class="col-money">Benefit money</th>
+                        <th class="col-date">Start date</th>
+                        <th class="col-date">End date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="
+                    let benefit of listBenefitOfEmployee
+                      | paginate
+                        : {
+                            id: 'server',
+                            itemsPerPage: pageSize,
+                            currentPage: pageNumber,
+                            totalItems: totalItems
+                          };
+                    let i = index
+                  ">
+                        <ng-container *ngIf="!benefit.id && benefit.isEdit">
+                            <td class="text-center"></td>
+                            <td class="text-center">
+                                <app-select-search 
+                                    [defaultValue]="benefit.benefitId" 
+                                    [selectControl]="selectBenefit" 
+                                    [list]="choosableBenefits" 
+                                    [searchLabel]="'Search Benefit'" 
+                                    (selectionValue)="onBenefitChange($event, benefit)">
+                                </app-select-search>
+                            </td>
+                            <td class="text-center text-bold" [ngStyle]="{color: APP_ENUM.BenefitTypeColor[benefit.benefitType]}">{{BenefitTypeNames[benefit.benefitType]}}</td>
+                            <td class="text-center ">{{benefit.money | currency:"VND":""}}</td>
+                            <td class="text-center">
+                                <mat-form-field class="w-100" *ngIf="benefit.benefitType != APP_ENUM.BenefitType.CheDoChung" appearance="outline">
+                                    <input matInput [(ngModel)]="benefit.startDate" [matDatepicker]="pickerStartDate" required>
+                                    <mat-datepicker-toggle matSuffix [for]="pickerStartDate"></mat-datepicker-toggle>
+                                    <mat-datepicker [dateClass]="dateClass" #pickerStartDate></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td class="text-center">
+                                <mat-form-field class="w-100" *ngIf="benefit.benefitType != APP_ENUM.BenefitType.CheDoChung" appearance="outline">
+                                    <input matInput [(ngModel)]="benefit.endDate" [min]="benefit.startDate" [matDatepicker]="pickerEndDate" #benefitEndDate="ngModel">
+                                    <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
+                                    <mat-datepicker [dateClass]="dateClass" #pickerEndDate></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td class="text-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" [(ngModel)]="benefit.status" disabled=""
+                                        class="custom-control-input">
+                                    <label class="custom-control-label ng-tns-c373-625"></label>
+                                </div>
+                            </td>
+                            <td class="col-action text-center">
+                                <ng-container *ngIf="benefit.benefitType != APP_ENUM.BenefitType.CheDoChung">
+                                    <button [disabled]="!benefit.startDate" (click)="onSave(benefit)" [disabled]="!benefit.benefitId || isLoading || testDate(benefitEndDate)" class="btn btn-accept">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="benefit.benefitType == APP_ENUM.BenefitType.CheDoChung">
+                                    <button (click)="onSave(benefit)" [disabled]="!benefit.benefitId || isLoading" class="btn btn-accept">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                </ng-container>
+                                <button (click)="onCancel()" class="btn btn-cancel">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </td>
+                        </ng-container>
+                        <ng-container *ngIf="benefit.id && !benefit.isEdit">
+                            <td class="text-center">{{pageSize*(pageNumber - 1) + i + 1}}</td>
+                            <td class="text-left hyperlink"
+                             >
+                                <a    
+                                    [routerLink]="['/app','benefits','list-benefit','benefit-detail','benefit-infomation']" [queryParams]="{id: benefit.benefitId, name:benefit.benefitName, active: benefit.status , type: benefit.benefitType}"
+                                >{{benefit.benefitName}}
+                                </a>
+                            </td>
+                            <td class="text-center text-bold" [ngStyle]="{color: APP_ENUM.BenefitTypeColor[benefit.benefitType]}">{{BenefitTypeNames[benefit.benefitType]}}</td>
+                            <td class="text-center ">{{benefit.money  | moneyFormat }}</td>
+                            <td class="text-center">{{benefit.startDate | DMYDateFormat}}</td>
+                            <td class="text-center">{{benefit.endDate | DMYDateFormat}}</td>
+                            <td class="text-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" [(ngModel)]="benefit.status" disabled=""
+                                        class="custom-control-input">
+                                    <label class="custom-control-label ng-tns-c373-625"></label>
+                                </div>
+                            </td>
+                            <td class="col-action text-center">
+                                <ng-container *ngIf="benefit.status">
+                                    <div class="d-flex">
+                                        <div class="col-6 text-right p-0">
+                                            <button *ngIf="isShowEditBtn(benefit)" [disabled]="isEdit || isLoading" (click)="onEdit(benefit)"
+                                        class="btn btn-sm btn-secondary mr-2">Edit</button>
+                                        </div>
+                                        <div class="col-6 text-left p-0">
+                                            <button *ngIf="isShowDeleteBtn()" (click)="onDelete(benefit)" class="btn btn-sm btn-danger">Delete</button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            
+                            </td>
+                        </ng-container>
+                        <ng-container *ngIf="benefit.id && benefit.isEdit">
+                            <td class="text-center col-stt">{{pageSize*(pageNumber - 1) + i + 1}}</td>
+                            <td class="text-bold "><a
+                                    [routerLink]="['/app','benefits','list-benefit','benefit-detail','benefit-infomation']" [queryParams]="{id: benefit.benefitId, name:benefit.benefitName, active: benefit.status , type: benefit.benefitType}"
+                                    class="hyperlink">{{benefit.benefitName}}</a></td>
+                            <td class="text-center text-bold" [ngStyle]="{color: APP_ENUM.BenefitTypeColor[benefit.benefitType]}">{{BenefitTypeNames[benefit.benefitType]}}</td>
+                            <td class="text-center ">{{benefit.money | currency:"VND":""}}</td>
+                            <td class="text-center">
+                                <mat-form-field *ngIf="benefit.benefitType != APP_ENUM.BenefitType.CheDoChung" appearance="outline">
+                                    <input matInput name="startDate" [(ngModel)]="benefit.startDate" [matDatepicker]="pickerStartDate" required>
+                                    <mat-datepicker-toggle matSuffix [for]="pickerStartDate"></mat-datepicker-toggle>
+                                    <mat-datepicker [dateClass]="dateClass" #pickerStartDate></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td class="text-center">
+                                <mat-form-field *ngIf="benefit.benefitType != APP_ENUM.BenefitType.CheDoChung" appearance="outline">
+                                    <input matInput name="endDate" [(ngModel)]="benefit.endDate" [min]="benefit.startDate" [matDatepicker]="pickerEndDate" #benefitEndDate="ngModel">
+                                    <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
+                                    <mat-datepicker [dateClass]="dateClass" #pickerEndDate></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td class="text-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" [(ngModel)]="benefit.status" disabled=""
+                                        class="custom-control-input">
+                                    <label class="custom-control-label ng-tns-c373-625"></label>
+                                </div>
+                            </td>
+                            <td class="col-action text-center">
+                                <ng-container *ngIf="benefit.benefitType != APP_ENUM.BenefitType.CheDoChung">
+                                    <button [disabled]="!benefit.startDate || isLoading || testDate(benefitEndDate)" (click)="onSave(benefit)" class="btn btn-accept">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="benefit.benefitType == APP_ENUM.BenefitType.CheDoChung">
+                                    <button (click)="onSave(benefit)" [disabled]="isLoading" class="btn btn-accept">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                </ng-container>
+                                <button (click)="onCancel()" class="btn btn-cancel">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </td>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container-fluid p-0">
+        <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+            (pageAction)="pageControlActions($event)"></pagination-control>
+    </div>
+</div>

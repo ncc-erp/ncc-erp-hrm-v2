@@ -1,0 +1,7 @@
+.info table th, td{
+    vertical-align: middle;
+}
+::ng-deep .fullName:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}

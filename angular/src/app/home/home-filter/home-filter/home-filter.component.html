@@ -1,0 +1,9 @@
+<div class="mt-2 text-right">
+    <app-date-selector [dropdownData]="listDateOptions"
+                       [defaultValue]="defaultValue"
+                       [fDate] = "birthdayFromDate"
+                       [tDate] = "birthdayToDate"
+                       [mode]="APP_ENUM.DateFilterMode.HomeMonthYear"
+                       (onDateSelectorChange)="handleDateSelectorChange($event)">
+    </app-date-selector>
+</div>

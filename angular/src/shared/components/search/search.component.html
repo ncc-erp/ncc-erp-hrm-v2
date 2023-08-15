@@ -1,0 +1,7 @@
+<div class="input-group pt-1">
+    <div class="input-group-prepend">
+        <button (click)="onClick()" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <input [placeholder]="placeholder" type="text" class="form-control" [(ngModel)]="seachText"
+        (keyup.enter)="onSearchEnter()">
+</div>

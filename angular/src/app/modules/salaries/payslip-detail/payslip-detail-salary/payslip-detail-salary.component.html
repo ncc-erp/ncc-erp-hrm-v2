@@ -1,0 +1,203 @@
+<div class="px-4 pt-4" style="font-size: 18px;" *ngIf="isViewTabSalary()" [busy]="isLoading">
+    <div *ngIf="isShowActions()">
+        <button *ngIf="isShowCollectAndReCalculateSalaryBtn" class="btn btn-primary mr-2" (click)="collectEmployeePayslip()">Collect & Re-Calculate Salary</button>
+        <button *ngIf="isShowReCalculateSalaryBtn()" class="btn btn-success mr-2" (click)="reCalculateSalary()">Re-Calculate Salary</button>
+        <button style="background-color:red" class="btn btn-success" (click)="UpdatePayslipInfo()">Update Payslip</button>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            <p class="title">
+                Input salary
+            </p>
+           <ng-container *ngIf="payslipDetailSalary?.inputSalary">
+            <div class="content" *ngFor="let item of payslipDetailSalary.inputSalary">
+                <div>
+                    <strong class="text-danger"> {{item.salary | moneyFormat}}</strong> from <strong
+                        class="text-primary"> {{item.fromDate | DMYDateFormat}}</strong>
+                        (<span>{{item.note}}</span>)
+                </div>
+            </div>
+           </ng-container>
+        </div>
+        <div class="col-6">
+            <p class="title">Standard information</p>
+            <div class="content row">
+                <div class="col-6">
+                    <p>Standard Working Day: </p>
+                    <p>Standard Opentalk Count: </p>
+                    <p>Standard Total Day: </p>
+                </div>
+                <div class="col-6">
+                    <p>{{payslipDetailSalary?.standardWorkingDay}}</p>
+                    <p>{{payslipDetailSalary?.standardOpenTalk}}</p>
+                    <p>{{payslipDetailSalary?.totalStandardDay}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            <p class="title">Collected data</p>
+            <div class="content">
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Leave day before caculating: </p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.leaveDayBefore}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Leave day added:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.monthlyAddedLeaveDay}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Normal working day: </p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.normalworkingDay}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Opentalk count: </p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.openTalkCount}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Total days: </p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.employeeTotalDay}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Off day: </p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.offDay}}</p>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">OT hour (đã nhân hệ số): </p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.otHour}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Refund leave day: </p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.refundLeaveDay}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <p class="title">Result</p>
+            <div class="content">
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Normal salary:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.normalSalary | currency:"VND":""}} VND</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">OT salary:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.otSalary | currency:"VND":""}} VND</p>
+                    </div>
+                </div>
+                <div class="row" *ngIf="payslipDetailSalary?.calculateResult?.maternityLeaveSalary > 0">
+                    <div class="col-6">
+                        <p class="title-content">Maternity Leave salary:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.maternityLeaveSalary | currency:"VND":""}} VND</p>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Total Benefit:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.totalBenefit | currency:"VND":""}} VND</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Total Bonus:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.totalBonus | currency:"VND":"" }} VND</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Total Punishment:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.totalPunishment | currency:"VND":""}} VND</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content">Total Debt:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.totalDebt | currency:"VND":"" }} VND</p>
+
+                    </div>
+                </div>
+                <div class="row" *ngIf="payslipDetailSalary?.calculateResult?.totalRefund != 0">
+                    <div class="col-6">
+                        <p class="title-content">Total Refund:</p>
+                    </div>
+                    <div class="col-6">
+                        <p>{{payslipDetailSalary?.calculateResult?.totalRefund | currency:"VND":"" }} VND</p>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content"><b>Total Real Salary:</b></p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-bold">
+                            {{ payslipDetailSalary?.totalRealSalary | currency:"VND":"" }} VND</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="title-content"><b>Remaining Leave day:</b></p>
+                    </div>
+                    <div class="col-6">
+                        <p class="title-content">{{ payslipDetailSalary?.leaveDayAfter}}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

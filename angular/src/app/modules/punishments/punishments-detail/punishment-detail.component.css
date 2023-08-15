@@ -1,0 +1,58 @@
+.w-90 {
+    width: 90%;
+}
+
+.w-20 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 20% !important;
+    flex: 0 0 20% !important;
+    max-width: 20%;
+}
+
+.w-30 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 30% !important;
+    flex: 0 0 30% !important;
+    max-width: 30%;
+}
+
+.w-40 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 40% !important;
+    flex: 0 0 40% !important;
+    max-width: 40%;
+}
+
+.w-85 {
+    width: 85%;
+}
+
+.center-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.middle-y{
+    vertical-align: middle;
+}
+.submit-btn:disabled i {
+    color: gray !important;
+}
+.breadcrumb{
+	background-color: unset !important;
+    margin: 0px;
+    padding-top: 20px;
+}
+.active{
+    font-weight: 700;
+    margin-top: 5px;
+}
+.card-header{
+    padding: 0px auto;
+}
+.header{
+    padding:  0px 20px;
+}
+::ng-deep .error.invalid-feedback{
+    text-align: initial;
+}

@@ -1,0 +1,77 @@
+<form class="form-horizontal" autocomplete="off" #benefitForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div>
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="benefitName" [(ngModel)]="benefit.name" #name="ngModel" cdkFocusInitial
+                        #nameEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Type:
+            </label>
+            <div>
+                <mat-form-field appearance="outline" class="common-input">
+                    <mat-select [(ngModel)]="benefit.type" #type="ngModel" #typeEl name="type" required>
+                        <mat-option *ngFor="let type of listBenefitType"  [value]="type.value">{{type.key}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="type" [controlEl]="typeEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Money:
+            </label>
+            <div>
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="money" [(ngModel)]="benefit.money" mask="separator" thousandSeparator=","
+                        #money="ngModel" #moneyEL required>
+                </mat-form-field>
+                <abp-validation-summary [control]="money" [controlEl]="moneyEL">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div *ngIf="benefit.type != APP_ENUM.BenefitType.CheDoChung" class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Apply date:
+            </label>
+            <div>
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput [matDatepicker]="picker" name="applyDate" #applyDateEl #applyDate="ngModel" [(ngModel)]="benefit.applyDate" required>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <abp-validation-summary [control]="applyDate" [controlEl]="applyDateEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group row detail">
+            <div class="col-md-3 col-form-label">
+            </div>
+            <div class="col-md-7">
+                <mat-checkbox name="isbelong" [(ngModel)]="benefit.isBelongToAllEmployee">Is belong to all employee
+                </mat-checkbox>
+            </div>
+        </div>
+        <div *ngIf="dialogData?.isClone" class="form-group row detail">
+            <div class="col-md-3 col-form-label">
+            </div>
+            <div class="col-md-7">
+                <mat-checkbox name="isCloneEmployee" [(ngModel)]="isCloneEmployee">Clone employee
+                </mat-checkbox>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!benefitForm.valid || isLoading"></app-dialog-footer>
+</form>

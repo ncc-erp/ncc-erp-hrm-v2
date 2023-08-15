@@ -1,0 +1,43 @@
+tbody td{
+    vertical-align: middle;
+}
+.col-updateTime {
+    width: 140px;
+}
+
+.btn-accept {
+    font-size: x-large;
+    color: var(--success)
+}
+
+.btn-cancel {
+    font-size: x-large;
+    color: var(--danger)
+}
+
+.btn-accept:hover,
+.btn-cancel:hover {
+    filter: brightness(0.8);
+}
+
+.col-updatedTime{
+    width: 160px;
+}
+
+.col-date{
+    width: 200px;
+}
+
+.full-note{
+    white-space: pre-line;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+.col-branch{
+    width: 150px;
+}
+
+.edit-button{
+    margin-right: 60px !important;
+}

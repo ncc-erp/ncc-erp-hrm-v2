@@ -1,0 +1,54 @@
+<form class="form-horizontal" autocomplete="off" #bonusForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="p-3">
+        <div class="form-group required">
+            <div class="row">
+                <label class="col-3 mt-2 col-form-label">
+                    Name:
+                </label>
+                <div class="col-9">
+                    <mat-form-field appearance="outline" class="common-input w-100">
+                        <input matInput name="name" [(ngModel)]="bonus.name" #name="ngModel" cdkFocusInitial #nameEl
+                            required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="name" [controlEl]="nameEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!this.dialogData?.id || dialogData?.isActive" class="form-group required">
+            <div class="row">
+                <label class="col-3 mt-2 col-form-label">
+                    Apply month:
+                </label>
+                <div class="col-9">
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-select [(ngModel)]="bonus.applyMonth"  (selectionChange)="chooseDate($event.value)"
+                         required #applyMonthValid="ngModel"
+                         name="applyMonth" >
+                            <mat-option *ngFor="let month of listDate" [value]="month">
+                                {{month}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-error class="mt-1" *ngIf="applyMonthValid.hasError('required') && applyMonthValid.touched"
+                        style="font-size: 13px;">
+                        This field is required
+                    </mat-error>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="this.dialogData?.id" class="form-group">
+            <div class="row">
+                <label class="col-3 mt-2 col-form-label">
+                    Apply note:
+                </label>
+                <div class="col-9 mt-3">
+                    <mat-checkbox [(ngModel)]="isApply" name="isApply">Thay đổi Note cho tất cả user được bonus</mat-checkbox>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!bonusForm.valid || isLoading"></app-dialog-footer>
+</form>

@@ -1,0 +1,6 @@
+.mat-datepicker-toggle {
+    position: absolute;
+    right: 0;
+    top: 25%;
+    transform: translateY(-50%);
+  }

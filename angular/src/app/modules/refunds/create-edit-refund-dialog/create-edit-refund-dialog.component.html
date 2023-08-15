@@ -1,0 +1,43 @@
+<form class="form-horizontal" autocomplete="off" #refundForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="py-3 mt-2">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-md-9">
+                <mat-form-field class="w-100" appearance="outline" >
+                    <input matInput name="name" [(ngModel)]="refund.name" #name="ngModel" cdkFocusInitial #nameEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required" *ngIf="!dialogData?.id">
+            <label class="col-md-3 mt-2 col-form-label">
+                Date:
+            </label>
+            <div class="col-md-9">
+                <mat-form-field class="w-100" appearance="outline" >
+                    <mat-select name="time" [(ngModel)]="refund.date"  required #date="ngModel" required>
+                        <mat-option *ngFor="let date of listDate" [value]="date">
+                            {{date}}
+                        </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-error class="mt-1" *ngIf="date.hasError('required') && date.touched"
+                    style="font-size: 13px;">
+                    This field is required
+                </mat-error>
+            </div>
+        </div>
+        <div class="form-group d-flex" *ngIf="dialogData?.id">
+            <div class="col-3"></div>
+            <div class="col-9">
+                <mat-checkbox  [(ngModel)]="refund.updateNote" name="updateNote">Update to note in detail page</mat-checkbox>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!refundForm.valid || isLoading"></app-dialog-footer>
+</form>

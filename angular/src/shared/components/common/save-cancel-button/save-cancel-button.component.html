@@ -1,0 +1,7 @@
+<div>
+    <button [disabled]="isDisable" class="mr-3 submit-btn"
+        style="background: none; border: none;" (click)="onSave(item)">
+        <i class="fas fa-check fa-2x"></i>
+    </button>
+    <i (click)="onCancel(item)" style="color: #dc3545;" class="fa-solid fa-arrow-rotate-left fa-2x"></i>
+</div>

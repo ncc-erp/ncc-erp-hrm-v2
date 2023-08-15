@@ -1,0 +1,131 @@
+.default-filter {
+    gap: 0.5rem;
+}
+
+.col-paymentType {
+    max-width: 100px;
+    min-width: 1%;
+}
+
+.col-principal {
+    width: 120px;
+}
+
+th {
+    word-wrap: break-word;
+    white-space: preline;
+    vertical-align: middle !important;
+}
+
+.col-interestRate {
+    width: 80px;
+}
+
+td {
+    vertical-align: middle;
+}
+
+td:first-child {
+    width: fit-content;
+}
+
+td:nth-child(3) {
+    max-height: 50px;
+}
+
+td:last-child {
+    width: 50px !important;
+}
+
+.col-interest,
+.col-paid,
+.col-remaining,
+.col-status {
+    width: 5%;
+    min-width: 100px;
+    padding: 0 0.25rem;
+    overflow-wrap: break-word;
+    line-break: loose;
+}
+
+.col-date {
+    width: 120px;
+}
+
+.note-content {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.col-stt {
+    width: 1%;
+}
+
+.col-action {
+    width: 100px !important;
+}
+
+.debt-link {
+    text-decoration: none;
+    color: black;
+}
+
+::ng-deep .mat-form-field {
+    width: 100%;
+}
+
+::ng-deep .date-picker .mat-form-field {
+    width: 63%;
+}
+
+@media screen and (min-width:992px) {
+    .date-picker .mat-form-field {
+        width: 90%;
+    }
+    .btn-advanced-filter{
+        padding: auto;
+    }
+}
+
+.fixTableHead {
+    max-height: 72vh;
+}
+
+.fixTableHead table {
+    margin-bottom: 0;
+}
+
+.col-note {
+    min-width: 150px;
+}
+
+.col-info:hover a {
+    text-decoration: underline;
+    width: fit-content;
+}
+
+app-user-info:hover a {
+    text-decoration: underline;
+}
+
+::ng-deep .date-filter .mat-form-{
+    width: 91.6% !important;
+    margin-right: 0.25rem;
+}
+.btn-advanced-filter{
+    padding: 6px 9px !important;
+}
+.header{
+    padding : 0px 20px;
+}
+
+::ng-deep .note-full {
+    white-space: pre-line;
+    word-break: break-all;
+    text-align: left !important;
+}

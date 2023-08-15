@@ -1,0 +1,89 @@
+<div class="row pt-2" *ngIf="isAllowViewTabDebt()">
+    <div class="d-flex w-100 align-items-center pb-2">
+        <div class="col-9 p-0 d-flex">
+            <table-filter class="col-3 pl-0" [dropdownData]="STATUS_FILTER" [filterType]="filterTypeEnum.Dropdown"
+                (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown,$event,'debtStatus')" [placeholder]="'Status'"
+                [defaultValue]="EDEBT_STATUS.Inprogress">
+            </table-filter>
+            <table-filter class="col-3" [dropdownData]="PAYMENT_METHOD_FILTER" [filterType]="filterTypeEnum.Dropdown"
+                (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown,$event,'paymentType')"
+                [placeholder]="'Payment method'" [defaultValue]="APP_CONST.DEFAULT_ALL_FILTER_VALUE">
+            </table-filter>
+        </div>
+        <div class="col-3 p-0 d-flex justify-content-end" *ngIf="isShowAddBtn()">
+            <a [routerLink]="['/app','debt','list-debt','create']" [queryParams]="{employeeId:employeeId}" class="btn btn-primary">Add</a>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <div class="fixTableHead">
+            <table class="table table-stripped" [busy]="isLoading">
+                <thead>
+                    <tr>
+                        <th>
+                            ID
+                            <toggle-column [columnList]="columnList"
+                            (columnToggle)="columnList = $event"
+                            [tableName]="'EmployeeDebtTable'">
+                            </toggle-column>
+                        </th>
+                        <ng-container *ngFor="let column of columnList" >
+                            <th
+                            [class]="column.className"
+                            *ngIf="column.isShow"
+                        >
+                            {{column.displayName}}
+                            <sortable
+                            *ngIf="column.sortable"
+                            [name]="column.name"
+                            [sortDirection]="sortDirection"
+                            [sortProperty]="sortProperty"
+                            (click)="onSortChange(column.name)">
+                         </sortable>
+                        </th>
+                        </ng-container>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="
+                    let debt of employeeDebtList
+                      | paginate
+                        : {
+                            id: 'server',
+                            itemsPerPage: pageSize,
+                            currentPage: pageNumber,
+                            totalItems: totalItems
+                          };
+                    let i = index
+                  ">
+                        <td class="text-center text-bold"><a class="hyperlink" [routerLink]="['/app','debt','list-debt','detail',debt.id]">{{debt.id}}</a></td>
+                        <td *ngIf="columnList[0].isShow" class="text-right text-bold ">{{debt.money | currency:"VND":""}}</td>
+                        <td *ngIf="columnList[1].isShow" class="text-center">{{debt.interestRate}}</td>
+                        <td *ngIf="columnList[2].isShow" class="text-right">{{calculateInterest(debt) | currency:"VND":""}}</td>
+                        <td *ngIf="columnList[3].isShow" class="text-right ">{{debt.totalPaid | currency:"VND":""}}</td>
+                        <td *ngIf="columnList[4].isShow" class="text-right text-bold ">{{debt.money + debt.interest - debt.totalPaid | currency:"VND":""}}</td>
+                        <td *ngIf="columnList[5].isShow" class="text-center">
+                            <strong [ngStyle]="{color: APP_ENUM.PaymentTypeColor[debt.paymentType]}">
+                                {{PAYMENT_METHOD[debt.paymentType].key}}
+                            </strong>
+                        </td>
+                        <td *ngIf="columnList[6].isShow" class="text-center">{{debt.startDate | DMYDateFormat}}</td>
+                        <td *ngIf="columnList[7].isShow" class="text-center">{{debt.endDate | DMYDateFormat}}</td>
+                        <td *ngIf="columnList[8].isShow" class="text-center text-bold">
+                            <span class="badge badge-pill text-white" [ngStyle]="{backgroundColor:DEBT_STATUS_LIST[debt.debtStatus].color}">
+                                {{DEBT_STATUS_LIST[debt.debtStatus].key}}
+                            </span>
+                        </td>
+                        <td *ngIf="columnList[9].isShow" class="col-note">
+                            {{debt.note}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container-fluid p-0">
+        <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+            (pageAction)="pageControlActions($event)"></pagination-control>
+    </div>
+</div>

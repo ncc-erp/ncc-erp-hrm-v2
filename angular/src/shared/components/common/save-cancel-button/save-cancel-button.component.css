@@ -1,0 +1,7 @@
+button:disabled i{
+    color: rgb(95, 207, 95) !important;
+}
+
+i{
+    color:var(--success);
+}

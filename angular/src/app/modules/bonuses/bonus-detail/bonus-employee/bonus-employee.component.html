@@ -1,0 +1,229 @@
+<div class="margin-custom" *ngIf="isAllowRoutingTabEmployee()">
+    <section>
+        <div class="container-fluid">
+            <div class="">
+                <div class="card-header">
+                    <div class="row justify-content-between">
+                        <div class="col-5">
+                            <app-search [placeholder]="'Search by Name or Email'" (onSearch)="onSearchEnter($event)">
+                            </app-search>
+                            <div class="text-left" *ngIf="bonus.isActive">
+                                <button *ngIf="isShowQuickAddBtn()" class="btn btn-success mt-2 mr-2"
+                                    [disabled]="isEditingEmployee || isAddingEmployee" (click)="onAddEmployee()">
+                                    <i class="fa-solid fa-plus mr-1"></i>
+                                    Quick Add
+                                </button>
+
+                                <button *ngIf="isShowAddBtn()" class="btn btn-primary mt-2 mr-2" [disabled]="isEditingEmployee || isAddingEmployee"
+                                    (click)="onMultipleAddEmployee()">
+                                    <i class="fa-solid fa-plus mr-1"></i>
+                                    Add
+                                </button>
+                                <button *ngIf="isShowDownloadTemplateBtn()" class="btn btn-warning mt-2 mr-2" [disabled]="isEditingEmployee || isAddingEmployee">
+                                    <i class="fa-solid fa-download mr-1"></i>
+                                    <a href="assets/template/import-employee-to-bonus.xlsx" target="_blank" style="color: #555"
+                                        download="import-employee-to-bonus.xlsx">Download Template</a>
+                                </button>
+                                <button *ngIf="isShowImportBtn()" class="btn btn-success mt-2 mr-2" [disabled]="isEditingEmployee || isAddingEmployee"
+                                    (click)="onImportFile()">
+                                    <i class="fas fa-upload mr-1"></i>
+                                    Import
+                                </button>
+                                <button class="btn btn-primary mt-2" (click)="onSendAllMail()" *ngIf="isShowSendAllMailBtn()">
+                                    <i class="fas fa-envelope fa-lg mr-2"></i>
+                                    Send all mail
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-7 row">
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userTypeList"
+                                [placeholder]="'User type'" 
+                               (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserType)">
+                           </table-filter>
+                            </div>
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList" [placeholder]="'Branch'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                                </table-filter>
+                            </div>
+                            <div class="col-3">
+                                <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userLevelList"
+                                 [placeholder]="'User level'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserLevel)">
+                                </table-filter>
+                            </div>
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="positionList"
+                                    [placeholder]="'Job position'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.JobPosition)">
+                                </table-filter>
+                            </div>
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="statusList" [placeholder]="'Status'"
+                                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Status)">
+                            </table-filter>
+                            </div>
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="genderList"
+                                [placeholder]="'Gender'" [defaultValue]="defaultValue.gender"
+                                (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown,$event, 'sex')">
+                            </table-filter>
+                            </div>
+                            <div class="col-6">
+                                <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelectWithCondition" [dropdownData]="teamList"
+                                    [placeholder]="'Team'" [defaultValue]="defaultValue.team"
+                                    (onTableMultiSelectWithConditionFilter)="onTableMultiSelectWithConditionFilter($event);">
+                                </table-filter>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="bonus-employee fixTableHead">
+                            <table class="table table-striped table-hover" [busy]="isLoading">
+                                <thead>
+                                    <th>No</th>
+                                    <th (click)="onSortChange('email')">Employee
+                                        <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th (click)="onSortChange('money')">Money
+                                        <sortable [name]="'money'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th>Note</th>
+                                    <th (click)="onSortChange('lastModificationTime')">Updated time
+                                        <sortable [name]="'lastModificationTime'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th class="col-action" *ngIf="bonus.isActive">Action</th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let employee of bonusEmployeeList| paginate: {
+                                        id: 'server',
+                                        itemsPerPage: pageSize,
+                                        currentPage: pageNumber,
+                                        totalItems: totalItems
+                                      }; let i =index ">
+                                        <td class="text-center" style="width: 50px">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                        <td class="align-middle">
+                                            <app-user-info
+                                            [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                            [isAllowRouting]="isAllowViewTabBonus()"
+                                             *ngIf="!employee.createMode || isEditingEmployee"
+                                            [link]="['/app','employees','list-employee','employee-detail','bonus']"
+                                            [queryParams]="{id: employee.employeeId}"
+                                            [userData]="{
+                                                id: employee.employeeId,
+                                                avatarFullPath: employee.avatarFullPath,
+                                                jobPositionInfo: employee.jobPositionInfo,
+                                                levelInfo: employee.levelInfo,
+                                                userTypeInfo: employee.userTypeInfo,
+                                                email: employee.email,
+                                                sex: employee.sex,
+                                                fullName: employee.fullName,
+                                                branchInfo: employee.branchInfo}">
+                                            </app-user-info>
+                                            <div class="form-group row required align-middle"
+                                                *ngIf="employee.createMode && !isEditingEmployee">
+                                                <mat-form-field class="w-100 mx-2 mt-3 center-flex"
+                                                    appearance="outline">
+                                                    <mat-select (closed)="searchEmployee=''" name="projectEmployee"
+                                                        placeholder="select account *" [(ngModel)]="employee.employeeId" #employeeInfo="ngModel"
+                                                         required>
+                                                        <mat-form-field class="w-100 px-3 "
+                                                            style="position: sticky; top: 0; z-index: 2; background-color: white;">
+                                                            <input matInput [(ngModel)]="searchEmployee"
+                                                                name="searchText" placeholder="Search" cdkFocusInitinal
+                                                                (keydown)="$event.stopPropagation()" #search>
+                                                                {{search.focus()}}
+                                                        </mat-form-field>
+                                                        <mat-option
+                                                            *ngFor="let em of employeeList | listFilter:'fullName': searchEmployee : 'email'"
+                                                            [value]="em.id">
+                                                            {{em.fullName}} - {{em.email}}
+                                                        </mat-option>
+                                                        <mat-option *ngIf="!employeeList.length">No data!</mat-option>
+                                                    </mat-select>   
+                                                </mat-form-field>
+                                                <mat-error class="ml-2" *ngIf="employeeInfo.hasError('required') && employeeInfo.touched"
+                                                    style="font-size: 13px;">
+                                                    This field is required
+                                                </mat-error>
+                                            </div>
+                                        </td>
+                                        <td class="text-right align-middle">
+                                            <div *ngIf="!employee.createMode">{{employee.money | moneyFormat}}
+                                            </div>
+                                            <div *ngIf="employee.createMode">
+                                                <mat-form-field class="w-100  center-flex" appearance="outline">
+                                                <input matInput name="money" [(ngModel)]="employee.money"
+                                                    placeholder="enter money*" [allowNegativeNumbers]="false"
+                                                    mask="separator" thousandSeparator="," #salaryLevelEl min=0 (blur)="focusOut()"
+                                                    #money="ngModel" #moneyInput cdkFocusInitial #moneyEl required>
+                                                {{isFocusing?moneyInput.focus():''}}
+                                            </mat-form-field>
+                                            <abp-validation-summary [control]="money" [controlEl]="moneyEl">
+                                            </abp-validation-summary>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle">
+                                            <div class="content-note" *ngIf="!employee.createMode">{{employee.note}}
+                                            </div>
+                                            <mat-form-field class="w-100" appearance="outline"
+                                                *ngIf="employee.createMode">
+                                                <textarea cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+                                                    name="pmNote" class="w-100 mt-2" rows="2"
+                                                    [(ngModel)]="employee.note" placeholder="Note..." name="solution"
+                                                    matInput></textarea>
+                                            </mat-form-field>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <div>{{employee.lastModificationTime | dmyHmDateFormat}}
+                                                <p class="m-0"><span *ngIf="!employee.createMode">by</span>
+                                                    {{employee.fullNameModification}}</p>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle col-action" *ngIf="bonus.isActive">
+                                            <div *ngIf="!employee.createMode">
+                                                <button [matMenuTriggerFor]="menu" class="btn" [isDisable]=" isLoading  || isAddingEmployee || isEditingEmployee">
+                                                    <i class="fas fa-bars fa-lg"></i>
+                                                </button>
+                                                <mat-menu #menu="matMenu">
+                                                    <button class="mat-menu-item" *ngIf="isShowEditBtn()" 
+                                                    (click)="onUpdate(employee)">
+                                                    <i class="fas fa-pencil-alt mr-2"></i>
+                                                        Edit
+                                                    </button>
+                                                    <button class="mat-menu-item"  *ngIf="isShowDeleteBtn()" (click)="onDelete(employee)">
+                                                        <i class="fa-solid fa-trash-can mr-2"></i>
+                                                        Delete
+                                                    </button>
+                                                    <button class="mat-menu-item" (click)="onSendMail(employee.id)" *ngIf="isShowSendMailBtn()">
+                                                        <i class="fas fa-envelope fa-lg mr-2"></i>
+                                                        Send mail
+                                                    </button>
+                                                </mat-menu>
+                                            </div>
+                                            <div *ngIf="employee.createMode">
+                                                <app-save-cancel-button [isDisable]="isLoading || !employee.employeeId || !employee.money" (save)="onSave(employee)" (cancel)="onCancel(employee)">
+                                                </app-save-cancel-button>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

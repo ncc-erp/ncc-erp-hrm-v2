@@ -1,0 +1,50 @@
+<form class="form-horizontal" autocomplete="off" #addUserInRoleForm="ngForm" [busy]="isLoading">
+    <div class="dialog-header" cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
+        <div class="out-line w-100 d-flex justify-content-between">
+            <div class="dialogTitle">
+                Add user to role
+            </div>
+            <div class="pt-2">
+                <button class="close-btn p-0" (click)="onClose()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mt-2">
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label" for="tenancyName">
+                User:
+            </label>
+            <div class="col-md-9">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-select name="user" [(ngModel)]="userId" #userValid="ngModel" [required]="true"
+                        (closed)="searchUser = ''" placeholder="select a User">
+                        <mat-form-field class="px-3 w-100"
+                            style="position: sticky; top: 0; z-index: 2; background-color: white;">
+                            <input matInput [(ngModel)]="searchUser" name="search" #search placeholder="Search"
+                                (keydown)="$event.stopPropagation()">{{search.focus()}}
+                        </mat-form-field>
+                        <mat-option
+                            *ngFor="let data of listUsersNotInRole | listFilter:  'name' : searchUser : 'email' : 'surname' : 'name'"
+                            [value]="data.id">
+                            {{data.fullName}} - ({{data.email}})
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-error class="mt-1" *ngIf="userValid.hasError('required') && userValid.touched"
+                    style="font-size: 13px;">
+                    This field is required
+                </mat-error>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="d-flex justify-content-end btn-footer-action">
+            <button class="btn mr-2 btn-secondary" mat-dialog-close (click)="onClose()">Cancel</button>
+            <button [disabled]="!addUserInRoleForm.valid || isLoading" class="btn btn-primary mr-2" (click)= "onSaveAndClose()">Save & Close</button>
+            <button [disabled]="!addUserInRoleForm.valid || isLoading" class="btn btn-primary" (click)= "onSaveAndCountinue()">Save & Continue</button>
+        </div>
+    </div>
+</form>

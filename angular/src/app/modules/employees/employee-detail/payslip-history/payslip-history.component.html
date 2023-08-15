@@ -1,0 +1,83 @@
+<div class="row pt-3" *ngIf="isAllowViewTabPayslipHistory()">
+    <div class="table-responsive">
+        <div class="fixTableHead">
+            <table class="table table-stripped" [busy]="isLoading">
+                <thead>
+                    <tr>
+                        <th class="col-stt">No</th>
+                        <th class="col-employee">Employee</th>
+                        <th>Payroll</th>
+                        <th>Input salary</th>
+                        <th class="col-realSalary">Real salary</th>
+                        <th>Remain leave day</th>
+                        <th class="text-left col-userInfo">
+                            <div>
+                                Branch, UserType
+                            </div>
+                            <div>
+                                Position, Level
+                            </div>
+                        </th>
+                        <th>Team</th>
+                        <th>Normal salary</th>
+                        <th>OT salary</th>
+                        <th>Benefit</th>
+                        <th>Bonus</th>
+                        <th>Punishment</th>
+                        <th>Debt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let history of listPayslipHistory; let i = index">
+                        <td class="text-center">{{i + 1}}</td>
+                        <td class="text-center td-employee">
+                            <app-user-info 
+                            [userData]="history" 
+                            [link]="['/app/payroll/list-payroll/payroll-detail/payslip-detail/salary']" 
+                            [isAllowRouting]="isAllowViewTabPayslipHistory()"
+                            [queryParams]="{
+                                id: history.payslipId, 
+                                status: history.payrollInfo.payrollStatus,
+                                employeeId: history.employeeId,
+                                payrollId: history.payrollInfo.payrollId
+                            }">
+                            </app-user-info>
+                        </td>
+                        <td class="text-center">
+                            <a class="hyperlink" [routerLink]="['/app/payroll/list-payroll/payroll-detail']" [queryParams]="{id: history.payrollInfo.payrollId}">
+                                {{history.applyMonth | date:'MM/yyyy'}}
+                            </a>
+                        </td>
+                        <td class="text-right">
+                            <div *ngFor="let s of history.standardSalary">
+                                <p class="mb-0">{{s.salary | moneyFormat}} -
+                                    <span class="text-black">  {{s.date | DMYDateFormat}}</span>
+                                </p>
+                            </div>
+                            
+                        </td>
+                        <td class="text-right">{{history.realSalary | moneyFormat}}</td>
+                        <td class="text-center">{{history.remainLeaveDayBefore}} => {{history.remainLeaveDayAfter}}</td>
+                        <td class="text-left pl-2">
+                            <span class="mx-1 badge text-white" [ngStyle]="{backgroundColor: history.payslipBranchInfo.color}">{{history.payslipBranchInfo.name}}</span>
+                            <span class="mx-1 badge text-white" [ngStyle]="{backgroundColor: history.payslipUserTypeInfo.color}">{{history.payslipUserTypeInfo.name}}</span>
+                            <br>
+                            <span class="mx-1 badge text-white" [ngStyle]="{backgroundColor: history.payslipJobPositionInfo.color}">{{history.payslipJobPositionInfo.name}}</span>
+                            <span class="mx-1 badge text-white" [ngStyle]="{backgroundColor: history.payslipLevelInfo.color}">{{history.payslipLevelInfo.name}}</span>
+                            
+                        </td>
+                        <td>
+                            <span class="mb-0" innerHtml="{{history.teams | team}}"></span>
+                        </td>
+                        <td class="text-right">{{history.normalSalary | moneyFormat}}</td>
+                        <td class="text-right">{{history.otSalary | moneyFormat}}</td>
+                        <td class="text-right">{{history.benefit | moneyFormat}}</td>
+                        <td class="text-right">{{history.bonus | moneyFormat}}</td>
+                        <td class="text-right">{{history.punishment | moneyFormat}}</td>
+                        <td class="text-right">{{history.debt | moneyFormat}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

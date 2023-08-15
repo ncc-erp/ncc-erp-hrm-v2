@@ -1,0 +1,26 @@
+.col-api{
+    width: 1%;
+    white-space: nowrap;
+}
+
+.col-api:hover{
+    cursor: pointer;
+}
+
+::ng-deep .my-tooltip{
+    max-width: fit-content !important;
+    text-overflow: unset;
+}   
+
+.col-active{
+    width: 1%;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 1400px) {
+    .col-api{
+        max-width: 220px !important;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+}

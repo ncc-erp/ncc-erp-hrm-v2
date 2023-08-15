@@ -1,0 +1,127 @@
+<div class="div">
+  <div class="card">
+    <div class="p-4 d-flex justify-content-between">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="bankMultiCtrl" placeholder="Skills" [multiple]="true" #multiSelect
+          disableOptionCentering panelClass="myPanelClass">
+          <mat-option>
+            <ngx-mat-select-search [formControl]="bankMultiFilterCtrl"></ngx-mat-select-search>
+          </mat-option>
+          <div style="position: sticky; top: 50px; background: white; z-index: 2; margin-top: -10px; padding: 10px;">
+            <div>
+              <label for="" class="mr-1">Search type: </label>
+              <div class="d-inline">
+                <mat-radio-group [(ngModel)]="filterOption" aria-label="Select an option">
+                  <mat-radio-button class="mr-2" [value]="0">And</mat-radio-button>
+                  <mat-radio-button [value]="1">Or</mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+            <div style="line-height: 30px">
+              <span *ngFor="let item of bankMultiCtrl?.value; let i = index"
+                (click)="clearSelected(item, bankMultiCtrl?.value)" [ngClass]="i%2==0?'bg-secondary':'bg-primary'"
+                class="m-1 pointer"
+                style="font-size: 14px; padding: 5px; border-radius: 2px; white-space: nowrap;">{{item.name}}<i
+                  class="fas fa-times ml-1"></i></span>
+              <span (click)="clearAll()" style="font-size: 14px; padding: 5px; border-radius: 2px; white-space: nowrap;"
+                class="bg-danger pointer">Clear all <i class="fas fa-times ml-1"></i></span>
+            </div>
+          </div>
+          <mat-option *ngFor="let bank of filteredBanksMulti | async" [value]="bank">
+            {{bank.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button class="btn btn-primary " (click)="openDialog()">
+        open dialog
+      </button>
+    </div>
+    <div class="card-body table-responsive px-4 pb-2">
+      <div class="fixTableHead">
+        <table style="border-collapse: collapse;" class="table table-hover text-nowrap w-100" [busy]="isLoading">
+          <thead class="bg-light">
+            <tr style="border: none;">
+              <th *ngIf="columnList[0].isShow">#</th>
+              <th *ngIf="columnList[1].isShow" style="cursor: pointer;" (click)="onSortChange('fullName')">{{columnList[1].displayName}}
+                <sortable [name]="'fullName'" [sortProperty]="sortProperty" [sortDirection]="sortDirection"></sortable>
+              </th>
+              <th *ngIf="columnList[2].isShow" style="width: 150px;">{{columnList[2].displayName}}</th>
+              <th *ngIf="columnList[3].isShow" style="width: 150px;">{{columnList[3].displayName}}
+              </th>
+              <th *ngIf="columnList[4].isShow">{{columnList[4].displayName}}</th>
+              <th *ngIf="columnList[5].isShow" class="pointer" (click)="onSortChange('creationTime')">{{columnList[5].displayName}}
+                <sortable [name]="'creationTime'" [sortProperty]="sortProperty" [sortDirection]="sortDirection">
+                </sortable>
+              </th>
+              <th>Action</th>
+            </tr>
+            <tr style="border: none;">
+              <td *ngIf="columnList[0].isShow"></td>
+              <td *ngIf="columnList[1].isShow" class="text-center">
+                <table-filter [filterType]="filterTypeEnum.SearchText" [placeholder]="'Search by Name and Email'"
+                  (onTableFilter)="onTableFilter(filterTypeEnum.SearchText, $event)"></table-filter>
+              </td>
+              <td *ngIf="columnList[2].isShow" class="text-center">
+                <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="statusList"
+                  [placeholder]="'Status'" (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown, $event, 'status')">
+                </table-filter>
+              </td>
+              <td *ngIf="columnList[3].isShow" class="text-center">
+                <table-filter [filterType]="filterTypeEnum.Radio"
+                  (onTableFilter)="onTableFilter(filterTypeEnum.Radio, $event, 'isActive')"></table-filter>
+              </td>
+              <td *ngIf="columnList[4].isShow"> </td>
+              <td class="text-center" *ngIf="columnList[5].isShow">
+                <table-filter [filterType]="filterTypeEnum.DatePicker"
+                  [placeholder]="'Date'" (onTableFilter)="onTableFilter(filterTypeEnum.DatePicker, $event, 'creationTime')">
+                </table-filter>
+              </td>
+              <td class="text-center fa-lg">
+                <toggle-column [columnList]="columnList" (columnToggle)="columnList = $event" [tableName]="'userTable'">
+                </toggle-column>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="
+                    let user of listUser
+                      | paginate
+                        : {
+                            id: 'server',
+                            itemsPerPage: pageSize,
+                            currentPage: pageNumber,
+                            totalItems: totalItems
+                          }
+                  ; let i =index" style="position: relative;">
+              <td *ngIf="columnList[0].isShow" class="text-center" style="width: 60px; max-width: 60px;"> {{ i+1 }}</td>
+              <td *ngIf="columnList[1].isShow">
+                <app-user-info [userData]="{fullName:user.fullName,branch:user.userInfo.branch,
+                            userType:user.userInfo.userType,emailAddress:user.emailAddress, avatarPath:'',
+                          userLevel:user.userInfo.level}"></app-user-info>
+              </td>
+              <td *ngIf="columnList[2].isShow" class="text-center"><span class="badge bg-success">working</span></td>
+
+              <td *ngIf="columnList[3].isShow" class="text-center">
+                {{user.isActive}}
+              </td>
+              <td *ngIf="columnList[4].isShow" class="text-center">
+                {{2000000 | number:"1.0"}}
+              </td>
+              <td *ngIf="columnList[5].isShow" class="text-center">{{user.creationTime | date: "yyyy/MM/dd"}}</td>
+              <td class="text-center">
+                <button class="btn btn-danger btn-sm mr-2">
+                  <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                </button>
+                <button class="btn btn-secondary btn-sm">
+                  <i class="fa-solid fa-pen-to-square mr-1"></i>Edit
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <pagination-control></pagination-control>
+  </div>
+</div>

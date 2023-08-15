@@ -1,0 +1,10 @@
+<mat-form-field class="w-100" appearance="outline">
+    <mat-select  [formControl]="selectControl" #singleSelect disableOptionCentering (selectionChange)="changeValue($event)">
+      <mat-option>
+        <ngx-mat-select-search  cdkFocusInitial noEntriesFoundLabel="No matching item found" [placeholderLabel]="searchLabel" [formControl]="searchControl"></ngx-mat-select-search>
+      </mat-option>
+      <mat-option  *ngFor="let item of filteredList | async" [value]="item.value">
+        {{item.key}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>

@@ -1,0 +1,21 @@
+<app-dialog-header [dialogTitle]="title">
+</app-dialog-header>
+<div id="add-employee">
+    <div>
+        <div class="px-4 pt-3 d-flex">
+            <div class="p-0 w-100">
+                <app-employee-filter [isOnDialog]="true" 
+                (onSearch)="onSearchEnter($event)" 
+                (onFilter)="onFilter($event)"
+                (onMultiFilterWithCondition)="onMultiFilterWithCondition($event)" 
+                (onMultiFilter)="onMultiFilter($event)"  
+                (onFilterBySeniority)="onFilterBySeniority($event)"
+                (onCancel)="onCancel()" 
+                (onDateSelectorChange)="onDateSelectorChange($event)"
+                [isExistFilterBirthday] = "true"
+                (onSelect)="onSave()"></app-employee-filter>
+            </div>
+        </div>
+        <app-list-employee [isOnDialog]="true" #listEmployee></app-list-employee>
+    </div>
+</div>

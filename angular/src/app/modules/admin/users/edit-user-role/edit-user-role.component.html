@@ -1,0 +1,18 @@
+<form class="form-horizontal" autocomplete="off" #editRoleForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="form-group row mt-3">
+        <ng-container *ngFor="let role of roles; let i = index">
+            <div class="col-md-6">
+                <div class="custom-control custom-checkbox">
+                    <input [disabled]="isviewOnlyMe" type="checkbox" class="custom-control-input" [id]="'role_' + i"
+                        [checked]="isRoleChecked(role.normalizedName)" (change)="onRoleChange(role, $event)" />
+                    <label class="custom-control-label" [for]="'role_' + i">
+                        {{ role.name }}
+                    </label>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!editRoleForm.valid || isLoading"></app-dialog-footer>
+</form>

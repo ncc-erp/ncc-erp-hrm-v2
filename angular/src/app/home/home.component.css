@@ -1,0 +1,56 @@
+.gray-td {
+  background-color: #f5efed;
+}
+.gray-th {
+  background-color: #efccc2;
+}
+.green-td {
+  background-color: #edf3ea;
+}
+.green-th {
+  background-color: #c8d9ad;
+}
+.blue-td {
+  background-color: #d9f3ff;
+  width: 90px;
+}
+.blue-th {
+  background-color: #a6d8ef;
+}
+.yellow-td {
+  background-color: #f5f2e5;
+}
+.yellow-th {
+  background-color: #eddbaa;
+  width: 90px;
+}
+.orange-td {
+  background-color: #ffc3a1;
+}
+.purple-th {
+  background-color: #d7d9fb;
+}
+.purple-td {
+  background-color: #f1f2ff;
+}
+.small-th {
+  width: 90px;
+}
+.branch-row:hover td {
+  background-color: #fff583;
+}
+.dark-th {
+  background-color: #bdc9d3;
+}
+.main-table {
+  box-shadow: 0px 0px 11px 2px rgb(185 183 183 / 41%);
+}
+.main-table td {
+  padding: 10px !important;
+}
+.title {
+  margin-top: 14px;
+}
+.page-wrapper {
+  height: 100vh;
+}

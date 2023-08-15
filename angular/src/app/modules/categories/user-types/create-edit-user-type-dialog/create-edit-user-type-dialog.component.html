@@ -1,0 +1,67 @@
+<form class="form-horizontal" autocomplete="off" #userTypeForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="name" (ngModelChange)="nameChange($event)" [(ngModel)]="userType.name" #name="ngModel" cdkFocusInitial #nameEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Code:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="code" [(ngModel)]="userType.code" #code="ngModel" #codeEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="code" [controlEl]="codeEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Short name:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="shortName" [(ngModel)]="userType.shortName" #shortName="ngModel" #shortNameEl
+                        required>
+                </mat-form-field>
+                <abp-validation-summary [control]="shortName" [controlEl]="shortNameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <label class="col-3 mt-2 col-form-label">
+                Color:
+            </label>
+            <div class="pl-2 d-flex align-items-center">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput pattern="" maxlength="7" name="color" [(ngModel)]="userType.color" >
+                </mat-form-field>
+                <div class="d-flex align-items-center">
+                    <input class="ml-3 color-picker" type="color" name="color" [(ngModel)]="userType.color" >
+                </div>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <label class="col-3 mt-2 col-form-label">
+                Contract period:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput type="number" name="contractPeriod" [(ngModel)]="userType.contractPeriodMonth" #contractPeriod="ngModel" #contractPeriodEl>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!userTypeForm.valid || isLoading"></app-dialog-footer>
+</form>

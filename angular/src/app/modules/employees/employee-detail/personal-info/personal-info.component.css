@@ -1,0 +1,149 @@
+mat-form-field {
+    width: 100%;
+}
+
+.avatar {
+    border-radius: 100%;
+}
+
+.avatar-wrapper {
+    width: 88%;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1px;
+}
+
+.input-avatar {
+    width: 100%;
+    object-fit: cover;
+    flex-shrink: none;
+}
+
+.upload-avatar {
+    bottom: 0px;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+    color: rgb(0, 197, 105);
+    background: white;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+.avatar-border {
+    border: 1px solid var(--secondary);
+}
+
+input:disabled {
+    color: black;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+::ng-deep .mat-select-disabled {
+    pointer-events: initial;
+    cursor: text;
+}
+
+::ng-deep .mat-select-disabled .mat-select-value {
+    color: rgb(0, 0, 0) !important;
+    pointer-events: initial !important;
+}
+
+::ng-deep .mat-input-element:disabled {
+    color: rgb(0, 0, 0) !important;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
+    color: transparent !important;
+}
+
+::ng-deep .mat-form-field-disabled.mat-form-field-appearance-outline .mat-select-arrow-wrapper .mat-select-arrow {
+    color: transparent !important;
+}
+
+::ng-deep .mat-form-field-disabled .mat-icon-button {
+    display: none !important;
+}
+
+.view-mode .form-group.required .col-form-label:after {
+    content: none;
+}
+
+.form-group label {
+    margin-bottom: 0;
+}
+
+.form-group {
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.form-group>div {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    flex-wrap: wrap;
+}
+
+.view-mode .form-group label {
+    font-weight: 500;
+}
+.update-request-mode label{
+    font-weight: 700 !important;
+}
+
+.badge {
+    font-size: 90%;
+    font-weight: 500;
+}
+
+.view-text {
+    font-size: 1rem;
+}
+
+@media screen and (max-width: 989px) {
+    .avatar-wrapper {
+        width: 200px;
+    }
+    .avatar-row{
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.badge {
+    color: white
+}
+.old-info{
+    margin-bottom: 7px;
+    margin-top: -10px;
+}
+.old-value{
+    display: flex;
+    align-items: center;
+    
+}
+.old-value span{
+    width: 100%;
+    padding: 5px 3px;
+    border-radius: 2px;
+    padding-left: 12px;
+
+    
+}
+.old-info span{
+    color:#007bff;
+    font-weight: 700;
+}
+.text-danger span{
+    color: #dc3545!important;
+}

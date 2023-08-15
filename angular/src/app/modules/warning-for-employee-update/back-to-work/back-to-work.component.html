@@ -1,0 +1,115 @@
+<div class="content px-4 pt-1">
+    <section class="header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-6 breadcrumb">
+                    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-9 pt-2">
+                        <app-search [placeholder]="'Search by Name or Email'"
+                            (onSearch)="onSearchEnter($event)">
+                        </app-search>
+                    </div>
+                    <div class="col-3 pt-2">
+                        <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="statusList" [placeholder]="'Status'"
+                        (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Status)">
+                       </table-filter>
+                    </div>
+                </div>
+            <div class="card-body mt-4 pb-1 row">
+                <div class="table-wrapper w-100">
+                    <div class="table-responsive">
+                        <div class="fixedHeader">
+                            <table class="table table-striped table-hover" [busy]="isLoading">
+                                <thead>
+                                    <th>#</th>
+                                    <th class="pointer" (click)="onSortChange('email')">
+                                        Employee
+                                        <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th>Status</th>
+                                    <th (click)="onSortChange('applyDate')">
+                                        Stop Date
+                                        <sortable [name]="'applyDate'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th (click)="onSortChange('backDate')">
+                                        Back date
+                                        <sortable [name]="'backDate'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th (click)="onSortChange('updatedTime')">
+                                        Updated Time
+                                        <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th>Action</th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let employee of employeeList| paginate: {
+                                        id: 'server',
+                                        itemsPerPage: pageSize,
+                                        currentPage: pageNumber,
+                                        totalItems: totalItems
+                                      }; let i =index">
+                                        <td class="text-center align-middle">{{(pageNumber-1)*pageSize + i + 1}}</td>
+                                        <td>
+                                            <app-user-info
+                                                [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                                [isAllowRouting]="isAllowViewTabPersonalInfo()"
+                                                [link]="['/app/employees/list-employee/employee-detail/personal-info']"
+                                                [queryParams]="{id:employee.id}" [userData]="employee"></app-user-info>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span
+                                                [class]="APP_CONST.userStatus[employee.status].class">{{APP_CONST.userStatus[employee.status].name}}</span>
+                                        </td>
+                                        <td class="text-center align-middle">{{employee.applyDate | DMYDateFormat}}
+                                        </td>
+                                        <td class="text-center align-middle"><span>{{employee.backDate | DMYDateFormat}}</span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <p>{{employee.updatedTime | DMYDateFormat}}</p>
+                                            <p><b>by</b> {{employee.updatedUser}}</p>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div style="visibility: hidden; position: fixed"
+                                                [style.left]="contextMenuPosition.x" [style.top]="contextMenuPosition.y"
+                                                [matMenuTriggerFor]="menu"></div>
+                                            <button mat-button [matMenuTriggerFor]="menu" *ngIf="isShowBackToWorkBtn() || isShowUpdateEmployeeBackDate()">
+                                                <i class="fas fa-bars fa-lg"></i>
+                                            </button>
+                                            <mat-menu #menu="matMenu" class="p-2">
+                                                <button *ngIf="isShowBackToWorkBtn()" class="mat-menu-item "
+                                                (click)="onBackToWork(employee)">
+                                                <i class="fas fa-id-card-clip mr-1"></i>
+                                                Back to work</button>
+                                                <button *ngIf="isShowUpdateEmployeeBackDate()" class="mat-menu-item "
+                                                (click)="updateEmployeeBackDate(employee)">
+                                                <i class="fas fa-pencil-alt mr-1"></i>
+                                                Update back date
+                                                </button>
+                                            </mat-menu>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                    (pageAction)="pageControlActions($event)"></pagination-control>
+            </div>
+        </div>
+    </div>
+</div>

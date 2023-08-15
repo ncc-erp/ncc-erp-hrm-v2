@@ -1,0 +1,29 @@
+<div id="content">
+    <abp-modal-header  [title]="title + ' Template'" (onCloseClick)="dialogRef.close()"></abp-modal-header>
+<div class="p-3 background-card" id="temp">
+    <div class="d-flex">
+        <button class="btn btn-primary mr-2" (click)="onEdit()">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit Template
+        </button>
+        <button class="btn btn-primary" (click)="printContractToPDF()">
+            <i class="fa-solid fa-print"></i>
+            Print Contract
+        </button>
+    </div>
+    <div class="card mb-0 mt-2" style="max-height: 70vh;overflow-y: auto;" *ngIf="contractInfo">
+        <div class="table table-responsive w-100 mb-0">
+
+        <div id="bodyMess" [innerHtml]="sanitizer.bypassSecurityTrustHtml(contractInfo?.bodyMessage)">
+        </div>
+        </div>
+        
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-action mr-2" 
+        (click)="dialogRef.close()">
+        Close
+    </button>
+</div>
+</div>

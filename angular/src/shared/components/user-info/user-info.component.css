@@ -1,0 +1,45 @@
+::ng-deep .stars-line {
+  justify-content: center;
+  margin-top: 4px;
+  z-index: 1;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#employee-info .female {
+  color: #d18c98;
+}
+
+#employee .gender {
+  font-size: 17px;
+    justify-content: center;
+    margin-top: 4px;
+    z-index: 1;
+}
+.avatar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+}
+
+.avatar img{
+  width: 100%;
+  max-width: 100%;
+}
+.avatar img:hover{
+  filter: brightness(0.8);
+}
+a{
+    color:black;
+    font-weight: bold;
+}
+.avatar {
+  max-width: 100%;
+  min-width: 55px;
+  width: 55px;
+}

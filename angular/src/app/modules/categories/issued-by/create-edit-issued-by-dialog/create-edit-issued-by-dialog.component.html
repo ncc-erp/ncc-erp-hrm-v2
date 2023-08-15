@@ -1,0 +1,20 @@
+<form class="form-horizontal" autocomplete="off" #issuedByForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="name" (ngModelChange)="nameChange($event)" [(ngModel)]="issuedBy.name"
+                        #name="ngModel" cdkFocusInitial #nameEL required>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEL">
+                </abp-validation-summary>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!issuedByForm.valid || isLoading"></app-dialog-footer>
+</form>

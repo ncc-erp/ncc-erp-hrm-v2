@@ -1,0 +1,4 @@
+tbody tr td{
+    min-height: 40px;
+    max-height: 50px;
+}

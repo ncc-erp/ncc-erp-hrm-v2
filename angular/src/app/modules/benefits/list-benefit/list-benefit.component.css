@@ -1,0 +1,28 @@
+.type-column{
+    width: 150px;
+}
+.userCount-column{
+    width: 120px;
+}
+.createTime-column{
+    width: 170px;
+}
+.isActive-column{
+    width: 100px;
+}
+.allEmployee-column{
+    width: 120px;
+}
+.col-action{
+    width: 95px;
+}
+.header{
+    padding: 0px 20px;
+}
+
+tbody td{
+    vertical-align: middle;
+}
+.fixTableHead{
+    max-height: 76vh;
+}

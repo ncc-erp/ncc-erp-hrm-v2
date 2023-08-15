@@ -1,0 +1,62 @@
+<div>
+    <section>
+        <div class="row header">
+            <div class="col-6">
+                <div class="breadcrumb">
+                    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content px-2">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover" [busy]="isLoading">
+                        <thead>
+                            <tr>
+                                <th class="text-center pl-3">{{ "No" | localize }}</th>
+                                <th>
+                                    {{ "Template Name" | localize }}
+                                </th>
+                                <th>Type</th>
+                                <th> {{ "To" | localize}} </th>
+                                <th>
+                                    {{ "Cc" | localize }}
+                                </th>
+                                <th class="text-center" style="width: 300px;">
+                                    {{ "Action" | localize }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of mails; let i = index;">
+                                <td class="text-center">{{ i + 1 }}</td>
+                                <td>{{ item.name }}</td>
+                                <td class="text-center align-middle"><span [ngClass]="TemplateTypes[item.templateType].class">{{TemplateTypes[item.templateType].name}}</span></td>
+                                <td class="max-line-content-1">{{item.sendToEmail}}</td>
+                                <td>
+                                    <div class="note max-line-content-1" talentResizeContent>
+                                        <div *ngFor="let cc of item.arrCCs">{{ cc }}</div>
+                                    </div>
+                                </td>
+                                <td class="text-center w-max-content">
+                                    <div class="w-max-content">
+                                        <button *ngIf="isShowPreviewBtn()" class="btn btn-sm mr-2 btn-secondary" (click)="preview(item)">
+                                            <i class="fa fa-eye mr-1 text-sm"></i>
+                                            Preview
+                                        </button>
+                                        <button *ngIf="isShowEditBtn()" class="btn btn-sm btn-primary" (click)="edit(item)">
+                                            <i class="fa fa-pen mr-1 text-sm"></i>
+                                            Edit Template
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

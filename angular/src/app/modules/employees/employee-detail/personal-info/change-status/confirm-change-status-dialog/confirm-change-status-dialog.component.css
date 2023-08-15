@@ -1,0 +1,19 @@
+::ng-deep mat-checkbox .mat-checkbox-layout{
+    margin-bottom: 0px;
+}
+::ng-deep #confirmChange .mat-dialog-container{
+    padding: 10px !important;
+}
+.header-icon{
+    height: 100px;
+    margin: 0px auto;
+}
+.icon{
+    font-size: 90px;
+    height: 90px;
+    width: 90px;
+    color: #f8bb86;
+}
+::ng-deep .mat-tooltip  {
+    white-space: pre-line !important;
+  }

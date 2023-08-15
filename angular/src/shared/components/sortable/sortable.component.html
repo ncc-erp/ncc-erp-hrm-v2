@@ -1,0 +1,4 @@
+<i *ngIf="sortProperty == name"
+[ngClass]=" sortDirection == sortDirectionEnum.Ascending ? 'fa-solid fa-arrow-up-wide-short' : 'fa-solid fa-arrow-down-wide-short'"
+class="ml-1"></i>
+<i *ngIf="!sortProperty || sortProperty != name"  class="fa-solid fa-sort ml-1"></i>

@@ -1,0 +1,30 @@
+<h1 matDialogTitle>Multiple Create Employee From Plan</h1>
+
+<mat-dialog-content>
+    <div>
+        <div class="row" *ngFor="let display of displays">
+            <div class="col-5">
+                <app-user-info [userData]="display.employee"></app-user-info>
+            </div>
+            <div class="col-6">
+                <span *ngIf="display.isSuccess != null && !display.isSuccess">{{display.error}}</span>
+            </div>
+            <div class="col-1 m-auto">
+                <button *ngIf="display.isSuccess == null" mat-mini-fab color="warn"
+                    (click)="onRemove(display.employee.id)">
+                    <i class="fa-solid fa-user-minus"></i>
+                </button>
+                <i *ngIf="display.isSuccess != null"
+                    [ngClass]="display.isSuccess ? 'fa-solid fa-circle-check fa-2xl success' : 'fa-solid fa-circle-xmark fa-2xl fail'"></i>
+            </div>
+        </div>
+    </div>
+    <div class="mt-1">
+        <mat-progress-bar mode="determinate" [value]="getProcess()" color="primary"></mat-progress-bar>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions [attr.align]="'end'">
+    <button mat-button mat-raised-button matDialogClose>Close dialog</button>
+    <button mat-button mat-raised-button color="primary" (click)="onUpload()">Create</button>
+</mat-dialog-actions>

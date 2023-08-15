@@ -1,0 +1,20 @@
+<div *ngIf="list == null">
+    <mat-form-field *ngIf="isEdit" appearance="outline" #controlEl >
+        <input matInput type="text" [formControl]="formControl">
+    </mat-form-field>
+    <abp-validation-summary *ngIf="isEdit" [control]="formControl" [controlEl]="controlEl">
+    </abp-validation-summary>
+    <span *ngIf="!isEdit">{{formControl.value}}</span>
+</div>
+<div *ngIf="list != null">
+    <mat-form-field *ngIf="isEdit" appearance="outline">
+        <mat-select [formControl]="formControl" #controlEl>
+            <mat-option *ngFor="let item of list" [value]="item.value">
+                {{item.key}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <abp-validation-summary *ngIf="isEdit" [control]="formControl" [controlEl]="controlEl">
+    </abp-validation-summary>
+    <span *ngIf="!isEdit">{{getKeyOption()}}</span>
+</div>

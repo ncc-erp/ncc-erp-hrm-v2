@@ -1,0 +1,47 @@
+<form class="form-horizontal" #punishmentTypeForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title"></app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-9 pl-2">
+                <mat-form-field class="common-input" appearance="outline">
+                    <input matInput name="name" [(ngModel)]="punishmentType.name" #name="ngModel" cdkFocusInitial
+                        #nameEl required />
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl"></abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                API:
+            </label>
+            <div class="col-9 pl-2">
+                <mat-form-field class="common-input" appearance="outline">
+                    <input matInput name="code" [(ngModel)]="punishmentType.api" #code="ngModel" #codeEl required />
+                </mat-form-field>
+                <abp-validation-summary [control]="code" [controlEl]="codeEl"></abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Is active:
+            </label>
+            <div class="col-9 pt-2">
+                <div class="custom-control custom-checkbox">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input mt-2"
+                      name="isActive"
+                      id="isActive"
+                      [(ngModel)]="punishmentType.isActive"
+                    />
+                    <label class="custom-control-label mt-2" for="isActive"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!punishmentTypeForm.valid || isLoading">
+    </app-dialog-footer>
+</form>

@@ -1,0 +1,18 @@
+.col-stt{
+    width: 60px;
+}
+.col-action{
+    width: 180px;
+}
+.col-amount{
+    width: 150px;
+}
+.col-date{
+    width: 150px;
+}
+.col-creation{
+    width: 150px;
+}
+.col-lastmodified{
+    width: 150px;
+}

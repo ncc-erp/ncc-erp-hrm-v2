@@ -1,0 +1,114 @@
+<div class="d-flex col-12 p-0">
+    <div class="col-9 p-0">
+        <h4>Debt Paid ({{totalDebtPaid | currency:'VND':''}} VND)</h4>
+        <p class="error"></p>
+    </div>
+    <div class="col-3 p-0 text-right">
+        <button (click)="addNewDebt()" *ngIf="debtStatus == EDebtStatus.Inprogress && isShowAddDebtPaidBtn()" class="btn btn-sm btn-primary">
+            <i class="fa-solid text-white fa-plus"></i>
+        </button>
+    </div>
+</div>
+<div class="table-responsive">
+    <div class="">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="align-middle">#</th>
+                    <th class="align-middle">Date</th>
+                    <th class="align-middle col-paymentType">Method</th>
+                    <th class="align-middle">Money</th>
+                    <th class="align-middle col-updateTime">Updated time</th>
+                    <th class="align-middle">Note</th>
+                    <th class="align-middle">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of debtPaidList; let i = index">
+                    <ng-container *ngIf="!item.isEdit; else editDebtPaid">
+                        <td class="text-center col-stt">{{i + 1}}</td>
+                        <td class="text-center col-date">
+                            {{item.displayDate}}
+                        </td>
+                        <td class="col-paymentType text-center"><strong [ngStyle]="{color: APP_ENUM.PaymentTypeColor[item.paymentType]}">
+                            {{PAYMENT_METHOD[item.paymentType].key}}
+                        </strong></td>
+                        <td class="text-right col-money"><strong>{{item.money | currency: 'VND':''}}</strong></td>
+                        <td class="col-updateTime text-center">
+                            <span *ngIf="item.updatedUser;else creatorUser">
+                                {{item.updatedTime | date:"dd/MM/yyyy hh:mm"}}<br>by <strong>{{item.updatedUser}}</strong>
+                            </span>
+                            <ng-template #creatorUser>
+                                <span class="text-justify">
+                                    {{item.creationTime | date:"dd/MM/yyyy hh:mm"}}<br>by <strong>{{item.creatorUser}}</strong>
+                                </span>
+                            </ng-template>
+                        </td>
+                        <td class="col-note">{{item.note}}</td>
+                        <td class="text-center align-middle col-action">
+                            <ng-container *ngIf="debtStatus == EDebtStatus.Inprogress">
+                                <button *ngIf="item.isAllowEdit && isShowEditDebtPaidBtn()" (click)="onEdit(item)"
+                                class="btn btn-sm btn-secondary mr-2">Edit</button>
+                                <button [disabled]="isLoading || !item.isAllowEdit" (click)="onDelete(item)" *ngIf="item.isAllowEdit && isShowDeleteDebtPaidBtn()" class="btn btn-sm btn-danger">Delete</button>
+                            </ng-container>
+                        </td>
+                    </ng-container>
+                    <ng-template #editDebtPaid>
+                        <td class="text-center col-stt">{{i +1}}</td>
+                        <td class="text-center col-date">
+                            <mat-form-field appearance="outline">
+                                <input matInput class="startDate" [matDatepicker]="dp"
+                                    required autocomplete="off" name="date"
+                                    [(ngModel)]="item.date">
+                                <mat-datepicker-toggle matSuffix [for]="dp">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #dp></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                        <td class="text-center col-paymentType">
+                            <mat-form-field appearance="outline">
+                                <mat-select [(ngModel)]="item.paymentType">
+                                    <mat-option  *ngFor="let option of PAYMENT_METHOD_LIST" [value]="option.value">
+                                        {{option.key}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td class="text-right col-money">
+                            <mat-form-field appearance="outline">
+                                <input matInput mask="separator" thousandSeparator="," aria-autocomplete="none" autocomplete="off" name="money"
+                                    [(ngModel)]="item.money" #input [appFocus]="input" [appForbiddenValue]="0">
+                                <mat-error *ngIf="isError">Invalid money</mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td class="col-updateTime text-justify">
+                            <ng-container *ngIf="item.id">
+                                <span *ngIf="item.updatedUser;else creatorUser">
+                                    {{item.updatedTime | date:"dd/MM/yyyy hh:mm"}}<br>by <strong>{{item.updatedUser}}</strong>
+                                </span>
+                                <ng-template #creatorUser>
+                                    <span>
+                                        {{item.creationTime | date:"dd/MM/yyyy hh:mm"}}<br>by <strong>{{item.creatorUser}}</strong>
+                                    </span>
+                                </ng-template>
+                            </ng-container>
+                        </td>
+                        <td class="col-note">
+                            <mat-form-field appearance="outline">
+                                <textarea cdkTextareaAutosize matInput [(ngModel)]="item.note"></textarea>
+                            </mat-form-field>
+                        </td>
+                        <td class="text-center align-middle col-action">
+                            <button [disabled]="!canSave(item)" (click)="onSave(item)" class="btn btn-accept">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                            <button (click)="onCancel(i, item)" class="btn btn-cancel">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </td>
+                    </ng-template>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

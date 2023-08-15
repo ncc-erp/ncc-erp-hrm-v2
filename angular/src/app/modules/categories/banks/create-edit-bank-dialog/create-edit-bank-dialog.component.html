@@ -1,0 +1,31 @@
+<form class="form-horizontal" autocomplete="off" #bankForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="name" (ngModelChange)="nameChange($event)" [(ngModel)]="bank.name" #name="ngModel" cdkFocusInitial #nameEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Code:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="code" multiline="true" [(ngModel)]="bank.code" #code="ngModel" #codeEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="code" [controlEl]="codeEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!bankForm.valid || isLoading"></app-dialog-footer>
+</form>

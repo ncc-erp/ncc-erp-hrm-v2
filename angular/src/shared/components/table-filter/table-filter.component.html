@@ -1,0 +1,141 @@
+<input [placeholder]="placeholder" *ngIf="filterType == filterTypeEnum?.SearchText" type="text" class="form-control"
+  [(ngModel)]="searchText" (keyup.enter)="onSearchEnter()">
+
+<div *ngIf="filterType == filterTypeEnum?.Radio">
+  <mat-radio-group aria-label="Select an option" [(ngModel)]="radioFilterValue" (ngModelChange)="onRadioFilter()">
+    <mat-radio-button [value]="true" class="mr-1">Yes</mat-radio-button>
+    <mat-radio-button [value]="false">No</mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<div *ngIf="filterType == filterTypeEnum?.Dropdown">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>{{placeholder}}</mat-label>
+    <mat-select [(ngModel)]="dropdownFilterValue" (openedChange)="clearSearchText()" (selectionChange)="onDropdownFilter()" [placeholder]="placeholder">
+      <mat-form-field class="w-100 px-3 searchInput" *ngIf="searchable">
+        <input (onblur)="clearSearchText()" matInput [(ngModel)]="dropdownSearchText" name="dropdownSearch" cdkFocusInitial
+          (keydown)="$event.stopPropagation()" (ngModelChange)="onSearch()" #search>
+          {{search.focus()}}
+      </mat-form-field>
+      <mat-option *ngFor="let item of dropdownData" [value]="item.value">
+        {{item.key}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div *ngIf="filterType == filterTypeEnum?.MultiSelect">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>{{placeholder}}</mat-label>
+    <mat-select placeholder="Status" multiple (selectionChange)="onDropdownMultiFilter()" [(ngModel)]="dropdownMultiValueFilter">
+      <mat-option *ngFor="let item of dropdownData" [value]="item.value">
+        {{ item.key }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div *ngIf="filterType == filterTypeEnum?.MultiSelectWithCondition" class="d-flex justify-content-between">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Team</mat-label>
+    <mat-select [(ngModel)]="teamMultiCtrl" (selectionChange)="onSelectMulti()" [multiple]="true"
+      #multiSelect disableOptionCentering panelClass="myPanelClass">
+      <mat-option>
+        <ngx-mat-select-search 
+        onkeydown="event.stopPropagation()" 
+        placeholderLabel="Search team"
+        noEntriesFoundLabel="No matching team found"
+        [formControl]="teamMultiFilterCtrl">
+        </ngx-mat-select-search>
+      </mat-option>
+      <div style="position: sticky; top: 50px; background: white; z-index: 2; margin-top: -10px; padding: 10px;">
+        <div>
+          <label for="" class="mr-1">Search type: </label>
+          <div class="d-inline">
+            <mat-radio-group [(ngModel)]="filterOption"  (ngModelChange)="onSelectMulti()" aria-label="Select an option">
+              <mat-radio-button class="mr-2" [value]="true">And</mat-radio-button>
+              <mat-radio-button [value]="false">Or</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+        <div style="line-height: 30px">
+          <span *ngFor="let item of teamMultiCtrl; let i = index" (click)="clearSelected(item, teamMultiCtrl)"
+            [ngClass]="i%2==0?'bg-secondary':'bg-primary'" class="m-1 pointer"
+            style="font-size: 14px; padding: 5px; border-radius: 2px; white-space: nowrap;">{{item.key}}<i
+              class="fas fa-times ml-1"></i></span>
+          <span (click)="clearAll();onSelectMulti()" style="font-size: 14px; padding: 5px; border-radius: 2px; white-space: nowrap;"
+            class="bg-danger pointer">Clear all <i class="fas fa-times ml-1"></i></span>
+        </div>
+      </div>
+      <mat-option *ngFor="let item of filteredTeamsMulti | async" [value]="item">
+        {{item.key}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div class="col-12 p-0" *ngIf="filterType == filterTypeEnum?.DatePicker">
+  <mat-form-field appearance="outline" class="col-6 pl-0">
+    <mat-label>Filter Date</mat-label>
+    <mat-select [(ngModel)]="filterComparison" (ngModelChange)="onComparisonChange()">
+      <mat-select-trigger>
+        <span [innerHtml]="OPERATOR_LIST[filterComparison].key"></span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let item of filterOperators" [value]="item.value">
+        <span [innerHtml]="item.key"></span>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="col-6 pr-0">
+    <mat-label>{{placeholder}}</mat-label>
+    <input matInput (dateChange)="onDatePickerFilter()" [matDatepicker]="picker" [(ngModel)]="datePickerValue">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker ></mat-datepicker>
+  </mat-form-field>
+</div>
+
+<div class="col-12 p-0 seniority-filter" *ngIf="filterType == filterTypeEnum?.Seniority">
+  <mat-form-field appearance="outline" class="col-4 pl-0">
+    <mat-label>
+      Thâm niên
+    </mat-label>
+    <mat-select [(ngModel)]="filterSenioryComparison" (ngModelChange)="onComparisonSeniorityChange()">
+      <mat-option *ngFor="let item of filterOperators" [value]="item.value">
+        <b class="comparision-option">{{item.keySign}}</b>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="col-4 pl-0">
+    <input type="text" mask="separator" thousandSeparator="," matInput name="value" maxlength="6" placeholder="enter value"
+    [(ngModel)]="seniorityValue" (keyup)="onComparisonSeniorityChange()">
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="col-4 pl-0 pr-0">
+    <mat-select [(ngModel)]="seniorityType" (ngModelChange)="onComparisonSeniorityChange()">
+      <mat-option *ngFor="let item of SENIORITY_LIST" [value]="item.value">
+        <span [innerHtml]="item.key"></span>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div class="col-12 p-0 w-100" *ngIf="isExistFilterContractEndDate">
+    <mat-form-field appearance="outline">
+        <mat-label>Contract end date days left</mat-label>
+        <input type="text" mask="separator" thousandSeparator="," matInput name="value" maxlength="6" placeholder="enter value"
+        [(ngModel)]="daysLeftContractEnd" (keyup)="onChangeFilterDaysLeftOfContractEnd()">
+    </mat-form-field>
+</div>
+<div class="col-12 p-0 seniority-filter" *ngIf="filterType == filterTypeEnum?.Comparison">
+  <mat-form-field appearance="outline" class="col-6 pl-0">
+    <mat-label>
+      {{placeholder}}
+    </mat-label>
+    <mat-select [(ngModel)]="filterOperatorsComparison" (ngModelChange)="onComparisonByOperatorChange()">
+      <mat-option *ngFor="let item of dropdownData" [value]="item.value">
+        <b class="comparision-option">{{item.keySign}}</b>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="col-6 pl-0">
+    <input type="text" mask="separator" thousandSeparator="," matInput name="value" [allowNegativeNumbers]="true" placeholder="enter value"
+    [(ngModel)]="valueFilterByOperatorComparison" (keyup)="onComparisonByOperatorChange()">
+  </mat-form-field>
+</div>

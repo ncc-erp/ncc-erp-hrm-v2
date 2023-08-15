@@ -1,0 +1,14 @@
+hr {
+  border-top: 2px solid grey;
+}
+
+th,
+tr,
+td {
+  padding: initial;
+  border: initial;
+}
+
+.deadline {
+  font-size: 18px;
+}

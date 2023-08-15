@@ -1,0 +1,51 @@
+mat-form-field {
+    width: 100%
+}
+.col-updateTime{
+    width: 150px;
+}
+.col-action{
+    width: 180px;
+}
+.btn-accept{
+    font-size: x-large;
+    color: var(--success)
+}
+.btn-cancel{
+    font-size: x-large;
+    color: var(--danger)
+}
+.btn-accept:hover, .btn-cancel:hover{
+    filter: brightness(0.8);
+}
+td,th{
+    vertical-align: middle !important;
+}
+.col-date{
+    max-width: 160px;
+}
+.col-money{
+    max-width: 125px;
+}
+.col-note{
+    max-width: 150px;
+    white-space: pre-line;
+    word-wrap: break-word;
+}
+.col-note .mat-form-field{
+    width: 100%;
+}
+.col-action{
+   width: 150px;
+}
+
+.col-paymentType{
+    width: 100px;
+}
+.col-paymentType .mat-form-field{
+    width: 120px;
+}
+::ng-deep .mat-select[aria-disabled=true] .mat-select-min-line {
+    color: #333;
+    cursor: not-allowed;
+}

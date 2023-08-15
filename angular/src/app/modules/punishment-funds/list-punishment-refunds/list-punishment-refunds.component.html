@@ -1,0 +1,81 @@
+<div class="px-4 pt-1">
+    <section class="">
+        <div class="row">
+            <div class="col-6 col-l-6 col-md-6 breadcrumb">
+                <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+            </div>
+            <div class="col-6 col-l-6 col-md-6 text-right mt-2">
+                <button class="btn btn-primary mr-2" (click)="onAdd()" *ngIf="isShowAddBtn()">
+                    <i class="fa-solid fa-square-plus mr-1"></i> Add
+                </button>
+                <button class="btn btn-success" (click)="onDisburse()" matTooltip="Giải ngân" *ngIf="isShowDisburseBtn()">
+                    <i class="fa-solid fa-sack-dollar mr-1"></i>
+                    Disburse 
+                </button>
+            </div>
+        </div>
+    </section>
+    <section class="body">
+        <div class="">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-9">
+                            <app-search [placeholder]="'Search by note'" [seachText]="searchText"
+                        (onSearch)="onSearchEnter($event)"></app-search>
+                        </div>
+                        <div class="col-3">
+                            <table-filter [placeholder]="'Amount'" [filterType]="filterTypeEnum.Comparison" [dropdownData]="filterOperators"
+                            (onTableFilterByOperatorComparison)="onTableFilterByOperatorComparison($event)">
+                            </table-filter>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="fixTableHead">
+                            <table class="table">
+                                <thead>
+                                    <th class="col-stt">#</th>
+                                    <th class="col-amount">Amount</th>
+                                    <th class="col-date">Date</th>
+                                    <th>Note</th>
+                                    <th class="col-creation">Created Time</th>
+                                    <th class="col-lastmodified">Last Modified Time</th>
+                                    <th class="col-action">Action</th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let pf of listPunishmentFunds| paginate: {
+                                        id: 'server',
+                                        itemsPerPage: pageSize,
+                                        currentPage: pageNumber,
+                                        totalItems: totalItems
+                                      }; let i =index ">
+                                        <td class="text-center align-middle">{{(pageNumber -1)*pageSize + i +1}}</td>
+                                        <td class="text-right align-middle">{{pf.amount | number:'1.0':'en-US'}}</td>
+                                        <td class="text-center align-middle">{{pf.date | date: 'dd/MM/yyyy'}}</td>
+                                        <td class="note align-middle">
+                                            <div style="word-wrap: break-word; white-space: pre-line; min-width: 300px;">
+                                            {{pf.note}}</div>
+                                        </td>
+                                        <td class="text-center align-middle">{{pf.creationTime | dmyHmDateFormat}} <br> by <strong style="font-weight:bold">{{pf.creationUser}}</strong></td>
+                                        <td class="text-center align-middle">{{pf.lastModificationTime | dmyHmDateFormat}} <br> by <strong style="font-weight:bold">{{pf.lastModifierUser}}</strong></td>
+                                        <td class="text-center">
+                                            <div class="my-2">
+                                                <app-edit-button  *ngIf="isShowEditBtn()" (update)="onUpdate(pf)"></app-edit-button>
+                                                <app-delete-button *ngIf="isShowDeleteBtn()" (delete)="onDelete(pf)"></app-delete-button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

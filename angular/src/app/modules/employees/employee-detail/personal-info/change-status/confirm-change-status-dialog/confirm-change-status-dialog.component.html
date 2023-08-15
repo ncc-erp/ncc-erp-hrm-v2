@@ -1,0 +1,21 @@
+
+<div class="container" cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle id="confirmChange">
+    <div class="text-right">
+        <button class="btn close-btn p-0" (click)="onCancel()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="header-icon" align="center">
+        <mat-icon class="icon">error_outline</mat-icon>
+      </div>
+    <div class="mt-1 text-center">
+        <b class="mr-2" style="font-size: 1.25rem;" [matTooltip]="noteToCheckbox">{{title}}</b> 
+        <mat-checkbox class="example-margin"
+        [checked]="isConfirmed" (change)="onConfirm($event.checked)">
+      </mat-checkbox>
+    </div>
+</div>
+<div class="text-center mt-4">
+    <button type="button" class="btn btn-secondary"  (click)="onCancel()"><i class="fa-solid fa-angles-left mr-1"></i>Cancel</button>
+    <button type="button" class="btn btn-primary ml-2" (click)="onContinue()"><i class="fa-solid fa-angles-right mr-1"></i>Submit</button>
+</div>

@@ -1,0 +1,21 @@
+
+<app-dialog-header [dialogTitle]="'Edit quit date'">
+</app-dialog-header>
+<div>
+    <div class="form-group">
+        <label class="col-form-label">
+            Quit date:
+        </label>
+        <mat-form-field appearance="outline" class="common-input"  class="w-100">
+            <input matInput [matDatepicker]="picker" name="dateAt" #dateAtEl #dateAt="ngModel" [(ngModel)]="inputToUpdate.dateAt" required>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <abp-validation-summary [control]="dateAt" [controlEl]="dateAtEl">
+        </abp-validation-summary>
+    </div>
+</div>
+<div mat-dialog-actions [align]="'end'">
+    <button class="btn btn-secondary mr-2" (click)="onClose()">Cancel</button>
+    <button class="btn btn-primary" (click)="onSave()"[disabled]="!inputToUpdate.dateAt || isLoading">Save</button>
+</div>

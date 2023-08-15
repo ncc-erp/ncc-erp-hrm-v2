@@ -1,0 +1,60 @@
+<div class="px-4 pt-1">
+    <div class="breadcrumb">
+        <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+    </div>
+    <div class="card">
+        <div class="card-header d-flex">
+            <div class="col-6 p-0">
+                <app-search [placeholder]="'Search by Name'" [seachText]="searchText"
+                    (onSearch)="onSearchEnter($event)"></app-search>
+            </div>
+            <div class="col-6 p-0 text-right">
+                <app-create-button *ngIf="isShowCreateBtn()" (create)="onCreate()"></app-create-button>
+            </div>
+        </div>
+        <div class="card-body pb-1">
+            <div class="table-responsive">
+                <div class="fixTableHead">
+                    <table class="table table-striped table-hover" [busy]="isLoading">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">#</th>
+                                <th>Name</th>
+                                <th style="width: 350px;">Number of employee</th>
+                                <th class="col-action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let team of teamList | paginate: {
+                                id: 'server',
+                                itemsPerPage: pageSize,
+                                currentPage: pageNumber,
+                                totalItems: totalItems
+                              }; let i = index">
+                                <td class="text-center">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                <td>
+                                    <a [routerLink]="['/app','employees','list-employee']" [queryParams]="{teamId:team.id}"
+                                        class="hyperlink">{{team.name}} </a>
+                                </td>
+                                <td class="text-center"><strong>{{team.numberOfEmployee}}</strong></td>
+                                <td class="text-center">
+                                    <button mat-button [matMenuTriggerFor]="menu"><i
+                                            class="fas fa-bars fa-lg"></i></button>
+                                    <mat-menu #menu="matMenu">
+                                        <button *ngIf="isShowEditBtn()" (click)="onUpdate(team)" mat-menu-item><i class="fa-solid fa-pen-to-square mr-1"></i> Edit</button>
+                                        <button *ngIf="isShowDeleteBtn()" (click)="onDelete(team)" mat-menu-item><i class="fa-solid fa-trash-can mr-1"></i> Delete</button>
+                                        <button mat-menu-item (click)="onAddEmployees(team)"><i
+                                                class="fa-solid fa-plus mr-1"></i> Add
+                                            employees</button>
+                                    </mat-menu>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                (pageAction)="pageControlActions($event)"></pagination-control>
+        </div>
+    </div>
+</div>
