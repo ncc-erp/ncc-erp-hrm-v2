@@ -156,4 +156,4 @@ HRMv2 tool has varios function for you to manage your company's Human Resource, 
 - Manage Payroll of employee
 ![Payroll](./_screenshots/Payroll.png)
 ## License
-<lisence>
+[MIT License](./LICENSE)
