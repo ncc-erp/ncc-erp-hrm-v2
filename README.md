@@ -26,7 +26,7 @@ Before you begin, ensure you have met the following requirements:
 - Ex: **ncc-erp-hrmv2** folder
 2. **Clone project** in this created folder, `Right Click` and select `Git Bash Here` to use the following command: 
 ```bash
-   git clone https://github.com/ncc-erp/ncc-erp-hrm-v2.git
+git clone https://github.com/ncc-erp/ncc-erp-hrm-v2.git
 ```
 3. Open the **HRMv2 Solution** using **Visual Studio 2022**:
 
@@ -61,14 +61,14 @@ You also have to set other paramaters here when you need.
 - Open **Tool** > **Command Line** > **Developer Command Prompt**
 - Navigate to **EntityFrameworkCore** folder, by using command:
 ```bash
-   cd src
+cd src
 ```
 ```bash
-   cd HRMv2.EntityFrameworkCore
+cd HRMv2.EntityFrameworkCore
 ```
 - Download **Entity Framework Core CLI** globally
 ```bash
-   dotnet tool install --global dotnet-ef
+dotnet tool install --global dotnet-ef
 ```
 - Update database
 ```bash
@@ -81,8 +81,8 @@ You also have to set other paramaters here when you need.
 10. Change Login Setting for the first time
 - At Swagger UI, `Authorize` with account (leave Ternancy Name empty):
 ```bash
-   Username: admin
-   Password: 123qwe
+Username: admin
+Password: 123qwe
 ```
 - Select `/api/services/app/Configuration/ChangeLoginSetting` api, `Try it out` and `Execute` it, make sure that value of **enableNormalLogin** is true:
 ```bash
@@ -101,34 +101,34 @@ You also have to set other paramaters here when you need.
 2. Change Url
 - At **appconfig.json** change "https" to "http"
 ```bash
-   "remoteServiceBaseUrl": "http://localhost:44311",
+"remoteServiceBaseUrl": "http://localhost:44311",
 ```
 
 3. Install frontend dependencies
 - Select **Terminal** > **New Terminal**
 - Using this command:
 ```bash
-   npm install
+npm install
 ```
 - Then 
 ```bash
-   npm audit fix
+npm audit fix
 ```
 
 4. Install Angular CLI 12.0.5 globally
 ```bash
-   npm install -g @angular/cli@12.0.5
+npm install -g @angular/cli@12.0.5
 ```
 
 5. Run the frontend project
 ```bash
-   node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng s -o
+node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng s -o
 ```
 6. Login
 - Login with the default account:
 ```bash
-   Username: admin
-   Password: 123qwe
+Username: admin
+Password: 123qwe
 ```
 
 ### Running
@@ -139,7 +139,7 @@ To run the project, use these commands:
 2. Start the frontend:
 
 ```bash
-   node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng s -o
+node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng s -o
 ```
 
 ## Screenshots
