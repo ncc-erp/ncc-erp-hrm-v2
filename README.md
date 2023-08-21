@@ -1,5 +1,6 @@
 # HRMv2
 ## Overview
+**Human Resource Management** (HRM) is a tool to help businesses manage and develop human resources comprehensively. HRM helps to manage employee information from recruitment to onboarding, training, improving, and promoting. Based on complete and detailed data, enterprises can effectively evaluate and define their human resource development strategy.
 
 ## Table of Contents
 - [Getting Started](#getting-started)
