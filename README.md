@@ -19,7 +19,6 @@ Before you begin, ensure you have met the following requirements:
 - [PostgreSQL](https://www.postgresql.org/download/) installed
 - [Node 14.20.0](https://nodejs.org/en/blog/release/v14.20.0) installed
 - [.NET Core 3.1 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/3.1) installed
-- [.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed
 - [Git](https://www.git-scm.com/downloads) installed
 ### BackEnd Setup
 1. **Create a folder** to store project code
