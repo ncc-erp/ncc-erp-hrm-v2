@@ -72,7 +72,7 @@ dotnet tool install --global dotnet-ef
 ```
 - Update database
 ```bash
-   dotnet ef database update
+dotnet ef database update
 ```
 8. At **Startup Projects** choose **HRMv2.Web.Host**
 ![StartupProjects](./_screenshots/StartupProjects.png)
