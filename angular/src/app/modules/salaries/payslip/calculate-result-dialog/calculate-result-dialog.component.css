@@ -1,0 +1,9 @@
+.fixed-body{
+    max-height: 60vh;
+    height: 60vh;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;;
+}
+.process{
+    font-size: 18px;
+}

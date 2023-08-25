@@ -1,0 +1,392 @@
+<div class="px-4 pb-4 h-max">
+    <div class="breadcrumb">
+        <div class="w-100 py-1 d-flex align-items-center justify-content-between">
+            <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+        </div>
+    </div>
+    <div class="card mb-0 h-max px-3 pb-2" [busy]="isLoading">
+        <div id="listEmployee">
+            <div class="card-body pb-1">
+                <div class="w-100">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group-left">
+                            <div class="form-group row" [ngClass]="{required:currentViewMode == ViewMode.Create}">
+                                <label class="col-form-label col-3">Employee</label>
+                                <div class="col-9 d-flex align-items-center">
+                                    <ng-container *ngIf="currentViewMode == ViewMode.Create">
+                                        <app-select-search class="w-100" [selectControl]="formGroup.controls.employeeId"
+                                            *ngIf="employeeList.length" [searchLabel]="'Search Employee'"
+                                            [list]="employeeList">
+                                        </app-select-search>
+                                    </ng-container>
+                                    <ng-container
+                                        *ngIf="currentViewMode == ViewMode.View || currentViewMode==ViewMode.Edit">
+                                        <div>
+                                            <div class="text-bold" style="font-size:1.1rem;">
+                                                {{currentRequestEmployee?.fullName}} </div>
+                                            <div>{{currentRequestEmployee?.email}}</div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header section-header text-primary text-bold">
+                        Personal Information
+                    </div>
+                    <div class="card-body">
+                        <div class="w-100">
+                            <div class="w-100 d-flex">
+                                <p class="text-bold text-primary">From</p>
+                            </div>
+                            <div class="row pt-2">
+                                <div class="col-md-6 col-sm-12 form-group-left">
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">User type:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <span class="badge"
+                                                [ngStyle]="{backgroundColor: getUserTypeColor(currentRequestEmployee?.fromUserType ) || currentEmployee?.userTypeInfo?.color}">
+                                                {{getUserTypeName(requestInformation.userType.value)}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Level:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <span class="badge"
+                                                [ngStyle]="{backgroundColor: getLevelColor(currentRequestEmployee?.fromLevelId) || currentEmployee?.levelInfo?.color}">
+                                                {{getLevelName(requestInformation.levelId.value)}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12 form-group-right">
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Position:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <span class="badge"
+                                                [ngStyle]="{backgroundColor: getJobPositionColor(currentRequestEmployee?.fromJobPositionId) || currentEmployee?.jobPositionInfo?.color}">
+                                                {{requestInformation.jobPosition.value}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Real salary:</label>
+                                        <div class="col-9 d-flex align-items-center text-danger text-bold">
+                                            <span class="text-view">
+                                                {{requestInformation.realSalary.value | currency:"VND":""}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex w-100">
+                                <p class="text-bold text-primary">To</p>
+                            </div>
+                            <div class="row pt-2">
+                                <div class="col-md-6 col-sm-12 form-group-left">
+                                    <div class="form-group row "
+                                        [ngClass]="{required: currentViewMode != ViewMode.View}">
+                                        <label class="col-form-label col-sm-3">User type:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <app-select-search class="" [list]="userTypeList"
+                                                    *ngIf="userTypeList.length && formGroup"
+                                                    [searchLabel]="'Search User type'"
+                                                    [selectControl]="requestInformation.toUserType">
+                                                </app-select-search>
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                <span class="badge"
+                                                    [ngStyle]="{backgroundColor: getUserTypeColor(currentRequestEmployee.toUserType)}">
+                                                    {{getUserTypeName(requestInformation.toUserType.value)}}
+                                                </span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row "
+                                        [ngClass]="{required: currentViewMode != ViewMode.View}">
+                                        <label class="col-form-label col-sm-3">Level:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <app-select-search class="" [list]="levelList"
+                                                    *ngIf="levelList.length && formGroup"
+                                                    [searchLabel]="'Search level type'"
+                                                    [selectControl]="requestInformation.toLevelId"></app-select-search>
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                <span class="badge"
+                                                    [ngStyle]="{backgroundColor: getLevelColor(currentRequestEmployee.toLevelId)}">
+                                                    {{currentRequestEmployee.toLevelName}}
+                                                </span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row "
+                                        [ngClass]="{required: currentViewMode != ViewMode.View}">
+                                        <label class="col-form-label col-sm-3">Apply date:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <div class="w-100">
+                                                    <mat-form-field class="" appearance="outline">
+                                                        <input matInput [formControl]="requestInformation.applyDate"
+                                                            [matDatepicker]="requestApplyDate" name="requestApplyDate"
+                                                            #applyDateEl>
+                                                        <mat-datepicker-toggle matSuffix [for]="requestApplyDate">
+                                                        </mat-datepicker-toggle>
+                                                        <mat-datepicker #requestApplyDate
+                                                            panelClass="example-month-picker">
+                                                        </mat-datepicker>
+                                                    </mat-form-field>
+                                                    <abp-validation-summary [control]="requestInformation.applyDate"
+                                                        [controlEl]="applyDateEl">
+                                                    </abp-validation-summary>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                {{currentRequestEmployee.applyDate | DMYDateFormat}}
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Has contract:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox"
+                                                    [formControl]="requestInformation.hasContract" id="customCheckbox1"
+                                                    checked>
+                                                <label for="customCheckbox1" class="custom-control-label"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12 form-group-right">
+                                    <div class="form-group row "
+                                        [ngClass]="{required: currentViewMode != ViewMode.View}">
+                                        <label class="col-form-label col-sm-3">Position:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <app-select-search class="" [list]="jobPositionList"
+                                                    *ngIf="jobPositionList.length && formGroup"
+                                                    [searchLabel]="'Search Job position'"
+                                                    [selectControl]="requestInformation.toJobPositionId">
+                                                </app-select-search>
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                <span class="badge"
+                                                    [ngStyle]="{backgroundColor: getJobPositionColor(currentRequestEmployee.toJobPositionId)}">
+                                                    {{currentRequestEmployee.toJobPositionName}}
+                                                </span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row "
+                                        [ngClass]="{required: currentViewMode != ViewMode.View}">
+                                        <label class="col-form-label col-sm-3">Real salary:</label>
+                                        <div class="col-9 d-flex align-items-center text-bold text-primary">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <input [formControl]="requestInformation.toRealSalary"
+                                                    mask="separator.0" thousandSeparator="," type="text"
+                                                    class="form-control my-1 ">
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                {{currentRequestEmployee.toSalary | currency:"VND":""}}
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Note:</label>
+                                        <div class="col-9 d-flex align-items-center"
+                                            [ngClass]="{note: currentViewMode == ViewMode.View}">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <mat-form-field appearance="outline">
+                                                    <textarea [formControl]="requestInformation.note" matInput
+                                                        cdkTextareaAutosize></textarea>
+                                                </mat-form-field>
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                {{currentRequestEmployee.note}}
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="currentViewMode != ViewMode.Create" class="form-group row">
+                                        <label class="col-form-label col-sm-3">Last modified:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            {{currentRequestEmployee.updatedTime | dmyHmDateFormat}}
+                                            by&nbsp;<b>{{currentRequestEmployee.updatedUser}}</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" *ngIf="requestInformation.hasContract.value">
+                    <div class="card-header section-header text-primary text-bold">
+                        Contract Information
+                    </div>
+                    <div class="card-body">
+                        <div class="w-100">
+                            <div class="row">
+                                <div class="col-md-12 col-lg-6 form-group-left">
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Employee:</label>
+                                        <div *ngIf="currentEmployee?.id" class="col-9 d-flex align-items-center">
+                                            {{currentEmployee?.fullName + " (" + currentEmployee?.email + ")"}}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">User type:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <span class="badge"
+                                                *ngIf="requestInformation?.toUserType.value != null"
+                                                [ngStyle]="{backgroundColor: getUserTypeColor(requestInformation?.toUserType.value)}">
+                                                {{getUserTypeName(requestInformation.toUserType.value)}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Position:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <span class="badge"
+                                                [ngStyle]="{backgroundColor: getJobPositionColor(requestInformation?.toJobPositionId.value)}">
+                                                {{getNewJobPositionName()}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Level:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <span class="badge"
+                                                [ngStyle]="{backgroundColor: getLevelColor(requestInformation?.toLevelId.value)}">
+                                                {{getNewLevelName()}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="currentRequestEmployee?.hasContract" class="form-group row" [ngClass]="{required: this.currentContractInformation.code && currentViewMode == ViewMode.Edit}">
+                                        <label class="col-form-label col-sm-3">Contract code:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <ng-container *ngIf="currentViewMode == ViewMode.Edit">
+                                                <div class="w-100">
+                                                    <input type="text" class="form-control w-100"
+                                                        [formControl]="contractInformation.contractCode" #contractCodeEl
+                                                        class="form-control">
+                                                    <abp-validation-summary *ngIf="currentContractInformation.code"
+                                                        [control]="contractInformation.contractCode"
+                                                        [controlEl]="contractCodeEl"></abp-validation-summary>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                {{contractInformation.contractCode.value}}
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="currentRequestEmployee?.hasContract" class="form-group row">
+                                        <label class="col-form-label col-sm-3">Last modified:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            {{currentContractInformation?.updatedTime | dmyHmDateFormat}}
+                                            &nbsp;<b>{{'by ' + currentContractInformation?.updatedUser}}</b>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-6 form-group-right">
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Start date:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            {{requestInformation.applyDate.value | DMYDateFormat}}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">End date:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <mat-form-field class="" appearance="outline">
+                                                    <input matInput [formControl]="contractInformation.contractEndDate"
+                                                        [matDatepicker]="picker" name="contractEndDate"
+                                                        #contractEndDateEl>
+                                                    <mat-datepicker-toggle matSuffix [for]="picker">
+                                                    </mat-datepicker-toggle>
+                                                    <mat-datepicker #picker panelClass="example-month-picker">
+                                                    </mat-datepicker>
+                                                </mat-form-field>
+                                                <abp-validation-summary [control]="contractInformation.contractEndDate"
+                                                    [controlEl]="contractEndDateEl">
+                                                </abp-validation-summary>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="currentViewMode == ViewMode.View && currentContractInformation?.endDate">
+                                                {{currentContractInformation?.endDate | DMYDateFormat}}
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" *ngIf="requestInformation.toUserType.value ==  APP_ENUM.UserType.ProbationaryStaff">
+                                        <label class="col-form-label col-sm-3">Probation percentage:</label>
+                                        <div class="col-9 d-flex align-items-center text-bold text-primary">
+                                            <ng-container *ngIf="currentViewMode != ViewMode.View">
+                                                <input type="text" suffix="%" mask="separator.0"
+                                                    [formControl]="contractInformation.probationPercentage"
+                                                    class="form-control">
+                                            </ng-container>
+                                            <ng-container *ngIf="currentViewMode == ViewMode.View">
+                                                {{contractInformation.probationPercentage.value}}%
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row"  *ngIf="requestInformation.toUserType.value ==  APP_ENUM.UserType.ProbationaryStaff">
+                                        <label class="col-form-label col-sm-3">Basic salary:</label>
+                                        <div class="col-9 d-flex align-items-center text-bold text-primary">
+                                            {{contractInformation.basicSalary.value | currency:"VND":""}}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3">Real salary:</label>
+                                        <div class="col-9 d-flex align-items-center text-bold text-primary">
+                                            {{contractInformation.realSalary.value | currency:"VND":""}}
+                                        </div>
+                                    </div>
+                                    <div *ngIf="currentContractInformation?.id" class="form-group row">
+                                        <label class="col-form-label col-sm-3">Contract file:</label>
+                                        <div class="col-9 d-flex align-items-center">
+                                            <ng-container
+                                                *ngIf="currentViewMode !== ViewMode.Create && !currentContractInformation?.fullFilePath">
+                                                <button *ngIf="isShowUploadContractFileBtn()" (click)="openUploadDialog()"
+                                                    class="btn btn-primary btn-sm mr-2">Upload</button>
+                                                <br>
+                                            </ng-container>
+                                            <ng-container *ngIf="currentContractInformation?.fullFilePath">
+                                                <a class="hyperlink" href="{{currentContractInformation?.fullFilePath}}"
+                                                    download="{{currentContractInformation?.file}}"
+                                                    style="cursor: pointer;">{{currentContractInformation?.fileName}}</a>
+                                                <span *ngIf="currentViewMode !== ViewMode.Create && isShowDeleteContractFileBtn()" class="ml-1"
+                                                    (click)="deleteContractFile(currentContractInformation.id)"><i
+                                                        class="fas fa-times"></i></span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row action text-center justify-content-center">
+                    <ng-container *ngIf="currentViewMode == ViewMode.Create">
+                        <button type="button" (click)="onBack()" class="btn btn-default mr-2">Back</button>
+                        <button type="button" class="btn btn-primary" (click)="onSave()"
+                        [disabled]="formGroup.invalid || isLoading">Save</button>
+                    </ng-container>
+                    <ng-container *ngIf="currentViewMode == ViewMode.View">
+                        <button type="button" (click)="onBack()" class="btn btn-default mr-2">Back</button>
+                        <button *ngIf="isShowEditBtn()" type="button" class="btn btn-primary" [disabled]="salaryChangeRequestInfo?.status == ERequestStatus.Executed || salaryChangeRequestInfo?.status == ERequestStatus.Approved || salaryChangeRequestInfo?.status == ERequestStatus.Pending" (click)="onEdit()">Edit</button>
+                    </ng-container>
+                    <ng-container *ngIf="currentViewMode == ViewMode.Edit">
+                        <button type="button" (click)="onCancel()" class="btn btn-default mr-2">Cancel</button>
+                        <button type="button" class="btn btn-primary" (click)="onSave()"
+                            [disabled]="formGroup.invalid">Save</button>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

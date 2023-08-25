@@ -1,0 +1,43 @@
+<div id="employee-info">
+    <div class="row w-100">
+        <div class="d-flex w-100">
+            <div class="text-center mr-3 ml-4 avatar">
+                <img *ngIf="!isAllowAvatarRouting " [src]="getAvatar(user)" class="rounded-circle mt-1" onError="this.src='assets/img/men.png'" 
+                    alt="avatar">
+                <a *ngIf="isAllowAvatarRouting "  [routerLink]="['/app','employees','list-employee','employee-detail','personal-info']" [queryParams]="{id:user.id}">
+                    <img  
+                    [src]="getAvatar(user)" class="rounded-circle mt-1" onError="this.src='assets/img/men.png'" alt="avatar">
+                </a>
+            </div>
+            <div class="pl-1 flex-grow-1 text-left">
+                <ng-container *ngIf="link;else normalName">
+                    <a *ngIf="!isAllowRouting " class="text-default">{{user?.fullName}}</a>
+                    <a *ngIf="isAllowRouting " class="text-default hyperlink" [routerLink]="link" [queryParams]="queryParams">{{user?.fullName}}</a>
+                    <i class="ml-2 gender"
+                    [ngClass]="user.sex == APP_ENUM.Gender.Female ? 'fa-solid fa-venus female' : 'fa-solid fa-mars text-primary' ">
+                    </i>
+                </ng-container>
+                <ng-template #normalName>
+                    <a *ngIf="!isAllowRouting " class="text-default fullName">{{user?.fullName}}</a>
+                    <a *ngIf="isAllowRouting " class="text-default hyperlink" [routerLink]="['/app','employees','list-employee','employee-detail','personal-info']"  [queryParams]="{id:user.id}">{{user?.fullName}}</a>
+                    <i class="ml-2 gender"
+                    [ngClass]="user.sex == APP_ENUM.Gender.Female ? 'fa-solid fa-venus female' : 'fa-solid fa-mars text-primary' ">
+                    </i>
+                </ng-template>
+                <p class="m-0 text-left text-overflow">
+                    <span class="mr-1 badge text-white" [ngStyle]="{'background': user.branchInfo?.color}">
+                        {{user.branchInfo?.name}}</span>
+                    <span class="badge text-white"  
+                        [ngStyle]="{'background': user.userTypeInfo?.color}">{{user.userTypeInfo?.name}}</span>
+                    <span class="ml-1 badge text-white"
+                        [ngStyle]="{'background': user.levelInfo?.color}">{{user.levelInfo?.name}}
+                    </span>
+                    <span class="ml-1 badge text-white"
+                        [ngStyle]="{'background': user.jobPositionInfo?.color}">{{user.jobPositionInfo?.name}}
+                    </span>
+                </p>
+                <p class="text-overflow m-0"><span>{{user?.email}}</span></p>
+            </div>
+        </div>
+    </div>
+</div>

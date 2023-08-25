@@ -1,0 +1,8 @@
+:host ::ng-deep abp-modal-header h4 {
+    margin-bottom: 0px !important;
+}
+
+.btn-footer{
+    padding-top: 9px;
+    padding-bottom: 9px;
+}

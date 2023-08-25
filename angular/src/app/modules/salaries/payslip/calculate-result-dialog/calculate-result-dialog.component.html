@@ -1,0 +1,18 @@
+
+<div class="card-header">
+    <h3>{{title}}</h3>
+    <div class="row m-0">
+        <strong class="text-primary process" [ngClass]="status == 'Done' ? 'text-success' : ''">
+            <i class="fa-solid fa-check" *ngIf="status == 'Done'"></i>
+            <i class="fa fa-spinner fa-spin d-line" *ngIf="status != 'Done'"></i>
+             {{status}}
+        </strong>
+        <strong class="ml-1 process">{{process}}</strong>
+    </div>
+</div>
+<div class="card-body fixed-body" #content>
+    <p #messages *ngFor="let result of resulMessage">{{result.message}}</p>
+</div>
+<div class="text-right mt-3">
+    <button class="btn btn-secondary" (click)="closeDialog()">Close</button>
+</div>

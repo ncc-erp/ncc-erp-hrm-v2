@@ -1,0 +1,20 @@
+<ng-container *ngIf="isViewTabPayslipPreview()">
+    <div *ngIf="mailInfo?.bodyMessage" class="container-fluid">
+        <div class="d-flex px-2 mt-2 mb-2" *ngIf="isShowActions()">
+            <div class="col-6">
+                <button class="btn btn-secondary mr-2" (click)="onEdit()">Edit</button>
+                <button class="btn btn-primary" [disabled]="sending" (click)="sendMail()">
+                    {{sending? "Sending..." : "Send"}}
+                </button>
+            </div>
+            <div class="col-6 text-right deadline">
+                <label class="mr-1">Confirm deadline:</label>
+                <strong class="text-danger mr-2">{{deadline |date:"dd/MM/yyyy HH:mm"}}</strong>
+                <i class="fa-solid fa-pen-to-square fa-lg pointer" (click)="updateDeadline()"></i>
+            </div>
+        </div>
+        <div class="email-content px-2" [innerHtml]="sanitizer.bypassSecurityTrustHtml(mailInfo.bodyMessage)">
+
+        </div>
+    </div>
+</ng-container>

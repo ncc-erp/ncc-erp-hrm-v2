@@ -1,0 +1,23 @@
+.filter-money{
+    justify-content: space-between;
+}
+.filter-money .item{
+    width: 100%;
+}
+.filter-money .text-to{
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+::ng-deep .error.invalid-feedback{
+    text-align: initial;
+}
+
+
+::ng-deep .bonus-employee.fixTableHead {
+    max-height: 70vh !important;
+    overflow-y: auto;
+}
+.col-action{
+    width: 120px;
+}

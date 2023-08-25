@@ -1,0 +1,114 @@
+<div class="content px-4 pt-1">
+    <section class="header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-6 breadcrumb">
+                    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-9 pt-2">
+                        <app-search [placeholder]="'Search by Name or Email'" (onSearch)="onSearchEnter($event)">
+                        </app-search>
+                    </div>
+                    <div class="col-3 pt-2">
+                        <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="listRequestStatuses"
+                            [placeholder]="'Request Status'" [defaultValue]="APP_ENUM.RequestUpdateInfoStatus.Pending"
+                            (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.RequestUpdateInfoStatus)">
+                        </table-filter>
+                    </div>
+                </div>
+                <div class="card-body mt-4 pb-1 row">
+                    <div class="table-wrapper w-100">
+                        <div class="table-responsive">
+                            <div class="fixedHeader">
+                                <table class="table table-striped table-hover" [busy]="isLoading">
+                                    <thead>
+                                        <th class="col-stt">#</th>
+                                        <th class="pointer" (click)="onSortChange('email')">
+                                            Employee
+                                            <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th class="col-status">Request status</th>
+                                        <th class="col-date" (click)="onSortChange('creationTime')">
+                                            Creation Time
+                                            <sortable [name]="'creationTime'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th  class="col-date" (click)="onSortChange('updatedTime')">
+                                            Updated Time
+                                            <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th class="col-action">Action</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let reqEmployee of listEmployeeRequests| paginate: {
+                                        id: 'server',
+                                        itemsPerPage: pageSize,
+                                        currentPage: pageNumber,
+                                        totalItems: totalItems
+                                      }; let i =index">
+                                            <td class="text-center align-middle">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                            <td>
+                                                <app-user-info
+                                                [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                                [isAllowRouting]="isAllowViewTabPersonalInfo()"
+                                                    [link]="['/app/employees/list-employee/employee-detail/personal-info']"
+                                                    [queryParams]="{id: reqEmployee.employeeId, requestId: reqEmployee.id}"
+                                                    
+                                                    [userData]="{
+                                                        id: reqEmployee.employeeId,
+                                                        avatarFullPath: reqEmployee.avatarFullPath,
+                                                        jobPositionInfo: reqEmployee.jobPositionInfo,
+                                                        levelInfo: reqEmployee.levelInfo,
+                                                        userTypeInfo: reqEmployee.userTypeInfo,
+                                                        email: reqEmployee.email,
+                                                        sex: reqEmployee.sex,
+                                                        fullName: reqEmployee.fullName,
+                                                        branchInfo: reqEmployee.branchInfo}">
+                                                </app-user-info>
+                                            </td>
+                                            <td class="text-center align-middle ">
+                                                <span class="badge" style="color: #fff;"
+                                                [ngStyle]="{'background': reqEmployee.requestStatusInfo?.color}">{{reqEmployee.requestStatusInfo.name}}</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <p class="mb-0 mt-2">{{reqEmployee.creationTime | DMYDateFormat}}</p>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <p class="mb-0 mt-2">{{reqEmployee.updatedTime | DMYDateFormat}}</p>
+                                                <p>by<b> {{reqEmployee.updatedUser}}</b></p>
+                                            </td>
+
+                                            <td class="text-center align-middle">                                              
+                                                <a 
+                                                [queryParams]="{id: reqEmployee.employeeId, requestId: reqEmployee.id}"  
+                                                [routerLink]="['/app/employees/list-employee/employee-detail/personal-info']"  
+                                                target="_blank" 
+                                                style="color: #ffff" 
+                                                *ngIf="isShowViewDetailRequestBtn()"  
+                                                class="btn btn-success">
+                                                    <i class="fa-solid fa-eye mr-1"></i>View request detail
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </div>

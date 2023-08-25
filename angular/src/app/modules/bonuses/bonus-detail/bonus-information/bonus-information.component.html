@@ -1,0 +1,121 @@
+<div class="" *ngIf="isAllowRoutingTabInfo()">
+  <div class="">
+    <div class="card-body pb-1">
+      <form class="form-horizontal" autocomplete="off" #requestDetail="ngForm">
+        <div class="row">
+          <div class="col-md-6 col-12">
+            <div class="form-group row detail" [ngClass]="!readMode?'required':''">
+              <label class="col-md-3 col-form-label" for="requestName">
+                Name:
+              </label>
+              <div *ngIf="readMode" class="col-md-7">
+                <div class="form-control text-read">{{bonus.name}}</div>
+              </div>
+              <div *ngIf="!readMode" class="col-md-7">
+                <input type="text" class="form-control" name="bonusName" id="bonusName" minlength="2" maxlength="64"
+                  required [(ngModel)]="bonus.name" #bonusNameModel="ngModel" #bonusNameEl />
+                <abp-validation-summary [control]="bonusNameModel" [controlEl]="bonusNameEl">
+                </abp-validation-summary>
+                <mat-checkbox class="mt-3" [(ngModel)]="isApply" name="isApply">Thay đổi Note cho tất cả user được bonus
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <div class="form-group row detail">
+              <label class="col-md-3 col-form-label">
+                Apply month:
+              </label>
+              <div class="col-md-7">
+                <div *ngIf="readMode">
+                    <div class="form-control text-read">{{bonus.applyMonth}}</div>
+                </div>
+                <div *ngIf="!readMode && bonus.isActive">
+                  <mat-form-field class="w-100" appearance="outline">
+                    <mat-select [(ngModel)]="bonus.applyMonth"  (selectionChange)="chooseDate($event.value)"
+                     required #applyMonthValid="ngModel"
+                     name="applyMonth">
+                        <mat-option *ngFor="let month of listDate" [value]="month">
+                            {{month}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-error class="mt-1" *ngIf="applyMonthValid.hasError('required') && applyMonthValid.touched"
+                    style="font-size: 13px;">
+                    This field is required
+                </mat-error>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row detail" [ngClass]="!readMode?'required':''">
+              <label class="col-md-3 col-form-label" for="requestName">
+                Status:
+              </label>
+              <div *ngIf="readMode" class="col-md-7">
+                <div style="margin: 0.375rem 0.75rem;" [ngClass]="bonus.isActive | isActive:true">
+                  {{bonus.isActive |isActive}}
+                </div>
+              </div>
+              <div *ngIf="!readMode" class="col-md-7">
+                <mat-form-field class="w-100" appearance="outline">
+                  <mat-select [(ngModel)]="bonus.isActive" name="bonusStatus" placeholder="select a bonus status"
+                    required #bonusStatus="ngModel">
+                    <ng-container *ngFor="let status of bonusStatusList">
+                      <mat-option [value]="APP_ENUM.BonusStatus[status]"> {{status}}</mat-option>
+                    </ng-container>
+                  </mat-select>
+                </mat-form-field>
+                <mat-error class="mt-1" *ngIf="bonusStatus.hasError('required') && bonusStatus.touched"
+                  style="font-size: 13px;">
+                  This field is required
+                </mat-error>
+              </div>
+            </div>
+
+            <div class="form-group row detail">
+              <label class="col-md-3 col-form-label">
+                Creation time:
+              </label>
+              <div class="col-md-9">
+                <div class="form-control text-read">{{bonus.creationTime | dmyHmDateFormat}} <span
+                    class="">by</span>
+                  {{bonus.fullNameCreation}}</div>
+              </div>
+            </div>
+
+            <div class="form-group row detail">
+              <label class="col-md-3 col-form-label">
+                Last updated:
+              </label>
+              <div class="col-md-9">
+                <div class="form-control text-read">{{bonus.lastModificationTime | dmyHmDateFormat}} <span
+                    class="">by</span>
+                  {{bonus.fullNameModification}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-left" *ngIf="isShowEditBtn()">
+          <div class="form-group" *ngIf="bonus.isActive" [hidden]="!readMode">
+            <a class="btn bg-primary" (click)="editRequest()">
+              <i class="fas fa-edit"></i>
+              Edit
+            </a>
+          </div>
+          <div class="form-group" [hidden]="readMode">
+            <div class="d-flex">
+              <button class="btn btn-secondary btn-action mr-2" (click)="readMode = true; getBonusDetail()">
+                Cancel
+              </button>
+              <button class="btn btn-primary btn-action" [disabled]="!requestDetail.valid || isLoading "
+                (click)="saveAndClose()">
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

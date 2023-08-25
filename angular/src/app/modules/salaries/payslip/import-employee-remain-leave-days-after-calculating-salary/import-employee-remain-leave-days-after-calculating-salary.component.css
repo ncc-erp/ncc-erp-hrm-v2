@@ -1,0 +1,7 @@
+::ng-deep .swal2-popup{
+    width: 700px;
+}
+::ng-deep .swal2-popup div{
+    font-weight: 700px;
+    
+}

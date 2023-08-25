@@ -1,0 +1,27 @@
+<section class="content px-4 pt-1">
+    <div class="breadcrumb header">
+        <div class="mb-1">
+           <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+           <span class="ml-2" [ngClass]="benefit.isActive | isActive:true">
+            {{benefit.isActive |isActive}}
+            </span>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row mb-4 card">
+            <div class="col-12 p-0">
+                <nav mat-tab-nav-bar>
+                    <a *ngIf="isAllowRoutingTabInfo()" [ngClass]="currentUrl.includes('benefit-infomation')?'active':''" mat-tab-link
+                        (click)="routingInformationTab()">
+                        Information
+                    </a>
+                    <a *ngIf="isAllowRoutingTabEmployee()" [ngClass]="currentUrl.includes('benefit-employee')?'active':''" mat-tab-link
+                        (click)="routingEmployeeTab()">
+                        Employees
+                    </a>
+                </nav>
+                <router-outlet (activate)="onActive($event)"></router-outlet>
+            </div>
+        </div>
+    </div>
+</section>

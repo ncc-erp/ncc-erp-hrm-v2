@@ -1,0 +1,288 @@
+<app-dialog-header [dialogTitle]="title">
+</app-dialog-header>
+<mat-tab-group>
+    <mat-tab label="Change Status">
+        <form class="form-horizontal" autocomplete="off" #changeStatusForm="ngForm" novalidate>
+            <div class="pt-3 mx-0 row change-status-side">
+                <div class="col-4 px-0">
+                    <label class="current-side text-danger title-side">* Current:</label>
+                    <div>
+                        <div class="form-group d-flex">
+                            <label class="col-4 mt-2 col-form-label px-0">
+                                Working status:
+                            </label>
+                            <div class="col-md-8">
+                                <p class="mb-0 mt-3" [class]="APP_CONST.userStatus[employeeInfo.status].class">
+                                    {{APP_CONST.userStatus[employeeInfo.status].name}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex">
+                            <label class="col-4 mt-2 col-form-label px-0">
+                                Salary:
+                            </label>
+                            <div class="col-md-8">
+                                <p class="mb-0 mt-3"><b>{{employeeInfo.realSalary | number:'1.0':'en-US'}} ( VND )</b>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex">
+                            <label class="col-4 mt-2 col-form-label px-0">
+                                Level:
+                            </label>
+                            <div class="col-md-8">
+                                <p class="mb-0 mt-3 badge text-white"
+                                    [ngStyle]="{'background': employeeInfo.levelInfo?.color}">
+                                    {{employeeInfo.levelInfo.name}}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex">
+                            <label class="col-4 mt-2 col-form-label px-0">
+                                User type:
+                            </label>
+                            <div class="col-md-8">
+                                <p class="mb-0 mt-3 badge text-white"
+                                    [ngStyle]="{'background': employeeInfo.userTypeInfo?.color}">
+                                    {{employeeInfo.userTypeInfo?.name}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex">
+                            <label class="col-4 mt-2 col-form-label px-0">
+                                Job Position:
+                            </label>
+                            <div class="col-md-8">
+                                <p class="mb-0 mt-3 badge text-white"
+                                    [ngStyle]="{'background': employeeInfo.jobPositionInfo?.color}">
+                                    {{employeeInfo.jobPositionInfo?.name}}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-8 px-0">
+                    <label class="new-side text-danger title-side">* New:</label>
+                    <div class="d-flex">
+                        <div class="col-md-6 pl-0 pr-2">
+                            <div class="form-group d-flex">
+                                <label class="col-md-5 mt-2 col-form-label px-0">
+                                    New working status:
+                                </label>
+                                <div class="col-md-7">
+                                    <p class="mb-0 mt-3" [class]="APP_CONST.userStatus[inputForChange.toStatus].class">
+                                        {{APP_CONST.userStatus[inputForChange.toStatus].name}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group d-flex required">
+                                <label class="col-md-5 mt-2 col-form-label px-0">
+                                    Level:
+                                </label>
+                                <div class="col-md-7">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>select new level</mat-label>
+                                        <mat-select name="level" [(ngModel)]="inputForChange.toLevelId" #level="ngModel"
+                                            placeholer="select new level* " required>
+                                            <mat-option *ngFor="let level of levelsList" [value]="level.value">
+                                                {{level.key}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error class="mt-1" *ngIf="level.hasError('required') && level.touched"
+                                        style="font-size: 13px;">
+                                        This field is required
+                                    </mat-error>
+                                </div>
+                            </div>
+
+                            <div class="form-group d-flex required">
+                                <label class="col-md-5 mt-2 col-form-label px-0">
+                                    User type:
+                                </label>
+                                <div class="col-md-7">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>select new user type</mat-label>
+                                        <mat-select name="type" [(ngModel)]="inputForChange.toUserType" #type="ngModel"
+                                            (selectionChange)="onSelectNewUserType($event)"
+                                            placeholer="select new level* " required>
+                                            <mat-option *ngFor="let type of userTypeList" [value]="type.value">
+                                                {{type.key}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error class="mt-1" *ngIf="type.hasError('required') && type.touched"
+                                        style="font-size: 13px;">
+                                        This field is required
+                                    </mat-error>
+                                </div>
+                            </div>
+                            <div class="form-group d-flex required">
+                                <label class="col-md-5 mt-2 col-form-label px-0">
+                                    Job Position:
+                                </label>
+                                <div class="col-md-7">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>select new position</mat-label>
+                                        <mat-select name="position" [(ngModel)]="inputForChange.toJobPositionId"
+                                            #position="ngModel" placeholer="select new position* " required>
+                                            <mat-option *ngFor="let position of positionList" [value]="position.value">
+                                                {{position.key}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error class="mt-1" *ngIf="position.hasError('required') && position.touched"
+                                        style="font-size: 13px;">
+                                        This field is required
+                                    </mat-error>
+                                </div>
+                            </div>
+
+                            <div class="form-group d-flex required">
+                                <label class="col-md-5 mt-2 col-form-label px-0">
+                                    Apply date:
+                                </label>
+                                <div class="col-md-7">
+                                    <mat-form-field class="w-100  center-flex" appearance="outline" required>
+                                        <mat-label>Choose a apply date</mat-label>
+                                        <input name="applyDate" matInput [matDatepicker]="picker"
+                                        [min]="employeeInfo.startWorkingDate"  (dateChange)="getApplyDateValue(inputForChange.applyDate)"
+                                            [(ngModel)]="inputForChange.applyDate" required>
+                                        <mat-datepicker-toggle matSuffix [for]="picker" required>
+                                        </mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 pl-2">
+
+                            <div class="form-group d-flex">
+                                <div class="col-1 mt-2 col-form-label">
+                                    <mat-checkbox class="example-margin" [checked]="inputForChange.hasContract"
+                                        (change)="onCreateContract($event)">
+                                    </mat-checkbox>
+                                </div>
+                                <div class="col-11" style="align-self: center;">
+                                    <b class="text-primary">Has Contract</b>
+                                </div>
+                            </div>
+                            <div class="form-group d-flex required">
+                                <label class="col-md-5 mt-2 col-form-label ">
+                                    Real Salary:
+                                </label>
+                                <div class="col-md-7">
+                                    <mat-form-field class="w-100  center-flex" appearance="outline" required>
+                                        <input matInput name="Salary" [(ngModel)]="inputForChange.realSalary"
+                                            (keyup)="onChange($event)" placeholder="enter salary*"
+                                            [allowNegativeNumbers]="false" mask="separator" thousandSeparator="," min=0
+                                            #salary="ngModel" #salaryInput required>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="form-group d-flex required" *ngIf="inputForChange.toUserType == APP_ENUM.UserType.ProbationaryStaff">
+                                <label class="col-md-5 mt-2 col-form-label">
+                                    Basic Salary:
+                                </label>
+                                <div class="col-md-7">
+                                    <p class="mb-0 mt-3"><b>{{inputForChange.basicSalary | number:'1.0':'en-US'}} ( VND
+                                            )</b></p>
+                                </div>
+                            </div>
+
+                            <div class="form-group d-flex required" *ngIf="inputForChange.toUserType == APP_ENUM.UserType.ProbationaryStaff">
+                                <label class="col-md-5 mt-2 col-form-label">
+                                    Probation percentage:
+                                </label>
+                                <div class="col-7">
+                                    <ng-container>
+                                        <mat-form-field appearance="outline" class="w-100  center-flex">
+                                            <input type="text" mask="percent" suffix="%" matInput
+                                                name="probationPercentage" (keyup)="onChange($event)" required
+                                                [(ngModel)]="inputForChange.probationPercentage" #salaryEl>
+                                        </mat-form-field>
+                                    </ng-container>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group d-flex">
+                                <label class="col-md-5 mt-2 col-form-label">
+                                    Contract end date:
+                                </label>
+                                <div class="col-md-7">
+                                    <mat-form-field class="w-100  center-flex" appearance="outline">
+                                        <mat-label>Choose a contract end date</mat-label>
+                                        <input matInput [matDatepicker]="pickerContractEndDate" name="ContractEndDate"
+                                            [(ngModel)]="inputForChange.contractEndDate">
+                                        <mat-datepicker-toggle matSuffix [for]="pickerContractEndDate">
+                                        </mat-datepicker-toggle>
+                                        <mat-datepicker #pickerContractEndDate></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-12 pl-0 mt-2">
+                        <div class="form-group d-flex">
+                            <label class="col-md-2 mt-2 col-form-label px-0">
+                                Note:
+                            </label>
+                            <div class="col-md-10">
+                                <mat-form-field class="w-100 form-note" appearance="outline">
+                                    <textarea  class="w-100 mt-2" rows="4"
+                                        [(ngModel)]="inputForChange.note" placeholder="leave a comment"
+                                        name="note" matInput></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </mat-tab>
+    <mat-tab label="Change Benefits ({{benefitsOfEmployee.length}})">
+        <div class="col-12  mt-4 ">
+            <b *ngIf="!benefitsOfEmployee.length" class="text-center ml-2 mt-2">
+                This employee didn't have any benefit! (No data)
+            </b>
+            <div class="table-responsive list-benefits mt-4" *ngIf="benefitsOfEmployee.length">
+                <div class="fixTableHead">
+                    <table class="table table-striped table-hover" [busy]="isLoading">
+                        <thead>
+                            <th class="text-center stt-header">#</th>
+                            <th class="" style="width: 60%">Benefit name</th>
+                            <th class="">Start date</th>
+                            <th class="end-date-header">End date</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let benefit of benefitsOfEmployee;let i = index">
+                                <td class="text-center">{{i+1}}</td>
+                                <td class="text-left" style="width: 60%">{{benefit.benefitName}}</td>
+                                <td class="text-center">
+                                    <mat-form-field class="w-100  center-flex my-1" appearance="outline">
+                                        <mat-label>Choose a start date</mat-label>
+                                        <input name="startDate{{benefit.id}}" [(ngModel)]="benefit.startDate" matInput
+                                            [matDatepicker]="pickerStartDate">
+                                        <mat-datepicker-toggle matSuffix [for]="pickerStartDate">
+                                        </mat-datepicker-toggle>
+                                        <mat-datepicker #pickerStartDate></mat-datepicker>
+                                    </mat-form-field>
+                                </td>
+                                <td class="text-center">
+                                    <mat-form-field class="w-100  center-flex" appearance="outline">
+                                        <mat-label>Choose a end date</mat-label>
+                                        <input name="endDate{{benefit.id}}" [(ngModel)]="benefit.endDate" matInput
+                                            [matDatepicker]="pickerEndDate">
+                                        <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
+                                        <mat-datepicker #pickerEndDate></mat-datepicker>
+                                    </mat-form-field>
+                                </td>
+    
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+</mat-tab-group>
+<app-dialog-footer class="mt-3" (onSave)="saveAndClose()" [isDisable]="!changeStatusForm.valid ||  isLoading">
+</app-dialog-footer>

@@ -1,0 +1,36 @@
+<form class="form-horizontal" autocomplete="off" #salaryChangeRequestForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 col-form-label">
+                Name:
+            </label>
+            <div class="col-9 p-0">
+                <mat-form-field appearance="outline" class="common-input w-100">
+                    <input matInput name="salaryChangeRequestName" [(ngModel)]="salaryChangeRequest.name"
+                        #name="ngModel" cdkFocusInitial #nameEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-form-label col-3">
+                Apply month:
+            </label>
+            <div class="col-9 p-0">
+                <mat-form-field appearance="outline" class="common-input w-100">
+                    <input matInput #datepickerEl [matDatepicker]="picker" name="applyMonth" [formControl]="date">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker startView="multi-year" (monthSelected)="chosenMonthHandler($event,picker)"
+                        (yearSelected)="chosenYearHandler($event)" panelClass="example-month-picker"></mat-datepicker>
+                </mat-form-field>
+                <abp-validation-summary [control]="date" [controlEl]="datepickerEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!salaryChangeRequestForm.valid || isLoading">
+    </app-dialog-footer>
+</form>

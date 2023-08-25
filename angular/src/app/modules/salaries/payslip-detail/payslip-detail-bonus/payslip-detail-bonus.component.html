@@ -1,0 +1,84 @@
+<div *ngIf="isViewTabBonus()">
+    <div class="card-body">
+        <ng-container *ngIf="isShowActions()">
+            <button class="btn btn-primary mb-2" *ngIf="!isAdding && isShowAddBtn()" [disabled]="isEditing" (click)="onAdd()"><i
+                class="fa-solid fa-square-plus mr-1"></i>Add
+            </button>
+        </ng-container>
+        <div class="table-responsive">
+            <div class="fixTableHead">
+                <table class="table table-striped table-hover" [busy]="isLoading">
+                    <thead>
+                        <th>#</th>
+                        <th>Note</th>
+                        <th>Money</th>
+                        <th>Updated time</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let bonus of listPayslipDetailBonuses; let i = index;">
+                            <td class="text-center align-middle">{{i+1}}</td>
+                            <td class="align-middle">
+                                <div style="word-wrap: break-word; white-space: pre-line; min-width: 300px;"
+                                    *ngIf="!bonus.createMode">
+                                    {{bonus.note}}
+                                </div>
+                                <div class="form-group row required align-middle" *ngIf="bonus.createMode && isAdding">
+                                    <mat-form-field class="w-100 mx-2 mt-3 center-flex" appearance="outline">
+                                        <mat-select (closed)="searchBonus=''" placeholder="select bonus *" 
+                                        [(ngModel)]="bonusEmp" name="bonus" required>
+                                            <mat-form-field class="w-100 px-3 "
+                                                style="position: sticky; top: 0; z-index: 2; background-color: white;">
+                                                <input matInput [(ngModel)]="searchBonus" name="searchText"
+                                                    placeholder="Search"  #search>
+                                            </mat-form-field>
+                                            <mat-option *ngFor="let b of listBonuses | listFilter:'name': searchBonus"
+                                                [value]="b">
+                                                {{b.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                </div>
+                                <div *ngIf="bonus.createMode && isEditing">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <textarea  cdkTextareaAutosize #autosize="cdkTextareaAutosize" name="note" rows="2" matInput  [(ngModel)]="bonus.note"></textarea>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td class="text-right align-middle">
+                                <b *ngIf="!bonus.createMode">{{bonus.money|number:'1.0':'en-US'}}</b>
+                                <mat-form-field class="w-100  center-flex" appearance="outline"
+                                    *ngIf="bonus.createMode || bonus.updateMode" required>
+                                    <input matInput name="money" [(ngModel)]="bonus.money" placeholder="enter money*"
+                                        [allowNegativeNumbers]="false" mask="separator" thousandSeparator="," min=0
+                                        #money="ngModel" #moneyInput required>
+                                </mat-form-field>
+                            </td>
+                            <td class="text-center align-middle">
+                                <div *ngIf="!bonus.createMode">
+                                    <p class="mb-0 mt-2">{{bonus.updatedTime | dmyHmDateFormat}}</p>
+                                    <p>by <b>{{bonus.updatedUser}}</b></p>
+                                </div>
+                            </td>
+                            <td class="text-center align-middle">
+                                <div *ngIf="!bonus.createMode && isShowActions()">
+                                    <app-edit-button [isDisable]="bonus.createMode || isEditing || isAdding" (update)="onUpdate(bonus)"
+                                        *ngIf="isShowEditBtn()">
+                                    </app-edit-button>
+                                    <app-delete-button [isDisable]="bonus.createMode || isEditing || isAdding" (update)="onUpdate(bonus)" (delete)="onDelete(bonus)"
+                                        *ngIf="isShowDeleteBtn()"></app-delete-button>
+                                </div>
+                                <div *ngIf="bonus.createMode">
+                                    <app-save-cancel-button [isDisable]="!bonus.money || !bonusEmp" (save)="onSave(bonus)" (cancel)="onCancel(bonus)"></app-save-cancel-button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

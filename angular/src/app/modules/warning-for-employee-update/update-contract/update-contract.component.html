@@ -1,0 +1,130 @@
+<div class="content px-4 pt-1">
+    <section class="header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-6 breadcrumb">
+                    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <!-- <div class="px-4 pt-3 d-flex">
+                        <div class="p-0 w-100">
+                            <app-employee-filter [isExistFilterContractEndDate]="true" [isOnDialog]="false" (onSearch)="onSearchEnter($event)"
+                                (onMultiFilterWithCondition)="onMultiFilterWithCondition($event)"
+                                (onMultiFilter)="onMultiFilter($event)"
+                                (onFilterBySeniority)="onFilterBySeniority($event)" (onFilter)="onFilter($event)"
+                                (onChangeDaysLeftOfContractEnd)="onChangeDaysLeftOfContractEnd($event)">
+                            </app-employee-filter>
+                        </div>
+                    </div> -->
+                    <div class="row">
+                        <div class="col-5 mt-2">
+                            <app-search [placeholder]="'Search by Name or Email'"
+                                (onSearch)="onSearchEnter($event)">
+                            </app-search>
+                        </div>
+                        
+                    <div class="row col-7">
+                        <div class="col-6 mt-2">
+                            <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userTypeList"
+                                 [placeholder]="'User type'" 
+                                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserType)">
+                            </table-filter>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList" [placeholder]="'Branch'"
+                                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                            </table-filter>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="positionList"
+                                [placeholder]="'Job position'"
+                                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.JobPosition)">
+                            </table-filter>
+                        </div>
+                        <div class="mt-2 col-6">
+                            <table-filter  [isExistFilterContractEndDate]="true"  [defaultValue]="daysLeftContractEnd"
+                                [placeholder]="'Contract end date left'"
+                                (onChangeDaysLeftOfContractEnd)="onChangeDaysLeftOfContractEnd($event)">
+                            </table-filter>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
+                <div class="card-body pb-1">
+                    <div class="table-responsive">
+                        <div class="fixTableHead">
+                            <table class="table table-striped table-hover" [busy]="isLoading">
+                                <thead>
+                                    <tr>
+                                        <th class="stt">#</th>
+                                        <th class="pointer" (click)="onSortChange('email')">
+                                            Employee
+                                            <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th (click)="onSortChange('contractStartDate')">
+                                            Contract start date
+                                            <sortable [name]="'contractStartDate'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th (click)="onSortChange('contractEndDate')">
+                                            Contract end date 
+                                            <sortable [name]="'contractEndDate'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th (click)="onSortChange('updatedTime')">
+                                            Updated Time
+                                            <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let employee of employeeList| paginate: {
+                                        id: 'server',
+                                        itemsPerPage: pageSize,
+                                        currentPage: pageNumber,
+                                        totalItems: totalItems
+                                      }; let i =index">
+                                        <td class="text-center align-middle">{{i+1}}</td>
+                                        <td>
+                                            <app-user-info
+                                                [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                                [isAllowRouting]="isAllowViewTabPersonalInfo()"
+                                                [link]="['/app/employees/list-employee/employee-detail/personal-info']"
+                                                [queryParams]="{id:employee.id}" [userData]="employee"></app-user-info>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            {{employee.contractStartDate | DMYDateFormat}}
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <p class="mb-0 mt-2">{{employee.contractEndDate | DMYDateFormat}}</p>
+                                            <p *ngIf="employee.contractDayLeft < 0" class="text-danger"> <strong>{{employee.contractDayLeft* (-1)}} d ago</strong></p>
+                                            <p *ngIf="employee.contractDayLeft > 0" class="text-success"><strong> {{employee.contractDayLeft}} d</strong></p>
+                                            <p *ngIf="employee.contractDayLeft == 0" class="text-success"><strong>in day</strong></p>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <p class="mb-0 mt-2">{{employee.updatedTime | DMYDateFormat}}</p>
+                                            <p><b>by</b> {{employee.updatedUser}}</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,118 @@
+<div class="px-4">
+    <section class="header">
+        <div class="">
+            <div class="row">
+                <div class="col-6 breadcrumb">
+                    <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-8 center-flex">
+                            <app-search [placeholder]="'Search by job type, job agrs'" [seachText]="searchText"
+                                (onSearch)="onSearchEnter($event)">
+                            </app-search>
+                        </div>
+                        <div class="col-4 center-flex">
+                            <div class="input-group pt-1">
+                                <div class="input-group-prepend">
+                                    <button (click)="onSearchEnterId()" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                                <input placeholder="Search by job id" id="IdOrDes" type="text" class="form-control" [(ngModel)]="searchById"
+                                    (keyup.enter)="onSearchEnterId()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pb-1" id="bg-table">
+                    <div class="table-responsive">
+                        <div class="fixTableHead">
+                            <table class="table table-striped table-hover" [busy]="isLoading">
+                                <thead>
+                                    <tr>
+                                        <th class="stt">#</th>
+                                        <th class="job-type">Job type</th>
+                                        <th class="job-agrs">Job agrs</th>
+                                        <th style="width: 80px">Try count</th>
+                                        <th (click)="onSortChange('lastTryTime')">Last try time
+                                            <sortable [name]="'lastTryTime'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection">
+                                            </sortable>
+                                        </th>
+                                        <th (click)="onSortChange('nextTryTime')">Next try time
+                                            <sortable [name]="'nextTryTime'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection">
+                                            </sortable>
+                                        </th>
+                                        <th style="width: 80px">Is Abandoned</th>
+                                        <th>Priority</th>
+                                        <th>Description</th>
+                                        <th (click)="onSortChange('creationTime')">Creation time
+                                            <sortable [name]="'creationTime'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable></th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let bg of backgroundJobs| paginate: {
+                                    id: 'server',
+                                    itemsPerPage: pageSize,
+                                    currentPage: pageNumber,
+                                    totalItems: totalItems
+                                  }; let i =index">
+                                        <td class="text-center">
+                                            <p>{{(pageNumber-1)*pageSize+i+1}}</p>
+                                            <b>#{{bg.id}}</b>
+                                        </td>
+                                        <td class="job-type">
+                                            <div>{{bg.subJobType}}</div>
+                                        </td>
+                                        <td class="job-agrs" style="width: 250px;">
+                                            <div class="agrs">{{bg.jobAgrs}}</div>
+                                        </td>
+                                        <td class="text-center align-middle">{{bg.tryCount}}</td>
+                                        <td class="text-center col-date align-middle">{{bg.lastTryTime | dmyHmDateFormat}}</td>
+                                        <td class="text-center col-date align-middle">{{bg.nextTryTime | dmyHmDateFormat}}</td>
+                                        <td class="text-center align-middle">
+                                                <span [ngClass]="bg.isAbandoned ? 'text-danger text-bold': ''">
+                                                    {{bg.isAbandoned}}
+                                                </span>
+                                        </td>
+                                        <td class="text-center align-middle">{{bg.priority}}</td>
+                                        <td class="col-description"><div>{{bg.description}}</div></td>
+                                        <td class="text-center align-middle">{{bg.creationTime| dmyHmDateFormat}}</td>
+                                        <td class="align-middle text-center">
+                                            <button [matMenuTriggerFor]="menu" class="btn">
+                                                <i class="fas fa-bars fa-lg"></i>
+                                            </button>
+                                            <mat-menu #menu="matMenu">
+                                                <mat-item *ngIf="bg.isAbandoned && isShowBtnRetry()" (click)="onRetry(bg.id)" class="mat-menu-item">
+                                                    <i class="fas fa-rotate-left mr-1"></i>
+                                                    Retry
+                                                </mat-item>
+                                                <mat-item *ngIf="isShowBtnDelete()" (click)="onDelete(bg.id)" class="mat-menu-item">
+                                                    <i class="fas fa-trash fa-lg mr-1"></i>
+                                                    Delete
+                                                </mat-item>
+                                            </mat-menu>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+

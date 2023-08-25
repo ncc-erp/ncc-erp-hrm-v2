@@ -1,0 +1,19 @@
+.card-header {
+    font-size:  18px;
+    font-weight:  400;
+    color: #111; 
+    height: 62px;
+}
+.card-header .title {
+    margin-top: 8px;
+}
+::ng-deep .mat-input-element:disabled {
+    color: rgb(0, 0, 0) !important;
+}
+.message{
+    cursor: pointer;
+}
+::ng-deep .my-tooltip{
+    max-width: fit-content !important;
+    text-overflow: unset;
+}   

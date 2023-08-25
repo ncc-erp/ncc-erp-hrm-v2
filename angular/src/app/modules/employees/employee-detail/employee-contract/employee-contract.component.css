@@ -1,0 +1,104 @@
+table thead th {
+    vertical-align: middle;
+}
+
+table tbody td {
+    vertical-align: middle;
+}
+
+.col-stt {
+    width: 60px;
+}
+
+.col-salary,
+.col-realSalary {
+    width: 100px;
+}
+
+.col-probation {
+    width: 70px;
+}
+
+.col-contractCode {
+    width: 150px;
+    text-overflow: clip;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.col-date {
+    width: 125px;
+}
+
+.col-userType {
+    width: 100px;
+}
+
+.col-jobPosition {
+    width: 100px;
+}
+
+.col-contractFile {
+    width: 150px;
+}
+
+.col-updatedTime {
+    width: 140px;
+}
+
+.col-level {
+    width: 80px;
+}
+
+.badge {
+    color: white;
+    font-size: 13px;
+}
+
+.icon-edit {
+    bottom: calc(50% - 10px);
+    right: 2px;
+}
+
+.col-note {
+    max-width: 180px;
+    height: max-content;
+}
+
+.note {
+    width: calc(100% - 15px);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.col-action {
+    width: 50px;
+}
+
+.col-request {
+    width: 130px;
+    max-width: 150px;
+}
+
+.col-contractFile {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+::ng-deep .note-full {
+    white-space: pre-line;
+    word-break: break-all;
+    text-align: left !important;
+}
+
+.fixTableHead{
+    max-height: 77vh;
+}

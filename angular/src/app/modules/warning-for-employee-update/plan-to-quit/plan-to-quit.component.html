@@ -1,0 +1,97 @@
+<div class="px-4 page-wrapper">
+    <section class="header">
+        <div class="">
+            <div class="row">
+                <div class="col-6 breadcrumb">
+                    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-8 center-flex">
+                            <div class="input-group pt-1">
+                                <div class="input-group-prepend">
+                                    <button (click)="onSearchEnter()" class="btn btn-primary"><i
+                                            class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                                <input placeholder="Search by name, email" type="text" class="form-control"
+                                    [(ngModel)]="searchText" (input)="onSearchEnter()">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-body pb-1" id="bg-table">
+                    <div class="table-responsive">
+                        <div class="fixTableHead">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="stt">#</th>
+                                        <th (click)="onSort('email')">Employee
+                                            <sortable [name]="'email'" [sortProperty]="sortProperty" [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th class="status">Status</th>
+                                        <th class="status">Execute status</th>
+                                        <th style="width: 170px;" (click)="onSort('dateAt')">Quit date
+                                            <sortable [name]="'dateAt'" [sortProperty]="sortProperty" [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th style="width: 150px;" (click)="onSort('creationTime')">Creation time 
+                                            <sortable [sortProperty]="sortProperty" [sortDirection]="sortDirection"
+                                            [name]="'creationTime'">
+                                        </sortable> 
+                                        </th>
+                                        <th style="width: 120px">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let employee of planQuitEmployees; let i =index">
+                                        <td class="text-center">
+                                            <p>{{i+1}}</p>
+                                        </td>
+                                        <td>
+                                            <app-user-info
+                                                 [userData]="employee" [isAllowRouting]="isAllowRoutingDetail()" [isAllowAvatarRouting]="isAllowRoutingDetail()" >
+                                            </app-user-info>
+                                        </td>
+                                        <td class="text-center">
+                                            <span [ngClass]="planQuitEmployeeStatusClass[employee.workingStatus]">{{employee.workingStatus}} </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span *ngIf="employee.isAbandoned !== null" [ngClass]="employee.isAbandoned ? 'badge badge-warning': 'badge badge-success'">
+                                                {{employee.isAbandoned ? "Fail to execute": "Success to execute"}}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="row">
+                                                <div class="full-note col-10">
+                                                    {{employee.dateAt | DMYDateFormat}}</div>
+                                                <div class="col-2  text-right" *ngIf="isShowEditBtn()">
+                                                    <i class="fas fa-edit icon-edit" (click)="onUpdate(employee)">
+                                                    </i>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">{{employee.creationTime | DMYDateFormat}}</td>
+                                        <td class="align-middle text-center">
+                                            <button
+                                                *ngIf="(employee.workingStatus == 'Plan quit' || employee.workingStatus == 'Plan pause') && isShowDeleteBtn()"
+                                                class="btn btn-danger btn-sm"
+                                                (click)="deletePlanQuitEmployee(employee)">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>

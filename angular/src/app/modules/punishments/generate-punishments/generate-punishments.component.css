@@ -1,0 +1,21 @@
+.center-flex{
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+::ng-deep th label.mat-checkbox-layout{
+    margin-bottom: 0px;
+}
+.btn-application{
+    padding: 12px 20px;
+}
+.fixTableHead{
+    max-height: 80vh !important;
+    overflow: auto;
+}
+@media (max-width: 1400px) {
+    .fixTableHead{
+        max-height: 65vh !important;
+        overflow: auto;
+    }
+  }

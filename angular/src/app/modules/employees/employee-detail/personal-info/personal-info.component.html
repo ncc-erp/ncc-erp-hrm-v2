@@ -1,0 +1,787 @@
+<form [formGroup]="formGroup" [ngClass]="{'view-mode':!isEdit}" [busy]="isLoading" *ngIf="isAllowViewTabPersonalInfo()">
+    <div class="row p-2 justify-content-end">
+        <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+            [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="menu">
+        </div>
+        <button *ngIf="isShowApproveBtn()" (click)="onApprove()" class="btn btn-success mr-2">
+            <i class="fa-solid fa-check mr-1"></i>Approve
+        </button>
+        <button *ngIf="isShowRejectBtn()" (click)="onReject()" class="btn btn-secondary mr-2">
+            <i class="fa-solid fa-xmark mr-1"></i>Reject
+        </button>
+        <button class="btn btn-warning mr-2"  [matMenuTriggerFor]="matMenuSyncData" *ngIf="isShowSyncDataToOtherTool()">
+                Sync to other tool
+        </button>
+        <mat-menu #matMenuSyncData = "matMenu" class="p-2">
+            <button class="mat-menu-item" (click)="reCreateUserToOtherTool()" *ngIf="isShowRecreateBtn()">
+                ReCreate
+            </button>
+            <button class="mat-menu-item" (click)="updateEmployeeToOtherTool()" *ngIf="isShowEditToOtherToolBtn()">
+                Update
+            </button>
+            <button class="mat-menu-item" (click)="toQuitJob()" *ngIf="isShowQuitJobBtn()">
+                Quit job
+            </button>
+        </mat-menu>
+        <button *ngIf="isShowChangeStatusBtn()" [matMenuTriggerFor]="menu"
+             class="btn btn-primary mr-2"  (click)="onChangeStatus()">Change working status
+        </button>
+        <mat-menu #menu="matMenu" class="p-2">
+
+            <button *ngIf="personalInfo.status != APP_ENUM.UserStatus.Working && isShowBackToWorkBtn() && !isEdit" class="mat-menu-item"
+            (click)="onChangeStatusToWorking()">
+                <span>Back to working</span>
+
+            </button>
+            <button *ngIf="personalInfo.status == APP_ENUM.UserStatus.Working && isShowPauseBtn()"
+             class="mat-menu-item"
+            (click)="onChangeStatusToPause()">
+                <span>Pause</span>
+            </button>
+            <button *ngIf="personalInfo.status != APP_ENUM.UserStatus.Quit && isShowQuitBtn()" class="mat-menu-item"
+            (click)="onChangeStatusToQuit()">
+                <span>Quit</span>
+            </button>
+            <button *ngIf="personalInfo.status == APP_ENUM.UserStatus.Working && isShowMaternityLeaveBtn()" class="mat-menu-item"
+            (click)="onChangeStatusToMaternityLeave()">
+                <span>Maternity leave</span>
+            </button>
+            <button *ngIf="personalInfo.status == APP_ENUM.UserStatus.MaternityLeave && isShowExtendMaternityLeaveBtn()" class="mat-menu-item"
+            (click)="onExtendMaterityLeave()">
+                <span>Extend maternity leave</span>
+            </button>
+            <button *ngIf="personalInfo.status == APP_ENUM.UserStatus.Pausing && isShowExtendPausingBtn()" class="mat-menu-item"
+            (click)="onExtendPausing()">
+                <span>Extend pausing</span>
+            </button>
+        </mat-menu>
+
+
+
+        <button *ngIf="isShowChangeBranchBtn()" class="btn btn-success mr-2" (click)="onChangeBranch()">Change branch</button>
+        <button type="button" (click)="onCancel()" class="btn btn-default mr-2">{{isEdit?"Cancel":"Back"}}</button>
+        <button type="button" *ngIf="!isEdit && isShowEditBtn() && !isUpdateRequestMode" (click)="onEdit()" class="btn btn-primary mr-2">Edit</button>
+        <button type="button" *ngIf="isEdit && !isUpdateRequestMode" (click)="onSave()"  [disabled]="formGroup.invalid || isLoading"
+            class="btn btn-primary">Save</button>
+    </div>
+    <div class="row pb-2">
+        <div class="col-lg-2 col-md-12">
+            <div class="mt-1 avatar-row">
+                <div class="avatar-wrapper rounded-circle position-relative" [ngClass]="">
+                    <img [src]="getAvatar(personalInfo)" class="input-avatar" alt="">
+                    <div *ngIf="isShowUploadAvatarBtn()" (click)="openUploadAvatar()" class="position-absolute upload-avatar">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10 col-md-12">
+            <div class="row">
+                <ng-container *ngIf="isEdit;else fullName">
+                    <div class="col-4">
+                        <div class="form-group required row align-items-center">
+                            <label class="col-form-label col-lg-3 col-md-5">
+                                Surname:
+                            </label>
+                            <div class="col-lg-9 col-md-7 d-flex align-items-center">
+                                <mat-form-field appearance="outline" class="common-input">
+                                    <input matInput name="surname" formControlName="surname" cdkFocusInitial #surnameEl
+                                        required>
+                                </mat-form-field>
+                                <abp-validation-summary [control]="formGroup.controls.surname" [controlEl]="surnameEl">
+                                </abp-validation-summary>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group required row">
+                            <label class="col-form-label col-lg-3 col-md-5">
+                                Name:
+                            </label>
+                            <div class="col-lg-9 col-md-7">
+                                <mat-form-field appearance="outline" class="common-input">
+                                    <input matInput name="name" formControlName="name" #nameEl required>
+                                </mat-form-field>
+                                <abp-validation-summary [control]="formGroup.controls.name" [controlEl]="nameEl">
+                                </abp-validation-summary>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group row">
+                            <label class="col-form-label col-lg-3 col-md-5">
+                                Sex:
+                            </label>
+                            <div class="col-lg-9 col-md-7">
+                                <mat-form-field appearance="outline">
+                                    <mat-select name="sex" formControlName="sex">
+                                        <mat-option *ngFor="let type of genderList" [value]="type.value">
+                                            {{type.key}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #fullName>
+                    <div class="mb-2">
+                        <div class="row">
+                            <h3 class="ml-2 pl-1">
+                                {{personalInfo.fullName}}
+                            </h3>
+                            <i class="ml-3 gender"
+                                [ngClass]="personalInfo.sex == APP_ENUM.Gender.Female ? 'fa-solid fa-venus mt-2 text-lg female text-pink' : 'fa-solid fa-mars mt-2 text-lg text-primary' "></i>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-12">
+                    <div class="form-group required row">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Email:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <span *ngIf="!isEdit || personalInfo.id" class="view-text">
+                                {{personalInfo.email}}
+                            </span>
+                            <mat-form-field *ngIf="isEdit && !personalInfo.id" appearance="outline" class="common-input">
+                                <input matInput name="email" formControlName="email" #emailEl required>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit && !personalInfo.id" [control]="formGroup.controls.email"
+                                [controlEl]="emailEl">
+                            </abp-validation-summary>
+                        </div>
+                    </div>
+
+                    <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Phone:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                                <input   matInput name="phone" formControlName="phone" #phoneNumberEl>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.phone"
+                                [controlEl]="phoneNumberEl">
+                            </abp-validation-summary>
+                            <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">{{personalInfo.phone}}</span>
+                        </div>
+                    </div>
+                    <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangePhone}">
+                        <div class="col-form-label col-lg-3 col-md-5">
+                            <span>Old value</span>
+                        </div>
+                        <div class="col-lg-9 col-md-7 old-value">
+                            <span  >{{personalInfo.phone}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Date of birth:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <mat-form-field *ngIf="isEdit || isUpdateRequestMode" class="example-full-width" appearance="outline">
+                                <input  matInput formControlName="birthday" [matDatepicker]="pickerBirthDay">
+                                <mat-datepicker-toggle matSuffix [for]="pickerBirthDay"></mat-datepicker-toggle>
+                                <mat-datepicker [dateClass]="dateClass" #pickerBirthDay></mat-datepicker>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.birthday"
+                                [controlEl]="dateOfBirthEl">
+                            </abp-validation-summary>
+                            <span class="view-text" *ngIf="!isEdit && !isUpdateRequestMode">{{personalInfo.birthday | DMYDateFormat}}</span>
+                        </div>
+                    </div>
+                    <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeBirthday}">
+                        <div class="col-form-label col-lg-3 col-md-5">
+                            <span>Old value</span>
+                        </div>
+                        <div class="col-lg-9 col-md-7 old-value">
+                            <span>{{personalInfo.birthday | date:"dd/MM/yyyy"}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="form-group row required">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Branch:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <ng-container *ngIf="isEdit && isAllowBranchStatus">
+                                <mat-form-field appearance="outline">
+                                    <mat-select formControlName="branchId" name="type" #branchIdEl>
+                                        <mat-option *ngFor="let type of branchList" [value]="type.value">
+                                            {{type.key}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <abp-validation-summary [control]="formGroup.controls.branchId"
+                                    [controlEl]="branchIdEl._elementRef.nativeElement">
+                                </abp-validation-summary>
+                            </ng-container>
+                            <span *ngIf="!isEdit || !isAllowBranchStatus" class="badge"
+                                [ngStyle]="{backgroundColor: personalInfo.branchInfo?.color}">
+                                {{personalInfo.branchInfo?.name}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group row required">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            User type:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <ng-container *ngIf="isAllowEdit">
+                                <ng-container *ngIf="isEdit">
+                                    <app-select-search class="w-100" [list]="userTypeList" #userTypeEl
+                                        [searchLabel]="'Find user type'" [defaultValue]="personalInfo.userType"
+                                        [selectControl]="formGroup.controls.userType"></app-select-search>
+                                    <abp-validation-summary [control]="formGroup.controls.userType"
+                                        [controlEl]="userTypeEl._elementRef.nativeElement">
+                                    </abp-validation-summary>
+                                </ng-container>
+                                <span *ngIf="!isEdit" class="badge"
+                                    [ngStyle]="{backgroundColor: personalInfo.userTypeInfo?.color}">
+                                    {{personalInfo.userTypeInfo?.name}}
+                                </span>
+                            </ng-container>
+                            <ng-container *ngIf="!isAllowEdit">
+                                <span class="badge" [ngStyle]="{backgroundColor: personalInfo.userTypeInfo?.color}">
+                                    {{personalInfo.userTypeInfo?.name}}
+                                </span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="form-group row required ">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Level:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <ng-container *ngIf="isAllowEdit">
+                                <ng-container *ngIf="isEdit">
+                                    <app-select-search class="w-100" [list]="levelList" #levelIdEl
+                                        [searchLabel]="'Find level'" [defaultValue]="personalInfo.levelId"
+                                        [selectControl]="formGroup.controls.levelId"></app-select-search>
+                                    <abp-validation-summary [control]="formGroup.controls.levelId"
+                                        [controlEl]="levelIdEl._elementRef.nativeElement">
+                                    </abp-validation-summary>
+                                </ng-container>
+                                <span *ngIf="!isEdit" class="badge"
+                                    [ngStyle]="{backgroundColor: personalInfo.levelInfo?.color}">
+                                    {{personalInfo.levelInfo?.name}}
+                                </span>
+                            </ng-container>
+                            <ng-container *ngIf="!isAllowEdit">
+                                <span class="badge" [ngStyle]="{backgroundColor: personalInfo.levelInfo?.color}">
+                                    {{personalInfo.levelInfo?.name}}
+                                </span>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="form-group row required">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Position:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <ng-container *ngIf="isAllowEdit">
+                                <ng-container *ngIf="isEdit">
+                                    <app-select-search class="w-100" [list]="jobPositionList" #jobPositionEl
+                                        [searchLabel]="'Find job position'" [defaultValue]="personalInfo.jobPositionId"
+                                        [selectControl]="formGroup.controls.jobPositionId"></app-select-search>
+                                    <abp-validation-summary [control]="formGroup.controls.jobPositionId"
+                                        [controlEl]="jobPositionEl._elementRef.nativeElement">
+                                    </abp-validation-summary>
+                                </ng-container>
+                                <span *ngIf="!isEdit"
+                                    [ngStyle]="{ backgroundColor:personalInfo.jobPositionInfo?.color }"
+                                    class="badge">{{personalInfo.jobPositionInfo?.name}}</span>
+                            </ng-container>
+                            <ng-container *ngIf="!isAllowEdit">
+                                <span [ngStyle]="{ backgroundColor:personalInfo.jobPositionInfo?.color }"
+                                    class="badge">{{personalInfo.jobPositionInfo?.name}}</span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Skill:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <app-multi-select-box class="w-100" *ngIf="isEdit" [list]="skillList"
+                                [searchPlaceholder]="'Find skill'" [multiControl]="formGroup.controls.skills">
+                            </app-multi-select-box>
+                            <abp-validation-summary *ngIf="!isEdit" [control]="formGroup.controls.skills"
+                                [controlEl]="skillsEl">
+                            </abp-validation-summary>
+                            <ng-container *ngIf="!isEdit">
+                                <span *ngFor="let item of employeeSkillList" class="badge bg-secondary mr-2 mt-1">
+                                    {{item}}
+                                </span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Team:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <app-multi-select-box class="w-100" *ngIf="isEdit" [list]="teamList"
+                                [searchPlaceholder]="'Find team'" [multiControl]="formGroup.controls.teams">
+                            </app-multi-select-box>
+                            <abp-validation-summary [control]="formGroup.controls.teams" [controlEl]="skillsEl">
+                            </abp-validation-summary>
+                            <ng-container *ngIf="!isEdit">
+                                <span class="badge badge-team mr-2 mt-1"
+                                    *ngFor="let item of employeeTeamList">{{item}}</span>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid pb-2">
+        <div class="row">
+            <h4 class="mr-1">Salary info</h4>
+            <div style="flex-grow: 1;">
+                <hr>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-lg-4 col-md-12">
+                <div class="form-group row">
+                    <label class="col-form-label col-5">
+                        Contract code:
+                    </label>
+                    <div class="col-7 d-flex align-items-center">
+                        <ng-container *ngIf="isAllowEdit">
+                            <mat-form-field *ngIf="isEdit" appearance="outline" class="common-input">
+                                <input matInput formControlName="contractCode">
+                            </mat-form-field>
+                            <span *ngIf="!isEdit" class="w-100 view-text">{{personalInfo.contractCode}}</span>
+                        </ng-container>
+                        <ng-container *ngIf="!isAllowEdit">
+                            <span  class="w-100 view-text">{{personalInfo.contractCode}}</span>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="form-group row required">
+                    <label class="col-form-label col-5">
+                        Current contract start date:
+                    </label>
+                    <div class="col-7">
+                        <ng-container *ngIf="isAllowEdit">
+                            <mat-form-field *ngIf="isEdit" class="example-full-width" appearance="outline">
+                                <input matInput formControlName="contractStartDate" [matDatepicker]="pickerStartDate">
+                                <mat-datepicker-toggle matSuffix [for]="pickerStartDate"></mat-datepicker-toggle>
+                                <mat-datepicker [dateClass]="dateClass" #pickerStartDate></mat-datepicker>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.contractStartDate"
+                                [controlEl]="contractStartDateEl">
+                            </abp-validation-summary>
+                            <span class="view-text" *ngIf="!isEdit">{{personalInfo.contractStartDate |
+                                DMYDateFormat}}</span>
+                        </ng-container>
+                        <ng-container *ngIf="!isAllowEdit">
+                            <span class="view-text">{{personalInfo.contractStartDate | DMYDateFormat}}</span>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-form-label col-5">
+                        Current contract end date:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit" class="example-full-width" appearance="outline">
+                            <input matInput formControlName="contractEndDate" [matDatepicker]="pickerEndDate">
+                            <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
+                            <mat-datepicker [dateClass]="dateClass" #pickerEndDate></mat-datepicker>
+                        </mat-form-field>
+                        <span class="view-text" *ngIf="!isEdit">{{personalInfo.contractEndDate |
+                            DMYDateFormat}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="form-group row required" *ngIf="isProbationaryStaff">
+                    <label class="col-form-label  col-5">
+                        Basic salary:
+                    </label>
+                    <div class="col-7">
+                        <ng-container *ngIf="isAllowEdit">
+                            <mat-form-field *ngIf="isEdit" appearance="outline" class="common-input">
+                                <input matInput mask="separator.0" thousandSeparator="," name="basicSalary"
+                                    formControlName="salary" #salaryEl>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.salary"
+                                [controlEl]="salaryEl">
+                            </abp-validation-summary>
+                            <span *ngIf="!isEdit && isShowBasicSalary"
+                                class="view-text text-bold">{{calculateBasicSalary(personalInfo.realSalary,
+                                personalInfo.probationPercentage) | currency:"VND":""}}</span>
+                        </ng-container>
+                        <ng-container *ngIf="!isAllowEdit">
+                                <span *ngIf="!isEdit && isShowBasicSalary" class="view-text text-bold">{{calculateBasicSalary(personalInfo.realSalary,
+                                personalInfo.probationPercentage) | currency:"VND":""}}</span>
+                                <span *ngIf="isEdit" class="view-text text-bold">{{calculateBasicSalary(personalInfo.realSalary,
+                                    personalInfo.probationPercentage) | currency:"VND":""}}</span>
+                        </ng-container>
+                        <span  style="cursor: pointer;"  *ngIf="!isEdit"
+                        title="More..."><span class="mr-2" *ngIf="!isShowBasicSalary"> ***** </span>
+                        <i *ngIf="!isShowBasicSalary" class="fa-solid fa-eye ml-2" (click)="isShowBasicSalary  = !isShowBasicSalary"></i>
+                        <i *ngIf="isShowBasicSalary" class="fa-solid fa-eye-slash ml-2" (click)="isShowBasicSalary  = !isShowBasicSalary"></i></span>
+                    </div>
+                </div>
+                <div class="form-group row required" *ngIf="isProbationaryStaff">
+                    <label class="col-form-label col-5">
+                        Probation percentage:
+                    </label>
+                    <div class="col-7">
+                        <ng-container *ngIf="isAllowEdit">
+                            <mat-form-field *ngIf="isEdit" appearance="outline">
+                                <input type="text" mask="percent" suffix="%" matInput name="probationPercentage"
+                                    formControlName="probationPercentage" #probationEl>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.probationPercentage"
+                                [controlEl]="probationEl">
+                            </abp-validation-summary>
+                            <span *ngIf="!isEdit && isShowProbation"
+                                class="view-text text-bold">{{personalInfo.probationPercentage}}%</span>
+                        </ng-container>
+                        <ng-container *ngIf="!isAllowEdit">
+                            <span *ngIf="!isEdit && isShowProbation" class="view-text text-bold">{{personalInfo.probationPercentage}}%</span>
+                            <span *ngIf="isEdit" class="view-text text-bold">{{personalInfo.probationPercentage}}%</span>
+                        </ng-container>
+                        <span  style="cursor: pointer;" *ngIf="!isEdit"
+                        title="More..."><span class="mr-2" *ngIf="!isShowProbation"> ***** </span>
+                        <i *ngIf="!isShowProbation" class="fa-solid fa-eye ml-2" (click)="isShowProbation  = !isShowProbation"></i>
+                        <i *ngIf="isShowProbation" class="fa-solid fa-eye-slash ml-2" (click)="isShowProbation  = !isShowProbation"></i>
+                    </span>
+                    </div>
+                </div>
+                <div class="form-group row required">
+                    <label class="col-form-label col-5">
+                        Real Salary:
+                    </label>
+                    <div class="col-7">
+                        <ng-container *ngIf="isAllowEdit">
+                            <mat-form-field *ngIf="isEdit" appearance="outline" class="common-input">
+                                <input matInput mask="separator.0" thousandSeparator="," name="realSalary"
+                                    formControlName="realSalary" #realSalaryEl>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.realSalary"
+                                [controlEl]="realSalaryEl">
+                            </abp-validation-summary>
+                            <span *ngIf="!isEdit && isShowRealSalary" class="text-danger text-bold view-text">{{ personalInfo.realSalary |
+                                currency:"VND":""}}</span>
+                        </ng-container>
+                        <ng-container *ngIf="!isAllowEdit">
+                            <span *ngIf="!isEdit && isShowRealSalary" class="text-danger text-bold view-text">{{ personalInfo.realSalary |
+                                currency:"VND":""}}</span>
+                            <span *ngIf="isEdit" class="text-danger text-bold view-text">{{ personalInfo.realSalary |
+                            currency:"VND":""}}</span>
+                        </ng-container>
+                        <span  style="cursor: pointer;" *ngIf="!isEdit"
+                        title="More..."><span class="mr-2" *ngIf="!isShowRealSalary"> ***** </span>
+                        <i *ngIf="!isShowRealSalary" class="fa-solid fa-eye ml-2" (click)="isShowRealSalary  = !isShowRealSalary"></i>
+                        <i *ngIf="isShowRealSalary" class="fa-solid fa-eye-slash ml-2" (click)="isShowRealSalary  = !isShowRealSalary"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="form-group row required">
+                    <label class="col-form-label col-5">
+                        Working status:
+                    </label>
+                    <div class="col-7">
+                        <ng-container *ngIf=" isEdit && isAllowWorkingStatus" >
+                            <mat-form-field  appearance="outline">
+                                <mat-select name="status" formControlName="status">
+                                    <mat-option *ngFor="let type of workingStatusList" [value]="type.value">
+                                        {{type.key}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </ng-container>
+                        <div class=" pt-1 pl-1" *ngIf="!isEdit || !isAllowWorkingStatus">
+                            <span
+                                [class]="APP_CONST.userStatus[personalInfo.status]?.class">{{APP_CONST.userStatus[personalInfo.status]?.name}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-5">
+                        Remaining leave day:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit" appearance="outline" class="common-input">
+                            <input matInput name="remainLeaveDay" formControlName="remainLeaveDay" #remainLeaveDayEl>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.remainLeaveDay"
+                            [controlEl]="remainLeaveDayEl">
+                        </abp-validation-summary>
+                        <span *ngIf="!isEdit" class="view-text">
+                            {{personalInfo.remainLeaveDay}}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group row required" *ngIf="isStaff && userId">
+                    <label class="col-form-label col-5">
+                        Is Staff Date:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit" class="example-full-width" appearance="outline">
+                            <input matInput formControlName="startWorkingDate" [matDatepicker]="pickerIsStaffDate">
+                            <mat-datepicker-toggle matSuffix [for]="pickerIsStaffDate"></mat-datepicker-toggle>
+                            <mat-datepicker [dateClass]="dateClass" #pickerIsStaffDate></mat-datepicker>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.startWorkingDate"
+                                [controlEl]="startWorkingDateEl">
+                            </abp-validation-summary>
+                        <span class="view-text" *ngIf="!isEdit">{{personalInfo.startWorkingDate |
+                            DMYDateFormat}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt-2 pb-4">
+        <div class="row">
+            <h4 class="mr-1">Other info</h4>
+            <hr style="flex-grow: 1;">
+        </div>
+        <div class="row pt-2">
+            <div class="col-lg-4 col-md-12">
+                <div class="form-group row"  [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Email cá nhân'" class="col-form-label col-5">
+                        Personal Email:
+                    </label>
+                    <div class="col-7">
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">
+                            {{personalInfo.personalEmail}}
+                        </span>
+                        <mat-form-field  *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <input matInput name="personalEmail" formControlName="personalEmail">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="form-group row"  [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Ngân hàng'" class="col-form-label col-5">
+                        Bank:
+                    </label>
+                    <div class="col-7">
+                        <ng-container *ngIf="isEdit || isUpdateRequestMode">
+                            <app-select-search class="w-100" [list]="bankList" #bankIdEl [searchLabel]="'Find bank'"
+                                [defaultValue]="personalInfo.bankId" [selectControl]="formGroup.controls.bankId">
+                            </app-select-search>
+                            <abp-validation-summary [control]="formGroup.controls.bankId"
+                                [controlEl]="bankIdEl._elementRef.nativeElement">
+                            </abp-validation-summary>
+                        </ng-container>
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">
+                            {{personalInfo.bank}}
+                        </span>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeBankId}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.bank}}</span>
+                    </div>
+                </div>
+                <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Số tài khoản ngân hàng'" class="col-form-label col-5">
+                        Bank account number:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline">
+                            <input matInput name="bankAccountNumber" formControlName="bankAccountNumber" >
+                        </mat-form-field>
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">{{personalInfo.bankAccountNumber}}</span>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeBankAccountNumber}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.bankAccountNumber}}</span>
+                    </div>
+                </div>
+                <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Mã số thuế'" class="col-form-label  col-5">
+                        Tax code:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline">
+                            <input matInput name="taxCode" formControlName="taxCode" #taxCode >
+                        </mat-form-field>
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">{{personalInfo.taxCode}}</span>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeTaxCode}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.taxCode}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="form-group row">
+                    <label [tooltip]="'Bảo hiểm'" class="col-form-label col-5">
+                        Insurance status:
+                    </label>
+                    <div class="col-7">
+                        <ng-container *ngIf="isEdit">
+                            <mat-form-field appearance="outline">
+                                <mat-select #insuranceStatusEl name="insuranceStatus" formControlName="insuranceStatus">
+                                    <mat-option *ngFor="let type of insuranceStatusList" [value]="type.value">
+                                        {{type.key}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <abp-validation-summary [control]="formGroup.controls.insuranceStatus"
+                                [controlEl]="insuranceStatusEl._elementRef.nativeElement">
+                            </abp-validation-summary>
+                        </ng-container>
+                        <span *ngIf="!isEdit && personalInfo.insuranceStatus"
+                            class="view-text">{{insuranceStatusString}}</span>
+                    </div>
+                </div>
+                <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Số CCCD/CMND'" class="col-form-label col-5">
+                        Identity:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <input matInput name="idCard" formControlName="idCard" #identityEl >
+                        </mat-form-field>
+                        <abp-validation-summary [control]="formGroup.controls.idCard" [controlEl]="identityEl">
+                        </abp-validation-summary>
+                        <span *ngIf="!isEdit && personalInfo.idCard && !isUpdateRequestMode" class="view-text">{{personalInfo.idCard}}</span>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeIdCard}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.idCard}}</span>
+                    </div>
+                </div>
+                <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Quê quán'" class="col-form-label col-5">
+                        Place of origin:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <textarea cdkTextareaAutosize matInput name="placeOfOrigin" formControlName="placeOfOrigin"
+                                #placeOfOriginEl></textarea>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.placeOfOrigin"
+                            [controlEl]="placeOfOriginEl">
+                        </abp-validation-summary>
+                        <span class="view-text" *ngIf="!isEdit && !isUpdateRequestMode">{{personalInfo.placeOfPermanent}}</span>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangePlaceOfPermanent}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.placeOfPermanent}}</span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Nơi thường trú'" class="col-form-label col-5">
+                        Place of residence:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <textarea cdkTextareaAutosize matInput name="placeOfResidence"
+                                formControlName="placeOfResidence" #placeOfResidenceEl></textarea>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.placeOfResidence"
+                            [controlEl]="placeOfResidenceEl">
+                        </abp-validation-summary>
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">{{personalInfo.address}}</span>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeAddress}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.address}}</span>
+                    </div>
+                </div>
+                <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Ngày cấp'" class="col-form-label col-5">
+                        Date of issue:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit || isUpdateRequestMode" class="example-full-width" appearance="outline">
+                            <input matInput formControlName="issuedOn" [matDatepicker]="picker">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker  [dateClass]="dateClass" #picker></mat-datepicker>
+                        </mat-form-field>
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">{{personalInfo.issuedOn | DMYDateFormat}}</span>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeIssuedOn}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.issuedOn | date:"dd/MM/yyyy"}}</span>
+                    </div>
+                </div>
+                <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Nơi cấp'" class="col-form-label col-5">
+                        Issued By:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <textarea cdkTextareaAutosize matInput name="placeOfIssue" formControlName="issuedBy"
+                                #placeOfIssueEl></textarea>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.issuedBy"
+                            [controlEl]="placeOfIssueEl">
+                        </abp-validation-summary>
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">{{personalInfo.issuedBy}}</span>
+                    </div>
+                </div>
+                <div class="row old-info mt-2" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeIssuedBy}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.issuedBy}}</span>
+                    </div>
+                </div>
+                <div *ngIf="isUpdateRequestMode || isEdit || !userId">
+                    <div *ngFor="let item of listIssuedBys">
+                      <div class="form-group row mt-2">
+                        <div class="col-10">
+                          <span>{{item.key}}</span>
+                        </div>
+                        <div class="col-2">
+                          <button type="button"  class="btn btn-primary" (click)="onPickIssuedBy(item.key)">Select</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</form>

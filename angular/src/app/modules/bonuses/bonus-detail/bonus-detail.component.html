@@ -1,0 +1,28 @@
+<section class="content px-4 pt-1">
+    <div class="breadcrumb">
+        <div class="mb-1">
+            <app-bread-crumb [listBreadCrumb]="listBreadCrumb">
+            </app-bread-crumb>&nbsp;[{{bonus.applyMonth | date:'MM/YYYY'}}]
+            <span [ngClass]="bonus.isActive | isActive:true">
+                {{bonus.isActive |isActive}}
+            </span>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row mb-4 card">
+            <div class="col-12 p-0">
+                <nav mat-tab-nav-bar>
+                    <a *ngIf="isAllowRoutingTabInfo()" [ngClass]="currentUrl.includes('bonus-information')?'active':''" mat-tab-link
+                        (click)="routingInformationTab()">
+                        Information
+                    </a>
+                    <a *ngIf="isAllowRoutingTabEmployee()" [ngClass]="currentUrl.includes('bonus-employee')?'active':''" mat-tab-link
+                        (click)="routingEmployeeTab()">
+                        Employees
+                    </a>
+                </nav>
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,61 @@
+<ng-container *ngIf="mailInfo">
+    <abp-modal-header *ngIf="showDialogHeader" [title]="title" (onCloseClick)="dialogRef.close()"></abp-modal-header>
+    <div class="p-3 background-card">
+        <div class="row"   *ngIf="isShowHeaderSendMail()">
+            <div class="col-6">
+                <div class="form-group row">
+                    <label class="col-2 col-form-label">
+                        To:
+                    </label>
+                    <div class="col-9">
+                        <input class="form-control" #emailAdress="ngModel" #emailEl [(ngModel)]="mailInfo.sendToEmail" required placeholder="Email Address">
+                        <abp-validation-summary [control]="emailAdress" [controlEl]="emailEl"></abp-validation-summary>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-2 col-form-label">
+                        Subject:
+                    </label>
+                    <div class="col-9">
+                        <input class="form-control" [(ngModel)]="mailInfo.subject" required placeholder="Subject">
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group row">
+                    <label class="col-2 col-form-label">
+                        Cc:
+                    </label>
+                    <div class="col-9 d-flex align-items-center">
+                        <ng-container *ngIf="mailInfo.cCs?.length">
+                            <div class="d-flex align-items-center">
+                              <ng-container
+                                *ngFor="let ccMail of mailInfo.cCs; let isLast = last"
+                              >
+                                {{ ccMail }}{{ isLast ? "" : ",&nbsp;" }}
+                              </ng-container>
+                            </div>
+                          </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class=" email-content bg-white">
+            <div [innerHtml]="sanitizer.bypassSecurityTrustHtml(mailInfo.bodyMessage)">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-action mr-2" [disabled]="cancelDisabled"
+            (click)="dialogRef.close()">
+            Close
+        </button>
+        <button *ngIf="showEditButton && isShowEditBtn()" (click)="editTemplate()" type="button" class="btn btn-primary btn-action"
+            [disabled]="saveDisabled">
+            Edit
+        </button>
+        <button *ngIf="isShowSendMailBtn()" type="submit" class="btn btn-primary btn-action" (click)="sendMail()" [disabled]="saveDisabled">
+            {{showEditButton ? 'Send Mail':'Test Send Mail' }}
+        </button>
+    </div>
+</ng-container>

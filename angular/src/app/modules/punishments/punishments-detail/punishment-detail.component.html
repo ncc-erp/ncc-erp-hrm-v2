@@ -1,0 +1,228 @@
+<div class="content px-4 pt-1">
+    <section class="header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-7">
+                    <div class="breadcrumb">
+                        <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                        <span class="mr-2" style="font-weight: 400;">&nbsp;[{{punishment.date | date: "MM/yyyy"}}] </span>
+                        <span [ngClass]="punishment.isActive | isActive:true" class="active">
+                            {{punishment.isActive |isActive}}
+                        </span>
+                    </div>
+                </div>
+                <div *ngIf="punishment.isActive" class="col-5 text-right mt-1 mb-2">
+                    <button *ngIf="isShowDownloadTemplateBtn()" class="btn btn-warning mt-2 mr-2">
+                        <i class="fa-solid fa-download mr-1"></i>
+                        <a href="assets/template/import-employee-to-punishment.xlsx" target="_blank" style="color: #555"
+                            download="import-employee-to-punishment.xlsx">Download Template</a>
+                    </button>
+                    <button *ngIf="isShowImportBtn()" class="btn btn-success mt-2 mr-2" [disabled]="isLoading"
+                        (click)="onImportFile()">
+                        <i class="fas fa-upload mr-1"></i>
+                        Import
+                    </button>
+                    <button *ngIf="isShowAddEmployeeBtn()" class="btn btn-primary mt-2" [disabled]="isLoading"
+                        (click)="onAddEmployee()">
+                        <i class="fa-solid fa-square-plus mr-1"></i>
+                        Add Employee
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="">
+                        <div class="row">
+                            <div class="col-8">
+                                <app-search [placeholder]="'Search by Name or Email'"
+                                    (onSearch)="onSearchEnter($event)">
+                                </app-search>
+                            </div>
+                            <div class="col-4">
+                                <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelectWithCondition" [dropdownData]="teamList"
+                                    [placeholder]="'Team'" [defaultValue]="defaultValue.team"
+                                    (onTableMultiSelectWithConditionFilter)="onTableMultiSelectWithConditionFilter($event);">
+                                </table-filter>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userTypeList"
+                                     [placeholder]="'User type'" 
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserType)">
+                                </table-filter>
+                            </div>
+                            <div class="col-2 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList" [placeholder]="'Branch'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                                </table-filter>
+                            </div>
+                            <div class="col-2 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="positionList"
+                                    [placeholder]="'Job position'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.JobPosition)">
+                                </table-filter>
+                            </div>
+                            <div class="col-2 mt-2">
+                                <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userLevelList"
+                                 [placeholder]="'User level'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserLevel)">
+                                </table-filter>
+                            </div>
+
+                            <div class="col-2 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="statusList" [placeholder]="'Status'"
+                                 (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Status)">
+                                </table-filter>
+                            </div>
+
+                            <div class="col-2 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="genderList"
+                                    [placeholder]="'Gender'" [defaultValue]="defaultValue.gender"
+                                    (onTableFilter)="onTableFilter( filterTypeEnum.Dropdown, $event, 'sex')">
+                                </table-filter>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="fixTableHead">
+                            <table class="table table-striped table-hover" [busy]="isLoading">
+                                <thead>
+                                    <th>#</th>
+                                    <th (click)="onSortChange('email')">Employee
+                                        <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th (click)="onSortChange('money')">Amount
+                                        <sortable [name]="'money'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th>Note</th>
+                                    <th (click)="onSortChange('updatedTime')">Updated Time
+                                        <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+
+                                    <th style="width: 200px" *ngIf="punishment.isActive">Action</th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let employee of punishmentEmployeeList| paginate: {
+                                        id: 'server',
+                                        itemsPerPage: pageSize,
+                                        currentPage: pageNumber,
+                                        totalItems: totalItems
+                                      }; let i =index ">
+                                        <td class="text-center">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                        <td class="align-middle">
+                                            <app-user-info 
+                                                [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                                [isAllowRouting]="isAllowViewTabPunishment()"
+                                                [link]="['/app/employees/list-employee/employee-detail/punishment']"
+                                                [queryParams]="{id:employee.employeeId}"
+                                                *ngIf="!employee.createMode" [userData]="{
+                                                id: employee.employeeId,
+                                                avatarFullPath: employee.avatarFullPath,
+                                                jobPositionInfo: employee.jobPositionInfo,
+                                                levelInfo: employee.levelInfo,
+                                                userTypeInfo: employee.userTypeInfo,
+                                                email: employee.email,
+                                                sex: employee.sex,
+                                                fullName: employee.fullName,
+                                                branchInfo: employee.branchInfo}">
+                                            </app-user-info>
+                                            <div class="form-group row required align-middle mb-0"
+                                                *ngIf="employee.createMode">
+                                                <mat-form-field class="w-100 mx-2 center-flex"
+                                                    appearance="outline">
+                                                    <mat-select (closed)="searchEmployee=''" name="projectEmployee"
+                                                        placeholder="select account *" [(ngModel)]="employee.employeeId" 
+                                                        #employeeInfo="ngModel"
+                                                        required>
+                                                        <mat-form-field class="w-100 px-3 "
+                                                            style="position: sticky; top: 0; z-index: 2; background-color: white;">
+                                                            <input matInput [(ngModel)]="searchEmployee"
+                                                                name="searchText" placeholder="Search"
+                                                                (keydown)="$event.stopPropagation()" #search>
+                                                                {{search.focus()}}
+                                                        </mat-form-field>
+                                                        <mat-option
+                                                            *ngFor="let em of employeeList | listFilter:'fullName': searchEmployee : 'email'"
+                                                            [value]="em.id">
+                                                            {{em.fullName}} - {{em.email}}
+                                                        </mat-option>
+                                                        <mat-option *ngIf="!employeeList.length">No data!</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                                <mat-error class="ml-2" *ngIf="employeeInfo.hasError('required') && employeeInfo.touched"
+                                                style="font-size: 13px;">
+                                                This field is required
+                                            </mat-error>  
+                                            </div>
+                                        </td>
+                                        <td class="text-right align-middle">
+                                            <div *ngIf="!employee.createMode && !employee.updateMode">
+                                                <b>{{employee.money|number:'1.0':'en-US'}}</b>
+                                            </div>
+                                            <div *ngIf="employee.createMode || employee.updateMode">
+                                                <mat-form-field class="w-100  center-flex" appearance="outline"
+                                                >
+                                                <input matInput name="money" [(ngModel)]="employee.money"
+                                                    placeholder="enter money*" [allowNegativeNumbers]="false"
+                                                    mask="separator" thousandSeparator="," min=0  (blur)="focusOut()"
+                                                    #money="ngModel" #moneyEl required>
+                                                    {{isFocusing?moneyEl.focus():''}}
+                                            </mat-form-field>
+                                            <abp-validation-summary [control]="money" [controlEl]="moneyEl">
+                                            </abp-validation-summary>
+                                            </div>
+                                            
+                                        </td>
+                                        <td class="align-middle">
+                                            <div *ngIf="!employee.createMode && !employee.updateMode"
+                                                style="word-wrap: break-word; white-space: pre-line; min-width: 300px;">
+                                                {{employee.note}}</div>
+                                            <mat-form-field class="w-100" appearance="outline"
+                                                *ngIf="employee.createMode || employee.updateMode">
+                                                <textarea cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+                                                    name="pmNote" class="w-100 mt-2" rows="2"
+                                                    [(ngModel)]="employee.note" placeholder="leave a comment" [(value)]="punishment.name"
+                                                    name="solution" matInput></textarea>
+                                            </mat-form-field>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <div *ngIf="!employee.createMode || !employee.updateMode">
+                                                <p class="mt-0 mb-0">{{employee.updatedTime | date:"dd/MM/YYYY HH:mm"}}</p>
+                                                <p *ngIf="employee.updatedUser">by <b>{{employee.updatedUser}}</b></p>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle" *ngIf="punishment.isActive">
+                                            <div *ngIf="!employee.createMode && !employee.updateMode">
+                                                <app-edit-button 
+                                                    *ngIf="isShowEditBtn()" [isDisable]="isLoading || isAddingEmployee || isEditingEmployee || employee.updateMode" (update)="onUpdate(employee)">
+                                                </app-edit-button>
+                                                <app-delete-button 
+                                                    *ngIf="isShowDeleteBtn()" [isDisable]="isLoading || isAddingEmployee || isEditingEmployee || employee.updateMode" (delete)="onDelete(employee)"></app-delete-button>
+                                            </div>
+                                            <div *ngIf="employee.createMode || employee.updateMode">
+                                                <app-save-cancel-button [isDisable]="!employee.employeeId || !employee.money || isLoading" (save)="onSave(employee)" (cancel)="onCancel(employee, i)"></app-save-cancel-button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

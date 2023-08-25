@@ -1,0 +1,7 @@
+::ng-deep a.active{
+    border-bottom: 2px solid #468990;
+}
+
+a{
+    font-weight: 700;
+}

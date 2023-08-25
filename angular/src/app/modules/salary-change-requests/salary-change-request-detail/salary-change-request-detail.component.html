@@ -1,0 +1,188 @@
+<div class="px-4">
+    <div class="breadcrumb">
+        <div class="w-100 d-flex align-items-center justify-content-between">
+            <div class="col-6 pl-0">
+                <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+            </div>
+            <div class="col-6 text-right pr-0">
+                <ng-container *ngIf="salaryChangeRequestInfo?.id">
+                    <button (click)='update(ERequestStatus.Pending)'
+                        *ngIf="isShowSendBtn() && (salaryChangeRequestInfo.status == ERequestStatus.New || salaryChangeRequestInfo.status == ERequestStatus.Rejected)"
+                        class="btn btn-warning ml-2">
+                        Send
+                    </button>
+                    <button (click)='update(ERequestStatus.Approved)'
+                        *ngIf="isShowApproveBtn() && (salaryChangeRequestInfo.status == ERequestStatus.Pending || salaryChangeRequestInfo.status == ERequestStatus.Rejected)"
+                        class="btn btn-success ml-2">
+                        Approve
+                    </button>
+                    <button (click)='update(ERequestStatus.Rejected)'
+                        *ngIf="isShowRejectBtn() && (salaryChangeRequestInfo.status == ERequestStatus.Pending || salaryChangeRequestInfo.status == ERequestStatus.Approved)"
+                        class="btn btn-danger ml-2">
+                        Reject
+                    </button>
+                    <button (click)='update(ERequestStatus.Executed)'
+                        *ngIf=" isShowExecuteBtn() && (salaryChangeRequestInfo.status == ERequestStatus.Approved)" class="btn bg-indigo ml-1">
+                        Execute
+                    </button>
+                </ng-container>
+                <button *ngIf="isShowImportCheckpoint()" class="btn btn-primary ml-2" (click)="importCheckpoint()"> <i class="fas fa-upload mr-1"></i>Import checkpoint</button>
+                <button  *ngIf="isShowDownloadTemplate()" class="btn btn-primary ml-2" (click)="onDownloadTemps()">
+                    <i class="fa-solid fa-download mr-1"></i>
+                    Download Template
+                </button>
+                <button class="btn btn-primary ml-2" (click)="onSendAllMail()" *ngIf="isShowSendAllMailBtn()">
+                    <i class="fas fa-envelope fa-lg mr-2"></i>
+                    Send all mail
+                </button>
+                <a [routerLink]="['/app','salary-change-requests','list-request','request-detail','request-employee']"
+                    [queryParams]="{RequestId: salaryChangeRequestInfo.id, ViewMode:ViewMode.Create}"
+                    *ngIf="(salaryChangeRequestInfo?.status == ERequestStatus.New || salaryChangeRequestInfo?.status == ERequestStatus.Rejected) && isShowAddBtn()"
+                    class="btn btn-primary ml-2">
+                    <i class="fas fa-plus"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex" style="flex-wrap: wrap;">
+                <div class="filter-container col-lg-4 pl-0 col-md-12">
+                    <div class="w-100 mb-1">
+                        <app-search [seachText]="searchText" [placeholder]="'Search by Email or Name'" (onSearch)="onSearchEnter($event)"></app-search>
+                    </div>
+                </div>
+                <div class="filter-container col-lg-2 col-md-12">
+                    <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userTypeList"
+                        [defaultValue]="defaultValue.userType" [placeholder]="'To User type'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.ToUserType)">
+                    </table-filter>
+                </div>
+                <div class="filter-container col-lg-2 col-md-12">
+                    <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="levelList"
+                        [defaultValue]="defaultValue.level" [placeholder]="'To Level'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.ToLevel)">
+                    </table-filter>
+                </div>
+                <div class="filter-container col-lg-2 col-md-12">
+                    <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="jobPositionList"
+                        [defaultValue]="defaultValue.position" [placeholder]="'To Position'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.ToJobPosition)">
+                    </table-filter>
+                </div>
+                <div class="filter-container col-lg-2 pr-0 col-md-12">
+                    <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList"
+                        [defaultValue]="defaultValue.branch" [placeholder]="'Branch'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                    </table-filter>
+                </div>
+            </div>
+        </div>
+        <div id="listEmployee">
+
+            <div class="card-body pb-1">
+                <div class="table-responsive">
+                    <div class="fixTableHead">
+                        <table class="table table-striped table-hover" [busy]="isLoading">
+                            <thead>
+                                <tr>
+                                    <th class="col-stt">No</th>
+                                    <th class="col-employee">
+                                        Employee
+                                        <sortable [name]="'email'" [sortProperty]="sortProperty" [sortDirection]="sortDirection" (click)="onSortChange('email')"></sortable>
+                                    </th>
+                                    <th class="col-from">From</th>
+                                    <th class="col-to">To</th>
+                                    <th class="col-applyDate">
+                                        Apply Date
+                                        <sortable [name]="'applyDate'" [sortProperty]="sortProperty" [sortDirection]="sortDirection" (click)="onSortChange('applyDate')"></sortable>
+                                    </th>
+                                    <th class="col-contract">Contract Info</th>
+                                    <th class="col-updatedTime">Updated time</th>
+                                    <th class="col-note">Note</th>
+                                    <th class="col-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let employee of listRequestEmployee | paginate: {
+                                    id: 'server',
+                                    itemsPerPage: pageSize,
+                                    currentPage: pageNumber,
+                                    totalItems: totalItems
+                                  }; let i =index">
+                                    <td class="text-center">{{i+1}}</td>
+                                    <td class="col-employee">
+                                        <app-user-info
+                                        [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                        [isAllowRouting]="isAllowRoutingDetail()"
+                                        [link]="['/app/salary-change-requests/list-request/request-detail/request-employee']"
+                                            [queryParams]="{RequestId: requestId, RequestEmployeeId: employee.id, ViewMode:ViewMode.View}"
+                                            [userData]="{
+                                                id: employee.employeeId,
+                                                fullName: employee.fullName,
+                                                avatarFullPath: employee.avatarFullPath,
+                                                userTypeInfo: employee.userTypeInfo,
+                                                levelInfo: employee.levelInfo,
+                                                jobPositionInfo: employee.jobPositionInfo,
+                                                email: employee.email,
+                                                branchInfo: employee.branchInfo,
+                                                sex: employee.sex
+                                            }">
+                                        </app-user-info>
+                                    </td>
+                                    <td class="">
+                                        - {{employee.fromUserTypeName}}<br>
+                                        - {{employee.levelName}}<br>
+                                        - {{employee.salary | shortMoney}}<br>
+                                    </td>
+                                    <td class="">
+                                        - {{employee.toUserTypeName}}<br>
+                                        - {{employee.toLevelName}}<br>
+                                        - {{employee.toSalary | shortMoney}}
+                                    </td>
+                                    <td class="text-center col-applyDate">{{employee.applyDate | DMYDateFormat}}</td>
+                                    <td class="text-center col-contract">
+                                            <ng-container *ngIf="employee.contractCode">
+                                            <a class="hyperlink" [routerLink]="['/app','employees','list-employee','employee-detail','contract']"
+                                                [queryParams]="{id:employee.employeeId}"
+                                            >
+                                                {{employee.contractCode}}</a><br>
+                                                {{employee.applyDate | DMYDateFormat}} <ng-container
+                                                *ngIf="employee.contractEndDate">
+                                                to {{employee.contractEndDate |
+                                                DMYDateFormat}}
+                                            </ng-container>
+                                        </ng-container>
+                                    </td>
+                                    <td class="text-center">
+                                        {{employee.updatedTime | dmyHmDateFormat}}<br>
+                                        by <b>{{employee.updatedUser}}</b>
+                                    </td>
+                                    <td class="col-note">
+                                        {{employee.note}}
+                                    </td>
+                                    <td class="text-center">
+                                        <button [matMenuTriggerFor]="menu" class="btn" [isDisable]=" isLoading  || isAddingEmployee || isEditingEmployee">
+                                            <i class="fas fa-bars fa-lg"></i>
+                                        </button>
+                                        <mat-menu #menu="matMenu">
+                                            <button *ngIf="(salaryChangeRequestInfo?.status == ERequestStatus.New || salaryChangeRequestInfo?.status == ERequestStatus.Rejected) && isShowDeleteBtn()"
+                                                (click)="delete(employee)" class="mat-menu-item">
+                                                <i class="fa-solid fa-trash-can mr-2"></i>
+                                            Delete
+                                            </button>
+                                            <button class="mat-menu-item" *ngIf="isShowSendMailBtn()" (click)="onSendMail(employee.id)">
+                                                <i class="fas fa-envelope fa-lg mr-2"></i>
+                                                Send mail
+                                            </button>
+                                        </mat-menu>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <pagination-control [pageSize]="pageSizeType" [totalItems]="totalItems"
+                    (pageAction)="pageControlActions($event)">
+                </pagination-control>
+            </div>
+        </div>
+    </div>
+</div>

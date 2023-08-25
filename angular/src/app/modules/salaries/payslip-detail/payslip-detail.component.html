@@ -1,0 +1,48 @@
+<div class="px-4">
+    <div class="container-fluid">
+        <div class="breadcrumb">
+            <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+        </div>
+    </div>
+    <div class="container-fluid p-0">
+        <div class="row m-0 card">
+            <div class="col-12 p-0">
+                <nav mat-tab-nav-bar>
+                    <a *ngIf="isViewTabSalary()" [routerLink]="['salary']"
+                        [queryParams]="{ employeeId: employeeId, id: payslipId, payrollId: payrollId, status: payrollStatus }"
+                        routerLinkActive="active" mat-tab-link>
+                        Salary
+                    </a>
+                    <a *ngIf="employeeId && isViewTabDebt()" [routerLink]="['debt']"
+                        [queryParams]="{ employeeId: employeeId, id : payslipId, payrollId: payrollId, status: payrollStatus  }"
+                        routerLinkActive="active" mat-tab-link>
+                        Debt
+                    </a>
+                    <a *ngIf="employeeId && isViewTabBenefit()" [routerLink]="['benefit']"
+                        [queryParams]="{ employeeId: employeeId, id : payslipId,payrollId: payrollId, status: payrollStatus  }"
+                        routerLinkActive="active" mat-tab-link>
+                        Benefit
+                    </a>
+                    <a *ngIf="employeeId && isViewTabBonus()" [routerLink]="['bonus']"
+                        [queryParams]="{ employeeId: employeeId , id : payslipId, payrollId: payrollId, status: payrollStatus }"
+                        routerLinkActive="active" mat-tab-link>
+                        Bonus
+                    </a>
+                    <a *ngIf="employeeId && isViewTabPunishment()" [routerLink]="['punishment']"
+                        [queryParams]="{ employeeId: employeeId, id : payslipId, payrollId: payrollId, status: payrollStatus }"
+                        routerLinkActive="active" mat-tab-link>
+                        Punishment
+                    </a>
+                    <a *ngIf="isViewTabPayslipPreview()" [routerLink]="['payslip-preview']"
+                        [queryParams]="{ employeeId: employeeId, id : payslipId, payrollId: payrollId, status: payrollStatus  }"
+                        routerLinkActive="active" mat-tab-link>
+                        Payslip Preview
+                    </a>
+                </nav>
+                <div class="pb-0">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

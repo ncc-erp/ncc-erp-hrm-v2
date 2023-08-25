@@ -1,0 +1,22 @@
+<div class="row mt-2 w-100">
+    <div class="col-5 text-sm-left text-center d-flex align-items-center pb-2">
+        <button class="btn btn-secondary" (click)="onRefresh()">
+            <i class="fas fa-redo-alt"></i>
+        </button>
+        <mat-form-field style="width: 20%;margin-left: 20px;" appearance="outline">
+            <mat-label>Number items</mat-label>
+            <mat-select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeSelect()">
+                <mat-option *ngFor="let option of pagesizeOption" [value]="option">
+                    {{option}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="col-2 d-flex align-items-center pb-2">
+        Total items: {{totalItems}}
+    </div>
+    <div class="col-5 d-flex justify-content-end">
+        <abp-pagination-controls [id]="id ? id : 'server'" (pageChange)="onPageSelect($event)">
+        </abp-pagination-controls>
+    </div>
+</div>

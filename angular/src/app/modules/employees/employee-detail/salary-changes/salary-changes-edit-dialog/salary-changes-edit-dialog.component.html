@@ -1,0 +1,162 @@
+<abp-modal-header [title]="'Edit Salary History'" (onCloseClick)="dialogRef.close()">
+</abp-modal-header>
+<form novalidate #form="ngForm" autocomplete="off">
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Change type
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="type" [(ngModel)]="updateSalaryHistory.type" required #type="ngModel" #typeEl>
+                        <mat-option *ngFor="let item of changeTypeList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="type" [controlEl]="typeEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    From Salary
+                </label>
+            </div>
+            <div class="col-9">
+                <input class="form-control" name="fromSalary" type="text" mask="separator.0" thousandSeparator=","
+                    [(ngModel)]="updateSalaryHistory.fromSalary" required #fromSalary="ngModel" #fromSalaryEl />
+                <abp-validation-summary [control]="fromSalary" [controlEl]="fromSalaryEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    To Salary
+                </label>
+            </div>
+            <div class="col-9">
+                <input class="form-control" name="toSalary" type="text" mask="separator.0" thousandSeparator=","
+                    [(ngModel)]="updateSalaryHistory.toSalary" required  #toSalary="ngModel" #toSalaryEl/>
+                    <abp-validation-summary [control]="toSalary" [controlEl]="toSalaryEl">
+                    </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Apply Date
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <input matInput [(ngModel)]="updateSalaryHistory.applyDate" [matDatepicker]="picker"
+                        name="contractEndDate" required #contractEndDate="ngModel" #contractEndDateEl>
+                    <mat-datepicker-toggle matSuffix [for]="picker">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+                <abp-validation-summary [control]="contractEndDate"
+                    [controlEl]="contractEndDateEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    From Usertype
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="fromUserType" [(ngModel)]="updateSalaryHistory.fromUserType" required
+                        #fromUserType="ngModel" #fromUserTypeEl>
+                        <mat-option *ngFor="let item of userTypeList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="fromUserType" [controlEl]="fromUserTypeEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    To Usertype
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="toUserType" [(ngModel)]="updateSalaryHistory.toUserType" required
+                        #toUserType="ngModel" #toUserTypeEl>
+                        <mat-option *ngFor="let item of userTypeList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="toUserType" [controlEl]="toUserTypeEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    From Level
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="fromLevel" [(ngModel)]="updateSalaryHistory.fromLevelId" #fromLevelId="ngModel" #fromLevelIdEl required>
+                        <mat-option *ngFor="let item of levelList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="toUserType"
+                    [controlEl]="fromLevelIdEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    To Level
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="toLevel" [(ngModel)]="updateSalaryHistory.toLevelId" required #toLevelId="ngModel" #toLevelIdEl>
+                        <mat-option *ngFor="let item of levelList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="toLevelId"
+                    [controlEl]="toLevelIdEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <div class="col-form-label col-3">
+                <label>
+                    Note
+                </label>
+            </div>
+            <div class="col-9">
+                <textarea class="form-control" name="note" [(ngModel)]="updateSalaryHistory.note"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary ml-2" (click)="dialogRef.close()">
+            Cancel
+        </button>
+        <button type="button" class="btn btn-primary" [disabled]="form.invalid" (click)="onSave()">Save</button>
+    </div>
+</form>

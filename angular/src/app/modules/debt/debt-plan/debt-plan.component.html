@@ -1,0 +1,107 @@
+<div class="d-flex col-12 p-0">
+    <div class="col-9 p-0">
+        <h4>Payment Plan (<span class="text-primary">{{totalDebtPlan | currency:'VND':''}} VND</span>)</h4>
+        <p></p>
+    </div>
+    <div class="col-3 p-0 text-right">
+        <button (click)="addNewPlan()" *ngIf="debtStatus == EDebtStatus.Inprogress && isShowAddPaymentPlanBtn()"
+            class="btn btn-sm btn-primary">
+            <i class="fa-solid text-white fa-plus"></i>
+        </button>
+    </div>
+</div>
+<div class="table-responsive">
+    <div class="">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="col-stt">#</th>
+                    <th class="col-date">Date</th>
+                    <th class="">Money</th>
+                    <th class="col-updateTime">Updated time</th>
+                    <th class="col-note">Note</th>
+                    <th class="col-action">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of debtPlanList;let i = index">
+                    <ng-container *ngIf="!item.isEdit;else editTemp">
+                        <td class="text-center">{{i + 1}}</td>
+                        <td class="text-center col-date">
+                            {{item.displayDate}}
+                        </td>
+                        <td class="text-right"><strong>{{item.money | currency: 'VND':''}}</strong></td>
+                        <td class="col-updateTime text-center">
+                            <span *ngIf="item.updatedUser;else creatorUser">
+                                {{item.updatedTime | date:"dd/MM/yyyy hh:mm"}}<br>by
+                                <strong>{{item.updatedUser}}</strong>
+                            </span>
+                            <ng-template #creatorUser>
+                                <span>
+                                    {{item.creationTime | date:"dd/MM/yyyy hh:mm"}}<br>by
+                                    <strong>{{item.creatorUser}}</strong>
+                                </span>
+                            </ng-template>
+                        </td>
+                        <td class="col-note">{{item.note}}</td>
+                        <td class="text-center align-middle col-action">
+                            <ng-container *ngIf="debtStatus == EDebtStatus.Inprogress && isShowEditPaymentPlanBtn()">
+                                <button [disabled]="isLoading || currentDebtPlan?.date" (click)="onEdit(item)"
+                                    class="btn btn-sm btn-secondary mr-2">Edit</button>
+                                <button *ngIf="isShowDeletePaymentPlanBtn()" [disabled]="isLoading" (click)="onDelete(item.id)" class="btn btn-sm btn-danger">Delete</button>
+                            </ng-container>
+                        </td>
+                    </ng-container>
+                    <ng-template #editTemp>
+                        <td class="text-center col-stt">{{i+1}}</td>
+                        <td class="text-center col-date">
+                            <span *ngIf="item.id;else editDate">{{item.displayDate}}</span>
+                            <ng-template #editDate>
+                                <mat-form-field appearance="outline">
+                                    <input matInput class="date" [matDatepicker]="dp" [(ngModel)]="item.date" required>
+                                    <mat-datepicker-toggle matSuffix [for]="dp">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #dp></mat-datepicker>
+                                </mat-form-field>
+                            </ng-template>
+                        </td>
+                        <td class="text-right col-money">
+                            <mat-form-field appearance="outline">
+                                <input matInput type='text' mask="separator" thousandSeparator=","
+                                    [(ngModel)]="item.money" required>
+                            </mat-form-field>
+                        </td>
+                        <td class="text-center">
+                            <ng-container *ngIf="item.id">
+                                <span *ngIf="item.updatedUser;else creatorUser">
+                                    {{item.updatedTime | date:"dd/MM/yyyy hh:mm"}}<br>by
+                                    <strong>{{item.updatedUser}}</strong>
+                                </span>
+                                <ng-template #creatorUser>
+                                    <span>
+                                        {{item.creationTime | date:"dd/MM/yyyy hh:mm"}}<br>by
+                                        <strong>{{item.creatorUser}}</strong>
+                                    </span>
+                                </ng-template>
+                            </ng-container>
+                        </td>
+                        <td class="col-note">
+                            <mat-form-field appearance="outline">
+                                <textarea matInput cdkTextareaAutosize [(ngModel)]="item.note"></textarea>
+                            </mat-form-field>
+                        </td>
+                        <td class="text-center align-middle col-action">
+                            <button (click)="onSave(item)" [disabled]="!item.money || !item.date || isLoading"
+                                class="btn btn-accept">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                            <button (click)="onCancel(i, item)" class="btn btn-cancel">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </td>
+                    </ng-template>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,251 @@
+<div class="px-3 pt-2" *ngIf="isAllowRoutingTabEmployee()">
+    <section>
+        <div class="container-fluid">
+            <div>
+                <div class=" px-0">
+                    <div class="row justify-content-between">
+                        <div class="col-5">
+                            <app-search [placeholder]="'Search by Name or Email'" (onSearch)="onSearchEnter($event)">
+                            </app-search>
+                            <div class="">
+                                <div *ngIf="isActive">
+                                    <button class="btn btn-success mt-2 mr-2" *ngIf="isShowQuickAddBtn()"
+                                        [disabled]="isEditingEmployee || isAddingEmployee" (click)="onQuickAdd()">
+                                        <i class="fa-solid fa-plus mr-1"></i>
+                                        Quick Add
+                                    </button>
+                                    <button class="btn btn-success mt-2  mr-2" *ngIf="isShowAddBtn()"
+                                        [disabled]="isEditingEmployee || isAddingEmployee"
+                                        (click)="openAddEmployeeDialog()">
+                                        <i class="fa-solid fa-plus mr-1"></i>Add
+                                    </button>
+                                    <ng-container *ngIf="benefitType != APP_ENUM.BenefitType.CheDoChung">
+                                        <button class="btn btn-secondary mt-2 mr-2" *ngIf="isShowUpdateAllStartDateBtn()"
+                                        [disabled]="isEditingEmployee || isAddingEmployee" (click)="updateStartDate()">
+                                        <i class="fa-solid fa-pen-to-square mr-1"></i>Update all start date
+                                        </button>
+                                        <button class="btn btn-secondary mt-2 mr-2" *ngIf="isShowUpdateAllEndDateBtn()"
+                                            [disabled]="isEditingEmployee || isAddingEmployee" (click)="updateEndDate()">
+                                            <i class="fa-solid fa-pen-to-square mr-1"></i>Update all end date
+                                        </button>
+                                    </ng-container>                              
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7 row">
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userTypeList"
+                                     [placeholder]="'User type'" 
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserType)">
+                                </table-filter>
+                            </div>
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList" [placeholder]="'Branch'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                                </table-filter>
+                            </div>
+
+                            <div class="col-3">
+                                <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userLevelList"
+                                 [placeholder]="'User level'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserLevel)">
+                                </table-filter>
+                            </div>
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="positionList"
+                                    [placeholder]="'Job position'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.JobPosition)">
+                                </table-filter>
+                            </div>
+
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="statusList" [placeholder]="'Status'"
+                                 (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Status)">
+                                </table-filter>
+                            </div>
+
+                            <div class="col-3">
+                                <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="genderList"
+                                    [placeholder]="'Gender'" [defaultValue]="defaultValue.gender"
+                                    (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown,$event, 'sex')">
+                                </table-filter>
+                            </div>
+                            <div class="col-6">
+                                <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelectWithCondition" [dropdownData]="teamList"
+                                    [placeholder]="'Team'" [defaultValue]="defaultValue.team"
+                                    (onTableMultiSelectWithConditionFilter)="onTableMultiSelectWithConditionFilter($event);">
+                                </table-filter>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0">
+                    <div class="table-responsive">
+                        <div class="fixedTable">
+                            <table class="table table-striped table-hover" [busy]="isLoading">
+                                <thead>
+                                    <th class="stt">#</th>
+                                    <th class="pointer" (click)="onSortChange('email')">Employee
+                                        <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th class="pointer col-status" (click)="onSortChange('status')">
+                                        Working status
+                                        <sortable [name]="'status'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th class="pointer" style="width: 200px;"
+                                        *ngIf="benefit.type != APP_ENUM.BenefitType.CheDoChung"
+                                        (click)="onSortChange('startDate')">Start date
+                                        <sortable [name]="'startDate'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th class="pointer" style="width: 200px;"
+                                        *ngIf="benefit.type != APP_ENUM.BenefitType.CheDoChung"
+                                        (click)="onSortChange('endDate')">End date
+                                        <sortable [name]="'endDate'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th style="width: 180px;" class="pointer" (click)="onSortChange('updatedTime')">
+                                        Updated time
+                                        <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                    </th>
+                                    <th *ngIf="isActive" style="width: 170px;">Action</th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let employee of listBenefitEmployee| paginate: {
+                                        id: 'server',
+                                        itemsPerPage: pageSize,
+                                        currentPage: pageNumber,
+                                        totalItems: totalItems
+                                      }; let i =index ">
+                                        <td class="text-center align-middle">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                        <td class="align-middle">
+                                            <app-user-info 
+                                            [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                            [isAllowRouting]="isAllowViewTabBenefit()"
+                                            [link]="['/app/employees/list-employee/employee-detail/benefit']"
+                                            [queryParams]="{id:employee.employeeId}"
+                                            *ngIf="!employee.createMode || isEditingEmployee" [userData]="{
+                                                    id: employee.employeeId,
+                                                    avatarFullPath: employee.avatarFullPath,
+                                                    jobPositionInfo: employee.jobPositionInfo,
+                                                    levelInfo: employee.levelInfo,
+                                                    userTypeInfo: employee.userTypeInfo,
+                                                    email: employee.email,
+                                                    sex: employee.sex,
+                                                    fullName: employee.fullName,
+                                                    branchInfo: employee.branchInfo
+                                                }"></app-user-info>
+                                            <div class="form-group row required align-middle"
+                                                *ngIf="employee.createMode && !isEditingEmployee">
+                                                <mat-form-field class="w-100 mx-2 mt-3 center-flex"
+                                                    appearance="outline">
+                                                    <mat-select (closed)="searchEmployee=''" name="projectEmployee"
+                                                        placeholder="select account *" [(ngModel)]="employee.employeeId" #employeeId="ngModel" #employeeIdEl
+                                                        required>
+                                                        <mat-option>
+                                                            <ngx-mat-select-search cdkFocusInitial noEntriesFoundLabel="No matching item found" [placeholderLabel]="'Search Employee'" [(ngModel)]="searchEmployee"></ngx-mat-select-search>
+                                                        </mat-option>                                                       
+                                                        <mat-option
+                                                            *ngFor="let em of employeeList | listFilter:'fullName': searchEmployee : 'email'"
+                                                            [value]="em.id">
+                                                            {{em.fullName}} - {{em.email}}
+                                                        </mat-option>
+                                                        <mat-option *ngIf="!employeeList.length">No data!</mat-option>
+                                                    </mat-select>
+                                                    <mat-error class="mt-3">This field is required</mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div *ngIf="employee.workingStatus">
+                                                <span [ngClass]="APP_CONST.userStatus[employee?.workingStatus?.status]?.class">{{APP_CONST.userStatus[employee?.workingStatus?.status]?.name}}</span><br>
+                                                <span>{{employee.workingStatus?.dateAt | date:'dd/MM/yyyy'}}</span> 
+                                            </div>
+                                            <span *ngIf="!employee.workingStatus"
+                                                [ngClass]="APP_CONST.userStatus[employee?.status]?.class">{{APP_CONST.userStatus[employee?.status]?.name}}</span>
+                                        </td>
+                                        <td *ngIf="benefit.type != APP_ENUM.BenefitType.CheDoChung"
+                                            class="text-center align-middle">
+                                            <div *ngIf="!employee.createMode">{{employee.startDate |date:'dd/MM/yyyy'}}
+                                            </div>
+                                            <mat-form-field class="w-100" *ngIf="employee.createMode"
+                                                appearance="outline">
+                                                <mat-label>Choose a date</mat-label>
+                                                <input matInput [matDatepicker]="picker" name="startDate"
+                                                    [(ngModel)]="employee.startDate" #startDate="ngModel" #startDateEl
+                                                    required>
+                                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                                <mat-datepicker #picker></mat-datepicker>
+                                                <mat-error class="mt-3">Invalid start date</mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                        <td *ngIf="benefit.type != APP_ENUM.BenefitType.CheDoChung"
+                                            class="text-center align-middle">
+                                            <div *ngIf="!employee.createMode">{{employee.endDate |date:'dd/MM/yyyy'}}
+                                            </div>
+                                            <mat-form-field class="w-100" *ngIf="employee.createMode"
+                                                appearance="outline">
+                                                <mat-label>Choose a date</mat-label>
+                                                <input matInput [matDatepicker]="pickerEndDate" name="endDate"
+                                                    #endDate="ngModel" [(ngModel)]="employee.endDate" #endDateEl>
+                                                <mat-datepicker-toggle matSuffix [for]="pickerEndDate">
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #pickerEndDate></mat-datepicker>
+                                                <mat-error class="mt-3" *ngIf="endDate.errors?.endDateInput">Invalid end
+                                                    date</mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                        <td class="align-middle text-center col-updateTime">
+                                            <div>{{employee.updatedTime | date:'dd/MM/YYYY hh:mm'}}
+                                                <p class="m-0" *ngIf="employee.updatedUserName">by
+                                                    <strong>{{employee.updatedUserName}}</strong>
+                                                </p>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle" *ngIf="isActive">
+                                            <div *ngIf="!employee.createMode">
+                                                <div *ngIf="benefit.type !== APP_ENUM.BenefitType.CheDoChung">
+                                                    <app-edit-button *ngIf="isShowEditBtn()" [isDisable]="isLoading || isEditingEmployee || employee.createMode"
+                                                        (update)="onUpdate(employee)"></app-edit-button>
+                                                    <app-delete-button *ngIf="isShowDeleteBtn()" [isDisable]="isLoading || isEditingEmployee || employee.createMode"
+                                                        (delete)="onDelete(employee)">
+                                                    </app-delete-button>
+                                                </div>
+                                                <div *ngIf="benefit.type === APP_ENUM.BenefitType.CheDoChung">
+                                                    <button (click)="onDelete(employee)" class="btn btn-sm btn-danger">
+                                                        <i class="fa-solid fa-trash-can mr-1"></i>
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="employee.createMode">
+                                                <ng-container *ngIf="benefit.type == APP_ENUM.BenefitType.CheDoChung">
+                                                    <app-save-cancel-button
+                                                        [isDisable]="isLoading || !employee.employeeId || endDate.status == 'INVALID'"
+                                                        (save)="onSave(employee)" (cancel)="onCancel(employee)">
+                                                    </app-save-cancel-button>
+                                                </ng-container>
+                                                <ng-container *ngIf="benefit.type !== APP_ENUM.BenefitType.CheDoChung">
+                                                    <app-save-cancel-button
+                                                        [isDisable]="isLoading || !employee.employeeId || !employee.startDate || endDate.status == 'INVALID'"
+                                                        (save)="onSave(employee)" (cancel)="onCancel(employee)">
+                                                    </app-save-cancel-button>
+                                                </ng-container>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

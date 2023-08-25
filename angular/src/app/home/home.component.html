@@ -1,0 +1,103 @@
+﻿<div [@routerTransition] class="bg-white page-wrapper">
+  <section class="content-header">
+    <div class="container-fluid ">
+      <div class="row ">
+        <div class="col-3 ">
+          <h1 class="title">{{ "Số lượng nhân viên" | localize }}</h1>
+        </div>
+        <div class="col-5 ">
+          <app-home-filter (onDateSelectorChange)="onDateSelectorChange($event)" [fromDate]="filterFromDate"
+            [toDate]="filterToDate">
+          </app-home-filter>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class=" m-2 p-2">
+    <table class="w-100 main-table" [style]="{minHeight: '80vh'}">
+      <thead class>
+        <tr>
+          <th rowspan="2" class="dark-th">Branch</th>
+          <th rowspan="2" class="blue-th">Total</th>
+          <th rowspan="2" class="yellow-th">Intern</th>
+          <th rowspan="2" class="yellow-th">Staff</th>
+          <th rowspan="2" class="yellow-th">CTV</th>
+          <th rowspan="2" class="yellow-th">T.Việc</th>
+          <th colspan="3" class="green-th" [style]="{height:'50px'}">Onboard/back to work</th>
+          <th colspan="3" class="gray-th">Quit</th>
+          <th rowspan="2" class="purple-th">Onboard and quit
+            <div>in timespan</div>
+          </th>
+          <th class="purple-th" rowspan="2" style="width: 90px;">Pausing</th>
+          <th class="purple-th" rowspan="2" style="width: 90px;">Maternity leave</th>
+        </tr>
+        <tr>
+          <th class="green-th small-th" [style]="{height:'50px'}">Total</th>
+          <th class="green-th small-th">Intern</th>
+          <th class="green-th">Staff/CTV/T.việc</th>
+          <th class="gray-th small-th">Total</th>
+          <th class="gray-th small-th">Intern</th>
+          <th class="gray-th">Staff/CTV/Thử.việc</th>
+        </tr>
+      </thead>
+
+      <tbody class="text-center">
+        <tr *ngFor="let item of listCty" class="branch-row">
+          <td class="text-left" [ngClass]="getTextBold(item.branchName)">{{ item.branchName }}</td>
+          <td [ngClass]="getTextBold(item.branchName)" class="text-bold blue-td">
+            {{ getValueOrNone(item.employeeTotal) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="yellow-td">
+            {{ getValueOrNone(item.internCount) }}
+          </td>
+          <td class="yellow-td" [ngClass]="getTextBold(item.branchName)">
+            {{ getValueOrNone(item.staffCount) }}
+          </td>
+          <td class="yellow-td" [ngClass]="getTextBold(item.branchName)">
+            {{ getValueOrNone(item.ctvCount) }}
+          </td>
+          <td class="yellow-td" [ngClass]="getTextBold(item.branchName)">
+            {{ getValueOrNone(item.tViecCount) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="text-primary text-bold hyperlink green-td"
+            (click)="showList(item.onboardEmployees,'onboard',item.branchName,'Danh sách nhân viên')">
+            {{ getValueOrNone(item.onboardTotal) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="text-primary text-bold hyperlink green-td"
+            (click)="showList(item.onboardEmployees,'onboard',item.branchName, 'Danh sách Intern',APP_ENUM.UserType.Internship)">
+            {{ getValueOrNone(item.onboardInternCount) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="text-primary text-bold hyperlink green-td"
+            (click)="showList(item.onboardEmployees,'onboard',item.branchName,'Danh sách Staff/CTV/Thử việc',APP_ENUM.UserType.Staff)">
+            {{ getValueOrNone(item.onboardStaffCount) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class=" text-bold hyperlink gray-td"
+            (click)="showList(item.quitEmployees,'nghỉ việc',item.branchName,'Danh sách nhân viên')">
+            {{ getValueOrNone(item.quitJobTotal) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="text-bold hyperlink gray-td"
+            (click)="showList(item.quitEmployees,'nghỉ việc',item.branchName,'Danh sách Intern', APP_ENUM.UserType.Internship)">
+            {{ getValueOrNone(item.quitJobInternCount) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="text-bold hyperlink gray-td"
+            (click)="showList(item.quitEmployees,'nghỉ việc',item.branchName,'Danh sách Staff/CTV/Thử việc', APP_ENUM.UserType.Staff)">
+            {{ getValueOrNone(item.quitJobStaffCount) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="text-bold hyperlink  purple-td text-bold"
+            (click)="showList(item.onboardAndQuitEmployees,'',item.branchName,'Danh sách onboard/quit', null, true)">
+            {{ getValueOrNone(item.onboardAndQuitInTimeSpanCount) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="hyperlink purple-td text-bold"
+            (click)="showList(item.pausingEmployees, 'tạm nghỉ', item.branchName, 'Danh sách')">
+            {{ getValueOrNone(item.pausingCount) }}
+          </td>
+          <td [ngClass]="getTextBold(item.branchName)" class="hyperlink purple-td text-bold" (click)="
+                  showList(item.matenityLeaveEmployees, 'nghỉ sinh', item.branchName,'Danh sách')">
+            {{ getValueOrNone(item.maternityLeaveCount) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

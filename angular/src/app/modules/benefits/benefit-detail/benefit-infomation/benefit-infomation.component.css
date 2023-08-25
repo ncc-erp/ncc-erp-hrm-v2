@@ -1,0 +1,8 @@
+::ng-deep .mat-checkbox-disabled.mat-checkbox-checked .mat-checkbox-background, 
+.mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: #fd4885c0 !important;
+}
+
+::ng-deep .mat-checkbox-disabled .mat-checkbox-label{
+    color: rgb(59, 59, 59) !important;
+}

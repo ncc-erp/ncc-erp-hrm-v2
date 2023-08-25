@@ -1,0 +1,407 @@
+<div>
+    <section class="header">
+        <div class="container-fluid">
+            <div class="row header-no-wrap">
+                <div class="col-3 breadcrumb">
+                    <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                    <span [ngClass]="APP_CONST.payRollStatus[payroll?.statusName]" class="active ml-2 mt-1 mr-1">
+                        {{payroll?.statusName}}
+                    </span>
+                </div>
+                <div class="col-9 text-right mt-2">
+                    <div class="text-right">
+                        <div class="d-inline" >
+                            <i class="far fa-list-alt fa-lg mt-1 mr-2" matTooltip="View calculate process"
+                             *ngIf="(calculateStatus == 'Done' || isCalculating) && isShowCalculateSalaryBtn()" (click)="viewCalculateProcess()"></i>
+                        </div>
+                        <button *ngIf="isShowCalculateSalaryBtn()" class="btn btn-primary mr-2" (click)="onCollectData()"
+                        [disabled]="isCalculating">{{isCalculating ? 'Calculating salary...' : 'Calculate salary all'}}</button>
+                        <button *ngIf="isShowAddBtn()" class="btn btn-primary mr-2" (click)="onAdd()">Add employee</button>
+                        <button [matMenuTriggerFor]="exportMenu" class="btn btn-primary mr-2">Export</button>
+                            <mat-menu #exportMenu="matMenu">
+                            <button mat-menu-item (click)="exportPayroll()" *ngIf="isShowExportPayrollBtn()">Payroll list</button>
+                            <button mat-menu-item (click)="exportPayrollIncludeLastMonth()" *ngIf="isShowExportPayrollIncludeLastMonth()">Payroll include last month</button>
+                            <button mat-menu-item (click)="exportTechcombank()" *ngIf="isShowExportTechcombank()">Techcombank</button>
+                            <button mat-menu-item (click)="exportOutsideTech()" *ngIf="isShowExportOutsideTech()">Outside tech</button>
+                            </mat-menu>
+                        <button *ngIf="isShowSendMailAllBtn()" class="btn btn-primary mr-2" [disabled]="sending" (click)="onSendMailAll()">Send all email</button>
+                        <button *ngIf="isShowSendToFinfastBtn()" class="btn btn-primary mr-4" (click)="createFinfastOutcomeEntry()">Send to finfast</button>
+
+                        <button class="btn btn-success mr-2" *ngIf="isShowSendToAccountantBtn()" (click)="onChangeStatus(APP_ENUM.PayrollStatus.PendingKT)">
+                            Send to accountant
+                        </button>
+                        <button class="btn btn-success mr-2" *ngIf="isShowApproveAndSendtToCEOBtn()" (click)="onChangeStatus(APP_ENUM.PayrollStatus.PendingCEO)">
+                            Approve and send to CEO
+                        </button>
+                        <button class="btn btn-success mr-2" *ngIf="isShowApproveByKTBtn()" (click)="onChangeStatus(APP_ENUM.PayrollStatus.PendingCEO)">
+                            Approve (by KT)
+                        </button>
+                        <button class="btn btn-success mr-2" *ngIf="isShowRejectByKTBtn()" (click)="onChangeStatus(APP_ENUM.PayrollStatus.RejectedByKT)">
+                            Reject (by KT)
+                        </button>
+                        <button class="btn btn-success mr-2" *ngIf="isShowExecuteBtn()" (click)="executePayroll()">
+                            Execute
+                        </button>
+                        <button class="btn btn-success mr-2" *ngIf="isShowApproveByCEOBtn()" (click)="onChangeStatus(APP_ENUM.PayrollStatus.ApprovedByCEO)">
+                            Approve (by CEO)
+                        </button>
+                        <button class="btn btn-success mr-2" *ngIf="isShowRejectByCEOBtn()" (click)="onChangeStatus(APP_ENUM.PayrollStatus.RejectedByCEO)">
+                            Reject (by CEO)
+                        </button>
+                        <button class="btn btn-success" [matMenuTriggerFor]="menuImport" *ngIf="isShowUpdateRemainLeaveDaysAndDownloadTemplateBtn()">
+                           <div [matTooltip]="'Update employee remaining leave days after calculating salary'"> Update remain leave days</div>
+                        </button>
+                        <mat-menu #menuImport="matMenu">
+                            <button *ngIf="isShowDownloadTemplateBtn()" class="mat-menu-item mr-2">
+                                <i class="fa-solid fa-download mr-1"></i>
+                                <a href="assets/template/import-employee-remain-leave-days-after-calculating-salary.xlsx" target="_blank" style="color: #555"
+                                    download="import-employee-remain-leave-days-after-calculating-salary.xlsx">Download Template</a>
+                            </button>
+                            <button class="mat-menu-item" *ngIf="isShowUpdateRemainLeaveDaysBtn()" (click)="onImportEmployeeRemainLeaveDays()">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>
+                                Update
+                            </button>
+                        </mat-menu>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="card employee-card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-6">
+                        <app-search [placeholder]="'Search by Name or Email'"
+                            (onSearch)="onSearchEnter($event)">
+                        </app-search>
+                    </div>
+                    <div class="col-2">
+                        <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="confirmMailFilters"
+                            [placeholder]="'Confirm status'" [defaultValue]="DEFAULT_FILTER.confirmMail"
+                            (onTableFilter)="onTableFilter( filterTypeEnum.Dropdown, $event, 'ConfirmStatus')">
+                        </table-filter>
+                    </div>
+                    <div class="col-4">
+                        <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelectWithCondition" [dropdownData]="teamList"
+                            [placeholder]="'Team'" [defaultValue]="DEFAULT_FILTER.team"
+                            (onTableMultiSelectWithConditionFilter)="onTableMultiSelectWithConditionFilter($event);">
+                        </table-filter>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2 mt-2">
+                        <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userTypeList"
+                             [placeholder]="'User type'"
+                            (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserType)">
+                        </table-filter>
+                    </div>
+                    <div class="col-2 mt-2">
+                        <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList" [placeholder]="'Branch'"
+                            (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                        </table-filter>
+                    </div>
+                    <div class="col-2 mt-2">
+                        <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="positionList"
+                            [placeholder]="'Job position'"
+                            (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.JobPosition)">
+                        </table-filter>
+                    </div>
+                    <div class="col-2 mt-2">
+                        <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userLevelList"
+                         [placeholder]="'User level'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserLevel)">
+                        </table-filter>
+                    </div>
+
+                    <div class="col-2 mt-2">
+                        <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="statusList" [placeholder]="'Status'"
+                         (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Status)">
+                        </table-filter>
+                    </div>
+
+                    <div class="col-2 mt-2">
+                        <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="genderList"
+                            [placeholder]="'Gender'" [defaultValue]="DEFAULT_FILTER.gender"
+                            (onTableFilter)="onTableFilter( filterTypeEnum.Dropdown, $event, 'sex')">
+                        </table-filter>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 row">
+                    <div class="col-lg-6 col-sm-12 col-xs-6 action-menu-left">
+
+                    </div>
+
+                </div>
+                <div class="table-responsive">
+                    <div class="fixTableHead table-employee">
+                        <table class="table table-striped" [busy]="isLoading">
+                            <thead>
+                                <tr>
+                                    <ng-container *ngFor="let column of columnList">
+                                        <th [ngStyle]="{'width': column.width + 'px'}" *ngIf="column.isShow && !column.sortable">{{column.displayName}}
+                                            <span *ngIf="column.allowExpan == true" class="ml-2" >
+                                                <i *ngIf="!column.expanded" class='fa-solid fa-chevron-right' (click)="expanColumn(column)"></i>
+                                                <i *ngIf="column.expanded" class="fa-solid fa-chevron-left" (click)="collapseColumn(column)"></i>
+                                            </span>
+                                        </th>
+                                        <th *ngIf="column.isShow && column.sortable" [ngStyle]="{'width': column.width + 'px'}">
+                                            {{column.displayName}}
+                                            <sortable [name]="column.name" [sortProperty]="sortProperty" (click)="onSortChange(column.name)"
+                                            [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                    </ng-container>
+                                    <th>
+                                        <toggle-column
+                                        [columnList]="columnList"
+                                        (columnToggle)="columnList = $event"
+                                        [tableName]="'payslipTable'"
+                                        >
+                                        </toggle-column>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let payslip of listPayslips | paginate :
+                                {
+                                    id: 'server',
+                                    itemsPerPage: pageSize,
+                                    currentPage: pageNumber,
+                                    totalItems: totalItems
+                                };let i = index">
+                                    <td class="text-center align-middle" *ngIf="columnList[0].isShow">
+                                        <p>{{(pageNumber-1)*pageSize + i + 1}}</p>
+                                    </td>
+                                    <td class="text-center align-middle" style="min-width: 350px" *ngIf="columnList[1].isShow">
+                                        <app-user-info
+                                        class="w-100"
+                                        [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                        [isAllowRouting]="isAllowRoutingDetail()"  [link]="['/app/payroll/list-payroll/payroll-detail/payslip-detail/salary']" [queryParams]="{id:payslip.id , payrollId: payrollId, employeeId: payslip.employeeId, status: payrollStatus}"
+                                        [userData]="{
+                                            id: payslip.employeeId,
+                                            avatarFullPath: payslip.avatarFullPath,
+                                            jobPositionInfo: payslip.jobPositionInfo,
+                                            levelInfo: payslip.levelInfo,
+                                            userTypeInfo: payslip.userTypeInfo,
+                                            email: payslip.email,
+                                            sex: payslip.sex,
+                                            fullName: payslip.fullName,
+                                            branchInfo: payslip.branchInfo
+                                        }"
+                                        *ngIf="!payslip.createMode">
+                                        </app-user-info>
+                                        <div class="form-group row required align-middle"
+                                                *ngIf="payslip.createMode">
+                                                <mat-form-field class="w-100 mx-2 mt-3 center-flex"
+                                                    appearance="outline">
+                                                    <mat-select (closed)="searchEmployee=''" name="employee"
+                                                        placeholder="select account *" [(ngModel)]="payslip.employeeId"
+                                                        required>
+                                                        <mat-form-field class="w-100 px-3 "
+                                                            style="position: sticky; top: 0; z-index: 2; background-color: white;">
+                                                            <input matInput [(ngModel)]="searchEmployee"
+                                                                name="searchText" placeholder="Search"
+                                                                (keydown)="$event.stopPropagation()" #search>
+                                                        </mat-form-field>
+                                                        <mat-option
+                                                            *ngFor="let em of employeeList | listFilter:'fullName': searchEmployee : 'email'"
+                                                            [value]="em.id">
+                                                            {{em.fullName}} - {{em.email}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[2].isShow">
+                                        <b>{{payslip.normalSalary | moneyFormat}}</b>
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[3].isShow">
+                                        <b>{{payslip.realSalary | moneyFormat}}</b>
+                                    </td>
+                                    <td class="text-center align-middle pointer" *ngIf="columnList[4].isShow" [tippy]="inputSalary">
+                                        <div *ngFor="let salary of payslip.listInputSalary">
+                                            <span class="mr-1">{{salary.salary | moneyFormat}}</span>
+                                        </div>
+                                        <ng-template #inputSalary let-hide>
+                                            <div class="salary-tooltip">
+                                                <div class="mb-1 "  *ngFor="let salary of payslip.listInputSalary">
+                                                     <strong>&nbsp;&nbsp;{{salary.salary | moneyFormat}}</strong> from {{salary.fromDate | DMYDateFormat}} <span>{{salary.note}}.</span>
+                                                </div>
+                                            </div>
+                                         </ng-template>
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[5].isShow">
+                                        {{payslip.normalDay}} / {{payslip.standardNormalDay}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[6].isShow">
+                                        {{payslip.otHour}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[7].isShow">
+                                        {{payslip.offDay}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[8].isShow">
+                                        {{payslip.opentalkCount}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[9].isShow">
+                                        {{payslip.leaveDayBefore}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[10].isShow">
+                                        {{payslip.addedLeaveDay}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[11].isShow">
+                                        {{payslip.refundLeaveDay}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[12].isShow">
+                                        {{payslip.remainLeaveDays}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[13].isShow">
+                                        <span class="badge text-white" [style.backgroundColor]="payslip.branchInfo.color">{{payslip.payslipBanrch}}</span></td>
+                                    <td class="text-center align-middle" *ngIf="columnList[14].isShow">
+                                        <span class="badge text-white" [style.backgroundColor]="payslip.userTypeInfo.color">{{payslip.payslipUserTypeName}}</span>
+                                    </td>
+                                    <td class="text-center text-white align-middle" *ngIf="columnList[15].isShow">
+                                        <span class="badge text-black" [style.backgroundColor]="payslip.jobPositionInfo.color">{{payslip.payslipPosition}}</span>
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[16].isShow">
+                                        <span class="badge text-white" [style.backgroundColor]="payslip.levelInfo.color">{{payslip.payslipLevel}}</span>
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[17].isShow">
+                                            <div>{{payslip.bankInfo.bankAccountNumber}}</div>
+                                            <div>{{payslip.bankInfo.bankName}}</div>
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[18].isShow">
+                                        <span>{{getTeams(payslip.teams)}}</span>
+                                    </td>
+
+                                    <td class="text-center align-middle" [ngClass]="columnList[19].className" *ngIf="columnList[19].isShow">
+                                        {{payslip.otSalary | moneyFormat}}
+                                    </td>
+
+                                    <td class="text-center align-middle" *ngIf="columnList[20].isShow">
+                                        {{payslip.totalBonus | moneyFormat}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[21].isShow">
+                                        {{payslip.totalPunishment | moneyFormat}}
+                                    </td>
+                                    <td class="text-center align-middle" *ngIf="columnList[22].isShow">
+                                        {{payslip.totalDebt | moneyFormat}}
+                                    </td>
+                                    <td class="align-middle text-center modify-time" *ngIf="columnList[23].isShow">
+                                        <div>{{payslip.updatedTime | dmyHmDateFormat}}
+                                            <p class="m-0" *ngIf="payslip.updatedUserName">by
+                                                <strong>{{payslip.updatedUserName}}</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+
+                                    <td class="align-middle pointer min-text" *ngIf="columnList[24].isShow" [tippy]="tpl">
+                                        <div [ngClass]="!columnList[24].expanded ? 'text-ellipsis' : ''"
+                                         *ngFor="let benefit of payslip.listBenefit">
+                                         <span class="mr-1">{{benefit.money | moneyFormat}}</span>:
+                                         <span>{{benefit.note}}</span>
+
+                                        </div>
+                                        <ng-template #tpl let-hide >
+                                           <div class="benefit-tooltip mb-1"  *ngFor="let benefit of payslip.listBenefit">
+                                                <strong>{{benefit.money | moneyFormat}}</strong>: <span>{{benefit.note}}.</span>
+                                           </div>
+                                        </ng-template>
+                                    </td>
+
+                                    <td class="align-middle pointer min-text" *ngIf="columnList[25].isShow" style="white-space: pre-line;"
+                                     [tippy]="complainTpl" >
+                                        <div *ngIf="payslip.confirmStatus == APP_ENUM.PayslipConfirmStatus.ConfirmRight" class="text-success confirm-status">
+                                                <i class="fa-regular fa-circle-check mr-1"></i>
+                                                <strong>
+                                                    Confirm right
+                                                </strong>
+                                        </div>
+                                        <div *ngIf="payslip.confirmStatus == APP_ENUM.PayslipConfirmStatus.ConfirmWrong" class="text-danger confirm-status">
+                                            <i class="fa-regular fa-circle-xmark mr-1"></i>
+                                            <strong>
+                                                Confirm wrong
+                                            </strong>
+                                    </div>
+                                        <div [ngClass]="!columnList[25].expanded ? 'text-ellipsis' : ''" *ngIf="payslip.confirmStatus == APP_ENUM.PayslipConfirmStatus.ConfirmWrong" >
+                                            {{payslip.complainNote}}
+                                        </div>
+                                        <ng-template #complainTpl let-hide >
+                                            <div class="complain-tooltip mb-1">
+                                                 <span>{{payslip.confirmStatus == APP_ENUM.PayslipConfirmStatus.ConfirmWrong ? payslip.complainNote : ''}}</span>
+                                            </div>
+                                         </ng-template>
+                                    </td>
+
+                                    <td class="text-center align-middle" style="width: 70px;">
+                                        <ng-container>
+                                            <div style="visibility: hidden; position: fixed;" [style.left]="contextMenuPosition.x" [style.top]="contextMenuPosition.y"
+                                            [matMenuTriggerFor]="menu">
+
+                                            </div>
+                                            <button  *ngIf="isShowSendMailBtn() || isShowDeleteBtn()"   mat-button [matMenuTriggerFor]="menu">
+                                                <i class="fas fa-bars fa-lg"></i>
+                                            </button>
+                                            <mat-menu #menu="matMenu">
+                                                <button *ngIf="isShowSendMailBtn()" (click)="onSendMail(payslip)" class="mat-menu-item w-100">
+                                                    <i class="fas fa-paper-plane mr-1"></i>
+                                                    Send mail
+                                                </button>
+                                                <button *ngIf="isShowDeleteBtn()" (click)="onDeletePayslip(payslip)" class="mat-menu-item w-100">
+                                                    <i class="fas fa-trash fa-lg mr-1"></i>
+                                                    Delete
+                                                </button>
+                                            </mat-menu>
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                    (pageAction)="pageControlActions($event)"></pagination-control>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="card mb-0 pb-2">
+            <div class="card-body">
+                <h5><b>Summary information</b></h5>
+                <div class="table-responsive">
+                    <div class="fixTableHead table-summary">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Total Salary</th>
+                                <th>Avg Salary</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let info of summaryInfomations; let i = index" [ngStyle] ="{'font-weight' : i == 0 ? 'bold' : 'normal'}">
+                                    <td class="text-center">{{i+1}}</td>
+                                    <td class="text-left">
+                                        <span *ngIf="info.name !== 'Phạt không thu được'">
+                                            {{info.name}}
+                                        </span>
+                                        <button class="fixPaidNotGetInfo" *ngIf="info.name === 'Phạt không thu được'" (click)="OnGetNotPaidInfo()">
+                                            {{info.name}}
+                                        </button>
+                                    </td>
+
+                                    <td class="text-center">{{info.quantity}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.totalSalary < 0 ? 'red' : ''}">{{info.totalSalary | moneyFormat}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.avgSalary < 0 ? 'red' : ''}">{{info.avgSalary | moneyFormat}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,53 @@
+<app-dialog-header [dialogTitle]="title"></app-dialog-header>
+<div class="table-responsive">
+    <div class="fixTableHead table-employee">
+        <table class="table table-striped" [busy]="isLoading">
+            <thead>
+                <tr>
+                    <ng-container *ngFor="let column of columnList">
+                        <th [ngStyle]="{'width': column.width + 'px'}" *ngIf="!column.sortable">{{column.displayName}}
+                            <span *ngIf="column.allowExpan == true" class="ml-2" >
+                                <i *ngIf="!column.expanded" class='fa-solid fa-chevron-right' (click)="expanColumn(column)"></i>
+                                <i *ngIf="column.expanded" class="fa-solid fa-chevron-left" (click)="collapseColumn(column)"></i>
+                            </span>
+                        </th>
+                        <th *ngIf="column.sortable" [ngStyle]="{'width': column.width + 'px'}">
+                            {{column.displayName}}
+                            <sortable [name]="column.name" [sortProperty]="sortProperty" (click)="onSortChange(column.name)"
+                            [sortDirection]="sortDirection"></sortable>
+                        </th>
+                    </ng-container>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let notpayslip of ListPenaltyEmployees; let i = index">
+                    <td class="text-center align-middle">
+                        {{i+1}}
+                    </td>
+                    <td class="text-center align-middle" style="min-width: 350px">
+                        <app-user-info
+                                        class="w-100"
+                                        [isAllowRouting]="isAllowViewTabPersonalInfo()"                                      
+                                        [userData]="{
+                                            id: notpayslip.employeeId,
+                                            Avatar: notpayslip.Avatar,
+                                            jobPositionInfo: notpayslip.jobPositionInfo,
+                                            levelInfo: notpayslip.levelInfo,
+                                            userTypeInfo: notpayslip.userTypeInfo,
+                                            email: notpayslip.email,
+                                            sex: notpayslip.sex,
+                                            fullName: notpayslip.fullName,
+                                            branchInfo: notpayslip.branchInfo
+                                        }"(click)="onClose()"
+                                        *ngIf="!notpayslip.createMode">
+                        </app-user-info>
+                    </td>
+                    <td class="text-center align-middle">
+                        <b>{{notpayslip.realSalary | moneyFormat}}</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

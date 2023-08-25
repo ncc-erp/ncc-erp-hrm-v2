@@ -1,0 +1,52 @@
+<div class="px-4 pt-1">
+    <div class="breadcrumb">
+        <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+    </div>
+    <div class="card">
+        <div class="card-header d-flex">
+            <div class="col-6 p-0">
+                <app-search [placeholder]="'Search by Name, Code'" [seachText]="searchText"
+                    (onSearch)="onSearchEnter($event)"></app-search>
+            </div>
+            <div class="col-6 p-0 text-right">
+                <app-create-button *ngIf="isShowCreateBtn()" (create)="onCreate()"></app-create-button>
+            </div>
+        </div>
+        <div class="card-body pb-1">
+            <div class="table-responsive">
+                <div class="fixTableHead">
+                    <table class="table table-striped table-hover" [busy]="isLoading">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">#</th>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th class="col-action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let bank of bankList | paginate: {
+                                id: 'server',
+                                itemsPerPage: pageSize,
+                                currentPage: pageNumber,
+                                totalItems: totalItems
+                              }; let i =index">
+                                <td class="text-center">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                <td>{{bank.name}}</td>
+                                <td>{{bank.code}}</td>
+                                <td class="text-center">
+                                    <div>
+                                        <app-edit-button *ngIf="isShowEditBtn()" (update)="onUpdate(bank)"></app-edit-button>
+                                        <app-delete-button *ngIf="isShowDeleteBtn()" (delete)="onDelete(bank)"></app-delete-button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <pagination-control [pageSize]="pageSizeType" [totalItems]="totalItems" (pageAction)="pageControlActions($event)">
+            </pagination-control>
+        </div>
+    </div>
+</div>

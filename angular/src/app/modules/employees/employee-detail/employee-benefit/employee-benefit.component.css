@@ -1,0 +1,34 @@
+tbody td{
+    vertical-align: middle;
+}
+.btn-accept{
+    font-size: x-large;
+    color: var(--success)
+}
+.btn-cancel{
+    font-size: x-large;
+    color: var(--danger)
+}
+.btn-accept:hover, .btn-cancel:hover{
+    filter: brightness(0.8);
+}
+
+.fixTableHead{
+    max-height: 73vh;
+}
+
+.benefit-name{
+    width: 350px;
+}
+
+.col-date{
+    width: 130px;
+}
+
+.col-money{
+    width: 200px;
+}
+
+.col-stt {
+    width: 50px;
+}

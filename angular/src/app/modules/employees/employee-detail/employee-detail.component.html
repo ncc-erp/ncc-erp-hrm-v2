@@ -1,0 +1,58 @@
+<section class="content px-4 pb-4 pt-1">
+    <div class="breadcrumb">
+        <div class="mb-1">
+            <a [routerLink]="['/']"><i class="fa-solid fa-house fa-sm"></i></a>
+            <i class="fa-solid fa-chevron-right fa-sm"></i>
+            <a [routerLink]="'/app/employees/list-employee'" class="hyperlink">Employees</a>
+            <i class="fa-solid fa-chevron-right fa-sm"></i>
+            <span *ngIf="!employeeId">Create new employee</span>
+        </div>
+        <div *ngIf="employee" class="user-avatar d-flex align-items-center mb-1">
+            <img class="rounded-circle avatar" [src]="getAvatar(employee)">
+            <span class="ml-1 mb-1">
+                {{employee.fullName}}
+            </span>
+        </div>
+    </div>
+    <div class="container-fluid p-0">
+        <div class="row m-0 card">
+            <div class="col-12 p-0">
+                <nav mat-tab-nav-bar>
+                    <a *ngIf="isAllowViewTabPersonalInfo()" [routerLink]="['personal-info']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Personal Info
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabSalaryHistory()" [routerLink]="['salary-changes']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Salary History
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabBenefit()" [routerLink]="['benefit']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Benefit
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabBonus()" [routerLink]="['bonus']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Bonus
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabPunishment()" [routerLink]="['punishment']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Punishment
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabDebt()" [routerLink]="['debt']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Debt
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabContract()" [routerLink]="['contract']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Contract
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabWorkingHistory()" [routerLink]="['working-history']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Working History
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabBranchHistory()" [routerLink]="['branch-history']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Branch History
+                    </a>
+                    <a *ngIf="employeeId && isAllowViewTabPayslipHistory()" [routerLink]="['payslip-history']" [queryParams]="{ id: employeeId }" routerLinkActive="active" mat-tab-link>
+                        Payslip History
+                    </a>
+                </nav>
+                <div class="px-4">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

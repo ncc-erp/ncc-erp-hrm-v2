@@ -1,0 +1,17 @@
+<form class="form-horizontal" #teamForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title"></app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-9 pl-2" >
+                <mat-form-field class="common-input" appearance="outline">
+                    <input matInput name="name" [(ngModel)]="team.name" #name="ngModel" cdkFocusInitial #nameEl required/>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl"></abp-validation-summary>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!teamForm.valid || isLoading"></app-dialog-footer>
+</form>

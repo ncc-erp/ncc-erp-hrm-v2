@@ -1,0 +1,304 @@
+<div>
+  <section>
+      <div class="d-flex col-12">
+        <div class="col-6">
+          <div class="breadcrumb">
+            <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+          </div>
+        </div>
+        <div class="col-6 text-right mt-2">
+          <a  *ngIf="isShowCreateBtn()" class="btn btn-primary" routerLink="/app/debt/list-debt/create">
+            <i class="fa fa-plus-square"></i>
+            {{ "Create" | localize }}
+          </a>
+
+          <button class="btn btn-primary ml-2" (click)="onSendAllMail()">
+            <i class="fas fa-envelope fa-lg mr-2"></i>
+            Send all mail
+          </button>
+        </div>
+      </div>
+</section>
+  <section class="content px-2">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-lg-3 col-md-6">
+              <app-search
+                class="w-100"
+                [placeholder]="'Search by Email or Name'"
+                [seachText]="searchText"
+                (onSearch)="onSearchEnter($event)"
+              ></app-search>
+            </div>
+            <div class="col-lg-2 col-md-6 d-flex align-items-center">
+              <table-filter 
+              class="w-100"
+              [filterType]="filterTypeEnum.MultiSelect" 
+              [dropdownData]="userTypeList"
+                [placeholder]="'User type'" 
+                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserType)">
+              </table-filter>
+            </div>
+            <div class="col-lg-2 col-md-6 d-flex align-items-center">
+              <table-filter
+                [placeholder]="'Status'"
+                class="w-100"
+                [dropdownData]="statusFilter"
+                [defaultValue]="DEFAULT_FILTER.debtStatus"
+                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.DebtStatus)"
+                [filterType]="filterTypeEnum.MultiSelect"
+              >
+              </table-filter>
+            </div>
+            <div class="col-lg-2 col-md-6 d-flex align-items-center">
+              <table-filter
+                [placeholder]="'Payment Method'"
+                class="w-100"
+                [dropdownData]="paymentTypeFilter"
+                [filterType]="filterTypeEnum.MultiSelect"
+                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.PaymentType)"
+              >
+              </table-filter>
+            </div>
+            <div class="col-lg-3 col-md-6 d-flex align-items-center">
+              <table-filter 
+              class="w-100"
+              [filterType]="filterTypeEnum.MultiSelect" 
+              [dropdownData]="branchList" 
+              [placeholder]="'Branch'"
+               (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+              </table-filter>
+              <div
+              class="col-lg-1 col-md-2 col-sm-1 text-right p-0"
+            >
+                <button
+                  type="button"
+                  class="btn btn-default btn-advanced-filter"
+                  (click)="advancedFiltersVisible = !advancedFiltersVisible"
+                >
+                  <i
+                    class="fas"
+                    [class.fa-angle-up]="advancedFiltersVisible"
+                    [class.fa-angle-down]="!advancedFiltersVisible"
+                  ></i>
+                </button>
+            </div>
+            </div>
+
+          </div>
+          <div class="row" *ngIf="advancedFiltersVisible">
+            <div class="col-lg-3 col-md-6 d-flex justify-content-end">
+              <table-filter 
+              class="w-100"
+              [searchable]="true" 
+              [filterType]="filterTypeEnum.MultiSelectWithCondition" [dropdownData]="teamList"
+               [placeholder]="'Team'" 
+               [defaultValue]="DEFAULT_FILTER.teamId"                      
+               (onTableMultiSelectWithConditionFilter)="onTableMultiSelectWithConditionFilter($event);">
+              </table-filter>
+            </div>
+            <div class="col-lg-2 col-md-6 d-flex">
+              <table-filter 
+              class="w-100"
+              [searchable]="true" 
+              [filterType]="filterTypeEnum.MultiSelect" 
+              [dropdownData]="levelList"
+                                 
+              [placeholder]="'User level'" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserLevel)">
+              </table-filter>
+            </div>
+            <div class="col-lg-2 col-md-6 d-flex">
+              <table-filter
+                [filterType]="filterTypeEnum.MultiSelect" 
+                [placeholder]="'Working Status'"
+                class="w-100"
+                [dropdownData]="workingStatusList"
+                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Status)"  
+              >
+              </table-filter>
+            </div>
+            <div class="col-lg-2 col-md-6 d-flex">
+              <table-filter
+                [placeholder]="'Gender'"
+                class="w-100"
+                [dropdownData]="genderFilter"
+                [defaultValue]="DEFAULT_FILTER.sex"
+                (onTableFilter)="
+                  onTableFilter(filterTypeEnum.Dropdown, $event, 'sex')
+                "
+                [filterType]="filterTypeEnum.Dropdown"
+              ></table-filter>
+            </div>
+            <div class="col-lg-3 col-md-6 d-flex">
+              <table-filter
+              [placeholder]="'End Date'"
+              class="date-filter w-100"
+              [defaultValue]="DEFAULT_FILTER.EndDate"
+              (onTableFilter)="
+                onTableFilter(filterTypeEnum.DatePicker, $event.value, 'EndDate',$event.comparision)
+              "
+              [filterType]="filterTypeEnum.DatePicker"
+            ></table-filter>
+            </div>
+          </div>
+        </div>
+        <div class="card-body pb-1">
+          <div class="table-responsive">
+            <div class="fixTableHead">
+              <table class="table table-stripped table-hover" [busy]="isLoading">
+                <thead>
+                  <tr>
+                    <ng-container
+                      *ngFor="let column of columnList; let i = index"
+                    >
+                      <th
+                        [className]="column.className"
+                        *ngIf="column.isShow"
+                      >
+                        <span>{{ column.displayName }}</span>
+                        <sortable
+                           *ngIf="column.sortable"
+                           [name]="column.name"
+                           [sortDirection]="sortDirection"
+                           [sortProperty]="sortProperty"
+                           (click)="onSortChange(column.name)">
+                        </sortable>
+                      </th>
+                    </ng-container>
+                    <th class="col-action">
+                      Action
+                      <toggle-column
+                        [columnList]="columnList"
+                        (columnToggle)="columnList = $event"
+                        [tableName]="'debtTable'"
+                      >
+                      </toggle-column>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let debt of debtList
+                        | paginate
+                          : {
+                              id: 'server',
+                              itemsPerPage: pageSize,
+                              currentPage: pageNumber,
+                              totalItems: totalItems
+                            };
+                      let i = index
+                    "
+                  >
+                    <td
+                      *ngIf="columnList[0].isShow"
+                      class="text-center col-stt"
+                    >
+                      {{ (pageNumber - 1) * pageSize + i + 1 }}
+                    </td>
+                    <td class="col-info" *ngIf="columnList[1].isShow">
+                        <app-user-info 
+                        [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                        [isAllowRouting]="isAllowRoutingDetail()"
+                          [userData]="{
+                            id: debt.employeeId,
+                            avatar: debt.avatar,
+                            avatarFullPath: debt.avatarFullPath,
+                            fullName: debt.fullName,
+                            branchInfo: debt.branchInfo,
+                            levelInfo: debt.levelInfo,
+                            userTypeInfo: debt.userTypeInfo,
+                            email: debt.email,
+                            jobPositionInfo: debt.jobPositionInfo
+                          }"
+                          [link]="'/app/debt/list-debt/detail/' + debt.id"
+                        >
+                        </app-user-info>
+                    </td>
+                    <td
+                      class="col-money text-right"
+                      *ngIf="columnList[2].isShow"
+                    >
+                      {{ debt.money | currency: "VND":"" }}
+                    </td>
+                    <td class="text-center" *ngIf="columnList[3].isShow">
+                      {{ debt.interestRate }}
+                    </td>
+                    <td class="text-right" *ngIf="columnList[4].isShow">
+                      {{ debt.interest | currency: "VND":"" }}
+                    </td>
+                    <td class="text-right" *ngIf="columnList[5].isShow">
+                      {{ debt.totalPaid | currency: "VND":"" }}
+                    </td>
+                    <td class="text-right" *ngIf="columnList[6].isShow">
+                      {{
+                        debt.money + debt.interest - debt.totalPaid
+                          | currency: "VND":""
+                      }}
+                    </td>
+                    <td class="text-center align-middle text-bold" *ngIf="columnList[7].isShow" [ngStyle]="{color: APP_ENUM.PaymentTypeColor[debt.paymentType]}">
+                      {{ getPaymentType(debt.paymentType) }}
+                    </td>
+                    <td
+                      class="text-center col-date"
+                      *ngIf="columnList[8].isShow"
+                    >
+                      {{ debt.startDate | DMYDateFormat }}
+                    </td>
+                    <td
+                      class="text-center col-date"
+                      *ngIf="columnList[9].isShow"
+                    >
+                      {{ debt.endDate | DMYDateFormat }}
+                    </td>
+                    <td
+                      class="text-center col-status"
+                      *ngIf="columnList[10].isShow"
+                    >
+                      <span
+                        class="badge badge-pill text-white"
+                        [style.backgroundColor]="DEBT_STATUS[debt.debtStatus]?.color"
+                        >{{ DEBT_STATUS[debt.debtStatus]?.key }}</span
+                      >
+                    </td>
+                    <td class="col-note" *ngIf="columnList[11].isShow">
+                      <div [matTooltip]="debt.note" matTooltipClass="note-full" matTooltipPosition="after" class="note-content">
+                        {{ debt.note }}
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button [matMenuTriggerFor]="menu"
+                          class="btn mr-2">
+                          <i class="fas fa-bars fa-lg"></i>  
+                      </button>
+                      <mat-menu #menu="matMenu" class="p-2">
+                        <button *ngIf="isShowDeleteBtn()"
+                        (click)="onDelete(debt.id)"
+                        [disabled]
+                        class="mat-menu-item"
+                      >
+                        <i class="fa-solid fa-trash-can mr-2"></i>Delete
+                      </button>
+                      <button class="mat-menu-item" *ngIf="isShowSendMailBtn() && debt.debtStatus == EDebtStatus.Inprogress" (click)="onSendMail(debt.id)">
+                        <i class="fas fa-envelope fa-lg mr-2"></i>
+                        Send mail
+                      </button>
+                      </mat-menu>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <pagination-control
+            [totalItems]="totalItems"
+            [pageSize]="pageSizeType"
+            (pageAction)="pageControlActions($event)"
+          ></pagination-control>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

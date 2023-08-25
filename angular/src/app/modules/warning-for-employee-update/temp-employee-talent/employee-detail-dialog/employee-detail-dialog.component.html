@@ -1,0 +1,163 @@
+<h1 matDialogTitle>Employee Detail</h1>
+
+<form matDialogContent [formGroup]="formGroup" [busy]="isLoading">
+    <div class="row m-1">General Info</div>
+    <div class="row">
+        <div class="col m-1">
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Full Name</mat-label>
+                    <input matInput formControlName="fullName" #fullnameEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['fullName']" [controlEl]="fullnameEl">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Gender</mat-label>
+                    <mat-select formControlName="gender" #genderEl required>
+                        <mat-option *ngFor="let gender of genderSelectOptions"
+                            [value]="gender.value">{{gender.key}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['gender']" [controlEl]="genderEl">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Birth day</mat-label>
+                    <input matInput formControlName="dob" [matDatepicker]="birthDayPicker">
+                    <mat-datepicker-toggle matIconSuffix [for]="birthDayPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #birthDayPicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="col m-1">
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>NccEmail</mat-label>
+                    <input matInput formControlName="nccEmail" #nccEmailEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['nccEmail']" [controlEl]="nccEmailEl">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Phone</mat-label>
+                    <input matInput formControlName="phone" #phoneEl>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['phone']" [controlEl]="phoneEl">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Personal Email</mat-label>
+                    <input matInput formControlName="personalEmail" #personalEmailEl>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['personalEmail']" [controlEl]="personalEmailEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="col m-1">
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Branch</mat-label>
+                    <mat-select formControlName="branchId" #branchEl required>
+                        <mat-option *ngFor="let branch of branchSelectOptions"
+                            [value]="branch.value">{{branch.key}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['branchId']"
+                    [controlEl]="branchEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Level</mat-label>
+                    <mat-select formControlName="levelId" #levelEl required>
+                        <mat-option *ngFor="let level of levelSelectOptions"
+                            [value]="level.value">{{level.key}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['levelId']"
+                    [controlEl]="levelEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>User Type</mat-label>
+                    <mat-select formControlName="userType" #userTypeEl required>
+                        <mat-option *ngFor="let userType of userTypeSelectOptions"
+                            [value]="userType.value">{{userType.key}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['userType']"
+                    [controlEl]="userTypeEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+        </div>
+    </div>
+    <div class="row m-1">Working Info</div>
+    <div class="row">
+        <div class="col m-1">
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Salary</mat-label>
+                    <input type="number" matInput formControlName="salary" #salaryEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['salary']" [controlEl]="salaryEl">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Percentage</mat-label>
+                    <input type="number" matInput formControlName="probationPercentage" #probationPercentageEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['probationPercentage']"
+                    [controlEl]="probationPercentageEl">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Real Salary</mat-label>
+                    <input matInput formControlName="salary" [value]="getRealSalary(true)" readonly>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="col m-1">
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Job Position</mat-label>
+                    <mat-select formControlName="jobPositionId" #jobPositionEl required>
+                        <mat-option *ngFor="let jobPosition of jobPositionSelectOptions"
+                            [value]="jobPosition.value">{{jobPosition.key}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <abp-validation-summary [control]="formGroup.controls['jobPositionId']"
+                    [controlEl]="jobPositionEl._elementRef.nativeElement">
+                </abp-validation-summary>
+            </div>
+            <div class="row">
+                <app-multi-select-box [label]="'Skills'" [list]="skillSelectOptions" [searchPlaceholder]="'Find skill'"
+                    [multiControl]="formGroup.controls.skills">
+                </app-multi-select-box>
+            </div>
+        </div>
+        <div class="col m-1">
+            <div class="row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Onboard Date</mat-label>
+                    <input matInput formControlName="onboardDate" [matDatepicker]="onboardDatePicker" required>
+                    <mat-datepicker-toggle matIconSuffix [for]="onboardDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #onboardDatePicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</form>
+
+<mat-dialog-actions [attr.align]="'end'">
+    <button mat-raised-button [matDialogClose]="{isReload: false}">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSave()" [matDialogClose]="{isReload: true}" [disabled]="canSave()">Save & Close</button>
+    <button mat-raised-button color="primary" (click)="onDirect()" [matDialogClose]="{isReload: false}" [disabled]="canSave()">Save & Continue</button>
+</mat-dialog-actions>

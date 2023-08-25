@@ -1,0 +1,7 @@
+tr td {
+    vertical-align: middle;
+}
+
+:host .card {
+    box-shadow: unset !important;
+}

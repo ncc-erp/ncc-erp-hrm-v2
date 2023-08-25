@@ -1,0 +1,31 @@
+<mat-form-field appearance="outline">
+    <mat-label *ngIf="label != null">{{label}}</mat-label>
+    <mat-select [formControl]="multiControl" [multiple]="true" #multiSelect disableOptionCentering
+        panelClass="myPanelClass">
+        <mat-option>
+            <ngx-mat-select-search [placeholderLabel]="searchPlaceholder" noEntriesFoundLabel="No matching item found" [formControl]="filterControl"></ngx-mat-select-search>
+        </mat-option>
+        <div style="position: sticky; top: 50px; background: white; z-index: 2; margin-top: -10px; padding: 10px;">
+            <div *ngIf="isFilter">
+                <label class="mr-1">Search type: </label>
+                <div class="d-inline">
+                    <mat-radio-group [(ngModel)]="filterOption" aria-label="Select an option">
+                        <mat-radio-button class="mr-2" [value]="0">And</mat-radio-button>
+                        <mat-radio-button [value]="1">Or</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            </div>
+            <div class="skill-list" style="line-height: 30px">
+                <span *ngFor="let item of multiControl?.value; let i = index"
+                    (click)="clearSelected(item, multiControl?.value)" [ngClass]="i%2==0?'bg-secondary':'bg-primary'"
+                    class="m-1 pointer selected-item">
+                    {{item.key}}
+                    <i class="fas fa-times ml-1"> </i>
+                </span>
+            </div>
+        </div>
+        <mat-option *ngFor="let item of filteredItemSubject | async" [value]="item">
+            {{item.key}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>

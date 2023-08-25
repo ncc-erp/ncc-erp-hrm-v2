@@ -1,0 +1,20 @@
+    <div class="fixedHeader">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Selected employees ({{selectedEmployees.length}})</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let employee of selectedEmployees">
+                    <td>
+                        <app-user-info [userData]="employee"></app-user-info>
+                    </td>
+                    <td class="text-center">
+                        <i class="fa-solid fa-xmark fa-lg" (click)="removeSelected(employee)"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>

@@ -1,0 +1,140 @@
+<form class="form-horizontal" autocomplete="off" #branchForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="name" (ngModelChange)="nameChange($event)" [(ngModel)]="branch.name" #name="ngModel"
+                        cdkFocusInitial #nameEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Code:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="code" [(ngModel)]="branch.code" #code="ngModel" #codeEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="code" [controlEl]="codeEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Short name:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="shortName" [(ngModel)]="branch.shortName" #shortName="ngModel" #shortNameEl
+                        required>
+                </mat-form-field>
+                <abp-validation-summary [control]="shortName" [controlEl]="shortNameEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex ">
+            <label class="col-3 mt-2 col-form-label">
+                Name in contract:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="nameInContract" [(ngModel)]="branch.nameInContract" #nameInContract="ngModel" #nameInContractEl>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group d-flex ">
+            <label class="col-3 mt-2 col-form-label">
+                Branch tax code:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="taxCode" [(ngModel)]="branch.companyTaxCode" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group d-flex ">
+            <label class="col-3 mt-2 col-form-label">
+                Branch phone:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="phone" [(ngModel)]="branch.companyPhone" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <label class="col-3 mt-2 col-form-label">
+                CEO Branch:
+            </label>
+            <div class="col-9">
+                <mat-form-field class="w-100 center-flex" appearance="outline">
+                    <mat-select (closed)="searchEmployee=''" name="ceoProjectEmployee" placeholder="select account"
+                        [(ngModel)]="branch.ceoId" #employeeInfo="ngModel">
+                        <mat-form-field class="w-100 px-3 " style="position: sticky; top: 0; z-index: 2; background-color: white;">
+                            <input matInput [(ngModel)]="searchEmployee" name="searchText" placeholder="Search"
+                                (keydown)="$event.stopPropagation()" #search>
+                            {{search.focus()}}
+                        </mat-form-field>
+                        <mat-option *ngFor="let em of listEmployees | listFilter:'fullName': searchEmployee : 'email'"
+                            [value]="em.id">
+                            {{em.fullName}} - {{em.email}}
+                        </mat-option>
+                        <mat-option *ngIf="!listEmployees.length">No data!</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <label class="col-3 mt-2 col-form-label">
+                HR Branch:
+            </label>
+            <div class="col-9">
+                <mat-form-field class="w-100 center-flex" appearance="outline">
+                    <mat-select (closed)="searchEmployee=''" name="hrProjectEmployee" placeholder="select account"
+                        [(ngModel)]="branch.hrId" #employeeInfo="ngModel">
+                        <mat-form-field class="w-100 px-3 " style="position: sticky; top: 0; z-index: 2; background-color: white;">
+                            <input matInput [(ngModel)]="searchEmployee" name="searchText" placeholder="Search"
+                                (keydown)="$event.stopPropagation()" #search>
+                            {{search.focus()}}
+                        </mat-form-field>
+                        <mat-option *ngFor="let em of listEmployees | listFilter:'fullName': searchEmployee : 'email'"
+                            [value]="em.id">
+                            {{em.fullName}} - {{em.email}}
+                        </mat-option>
+                        <mat-option *ngIf="!listEmployees.length">No data!</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <label class="col-3 mt-2">
+                Address:
+            </label>
+            <div class="col-9 pl-2">
+                <textarea class="form-control" matInput name="address" [(ngModel)]="branch.address"></textarea>
+            </div>
+        </div> 
+        <div class="form-group d-flex">
+            <label class="col-3 mt-2 col-form-label">
+                Color:
+            </label>
+            <div class="d-flex align-items-center pl-2">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="color" [(ngModel)]="branch.color">
+                </mat-form-field>
+                <div class="d-flex align-items-center">
+                    <input class="ml-3 color-picker" type="color" name="color" [(ngModel)]="branch.color">
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!branchForm.valid || isLoading"></app-dialog-footer>
+</form>

@@ -1,0 +1,47 @@
+@media (min-width: 769px) {
+    .form-group-left > div{
+        padding-right: 3rem;
+    }
+    .form-group-right > div{
+        padding-left: 3rem;
+    }
+ }
+@media (max-width: 768px) {
+    .form-group-left > div{
+        padding-right: 0;
+    }
+    .form-group-right > div{
+        padding-left: 0;
+    }
+    .card{
+        margin-bottom: 0;
+    }
+    .action {
+        margin-top: 1rem;
+    }
+}
+.section-header{
+    font-weight: 600;
+    color: var(--blue);
+    font-size: 1.1rem;
+}
+app-select-search{
+    width: 100%;
+}
+mat-form-field{
+    width: 100%;
+}
+input.form-control{
+    width: 100%;
+}
+
+.badge{
+    color: white;
+    font-size: 85%;
+    margin-top: 5px;
+}
+
+.note{
+    white-space: pre-line;
+    word-break: break-all;
+}

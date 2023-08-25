@@ -1,0 +1,29 @@
+.job-type div{
+    max-width: 220px;
+    word-wrap: break-word;
+    white-space: pre-line;
+}
+.job-agrs div{
+    max-width: 350px;
+    word-wrap: break-word;
+    white-space: pre-line;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: auto;
+}
+.col-date{
+    min-width: 100px;
+}
+.col-description div{
+    width: 200px;
+    word-wrap: break-word;
+    white-space: pre-line;
+}
+::-webkit-scrollbar {
+    width: 7px;
+}
+#bg-table .fixTableHead {
+    overflow-y: auto;
+    max-height: 72vh;
+}

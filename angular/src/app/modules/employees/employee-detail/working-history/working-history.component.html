@@ -1,0 +1,56 @@
+<div class="row pt-3">
+    <div class="table-responsive">
+        <div class="fixTableHead">
+            <table class="table table-stripped" [busy]="isLoading">
+                <thead>
+                    <tr>
+                        <th class="col-stt">No</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Note</th>
+                        <th>Updated time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let history of listWorkingHistory; let i = index">
+                        <ng-container *ngIf="!history.isEdit">
+                            <td class="text-center">{{i + 1}}</td>
+                            <td class="text-center col-status">
+                                <span [ngClass]="APP_CONST.userStatus[history.status].class">{{APP_CONST.userStatus[history.status].name}}</span>
+                            </td>
+                            <td class="text-center col-date">
+                                <div class="row">
+                                    <div class="full-note col-10">{{history.dateAt| DMYDateFormat}}</div>
+                                    <div class="col-2  text-right" *ngIf="isShowEditDateBtn()">
+                                        <i class="fas fa-edit icon-edit" (click)="onEditDate(history)">
+                                        </i>
+                                    </div>
+                                </div>
+                                </td>
+                            <td class="col-note">
+                                <div class="row">
+                                    <div class="full-note col-10">{{history.note}}</div>
+                                    <div class="col-2  text-right" *ngIf="isShowEditNoteBtn()">
+                                        <i class="fas fa-edit icon-edit" (click)="onEdit(history)">
+                                        </i>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-updatedTime text-center">
+                                {{history.updatedTime | dmyHmDateFormat}}<br>
+                                by <b>{{history.updatedUser}}</b>
+                            </td>
+                            <td class="col-action text-center" >
+                                <btn *ngIf="!history.isNotAllowToDelete && isShowDeleteBtn()"  (click)="onDelete(history.id)" class="btn btn-sm btn-danger">
+                                    Delete
+                                </btn>
+                            </td>
+                           
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

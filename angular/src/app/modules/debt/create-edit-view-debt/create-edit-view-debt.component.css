@@ -1,0 +1,56 @@
+::ng-deep .cdk-overlay-container {
+    z-index: 1040;
+}
+
+.mat-form-field {
+    width: 99%;
+}
+
+.form-horizontal {
+    width: 100%;
+}
+
+@media screen and (min-width:1401px) {
+    .form-control-right div {
+        justify-content: end;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .form-control-right div {
+        justify-content: start;
+    }
+}
+
+.mat-select-disabled .mat-select-value {
+    color: black !important;
+}
+
+.info-wrapper {
+    width: 93%;
+}
+
+.info-wrapper>div>div:nth-child(2) {
+    padding-left: 8rem;
+}
+
+.info-wrapper .row div {
+    font-size: 18px;
+}
+
+.inprogress {
+    color: var(--success);
+}
+
+.done {
+    color: var(--danger)
+}
+
+.breadcrumb-icon {
+    font-size: 1.25rem;
+}
+
+.note-content {
+    word-wrap: break-word;
+    white-space: pre-line;
+}

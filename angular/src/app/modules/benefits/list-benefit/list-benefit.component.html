@@ -1,0 +1,133 @@
+<div class="px-4 pt-1">
+    <div class="breadcrumb header">
+        <div class="mb-1">
+            <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-4">
+                    <app-search [placeholder]="'Search by Name'" [seachText]="searchText"
+                        (onSearch)="onSearchEnter($event)"></app-search>
+                </div>
+                <div class="col-3">
+                    <table-filter [searchable]="true" [filterType]="filterTypeEnum.Dropdown"
+                        [dropdownData]="listBenefitType" [placeholder]="'Benefit type'"
+                        [defaultValue]="DEFAULT_FILTER.type"
+                        (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown, $event, 'type')">
+                    </table-filter>
+                </div>
+                <div class="col-3">
+                    <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="listBenefitStatus"
+                        [placeholder]="'Status'" [defaultValue]="DEFAULT_FILTER.isActive"
+                        (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown, $event, 'isActive')">
+                    </table-filter>
+                </div>
+                <div class="col-2">
+                    <div class="text-right pt-1">
+                        <app-create-button *ngIf="isShowCreateBtn()" (create)="onCreate()"></app-create-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body pb-1">
+            <div class="table-responsive">
+                <div class="fixTableHead">
+                    <table class="table table-striped table-hover" [busy]="isLoading">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">#</th>
+                                <th class="pointer" (click)="onSortChange('name')">Name
+                                    <sortable [name]="'name'" [sortProperty]="sortProperty"
+                                        [sortDirection]="sortDirection"></sortable>
+                                </th>
+                                <th class="pointer" (click)="onSortChange('money')">Money
+                                    <sortable [name]="'money'" [sortProperty]="sortProperty"
+                                        [sortDirection]="sortDirection"></sortable>
+                                </th>
+                                <th  class="type-column">Type</th>
+                                <th class="userCount-column">Employee count
+                                </th>
+                                <th class="pointer createTime-column" (click)="onSortChange('creationTime')" >
+                                    Creation time
+                                    <sortable [name]="'creationTime'" [sortProperty]="sortProperty"
+                                        [sortDirection]="sortDirection"></sortable>
+                                </th>
+                                <th class="isActive-column">Is active</th>
+                                <th class="allEmployee-column">All employee</th>
+                                <th class="col-action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let benefit of benefitList | paginate: {
+                                id: 'server',
+                                itemsPerPage: pageSize,
+                                currentPage: pageNumber,
+                                totalItems: totalItems
+                              }; let i = index">
+                                <td class="text-center">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                <td class="align-middle">
+                                    <a *ngIf="isAllowRoutingDetail()" class="hyperlink" 
+                                    [routerLink]="['/app','benefits','list-benefit','benefit-detail','benefit-employee']" 
+                                    [queryParams]="{id: benefit.id,
+                                        name: benefit.name,
+                                        active: benefit.isActive,
+                                        type: benefit.type}"
+                                    >{{benefit.name}}</a>
+                                    <span *ngIf="!isAllowRoutingDetail()">{{benefit.name}}</span>
+                                </td>
+                                <td class="text-right align-middle"><strong>{{benefit.money |number:"1.0"}}</strong></td>
+                                <td class="text-center align-middle text-bold" [ngStyle]="{color: APP_ENUM.BenefitTypeColor[benefit.type]}">{{benefit.benefitTypeName}}</td>
+                                <td class="text-center align-middle"> <strong>{{benefit.userCount}}</strong></td>
+                                <td class="text-center align-middle">{{benefit.creationTime | dmyHmDateFormat}}
+                                    <div *ngIf="benefit.creatorUser">
+                                        by  <strong>{{benefit.creatorUser}}</strong>
+                                    </div>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <i class="fa-solid fa-check text-success fa-lg" *ngIf="benefit.isActive"></i>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <i class="fa-solid fa-check text-success fa-lg"
+                                        *ngIf="benefit.isBelongToAllEmployee"></i>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <div style="visibility: hidden; position: fixed"
+                                        [style.left]="contextMenuPosition.x" [style.top]="contextMenuPosition.y"
+                                        [matMenuTriggerFor]="menu"></div>
+                                    <button mat-button [matMenuTriggerFor]="menu">
+                                        <i class="fas fa-bars fa-lg"></i>
+                                    </button>
+                                    <mat-menu #menu="matMenu" class="p-2">
+                                        <button (click)="onUpdate(benefit)" class="mat-menu-item  w-100 "
+                                            *ngIf="benefit.isActive && isShowEditBtn()">
+                                            <i class="fas fa-pencil-alt mr-1"></i>
+                                            Edit
+                                        </button>
+                                        <button (click)="onDelete(benefit)" class="mat-menu-item  w-100 "
+                                            *ngIf="benefit.isActive && isShowDeleteBtn()">
+                                            <i class="fas fa-trash fa-lg mr-1"></i>
+                                            Delete
+                                        </button>
+                                        <button *ngIf="benefit.isActive && isShowDeactiveBtn()" mat-menu-item
+                                            (click)="onStatusUpdate(benefit,false)">
+                                            <i class="fa-solid fa-xmark mr-1"></i>DeActive
+                                        </button>
+                                        <button *ngIf="!benefit.isActive && isShowActiveBtn()" mat-menu-item
+                                            (click)="onStatusUpdate(benefit,true)">
+                                            <i class="fa-solid fa-check mr-1"></i> Active
+                                        </button>
+                                    </mat-menu>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                (pageAction)="pageControlActions($event)"></pagination-control>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,176 @@
+<abp-modal-header [title]="'Edit employee contract'" (onCloseClick)="dialogRef.close()">
+</abp-modal-header>
+<form novalidate #editContractForm="ngForm" id="editContractForm">
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Contract code
+                </label>
+            </div>
+            <div class="col-9">
+                <input class="form-control"  name="contractCode" [(ngModel)]="employeeContract.code"
+                    #code="ngModel" #codeEl required>
+                <abp-validation-summary  [controlEl]="codeEl" [control]="code">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Usertype
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="userType" [(ngModel)]="employeeContract.userType" #userType="ngModel" required>
+                        <mat-option *ngFor="let item of userTypeList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-error class="mt-1" *ngIf="userType.hasError('required') && userType.touched"
+                 style="font-size: 13px;">
+                This field is required
+                </mat-error>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Start Date
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline" >
+                    <input matInput [(ngModel)]="employeeContract.startDate"
+                        [matDatepicker]="pickerStartDate" name="contractStartDate" required
+                        #contractStartDateEl>
+                    <mat-datepicker-toggle matSuffix [for]="pickerStartDate">
+                    </mat-datepicker-toggle>
+                    <mat-error class="mt-3">This field is required</mat-error>
+                    <mat-datepicker #pickerStartDate panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+                <abp-validation-summary  [control]="pickerStartDate"
+                                [controlEl]="contractStartDateEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <div class="col-form-label col-3">
+                <label>
+                    End Date
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <input matInput [(ngModel)]="employeeContract.endDate"
+                        [matDatepicker]="pickerEndDate" name="contractEndDate"
+                        #contractEndDateEl>
+                    <mat-datepicker-toggle matSuffix [for]="pickerEndDate">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #pickerEndDate panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Basic Salary
+                </label>
+            </div>
+            <div class="col-9">
+                <input class="form-control" (keyup)="onChange($event)"  
+                name="basicSalaryContract" type="text" mask="separator.0" thousandSeparator=","  required
+                [(ngModel)]="employeeContract.basicSalary" #basicSalary = "ngModel"
+                #basicSalaryEl />
+                <abp-validation-summary  [controlEl]="basicSalaryEl" [control]="basicSalary">
+                </abp-validation-summary>
+            </div>
+        </div>
+        
+
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Probation (%)
+                </label>
+            </div>
+            <div class="col-9">
+                <input  class="form-control" type="text" mask="percent" suffix="%" 
+                        name="probationPercentageContract" (keyup)="onChange($event)" required
+                        [(ngModel)]="employeeContract.probationPercentage" #probationPercentage = "ngModel" #probationPercentageEl>
+                <abp-validation-summary  [controlEl]="probationPercentageEl" [control]="probationPercentage">
+                </abp-validation-summary>
+            </div>
+        </div>
+
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Real Salary
+                </label>
+            </div>
+            <div class="col-9">
+                <input class="form-control"  
+                name="realSalaryContract" 
+                type="text" mask="separator.0" 
+                thousandSeparator="," 
+                [(ngModel)]="employeeContract.realSalary"
+                #realSalary = "ngModel"
+                #realSalaryEl
+                required
+                />
+                <abp-validation-summary  [controlEl]="realSalaryEl" [control]="realSalary">
+                </abp-validation-summary>
+            </div>
+        </div>
+        
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Position
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="position" [(ngModel)]="employeeContract.jobPositionId" #position="ngModel" required>
+                        <mat-option *ngFor="let item of positionList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-error class="mt-1" *ngIf="position.hasError('required') && position.touched"
+                                        style="font-size: 13px;">
+                                        This field is required
+                </mat-error>
+            </div>
+        </div>
+        
+        <div class="form-group d-flex required">
+            <div class="col-form-label col-3">
+                <label>
+                    Level
+                </label>
+            </div>
+            <div class="col-9">
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-select name="level" [(ngModel)]="employeeContract.levelId" required>
+                        <mat-option *ngFor="let item of levelList" [value]="item.value">
+                            {{item.key}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        
+    </div>
+    <div class="modal-footer btn-footer">
+        <button class="btn btn-secondary ml-2" (click)="dialogRef.close()">
+            Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="!editContractForm.valid ||isLoading" (click)="onSave()">Save</button>
+    </div>
+</form>

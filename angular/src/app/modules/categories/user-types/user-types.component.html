@@ -1,0 +1,39 @@
+<div class="px-4 pt-1">
+    <div class="breadcrumb">
+        <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+    </div>
+    <div class="card">
+        <div class="card-body pb-1">
+            <div class="table-responsive">
+                <div class="fixTableHead">
+                    <table class="table table-striped table-hover" [busy]="isLoading">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">#</th>
+                                <th>Name</th>
+                                <th>Short name</th>
+                                <th>Code</th>
+                                <th>Color</th>
+                                <th>Contract Period</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let type of userTypeList;let i = index">
+                                <td class="text-center">{{(pageNumber-1)*pageSize+i+1}}</td>
+                                <td>{{type.name}}</td>
+                                <td>{{type.shortName}}</td>
+                                <td>{{type.code}}</td>
+                                <td class="col-color text-center">
+                                    <span class="badge text-white" [style.backgroundColor]="type.color">
+                                        {{type.color}}
+                                    </span>
+                                </td>
+                                <td class="text-center">{{type.contractPeriodMonth}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

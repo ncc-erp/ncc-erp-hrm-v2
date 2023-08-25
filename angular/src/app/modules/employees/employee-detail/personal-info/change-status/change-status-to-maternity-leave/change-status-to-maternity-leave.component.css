@@ -1,0 +1,60 @@
+.list-benefits-text{
+    padding-bottom: 0px !important;
+}
+.remove-benefit{
+    font-weight: 600;
+    padding-top: 12px;
+}
+.list-benefits{
+    max-height: 80vh !important;
+    overflow: auto;
+}
+.col-form-label{
+    margin-top: 0px;
+}
+::ng-deep .change-working-status .btn-footer-action{
+    margin-top: 25px;
+}
+
+::ng-deep .change-working-status .mat-tab-header{
+    margin: 0px 16px;
+}
+
+.title-side{
+    font-size: 17px !important;
+}
+
+.title-side label{
+    font-size:  14px !important;
+}
+
+.change-status-side{
+    padding: 0px 16px;
+}
+
+.change-benefit-side{
+    padding: 0px 14px;
+}
+/* .current-side{
+    box-shadow: 5px 0 5px -5px rgba(0 0 0 /13%);
+}
+.new-side{
+    padding-left: 20px !important;
+} */
+table td, th{
+    border: none;
+    vertical-align: middle;
+}
+.stt-header {
+    border-left: 1px solid rgba(204, 204, 204, 0.35);;
+}
+.end-date-header {
+    border-right: 1px solid rgba(204, 204, 204, 0.35);
+}
+.list-benefits{
+    padding: 0px 8px;
+}
+.list-benefits .fixTableHead {
+    overflow-y: auto;
+    max-height: 70vh !important;
+}

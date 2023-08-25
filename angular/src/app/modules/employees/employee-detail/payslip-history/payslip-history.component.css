@@ -1,0 +1,24 @@
+thead th{
+    vertical-align: middle;
+}
+tbody td{
+    vertical-align: middle;
+}
+ul{
+    padding-inline-start: 1rem;
+    margin-bottom: 0;
+}
+.col-action{
+    width: 80px;
+}
+.col-employee{
+    min-width: 250px;
+}
+
+.td-employee{
+    padding:0;
+}
+
+.col-userInfo {
+    min-width: 150px;
+}

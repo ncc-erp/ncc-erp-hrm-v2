@@ -1,0 +1,16 @@
+<app-dialog-header [dialogTitle]="'Edit note'">
+</app-dialog-header>
+<div class="p-3">
+    <div class="form-group">
+        <label class="col-form-label">
+            Note:
+        </label>
+        <mat-form-field cdkFocusInitial class="w-100" appearance="outline">
+            <textarea [(ngModel)]="statusHistoryNote.note" matInput></textarea>
+        </mat-form-field>
+    </div>
+</div>
+<div mat-dialog-actions [align]="'end'">
+    <button class="btn btn-secondary mr-2" (click)="onClose()">Cancel</button>
+    <button class="btn btn-primary" (click)="onSave()">Save</button>
+</div>

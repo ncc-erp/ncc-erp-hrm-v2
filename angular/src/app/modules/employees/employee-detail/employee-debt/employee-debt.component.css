@@ -1,0 +1,29 @@
+thead tr th {
+    vertical-align: middle;
+}
+
+tbody tr td {
+    vertical-align: middle;
+}
+
+.col-note {
+    word-wrap: break-word;
+    white-space: pre-line;
+}
+
+.fixTableHead {
+    max-height: 70vh;
+}
+
+td {
+    width: 1%;
+}
+
+td:last-child {
+    min-width: 200px;
+}
+
+tbody tr {
+    min-height: 42px;
+    padding: 5px 0px;
+}

@@ -1,0 +1,65 @@
+<div class="px-4 pb-2">
+    <div class="breadcrumb header">
+        <div class="w-100 d-flex justify-content-between">
+            <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+            <div>
+                <button [disabled]="isLoading" (click)="OnSyncToAllEmployees()" _ngcontent-fqs-c454="" class="mat-menu-trigger btn btn-warning mr-2 ng-star-inserted" ng-reflect-menu="[object Object]" aria-haspopup="true">
+                    Sync all employees to other tools
+                </button>    
+                <app-create-button *ngIf="isShowCreateBtn()" (create)="onCreate()"></app-create-button>
+                <button class="btn btn-success ml-2" (click)="onExport()" *ngIf="isShowExportBtn()">
+                    <i class="fa-solid fa-download mr-1"></i>
+                    Export employee
+                </button>
+                <button class="btn btn-success ml-2" (click)="exportStatistic()">
+                    <i class="fa-solid fa-download mr-1"></i>
+                    Export Statistic
+                </button>
+                <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+                [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="menu"></div>
+                <button *ngIf="isShowImportEmployee()"
+                 [matMenuTriggerFor]="menu" class="btn btn-warning ml-2">
+                    <i class="fas fa-upload mr-1"></i>
+                    Import employee
+                </button>
+                <mat-menu #menu="matMenu" class="p-2">
+                    <button *ngIf="isShowDownCreateTemp()" class="mat-menu-item" (click)="getCreateTemp()">
+                        <i class="fa-solid fa-download mr-1"></i>
+                        Download Template create
+                    </button>
+                    <button *ngIf="isShowDownUpdateTemp()" class="mat-menu-item"  (click)="getUpdateTemp()">
+                        <i class="fa-solid fa-download mr-1"></i>
+                        Download Template update
+                    </button>
+
+                    <button *ngIf="isShowCreateEmpByFile()" class="mat-menu-item" (click)="onCreateEmployeeFromFile()">
+                        <i class="fa-solid fa-square-plus mr-1"></i>
+                        <span>Create Employee</span>
+
+                    </button>
+                    <button *ngIf="isShowUpdateEmpByFile()" class="mat-menu-item" (click)="onUpdateEmployeeFromFile()">
+                        <i class="fa-solid fa-pen-to-square mr-1"></i>
+                        <span>Update employee</span>
+                    </button>
+                </mat-menu>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-0">
+        <div id="listEmployee">
+            <div class="px-4 pt-3 d-flex">
+                <div class="p-0 w-100">
+                    <app-employee-filter [isOnDialog]="false" (onSearch)="onSearchEnter($event)"
+                    (onMultiFilterWithCondition)="onMultiFilterWithCondition($event)"
+                    (onMultiFilter)="onMultiFilter($event)"
+                    (onFilterBySeniority)="onFilterBySeniority($event)"
+                    (onDateSelectorChange)="onDateSelectorChange($event)"
+                    (onFilter)="onFilter($event)" #employeeFilter
+                    [isExistFilterBirthday]="true"></app-employee-filter>
+                </div>
+            </div>
+            <app-list-employee [isOnDialog]="false" #listEmployee></app-list-employee>
+        </div>
+    </div>
+</div>
+

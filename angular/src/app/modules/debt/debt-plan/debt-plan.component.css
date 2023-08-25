@@ -1,0 +1,58 @@
+.col-updateTime {
+    width: 140px;
+}
+
+.btn-accept {
+    font-size: x-large;
+    color: var(--success)
+}
+
+.btn-cancel {
+    font-size: x-large;
+    color: var(--danger)
+}
+
+.btn-accept:hover,
+.btn-cancel:hover {
+    filter: brightness(0.8);
+}
+
+td,
+th {
+    vertical-align: middle !important;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.col-date {
+    max-width: 160px;
+}
+
+.col-date .mat-form-field {
+    max-width: 98%;
+}
+
+.col-money {
+    max-width: 140px;
+}
+
+.col-stt {
+    width: 1%;
+}
+
+.col-note {
+    min-width: 180px;
+    white-space: pre-line;
+    word-wrap: break-word;
+}
+
+.col-note .mat-form-field {
+    max-width: 100%;
+}
+
+.col-action {
+    min-width: 120px;
+    max-width: 130px;
+}

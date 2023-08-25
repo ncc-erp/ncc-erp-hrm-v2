@@ -1,0 +1,12 @@
+<i [matMenuTriggerFor]="menu" class="fa-solid fa-gear"></i>
+<mat-menu #menu="matMenu">
+    <div class="px-3 py-2">
+        Toogle column
+    </div>
+    <div class="px-3 py-2 d-flex" *ngFor="let column of columnList">
+        <mat-checkbox [checked]="column.isShow" (click)="$event.stopPropagation()" class="checkbox"
+            (change)="onColumnToggle(column,$event)"></mat-checkbox>
+            <input (click)="$event.stopPropagation()" type="text" class="form-control ml-2" [(ngModel)]="column.displayName"
+            (ngModelChange)="onColumnNameChange()">
+    </div>
+</mat-menu>

@@ -1,0 +1,62 @@
+<form class="form-horizontal" #jobPositionForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title"></app-dialog-header>
+    <div class="p-3">
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Name:
+            </label>
+            <div class="col-9 pl-2" >
+                <mat-form-field class="common-input" appearance="outline">
+                    <input matInput name="name" (ngModelChange)="nameChange($event)" [(ngModel)]="jobPosition.name" #name="ngModel" cdkFocusInitial #nameEl required/>
+                </mat-form-field>
+                <abp-validation-summary [control]="name" [controlEl]="nameEl"></abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Short name:
+            </label>
+            <div class="col-9 pl-2">
+                <mat-form-field class="common-input" appearance="outline">
+                    <input matInput name="shortName" [(ngModel)]="jobPosition.shortName" #shortName="ngModel" #shortNameEl required/>
+                </mat-form-field>
+                <abp-validation-summary [control]="shortName" [controlEl]="shortNameEl"></abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex required">
+            <label class="col-3 mt-2 col-form-label">
+                Code:
+            </label>
+            <div class="col-9 pl-2">
+                <mat-form-field class="common-input" appearance="outline">
+                    <input matInput name="code" [(ngModel)]="jobPosition.code" #code="ngModel" #codeEl required/>
+                </mat-form-field>
+                <abp-validation-summary [control]="code" [controlEl]="codeEl"></abp-validation-summary>
+            </div>
+        </div>
+        <div class="form-group d-flex ">
+            <label class="col-3 mt-2 col-form-label">
+                Name in contract:
+            </label>
+            <div class="col-9">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="nameInContract" [(ngModel)]="jobPosition.nameInContract" #nameInContract="ngModel" #nameInContractEl>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group d-flex">
+            <label class="col-3 mt-2 col-form-label">
+                Color:
+            </label>
+            <div class="d-flex align-items-center pl-2">
+                <mat-form-field appearance="outline" class="common-input">
+                    <input matInput name="color" [(ngModel)]="jobPosition.color">
+                </mat-form-field>
+                <div class="d-flex align-items-center">
+                    <input class="ml-3 color-picker" type="color" name="color" [(ngModel)]="jobPosition.color">
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!jobPositionForm.valid || isLoading"></app-dialog-footer>
+</form>

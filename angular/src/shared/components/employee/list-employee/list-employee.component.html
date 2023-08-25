@@ -1,0 +1,103 @@
+<div class="card-body pt-2 pb-1 row">
+    <div class="table-wrapper w-100" [ngClass]="isOnDialog ? 'col-9' : ''">
+        <div class="table-responsive">
+            <div class="fixedHeader">
+                <table class="table table-striped table-hover" [busy]="isLoading">
+                    <thead>
+                        <tr>
+                            <th *ngIf="isOnDialog" class="col-stt">
+                                <mat-checkbox [indeterminate]="someChecked()" [(ngModel)]="allSelected" [color]="primary"
+                                    (change)="selectAll($event.checked)">
+                                </mat-checkbox>
+                            </th>
+                            <th *ngIf="columnList[0].isShow" style="width: 50px;">
+                                #
+                            </th>
+                            <th class="pointer" *ngIf="columnList[1].isShow" (click)="onSortChange('email')">
+                                {{columnList[1].displayName}}
+                                <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                    [sortDirection]="sortDirection"></sortable>
+                            </th>
+                            <th  style="width: 120px;" (click)="onSortChange('birthday')" *ngIf="columnList[1].isShow">{{columnList[2].displayName}}
+                                <sortable [name]="'birthday'" [sortProperty]="sortProperty"
+                                [sortDirection]="sortDirection"></sortable>
+                            </th>
+                            <th *ngIf="columnList[2].isShow">{{columnList[3].displayName}}</th>
+                            <th *ngIf="columnList[3].isShow">{{columnList[4].displayName}}</th>
+                            <th  style="width: 120px; white-space: nowrap;" *ngIf="columnList[4].isShow">
+                                {{columnList[5].displayName}} 
+                            </th>
+
+                            <th (click)="onSortChange('updatedTime')" style="width: 155px;" *ngIf="columnList[5].isShow">{{columnList[6].displayName}}
+                                <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
+                                [sortDirection]="sortDirection"></sortable>
+                            </th>
+                            <th *ngIf="!isOnDialog" style="width: 100px;">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let employee of employeeList | paginate: {
+                        id: 'employee-dialog',
+                        itemsPerPage: pageSize,
+                        currentPage: pageNumber,
+                        totalItems: totalItems
+                      }; let i = index">
+
+                            <td *ngIf="isOnDialog" class="text-center">
+                                <mat-checkbox [(ngModel)]="employee.selected" [color]="'primary'"
+                                    (change)="onEmployeeSelect(employee)">
+                                </mat-checkbox>
+                            </td>
+                            <td class="text-center" *ngIf="columnList[0].isShow">{{(pageNumber-1)*pageSize+i+1}}</td>
+                            <td *ngIf="columnList[1].isShow">
+                                <app-user-info 
+                                    [isAllowAvatarRouting]="isAllowRoutingDetail()"
+                                    [isAllowRouting]="isAllowRoutingDetail()"   
+                                    [link]="['/app/employees/list-employee/employee-detail/personal-info']" 
+                                    [queryParams]="{id:employee.id}" 
+                                    [userData]="employee">
+                                </app-user-info>
+                            </td>
+                            <td class="text-center" >{{employee.birthday | DMYDateFormat}}</td>
+                            <td class="text-center" *ngIf="columnList[2].isShow"><span
+                                    [ngClass]="employee.status | userStatus: true">
+                                    {{employee.status | userStatus}}
+                                </span></td>
+                            <td innerHtml="{{employee.teams | team}}" *ngIf="columnList[3].isShow"></td>
+                            <td class="text-center" *ngIf="columnList[4].isShow" [innerHTML]="employee.countSeniority">
+                            </td>
+                            <td class="text-center" *ngIf="columnList[5].isShow">
+                                <div>{{employee.updatedTime |dmyHmDateFormat}}</div>
+                                <div *ngIf="employee.updatedUser">by <strong>{{employee.updatedUser}}</strong></div>
+                            </td>
+                            <td *ngIf="!isOnDialog" class="text-center">
+                                <button mat-button [matMenuTriggerFor]="menu" *ngIf="isShowEditBtn() || isShowDeleteBtn() || isShowUploadAvatarBtn()">
+                                    <i class="fas fa-bars fa-lg"></i>
+                                </button>
+                                <mat-menu #menu="matMenu" class="p-2">
+                                    <button *ngIf="isShowEditBtn()" [routerLink]="['/app','employees', 'list-employee','employee-detail','personal-info']" [queryParams]="{id:employee.id, isEdit: true}" class="mat-menu-item  w-100">
+                                        <i class="fa-solid fa-pen-to-square mr-1"></i>Edit
+                                    </button>
+                                    <button *ngIf="isShowDeleteBtn()" class="mat-menu-item   w-100" (click)="onDelete(employee)">
+                                        <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                                    </button>
+                                    <button *ngIf="isShowUploadAvatarBtn()" class="mat-menu-item  w-100 " (click)="onUpdateAvatar(employee)">
+                                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i>Upload Avatar</button>
+
+                                </mat-menu>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType" [id]="'employee-dialog'"
+            (pageAction)="pageControlActions($event)"></pagination-control>
+    </div>
+    <div [ngClass]="isOnDialog ? 'col-3' : ''" *ngIf="isOnDialog">
+        <app-selected-employee (deselectEmployee)="onDeselectEmployee($event)" [employeeList]="employeeList" [selectedEmployees]="selectedEmployees">
+        </app-selected-employee>
+    </div>
+</div>

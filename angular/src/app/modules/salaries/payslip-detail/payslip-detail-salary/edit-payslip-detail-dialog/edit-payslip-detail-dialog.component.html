@@ -1,0 +1,142 @@
+<form class="form-horizontal" autocomplete="off" #PayslipForm="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div *ngIf="input" class="p-3 row">
+        <div class="col-md-6">
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Leave day before:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="leavedaybefore" [(ngModel)]="input.remainLeaveDayBefore" #leavedaybefore="ngModel"
+                            cdkFocusInitial #leavedaybeforeEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="leavedaybefore" [controlEl]="leavedaybeforeEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Leave day added:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="addedLeaveDay" [(ngModel)]="input.addedLeaveDay" #addedLeaveDay="ngModel"
+                            cdkFocusInitial #addedLeaveDayEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="addedLeaveDay" [controlEl]="addedLeaveDayEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Refund leave day:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="refundLeaveDay" [(ngModel)]="input.refundLeaveDay" #refundLeaveDay="ngModel"
+                            cdkFocusInitial #refundLeaveDayEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="refundLeaveDay" [controlEl]="refundLeaveDayEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Remaining leave day:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="remainLeaveDayAfter" [(ngModel)]="input.remainLeaveDayAfter" #remainLeaveDayAfter="ngModel"
+                            cdkFocusInitial #remainLeaveDayAfterEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="remainLeaveDayAfter" [controlEl]="remainLeaveDayAfterEl">
+                    </abp-validation-summary>
+                </div>
+            </div>            
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Opentalk Count:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="opentalkCount" [(ngModel)]="input.opentalkCount" #opentalkCount="ngModel"
+                            cdkFocusInitial #opentalkCountEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="opentalkCount" [controlEl]="opentalkCountEl">
+                    </abp-validation-summary>
+                </div>
+            </div>           
+        </div>
+        <div class="col-md-6">
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Normal working day:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="normalDay" [(ngModel)]="input.normalDay" #normalDay="ngModel"
+                            cdkFocusInitial #normalDayEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="normalDay" [controlEl]="normalDayEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Off day:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="offDay" [(ngModel)]="input.offDay" #offDay="ngModel"
+                            cdkFocusInitial #offDayEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="offDay" [controlEl]="offDayEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    OT hour (đã nhân hệ số):
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput name="otHour" [(ngModel)]="input.otHour" #otHour="ngModel"
+                            cdkFocusInitial #otHourEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="otHour" [controlEl]="otHourEl">
+                    </abp-validation-summary>
+                </div>
+            </div>          
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    Normal salary:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput mask="separator.0" thousandSeparator="," name="normalSalary" [(ngModel)]="input.normalSalary" #normalSalary="ngModel"
+                            cdkFocusInitial #normalSalaryEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="normalSalary" [controlEl]="normalSalaryEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+            
+            <div class="form-group d-flex required">
+                <label class="col-md-3 mt-2 col-form-label">
+                    OT salary:
+                </label>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="common-input">
+                        <input matInput mask="separator.0" thousandSeparator="," name="otSalary" [(ngModel)]="input.otSalary" #otSalary="ngModel"
+                            cdkFocusInitial #otSalaryEl required>
+                    </mat-form-field>
+                    <abp-validation-summary [control]="otSalary" [controlEl]="otSalaryEl">
+                    </abp-validation-summary>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="saveAndClose()" [isDisable]="!PayslipForm.valid || isLoading"></app-dialog-footer>
+</form>

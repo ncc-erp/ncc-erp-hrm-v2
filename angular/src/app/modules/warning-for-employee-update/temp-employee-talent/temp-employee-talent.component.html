@@ -1,0 +1,171 @@
+<div class="content px-4 pt-1">
+    <section class="header">
+        <div class="breadcrumb header">
+            <div class="w-100 d-flex justify-content-between">
+                    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                    <button class="btn btn-primary ml-2" *ngIf="isShowCreateBtn()" (click)="onCreateAll()">
+                        <i class="fa-solid fa-square-plus mr-1"></i>
+                        Create Employees
+                    </button>
+            </div>
+        </div>
+    </section>
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-5 pt-2">
+                        <app-search [placeholder]="'Search by Name or Email'" (onSearch)="onSearchEnter($event)">
+                        </app-search>
+
+                        <mat-checkbox *ngIf="isShowCheckbox()" [(ngModel)] = 'isShowSalary' class="mt-2 pt-3"  color="primary">
+                            Show Salary
+                        </mat-checkbox>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <div class="col-6 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="userTypeList"
+                                     [placeholder]="'User type'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.UserType)">
+                                </table-filter>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList" [placeholder]="'Branch'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                                </table-filter>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="positionList"
+                                    [placeholder]="'Job position'"
+                                    (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.JobPosition)">
+                                </table-filter>
+                            </div>
+                            <div class="mt-2 col-6">
+                                <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="statusList" [placeholder]="'Status'"
+                                [defaultValue]="APP_ENUM.TalentOnboardStatus.AcceptedOffer"
+                                (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Status)">
+                               </table-filter>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body mt-4 pb-1 row">
+                    <div class="table-wrapper w-100">
+                        <div class="table-responsive">
+                            <div class="fixedHeader">
+                                <table class="table table-striped table-hover" [busy]="isLoading">
+                                    <thead>
+                                        <th>
+                                            <mat-checkbox color="primary" [checked]="allSelected" [indeterminate]="someSelected()"
+                                                (change)="onSetAll($event.checked)" *ngIf="isShowCreateBtn()"></mat-checkbox>
+                                        </th>
+                                        <th class="pointer" (click)="onSortChange('fullName')">
+                                            Employee
+                                            <sortable [name]="'fullName'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th>
+                                            NCC email
+                                        </th>
+                                        <th>
+                                            Position
+                                        </th>
+                                        <th *ngIf="isShowSalary" class="text-nowrap pointer" (click)="onSortChange('salary')">
+                                            Salary
+                                            <sortable [name]="'salary'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th class="probation-col">
+                                            Probation
+                                            <div>(%)</div>
+                                        </th>
+                                        <th class="text-nowrap pointer" (click)="onSortChange('onboardDate')">
+                                            Onboard date
+                                            <sortable [name]="'onboardDate'" [sortProperty]="sortProperty"
+                                            [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th  (click)="onSortChange('updatedTime')">
+                                            Updated Time
+                                            <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
+                                                [sortDirection]="sortDirection"></sortable>
+                                        </th>
+                                        <th>Action</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let temp of controlTempEmployee| paginate: {
+                                                                            id: 'server',
+                                                                            itemsPerPage: pageSize,
+                                                                            currentPage: pageNumber,
+                                                                            totalItems: totalItems,
+                                                                            sort : 'updatedTime',
+                                                                            sortDirection : 1
+                                                                          }">
+                                            <td class="text-center align-middle" *ngIf="isShowCreateBtn()">
+                                                <mat-checkbox *ngIf="isShowEditEmployeeBtn(temp.employee)" color="primary" [(ngModel)]="temp.isSelected" (ngModelChange)="updateAllSelected()"></mat-checkbox>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <app-user-info [userData]="temp.employee"></app-user-info>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <app-input-on-cell [isEdit]="temp.isEdited" [form-control]="temp.formControl.nccEmail"></app-input-on-cell>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <app-input-on-cell [isEdit]="temp.isEdited" [form-control]="temp.formControl.jobPosition" [list]="positionList"></app-input-on-cell>
+                                            </td>
+                                            <td *ngIf="isShowSalary" class="text-center align-middle">
+                                                <span>{{temp.employee.salary | moneyFormat}}</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                {{temp.employee.probationPercentage}}
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                {{temp.employee.onboardDate | DMYDateFormat}}
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span
+                                                    [ngClass]="temp.employee.onboardStatus == APP_ENUM.TalentOnboardStatus.Onboarded ? 'bg-success'
+                                                                                        : temp.employee.onboardStatus == APP_ENUM.TalentOnboardStatus.AcceptedOffer  ? 'bg-primary' : 'bg-secondary'"
+                                                    class="badge badge-pill">
+                                                    {{temp.employee.statusName}}
+                                                </span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <p class="mb-0 mt-2">{{temp.employee.updatedTime | dmyHmDateFormat}}</p>
+                                                <p>by<b> {{temp.employee.updatedUser}}</b></p>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <div class="row flex-nowrap justify-content-center">
+                                                    <div class="m-1" *ngIf="isShowCreatEmployeeBtn(temp.employee) && isShowCreateBtn()">
+                                                        <i class="fa-solid fa-xl fa-user-gear text-blue ml-1" (click)="confirm(temp)"
+                                                            [matTooltip]="'Employee Detail'"></i>
+                                                    </div>
+                                                    <div class="m-1" *ngIf="isShowEditEmployeeBtn(temp.employee) && isShowEditBtn() && !temp.isEdited">
+                                                        <i class="fa-solid fa-user-pen fa-xl text-green" (click)="onEdit(temp)" [matTooltip]="'Edit Employee'"></i>
+                                                    </div>
+                                                    <div class="m-1" *ngIf="isShowEditEmployeeBtn(temp.employee) && isShowEditBtn() && temp.isEdited">
+                                                        <i class="fa-solid fa-floppy-disk fa-xl text-green" (click)="onEdit(temp)" [matTooltip]="'Save Employee'"></i>
+                                                    </div>
+                                                    <div class="m-1" *ngIf="isShowDeleteBtn(temp.employee)">
+                                                        <i class="fa-solid fa-user-minus fa-xl text-danger" (click)="delete(temp.employee)"
+                                                            [matTooltip]="'Delete Employee'"></i>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                        (pageAction)="pageControlActions($event)"></pagination-control>
+                </div>
+            </div>
+        </div>
+    </div>

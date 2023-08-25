@@ -1,0 +1,112 @@
+<div class="row pt-3">
+  <div class="table-responsive">
+    <div class="fixTableHead">
+      <table class="table table-stripped" [busy]="isLoading">
+        <thead>
+          <tr>
+            <th rowspan="2" class="col-stt">
+              No
+            </th>
+            <th class="from" colspan="2">
+              From
+            </th>
+            <th class="to" colspan="2">
+              To
+            </th>
+            <th rowspan="2">Apply date</th>
+            <th rowspan="2">Type</th>
+            <th rowspan="2">Contract code</th>
+            <th rowspan="2">Request</th>
+            <th rowspan="2">Note</th>
+            <th rowspan="2">Updated Time</th>
+            <th rowspan="2">Action</th>
+          </tr>
+          <tr>
+            <th>Salary</th>
+            <th>User type - Level</th>
+            <th>Salary</th>
+            <th>User type - Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let history of listSalaryHistory;let i = index ">
+            <ng-container *ngIf="!history.isEdit">
+              <td class="text-center">{{i+1}}</td>
+              <td class="text-right col-salary">{{history.fromSalary | moneyFormat}}</td>
+              <td class="text-center col-userType">
+                <span class="badge text-white"
+                  [ngStyle]="{backgroundColor: history.fromUserTypeInfo.color}">{{history.fromUserTypeInfo.name}}
+                </span>
+                <span class="badge text-white ml-2"
+                  [ngStyle]="{backgroundColor: history.fromLevelInfo.color}">{{history.fromLevelInfo.name}}
+                </span>
+              </td>
+              <td class="text-right col-salary">{{history.toSalary | moneyFormat}}</td>
+              <td class="text-center col-userType">
+                <span class="badge text-white"
+                  [ngStyle]="{backgroundColor: history.toUserTypeInfo.color}">{{history.toUserTypeInfo.name}}
+                </span>
+                <span class="badge text-white ml-2"
+                  [ngStyle]="{backgroundColor: history.toLevelInfo.color}">{{history.toLevelInfo.name}}</span>
+              </td>
+              <td class="text-center col-applyDate">{{history.applyDate | DMYDateFormat}}</td>
+              <td class="text-center">{{history.typeName}}</td>
+              <td class="text-center col-code">{{history.contractCode}}</td>
+              <td class="col-request">
+                <div *ngIf="history.request">
+                  <div>
+                    <a [routerLink]="['/app','salary-change-requests','list-request','request-detail']"
+                      [queryParams]="{requestId: history.request?.id}" class="hyperlink">#{{history.request?.name}}</a>
+                  </div>
+                  <div class="text-right">
+                    <span class="badge badge-pill text-white"
+                      [ngStyle]="{backgroundColor:LIST_REQUEST_STATUS[history.request?.status]?.color}">{{LIST_REQUEST_STATUS[history.request?.status]?.key}}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="col-note">
+                <div class="row">
+                  <div class="note-content col-10">
+                    {{history.note}}
+                  </div>
+                  <div class="col-2 d-flex align-items-center text-right" *ngIf="isShowEditBtn()">
+                    <i class="fas fa-edit icon-edit mr-2" (click)="onEditNote(history)">
+                    </i>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center col-updateTime">
+                {{history.updatedTime | dmyHmDateFormat}}<br>
+                by <b>{{history.updatedUser}}</b>
+              </td>
+              <td class="text-center col-action">
+                <div style="visibility: hidden; position: fixed;" [style.left]="contextMenuPosition.x" [style.top]="contextMenuPosition.y"
+                [matMenuTriggerFor]="menu">
+                </div>
+                <button mat-button [matMenuTriggerFor]="menu">
+                  <i class="fas fa-bars fa-lg"></i>
+              </button>
+                <mat-menu #menu="matMenu">
+                  <button *ngIf="isShowEditDialogBtn()" (click)="onEditHistory(history)" class="mat-menu-item w-100">
+                    <i class="fas fa-edit mr-1"></i>
+                    Edit
+                  </button>
+                  <button *ngIf="isShowForceDeleteBtn()" (click)="onForceDelete(history)" class="mat-menu-item w-100">
+                    <i class="fas fa-dumpster-fire"></i>
+                      Force Delete
+                  </button>
+                  <button *ngIf="!history.isNotAllowToDelete && isShowDeleteBtn()" (click)="delete(history.id)" class="mat-menu-item w-100">
+                    <i class="fas fa-trash mr-1"></i>
+                    Delete
+                  </button>
+                </mat-menu>
+                <!-- <button *ngIf="!history.isNotAllowToDelete && isShowDeleteBtn()" (click)="delete(history.id)"
+                  class="btn btn-sm btn-danger">Delete</button> -->
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

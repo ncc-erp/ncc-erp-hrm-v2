@@ -1,0 +1,17 @@
+.selected-item {
+    font-size: 14px;
+    padding: 3px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+.mat-form-field{
+    width: 100%;
+}
+::ng-deep .mat-select-panel{
+    max-height: 400px !important;
+}
+
+.skill-list{
+    display: flex;
+    flex-wrap: wrap;
+}

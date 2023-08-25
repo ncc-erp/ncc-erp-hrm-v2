@@ -1,0 +1,19 @@
+<mat-form-field class="w-100 app-chip" appearance="outline">
+    <mat-chip-list class="w-100" #chipList>
+      <mat-chip
+        *ngFor="let item of list"
+        (removed)="remove(item)">
+        {{item}}
+        <button matChipRemove>
+          <i class="fa fa-close"></i>
+        </button>
+      </mat-chip>
+      <input
+        placeholder="New item"
+        #inputControl
+        [formControl]="itemInput"
+        [matChipInputFor]="chipList"
+        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        (matChipInputTokenEnd)="add($event)">
+    </mat-chip-list>
+  </mat-form-field>

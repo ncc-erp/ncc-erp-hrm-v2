@@ -1,0 +1,325 @@
+<div>
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 px-3">
+                    <div class="breadcrumb">
+                        <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content px-2">
+        <div class="container-fluid">
+            <div class="card mb-0">
+                <div class="card-header">
+                    <h5 class="text-bold mb-0">Debt Information</h5>
+                </div>
+                <div class="card-body pb-2">
+                    <form class="pl-2 form-horizontal" [formGroup]="formGroup" autocomplete="off" novalidate>
+                        <div class="flex justify-content-center">
+                            <div class="row justify-content-around">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="form-group row" [ngClass]="isAllowEditDebt() && isEdit && !debt.id?'required':''">
+                                        <label class="col-3 col-form-label">
+                                            Employee
+                                        </label>
+                                        <div class="col-8 d-flex align-items-center">
+                                            <span *ngIf="debt.id;else employeeSelect" class="text-bold">{{debt.fullName}} ({{debt.email}})</span>
+                                            <ng-template #employeeSelect>
+                                            <div class="w-100">
+                                                <mat-form-field  appearance="outline" class="common-input">
+                                                    <mat-select #employeeIdEl disableOptionCentering="true"
+                                                        formControlName="employeeId">
+                                                        <mat-option>
+                                                            <ngx-mat-select-search
+                                                                onkeydown="event.stopPropagation()"
+                                                                placeholderLabel="Find user"
+                                                                noEntriesFoundLabel="No matching user found" ngModel
+                                                                [ngModelOptions]="{standalone:true}"
+                                                                (ngModelChange)="filterEmployees($event)">
+                                                            </ngx-mat-select-search>
+                                                        </mat-option>
+                                                        <ng-containter
+                                                            *ngFor="let employee of filteredEmployeeList">
+                                                            <mat-option [value]="employee.id">{{employee.fullName}}
+                                                                ({{employee.email}})
+                                                            </mat-option>
+                                                        </ng-containter>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                                <abp-validation-summary [control]="employeeId" [controlEl]="employeeIdEl._elementRef.nativeElement">
+                                                </abp-validation-summary>
+                                            </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 form-control-right">
+                                    <div class="row form-group" [ngClass]="isAllowEditDebt() && isEdit?'required':''">
+                                        <label class="col-3 col-form-label">
+                                            Principal (VND)
+                                        </label>
+                                        <div class="col-8 d-flex justify-content-start align-items-center">
+                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                                <div class="w-100">
+                                                    <mat-form-field appearance="outline" class="common-input">
+                                                        <input matInput [readonly]="!isEdit && debt.id" type="text"
+                                                            mask="separator.0" thousandSeparator="," name="principal"
+                                                            formControlName="principal" #principalEl>
+                                                    </mat-form-field>
+                                                    <abp-validation-summary [control]="principal" [controlEl]="principalEl">
+                                                    </abp-validation-summary>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                                <span>{{debt.money | moneyFormat}}</span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-around">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="row form-group" [ngClass]="isAllowEditDebt() && isEdit?'required':''">
+                                        <label class="col-3 col-form-label">
+                                            Start Date
+                                        </label>
+                                        <div class="col-4 d-flex align-items-center">
+                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                                <div class="w-100">
+                                                    <mat-form-field appearance="outline">
+                                                        <input [readonly]="!isEdit && debt.id" matInput name="startDate"
+                                                            [matDatepicker]="dp" formControlName="startDate" #startDateEl>
+                                                        <mat-datepicker-toggle [disabled]="!isEdit && debt.id" matSuffix
+                                                            [for]="dp">
+                                                        </mat-datepicker-toggle>
+                                                        <mat-datepicker #dp></mat-datepicker>
+                                                    </mat-form-field>
+                                                    <abp-validation-summary [control]="startDate" [controlEl]="startDateEl">
+                                                    </abp-validation-summary>
+                                                    <mat-error *ngIf="startDate.errors?.invalidDate">
+                                                        Invalid Start Date
+                                                    </mat-error>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                                <span>{{debt.startDate | DMYDateFormat}}</span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 form-control-right">
+                                    <div class="row form-group" [ngClass]="isAllowEditDebt() && isEdit?'required':''">
+                                        <label class="col-3 col-form-label">
+                                            End date
+                                        </label>
+                                        <div class="col-8 d-flex align-items-center justify-content-start">
+                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                                <div class="w-100">
+                                                    <mat-form-field class="col-6 pl-0" appearance="outline">
+                                                        <input [readonly]="!isEdit && debt.id" matInput name="endDate"
+                                                            formControlName="endDate" #endDateInputEl
+                                                            [matDatepicker]="enddp">
+                                                        <mat-datepicker-toggle [disabled]="!isEdit && debt.id" matSuffix
+                                                            [for]="enddp"></mat-datepicker-toggle>
+                                                        <mat-datepicker #enddp></mat-datepicker>
+                                                    </mat-form-field>
+                                                    <abp-validation-summary [control]="endDate"
+                                                        [controlEl]="endDateInputEl">
+                                                    </abp-validation-summary>
+                                                    <mat-error *ngIf="endDate.errors?.invalidDate">
+                                                        Invalid End Date
+                                                    </mat-error>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                                {{ debt.endDate | DMYDateFormat}}
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-around">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="row form-group" [ngClass]="isAllowEditDebt() && isEdit?'required':''">
+                                        <label class="col-3 col-form-label">
+                                            APR (%/year)
+                                        </label>
+                                        <div class="col-4 d-flex align-items-center">
+                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                                <div>
+                                                    <mat-form-field appearance="outline" class="common-input w-100">
+                                                        <input matInput name="interestRate" min="0" allow type="number"
+                                                            [readonly]="!isEdit" formControlName="interestRate"
+                                                            #interestRateEl>
+                                                    </mat-form-field>
+                                                    <abp-validation-summary [control]="interestRate"
+                                                        [controlEl]="interestRateEl">
+                                                    </abp-validation-summary>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                                <span>{{debt.interestRate}}</span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 form-control-right">
+                                    <div class="row form-group">
+                                        <label class="col-3 col-form-label">
+                                            Interest (VND)
+                                        </label>
+                                        <div class="col-8 d-flex align-items-center justify-content-start">
+                                            <strong>
+                                                {{debt.interest | moneyFormat}}
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-around">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="row form-group">
+                                        <label class="col-3 col-form-label">
+                                            Status
+                                        </label>
+                                        <div class="col-8 d-flex align-items-center">
+                                            <span *ngIf="debt && debt.debtStatus" [class]="debt.debtStatus == EDebtStatus.Inprogress? 'inprogress':'done'" >
+                                                <strong>{{PAYMENT_STATUS[debt.debtStatus]?.key}}</strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 form-control-right">
+                                    <div class="row form-group" [ngClass]="isAllowEditDebt() && isEdit?'required':''">
+                                        <label class="col-3 col-form-label">
+                                            Payment Method
+                                        </label>
+                                        <div class="col-8">
+                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                                <strong class="read-mode d-flex align-items-center justify-content-start mt-2" [ngStyle]="{color: APP_ENUM.PaymentTypeColor[debt.paymentType]}">
+                                                    {{PAYMENT_METHOD[debt.paymentType]?.key}}
+                                                </strong>
+                                            </ng-container>
+                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                                <mat-form-field appearance="outline" class="common-input">
+                                                    <input readonly *ngIf="(!isEdit && debt.id)"
+                                                        [value]="PAYMENT_METHOD[debt.paymentType].key" matInput>
+                                                    <mat-select *ngIf="(isEdit && debt.id) || !debt.id"
+                                                        name="paymentType" formControlName="paymentType">
+                                                        <mat-option *ngFor="let option of paymentTypes"
+                                                            [value]="option.value">
+                                                            {{option.key}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-around">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="row form-group" *ngIf="debt.id">
+                                        <label class="col-3 col-form-label">
+                                            Created At
+                                        </label>
+                                        <div class="col-8 d-flex align-items-center">
+                                            <div class="text-read">{{debt.creationTime | dmyHmDateFormat}} <span
+                                                *ngIf="debt.creatorUser">by
+                                                <strong>{{debt.creatorUser}}</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group" *ngIf="debt.id">
+                                        <label class="col-3 col-form-label">
+                                            Updated At
+                                        </label>
+                                        <div class="col-8 d-flex align-items-center">
+                                            <div class="text-read">{{debt.updatedTime | dmyHmDateFormat}} <span
+                                                *ngIf="debt.updatedUser">by
+                                                <strong>{{debt.updatedUser}}</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 form-control-right">
+                                    <div class="row form-group">
+                                        <label class="col-3 d-flex col-form-label">
+                                            Note
+                                        </label>
+                                        <div class="col-8 d-flex align-items-center justify-content-start">
+                                            <mat-form-field *ngIf="isEdit" appearance="outline" class="common-input">
+                                                <textarea matInput name="note"
+                                                    formControlName="note"></textarea>
+                                            </mat-form-field>
+                                            <div *ngIf="!isEdit" class="note-content">
+                                                {{debt.note}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div *ngIf="debt.debtStatus == EDebtStatus.Inprogress"
+                        class="row d-flex justify-content-center mt-2">
+                        <button (click)="onDelete()" *ngIf="!isEdit && debt.id && isShowDeleteBtn()" class="btn btn-danger mr-2">
+                            Delete
+                        </button>
+                        <button *ngIf="isEdit || !debt.id" (click)="onCancel()" class="btn btn-default mr-2">
+                            Cancel
+                        </button>
+                        <button *ngIf="debt.id && !isEdit && isShowEditBtn() " (click)="isEdit=true" class="btn btn-secondary mr-2">
+                            Edit
+                        </button>
+                        <button *ngIf="isEdit || !debt.id" [disabled]="!formGroup.valid || isLoading" (click)="onSave()"
+                            class="btn btn-primary mr-2">
+                            Save
+                        </button>
+                        <button *ngIf="(debt.money + debt.interest == totalDebtPaid) && !isEdit && isShowSetDoneBtn()"
+                            (click)="onDone()" class="btn btn-success">
+                            Done
+                        </button>
+                    </div>
+                    <div *ngIf="debt.id>0">
+                        <hr>
+                        <div class="row col-12 px-3 py-2 align-items-center ">
+                            <button
+                                *ngIf="(paymentType.value == EPaymentType.TruLuong) && debt.debtStatus != EDebtStatus.Done && isShowGeneratePaymentPlanBtn()"
+                                [disabled]="isDisableGeneratePaymentPlan()"
+                                (click)="generateDebtPlan()" class="btn btn-primary mr-2">
+                                Generate Payment Plan
+                            </button>
+                            <span class="text-danger" *ngIf="totalDebtPlan != (debt.money + debt.interest)">
+                                <strong>
+                                    Error: Payment plan total (<span class="font-bolder text-primary">{{totalDebtPlan | currency:'VND':''}} VND</span>) is
+                                    NOT EQUAL
+                                    Principal + Interest (<span class="font-bolder text-dark">{{debt.money + debt.interest | currency:'VND':''}} VND</span>)
+                                </strong>
+                            </span>
+                        </div>
+                        <div class="row p-2">
+                            <div class="col-lg-6 col-md-12">
+                                <app-debt-plan [total]="debt.money + debt.interest" [debtPlanList]="debtPlanList"
+                                    [endDate]="endDate.value" [startDate]="startDate.value"
+                                    [debtStatus]="debt.debtStatus" [paymentType]="paymentType.value"
+                                    (onGetDebtPlan)="setDebtPlanList($event)" [valid]="formGroup.valid">
+                                </app-debt-plan>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <app-debt-paid [total]="totalDebtPlan" [totalDebtPaid]="totalDebtPaid"
+                                    [endDate]="endDate.value" [startDate]="startDate.value"
+                                    [debtStatus]="debt.debtStatus"
+                                    [paymentType]="debt.paymentType"
+                                    [debtPaidList]="debtPaidList" (onSavePaid)="setDebtPaidList()"></app-debt-paid>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

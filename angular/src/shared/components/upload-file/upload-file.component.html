@@ -1,0 +1,18 @@
+
+<form action="" #importEmployeeForm>
+    <div class="all_dialog">
+        <div class="header_h">
+            <div class="h_drag_and_drop">
+                <h4>Import File</h4>
+            </div>
+        </div>
+        <div class="mt-2">
+            <label class="mr-2">Choose file</label>
+            <input type="file" class="form-group" id="file" (change)="onSelectFile($event)">
+        </div>
+        <div class="mt-2">
+            <button class="btn btn-primary mr-2" [disabled]="isDisable" (click)="onImportFile() ">Import</button>
+            <button class="btn btn-secondary" mat-dialog-close>Cancel</button>
+        </div>
+      </div>
+  </form>

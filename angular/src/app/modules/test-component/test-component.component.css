@@ -1,0 +1,19 @@
+.center{
+    text-align: center;
+}
+::ng-deep .mat-select-search-panel{
+    /* height: 350px !important; */
+    max-height: 500px !important;
+}
+table th, td{
+    vertical-align: middle;
+}
+.myPanelClass{
+    margin-top: 20px !important; 
+}
+th{
+    background: #e9e9e9;
+}
+table td {
+    padding: 5px !important;
+  }

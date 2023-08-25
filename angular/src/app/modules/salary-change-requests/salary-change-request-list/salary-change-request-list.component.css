@@ -1,0 +1,31 @@
+tbody td{
+    vertical-align: middle;
+    height: 47px;
+}
+.btn {
+    min-width: 68px;
+}
+
+.col-status{
+    width: 150px;
+}
+
+.col-applyMonth{
+    width: 200px;
+}
+
+.col-createdAt{
+    width: 150px;
+}
+
+.col-modified{
+    width: 200px;
+}
+
+.fixTableHead{
+    max-height: 76vh;
+}
+
+.col-action{
+    width: 100px;
+}

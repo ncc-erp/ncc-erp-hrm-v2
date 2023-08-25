@@ -1,0 +1,21 @@
+<form #retryForm="ngForm" autocomplete="off">
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header>
+    <div class="pt-3 pr-3">
+        <div class="form-group d-flex required" matTooltip="Thời gian nhập >= 10s">
+            <label class="col-4 col-form-label">
+               Time execute background job:
+            </label>
+            <div class="col-8">
+                <mat-form-field appearance="outline" class="w-100">
+                    <input type="number" min=10 matInput name="enterSeconds" placeholder="enter seconds" 
+                    [(ngModel)]="inputToRetry.timeToExecute" cdkFocusInitial #second="ngModel" #secondEl required>
+                </mat-form-field>
+                <abp-validation-summary [control]="second" [controlEl]="secondEl">
+                </abp-validation-summary>
+            </div>
+        </div>
+    </div>
+    <app-dialog-footer (onSave)="onSaveAndClose()" [isDisable]="!retryForm.valid || isLoading">
+    </app-dialog-footer>
+</form>

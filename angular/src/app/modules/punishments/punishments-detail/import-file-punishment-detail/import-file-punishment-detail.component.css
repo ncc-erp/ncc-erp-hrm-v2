@@ -1,0 +1,12 @@
+::ng-deep .swal2-backdrop-show .swal2-popup{
+    width: 720px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+::ng-deep .swal2-backdrop-show .swal2-popup .swal2-content{
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+
