@@ -27,8 +27,7 @@ jobs:
         run: |
           cd aspnet-core/src/HRMv2.Migrator/bin/Debug/net6.0/publish/
           rm -rf appsettings.json
-          rm -rf /var/www/migrator_git/hrmv2/dev-dotnet-migrator-hrmv2/*
-          cp -r * /var/www/migrator_git/hrmv2/dev-dotnet-migrator-hrmv2/
+          cp -r . /var/www/migrator_git/hrmv2/dev-dotnet-migrator-hrmv2/
 
       - name: Build Host
         run: |
