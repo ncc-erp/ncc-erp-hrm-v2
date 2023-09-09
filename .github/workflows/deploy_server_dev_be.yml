@@ -15,12 +15,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Backup Log
-        run: |
-          rm -rf /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/wwwroot/swagger/
-          cp -r /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/wwwroot/* /home/nccsoft/data_git/hrmv2/
-          cp -r /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/App_Data/Logs/* /home/nccsoft/data_git/hrmv2/Logs/
 
       - name: Build Migrator
         run: |
@@ -33,6 +27,7 @@ jobs:
         run: |
           cd aspnet-core/src/HRMv2.Migrator/bin/Debug/net6.0/publish/
           rm -rf appsettings.json
+          rm -rf /var/www/migrator_git/hrmv2/dev-dotnet-migrator-hrmv2/*
           cp -r * /var/www/migrator_git/hrmv2/dev-dotnet-migrator-hrmv2/
 
       - name: Build Host
@@ -41,13 +36,26 @@ jobs:
           cd aspnet-core/src/HRMv2.Web.Host
           dotnet6 build
           dotnet6 publish
+      
+      - name: Backup Log
+        run: |
+          rm -rf /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/wwwroot/swagger/
+          cp -r /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/wwwroot/* /home/nccsoft/data_git/hrmv2/
+          cp -r /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/App_Data/Logs/* /home/nccsoft/data_git/hrmv2/Logs/
+          rm -rf /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/*
 
       - name: Copy New Host
         run: |
           cd aspnet-core/src/HRMv2.Web.Host/bin/Debug/net6.0/publish/
           rm -rf appsettings.json
+          rm -rf appsettings.Staging.json
           cp -r * /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/
-    
+          cd /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/
+          mkdir -p /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/App_Data/Logs/
+          cp -r /home/nccsoft/data_git/hrmv2/Logs/* /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/App_Data/Logs/
+          cp -r /home/nccsoft/data_git/hrmv2/* /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/wwwroot/
+          chmod 777 -R App_Data/
+          chmod 777 -R wwwroot/
           
   deploy:
     runs-on: self-hosted
@@ -77,11 +85,5 @@ jobs:
         run: |
           cd aspnet-core/
           cp appsettings.json /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/
-          cd /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/
-          mkdir -p /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/App_Data/Logs/
-          cp -r /home/nccsoft/data_git/hrmv2/Logs/* /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/App_Data/Logs/
-          cp -r /home/nccsoft/data_git/hrmv2/* /var/www/app_git/hrmv2/dev-dotnet-host-hrmv2/wwwroot/
-          chmod 777 -R App_Data/
-          chmod 777 -R wwwroot/
-          sudo service erp-hrmv2-git start
+          sudo service erp-hrmv2-git restart
           sudo service erp-hrmv2-git status
