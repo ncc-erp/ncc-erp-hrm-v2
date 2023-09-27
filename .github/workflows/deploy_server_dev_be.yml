@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: dev
     name: Build HRMv2_BE Dev
     environment: dev
     steps:
@@ -57,7 +57,7 @@ jobs:
           chmod 777 -R wwwroot/
           
   deploy:
-    runs-on: self-hosted
+    runs-on: dev
     name: Deploy HRMv2_BE Dev
     environment: dev
     needs:

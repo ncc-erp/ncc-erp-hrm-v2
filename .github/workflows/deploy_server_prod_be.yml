@@ -1,0 +1,89 @@
+name: Deploy HRMv2_BE PROD
+on:
+  push:
+    branches:
+      - prod
+    paths:
+    - 'aspnet-core/**'
+    - '.github/workflows/deploy_server_prod_be.yml'
+
+jobs:
+  build:
+    runs-on: prod
+    name: Build HRMv2_BE PROD
+    environment: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3    
+
+      - name: Build Migrator
+        run: |
+          export PATH=$PATH:/opt/dotnet6/
+          cd aspnet-core/src/HRMv2.Migrator
+          dotnet6 build
+          dotnet6 publish
+
+      - name: Copy New Migrator
+        run: |
+          cd aspnet-core/src/HRMv2.Migrator/bin/Debug/net6.0/publish/
+          rm -rf appsettings.json
+          cp -r * /var/www/migrator_git/hrmv2/stg-dotnet-migrator-hrmv2/
+
+      - name: Build Host
+        run: |
+          export PATH=$PATH:/opt/dotnet6/
+          cd aspnet-core/src/HRMv2.Web.Host
+          dotnet6 build
+          dotnet6 publish
+
+      - name: Backup Log
+        run: |
+          cp -r /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/wwwroot/* /home/erp/data_git/hrmv2/
+          cp -r /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/App_Data/Logs/* /home/erp/data_git/hrmv2/Logs/
+          rm -rf /home/erp/data_git/hrmv2/swagger/
+          rm -rf /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2-bk/*
+          cp -r /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/* /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2-bk/
+
+      - name: Copy New Host
+        run: |
+          cd aspnet-core/src/HRMv2.Web.Host/bin/Debug/net6.0/publish/
+          rm -rf appsettings.json
+          cp -r * /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/
+          cd /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/
+          mkdir -p /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/App_Data/Logs/
+          cp -r /home/erp/data_git/hrmv2/Logs/* /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/App_Data/Logs/
+          cp -r /home/erp/data_git/hrmv2/* /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/wwwroot/
+          chmod 777 -R App_Data/
+          chmod 777 -R wwwroot/
+          
+  deploy:
+    runs-on: prod
+    name: Deploy HRMv2_BE PROD
+    environment: prod
+    needs:
+      - build
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Up Data appsettings.json
+        run: |
+          cd aspnet-core/
+          echo '${{ secrets.APP_SETTING_PROD }}' > appsettings.json
+
+      - name: Migrate Database
+        run: |
+          export PATH=$PATH:/opt/dotnet6/
+          sudo service erp-hrmv2-git stop
+          cd aspnet-core/
+          cp -r appsettings.json /var/www/migrator_git/hrmv2/stg-dotnet-migrator-hrmv2/appsettings.json
+          cd /var/www/migrator_git/hrmv2/stg-dotnet-migrator-hrmv2/
+          dotnet6 HRMv2.Migrator.dll -q
+
+      - name: Restart Server
+        run: |
+          cd aspnet-core/
+          cp -r appsettings.json /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/appsettings.json
+          cp -r appsettings.json /var/www/app_git/hrmv2/stg-dotnet-host-hrmv2/appsettings.Production.json
+          sudo service erp-hrmv2-git restart
+          sudo service erp-hrmv2-git status

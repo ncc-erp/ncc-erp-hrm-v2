@@ -1,16 +1,16 @@
-name: Deploy HRMv2_FE Dev
+name: Deploy HRMv2_FE PROD
 on:
   push:
     branches:
-      - dev
+      - prod
     paths:
       - 'angular/**'
-      - '.github/workflows/deploy_server_dev_fe.yml'
+      - '.github/workflows/deploy_server_prod_fe.yml'
 jobs:
   build:
-    runs-on: dev
-    name: Build HRMv2_FE Dev
-    environment: dev
+    runs-on: prod
+    name: Build HRMv2_FE PROD
+    environment: prod
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -54,26 +54,20 @@ jobs:
       run: |
         cd angular/dist/assets
         rm -rf appconfig.production.json
-        rm -rf /var/www/app_git/hrmv2/dev-fe-hrmv2/*
+        rm -rf /var/www/app_git/hrmv2/stg-fe-hrmv2/*
         
     - name: Copy AngularBuild
       run: |
         cd angular/dist/
-        cp -r . /var/www/app_git/hrmv2/dev-fe-hrmv2/
+        cp -r . /var/www/app_git/hrmv2/stg-fe-hrmv2/
         
     - name: Update Env-Config
       run: |
         cd angular/
-        echo '${{ secrets.APP_CONFIG_DEV }}' > appconfig.production.json
+        echo '${{ secrets.APP_CONFIG_PROD }}' > appconfig.production.json
       
     - name: Restart Nginx
       run: |
         cd angular/
-        cp appconfig.production.json /var/www/app_git/hrmv2/dev-fe-hrmv2/assets/
+        cp appconfig.production.json /var/www/app_git/hrmv2/stg-fe-hrmv2/assets/
         sudo service nginx reload
-        
-        
-        
-      
-        
-     
