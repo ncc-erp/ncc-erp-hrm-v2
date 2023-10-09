@@ -25,6 +25,7 @@ namespace HRMv2.APIs.VoucherTool
         }
 
         [HttpPost]
+        [NccAuthentication]
         public async Task<List<ResponseApplyVoucherDto>> ApplyVoucher(List<InputApplyVoucherDto> input)
         {
             return await _payslipManager.ApplyVoucher(input);
