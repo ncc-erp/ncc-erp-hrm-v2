@@ -2729,6 +2729,74 @@ namespace HRMv2.Manager.Salaries.Payslips
             }
 
             return new { successList, failedList };
-        } 
+        }
+
+        public async Task<List<ResponseApplyVoucherDto>> ApplyVoucher(List<InputApplyVoucherDto> input)
+        {
+            //check active Payroll, if there is more than 1 active Payroll
+            var activePayrolls = WorkScope.GetAll<Payroll>()
+                                    .Where(x => (x.Status == PayrollStatus.New || x.Status == PayrollStatus.RejectedByKT))
+                                    .ToList();
+             if (activePayrolls.Count > 1)
+            {
+                throw new UserFriendlyException($"Cannot apply voucher because there are more than 2 active Payrolls.");
+            }
+            else if (activePayrolls.Count == 0)
+            {
+                throw new UserFriendlyException($"Cannot apply voucher because there is no active Payroll.");
+            }
+            else
+            {
+                var inputEmails = input.Select(s => s.Email).ToList();
+                var dicPunishmentEmployees = WorkScope.GetAll<PunishmentEmployee>()
+                    .Where(s => (s.Punishment.Date.Month == activePayrolls.FirstOrDefault().ApplyMonth.Month && s.Punishment.Date.Year == activePayrolls.FirstOrDefault().ApplyMonth.Year))
+                    .Where(s => inputEmails.Contains(s.Employee.Email))
+                    .OrderBy(s => s.PunishmentId)
+                    .ToList()
+                    .GroupBy(s => s.EmployeeId)
+                    .ToDictionary(group => group.Key, group => group.ToList());
+
+                var listResponseApplyVoucherDto = new List<ResponseApplyVoucherDto>();
+                foreach (var item in input)
+                {
+                    var itemEmployeeId = WorkScope.GetAll<Employee>()
+                        .Where(x => x.Email.ToLower().Trim() == item.Email.ToLower().Trim())
+                        .Select(s => s.Id).FirstOrDefault();
+
+                    if (!dicPunishmentEmployees.ContainsKey(itemEmployeeId)) continue;
+
+                    var listPunishmentEmployees = dicPunishmentEmployees[itemEmployeeId];
+
+                    foreach (var pe in listPunishmentEmployees)
+                    {
+                        if (item.VoucherValue == 0)
+                        {
+                            break;
+                        }
+                        if (pe.Money != 0)
+                        {
+                            var temp = Math.Min(Math.Abs(pe.Money), item.VoucherValue);
+
+                            item.VoucherValue -= temp;
+                            pe.Money -= temp;
+
+                            var note = string.Format(" (voucher: {0}, remain voucher: {1})", temp, item.VoucherValue);
+                            //var timestamp = DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy");
+                            //var note = string.Format(" (voucher: {0}, remain voucher: {1} at {2})", temp, item.VoucherValue, timestamp);
+
+                            pe.Note = (pe.Note.Trim() + note).Trim();
+                        }
+                    }
+                    var responseApplyVoucherDto = new ResponseApplyVoucherDto()
+                    {
+                        Email = item.Email,
+                        remainVoucherValue = item.VoucherValue,
+                    };
+                    listResponseApplyVoucherDto.Add(responseApplyVoucherDto);
+                }
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return listResponseApplyVoucherDto;
+            }
+        }
     }
 }
