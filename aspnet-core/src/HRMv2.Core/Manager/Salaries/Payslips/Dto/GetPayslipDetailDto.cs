@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
+using HRMv2.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -65,5 +68,18 @@ namespace HRMv2.Manager.Salaries.Payslips.Dto
         public double TotalPunishment { get; set; }
         public double TotalDebt { get; set; }
         public double TotalRefund { get; set; }
+    }
+
+    [AutoMapTo(typeof(PayslipDetail))]
+    public class PayslipForApplyVoucherDto : EntityDto<long>
+    {
+        public int? TenantId { get; set; }
+        public long PayslipId { get; set; }
+        public string Email { get; set; }
+
+        public double Money { get; set; }
+        public string Note { get; set; }
+        public PayslipDetailType Type { get; set; }
+        public long? ReferenceId { get; set; }
     }
 }

@@ -45,6 +45,7 @@ using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Spreadsheet;
 using AutoMapper.Internal;
 using HRMv2.Manager.Bonuses.Dto;
+using Abp.ObjectMapping;
 
 namespace HRMv2.Manager.Salaries.Payslips
 {
@@ -2785,6 +2786,88 @@ namespace HRMv2.Manager.Salaries.Payslips
                     listResponseApplyVoucherDto.Add(responseApplyVoucherDto);
                 }
                 await CurrentUnitOfWork.SaveChangesAsync();
+                return listResponseApplyVoucherDto;
+            }
+        }
+        public async Task<List<ResponseApplyVoucherDto>> ApplyVoucherCase2(List<InputApplyVoucherDto> input)
+        {
+            //check active Payroll, if there is more than 1 active Payroll
+            var activePayrolls = WorkScope.GetAll<Payroll>()
+                                    .Where(x => (x.Status == PayrollStatus.New || x.Status == PayrollStatus.RejectedByKT))
+                                    .Select(x => x.Id)
+                                    .ToList();
+            if (activePayrolls.Count > 1)
+            {
+                throw new UserFriendlyException($"Cannot apply voucher because there are more than 2 active Payrolls.");
+            }
+            else if (activePayrolls.Count == 0)
+            {
+                throw new UserFriendlyException($"Cannot apply voucher because there is no active Payroll.");
+            }
+            else
+            {
+                var inputEmails = input.Select(s => s.Email).ToList();
+                var dicPayslipDetail = WorkScope.GetAll<PayslipDetail>()
+                                                  .Where(x => activePayrolls.Contains(x.Payslip.PayrollId))
+                                                  .Where(x => x.Type == PayslipDetailType.Punishment)
+                                                  .Select(x => new PayslipForApplyVoucherDto
+                                                  {
+                                                      Id = x.Id,
+                                                      TenantId = x.TenantId,
+                                                      PayslipId = x.PayslipId,
+                                                      Email = x.Payslip.Employee.Email,
+                                                      Money = x.Money,
+                                                      Note = x.Note,
+                                                      Type = x.Type,
+                                                      ReferenceId = x.ReferenceId
+                                                  })
+                                                  .OrderBy(x => x.ReferenceId)
+                                                  .ToList()
+                                                  .GroupBy(x => x.Email)
+                                                  .ToDictionary(group => group.Key, group => group.ToList());
+
+                var listResponseApplyVoucherDto = new List<ResponseApplyVoucherDto>();
+                foreach (var item in input)
+                {
+                    if (!dicPayslipDetail.ContainsKey(item.Email)) continue;
+
+                    var listPayslipDetail = dicPayslipDetail[item.Email];
+                    foreach (var pe in listPayslipDetail)
+                    {
+                        if (item.VoucherValue == 0)
+                        {
+                            break;
+                        }
+                        if (pe.Money != 0)
+                        {
+                            var temp = Math.Min(Math.Abs(pe.Money), item.VoucherValue);
+                            item.VoucherValue -= temp;
+                            pe.Money += temp;
+                            var note = string.Format(" (voucher: {0}, remain voucher: {1})", temp, item.VoucherValue);
+                            pe.Note = (pe.Note.Trim() + note).Trim();
+
+                            var entity = await WorkScope.GetAsync<PayslipDetail>(pe.Id);
+                            ObjectMapper.Map(pe, entity);
+                            await WorkScope.UpdateAsync(entity);
+
+                            var punishmentEmployee = WorkScope.GetAll<PunishmentEmployee>()
+                                .Where(s => s.Id == entity.ReferenceId)
+                                .FirstOrDefault();
+                            if (punishmentEmployee != default)
+                            {
+                                punishmentEmployee.Money = pe.Money;
+                                punishmentEmployee.Note = pe.Note;
+                                await WorkScope.UpdateAsync(punishmentEmployee);
+                            }
+                        }
+                    }
+                    var responseApplyVoucherDto = new ResponseApplyVoucherDto()
+                    {
+                        Email = item.Email,
+                        RemainVoucherValue = item.VoucherValue,
+                    };
+                    listResponseApplyVoucherDto.Add(responseApplyVoucherDto);
+                }
                 return listResponseApplyVoucherDto;
             }
         }

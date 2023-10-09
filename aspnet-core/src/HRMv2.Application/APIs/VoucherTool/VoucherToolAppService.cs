@@ -30,6 +30,13 @@ namespace HRMv2.APIs.VoucherTool
         {
             return await _payslipManager.ApplyVoucher(input);
         }
+
+        [HttpPost]
+        [NccAuthentication]
+        public async Task<List<ResponseApplyVoucherDto>> ApplyVoucherCase2(List<InputApplyVoucherDto> input)
+        {
+            return await _payslipManager.ApplyVoucherCase2(input);
+        }
     }
 }
 
