@@ -2730,63 +2730,76 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             return new { successList, failedList };
         } 
-        public async Task<List<ResponseApplyVoucherDto>> ApplyVoucher(List<InputApplyVoucherDto> input)
-        {
-            //check active Payroll, if there is more than 1 active Payroll
-            var activePayrolls = WorkScope.GetAll<Payroll>()
+        public async Task<List<ResponseApplyVoucherDto>> ApplyVoucherToAllEmployee(List<InputApplyVoucherDto> input)
+        {            
+            var payrolls = WorkScope.GetAll<Payroll>()
                                     .Where(x => (x.Status == PayrollStatus.New || x.Status == PayrollStatus.RejectedByKT))
                                     .ToList();
-            if (activePayrolls.Count > 1)
+            if (payrolls.Count > 1)
             {
-                throw new UserFriendlyException($"Cannot apply voucher because there are more than 2 active Payrolls.");
+                throw new UserFriendlyException($"Cannot apply voucher because there are more than 1 New or RejectedByKT Payroll.");
             }
-            else if (activePayrolls.Count == 0)
+            
+            if (payrolls.Count == 0)
             {
-                throw new UserFriendlyException($"Cannot apply voucher because there is no active Payroll.");
+                throw new UserFriendlyException($"Cannot apply voucher because there is no New or RejectedByKT Payroll.");
             }
-            else
+            
+            var inputEmails = input.Select(s => s.Email).ToList();
+            var month = payrolls.FirstOrDefault().ApplyMonth.Month;
+            var year = payrolls.FirstOrDefault().ApplyMonth.Year;
+
+            var dicPunishmentEmployees = WorkScope.GetAll<PunishmentEmployee>()
+                .Select(s => new { s.Punishment.Date.Month, s.Punishment.Date.Year, s.Employee.Email, PunishmentEmployee = s })
+                .Where(s => (s.Month == month && s.Year == year))
+                .Where(s => inputEmails.Contains(s.Email))                
+                .ToList()
+                .GroupBy(s => s.Email)
+                .ToDictionary(s => s.Key, s => s.Select(x=> x.PunishmentEmployee).ToList());
+
+            var listResponseApplyVoucherDto = new List<ResponseApplyVoucherDto>();
+
+            foreach (var emailVoucher in input)
             {
-                var inputEmails = input.Select(s => s.Email).ToList();
-                var dicPunishmentEmployees = WorkScope.GetAll<PunishmentEmployee>()
-                    .Where(s => (s.Punishment.Date.Month == activePayrolls.FirstOrDefault().ApplyMonth.Month && s.Punishment.Date.Year == activePayrolls.FirstOrDefault().ApplyMonth.Year))
-                    .Where(s => inputEmails.Contains(s.Employee.Email))
-                    .OrderBy(s => s.PunishmentId)
-                    .ToList()
-                    .GroupBy(s => s.EmployeeId)
-                    .ToDictionary(group => group.Key, group => group.ToList());
-                var listResponseApplyVoucherDto = new List<ResponseApplyVoucherDto>();
-                foreach (var item in input)
+                if (!dicPunishmentEmployees.ContainsKey(emailVoucher.Email)) continue;
+
+                var listPunishmentEmployee = dicPunishmentEmployees[emailVoucher.Email];
+
+                listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
                 {
-                    var itemEmployeeId = WorkScope.GetAll<Employee>()
-                        .Where(x => x.Email.ToLower().Trim() == item.Email.ToLower().Trim())
-                        .Select(s => s.Id).FirstOrDefault();
-                    if (!dicPunishmentEmployees.ContainsKey(itemEmployeeId)) continue;
-                    var listPunishmentEmployees = dicPunishmentEmployees[itemEmployeeId];
-                    foreach (var pe in listPunishmentEmployees)
-                    {
-                        if (item.VoucherValue == 0)
-                        {
-                            break;
-                        }
-                        if (pe.Money != 0)
-                        {
-                            var temp = Math.Min(Math.Abs(pe.Money), item.VoucherValue);
-                            item.VoucherValue -= temp;
-                            pe.Money -= temp;
-                            var note = string.Format(" (voucher: {0}, remain voucher: {1})", temp, item.VoucherValue);
-                            pe.Note = (pe.Note.Trim() + note).Trim();
-                        }
-                    }
-                    var responseApplyVoucherDto = new ResponseApplyVoucherDto()
-                    {
-                        Email = item.Email,
-                        RemainVoucherValue = item.VoucherValue,
-                    };
-                    listResponseApplyVoucherDto.Add(responseApplyVoucherDto);
-                }
-                await CurrentUnitOfWork.SaveChangesAsync();
-                return listResponseApplyVoucherDto;
+                    Email = emailVoucher.Email,
+                    RemainVoucherValue = ApplyVoucherToEmployee(listPunishmentEmployee, emailVoucher.VoucherValue)
+                }); 
             }
+            await CurrentUnitOfWork.SaveChangesAsync();
+            return listResponseApplyVoucherDto;
+            
+        }
+
+        /// <summary>
+        /// voucher 50k
+        /// phat di muon    20k -> 0
+        /// phat sao do     40k -> 10k
+        /// return 0
+        /// </summary>
+        /// <param name="punishmentEmployees"></param>
+        /// <param name="voucher">voucher value</param>
+        /// <returns>remain voucher value</returns>
+        public double ApplyVoucherToEmployee(List<PunishmentEmployee> punishmentEmployees, double voucher)
+        {
+            if (voucher <= 0) return 0d;
+
+            var remainVoucher = voucher;
+            foreach(var pe in punishmentEmployees)
+            {
+                if (remainVoucher <= 0) break;
+                if (pe.Money == 0) continue;
+                var applyVoucher = Math.Min(pe.Money, remainVoucher);
+                pe.Money -= applyVoucher;
+                remainVoucher-= applyVoucher;                
+                pe.Note += $" (voucher: {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
+            }
+            return remainVoucher;
         }
     }
 }
