@@ -2750,9 +2750,10 @@ namespace HRMv2.Manager.Salaries.Payslips
             var year = payrolls.FirstOrDefault().ApplyMonth.Year;
 
             var dicPunishmentEmployees = WorkScope.GetAll<PunishmentEmployee>()
-                .Select(s => new { s.Punishment.Date.Month, s.Punishment.Date.Year, s.Employee.Email, PunishmentEmployee = s })
+                .Select(s => new { s.Punishment.Date.Month, s.Punishment.Date.Year, s.Employee.Email, s.PunishmentId, PunishmentEmployee = s })
                 .Where(s => (s.Month == month && s.Year == year))
-                .Where(s => inputEmails.Contains(s.Email))                
+                .Where(s => inputEmails.Contains(s.Email))  
+                .OrderBy(s => s.PunishmentId)
                 .ToList()
                 .GroupBy(s => s.Email)
                 .ToDictionary(s => s.Key, s => s.Select(x=> x.PunishmentEmployee).ToList());
