@@ -2785,7 +2785,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         /// <param name="punishmentEmployees"></param>
         /// <param name="voucher">voucher value</param>
         /// <returns>remain voucher value</returns>
-        private double ApplyVoucherToEmployee(List<PunishmentEmployee> punishmentEmployees, double voucher)
+        public double ApplyVoucherToEmployee(List<PunishmentEmployee> punishmentEmployees, double voucher)
         {
             if (voucher <= 0) return 0d;
 
