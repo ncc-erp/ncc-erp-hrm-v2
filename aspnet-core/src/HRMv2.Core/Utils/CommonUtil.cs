@@ -218,6 +218,26 @@ namespace HRMv2.Utils
         }
 
         /// <summary>
+        /// 100,000 -> 100k
+        /// 1000,000 -> 1M
+        /// </summary>
+        /// <param name="money"></param>
+        /// <returns></returns>
+        public static string FormatDisplayMoneyK(double money)
+        {
+            if (money >= 1000000)
+            {
+                return (money / 1000000).ToString("0.#") + "M";
+            }
+            if (money >= 1000)
+            {
+                return (money / 1000).ToString("0.#") + "k";
+            }
+            return money.ToString();
+        }
+
+
+        /// <summary>
         /// Làm tròn đến hàng nghìn
         /// dùng cho làm tròn tiền VNĐ
         /// </summary>
