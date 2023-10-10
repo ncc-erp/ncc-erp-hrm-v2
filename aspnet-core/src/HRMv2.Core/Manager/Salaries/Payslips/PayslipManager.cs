@@ -562,6 +562,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         {
             return WorkScope.GetAll<PayslipDetail>()
                 .Where(x => x.PayslipId == payslippId)
+                .OrderBy(x => x.ReferenceId)
                 .Select(x => new GetSalaryDetailDto
                 {
                     PayslipId = x.PayslipId,
@@ -577,6 +578,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             return WorkScope.GetAll<PayslipDetail>()
                 .Where(x => x.PayslipId == payslipId)
                 .Where(x => x.Type == type)
+                .OrderBy(x => x.ReferenceId)
                 .Select(x => new GetPayslipDetailByTypeDto
                 {
                     Id = x.Id,
@@ -637,6 +639,9 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public async Task<string> UpdatePayslipDetailPunishment(UpdatePayslipDetailDto input)
         {
+            if (input.Money < 0)
+                throw new UserFriendlyException("The amount of punishment money cannot be less than zero");
+
             var payslipDetailExt = WorkScope.GetAll<PayslipDetail>()
                 .Where(s => s.Id == input.Id)
                 .Select(s => new
@@ -2750,9 +2755,10 @@ namespace HRMv2.Manager.Salaries.Payslips
             var year = payrolls.FirstOrDefault().ApplyMonth.Year;
 
             var dicPunishmentEmployees = WorkScope.GetAll<PunishmentEmployee>()
-                .Select(s => new { s.Punishment.Date.Month, s.Punishment.Date.Year, s.Employee.Email, PunishmentEmployee = s })
+                .Select(s => new { s.Punishment.Date.Month, s.Punishment.Date.Year, s.Employee.Email, s.Id, PunishmentEmployee = s })
                 .Where(s => (s.Month == month && s.Year == year))
-                .Where(s => inputEmails.Contains(s.Email))                
+                .Where(s => inputEmails.Contains(s.Email))  
+                .OrderBy(s => s.Id)
                 .ToList()
                 .GroupBy(s => s.Email)
                 .ToDictionary(s => s.Key, s => s.Select(x=> x.PunishmentEmployee).ToList());
@@ -2797,7 +2803,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 var applyVoucher = Math.Min(pe.Money, remainVoucher);
                 pe.Money -= applyVoucher;
                 remainVoucher-= applyVoucher;                
-                pe.Note += $" (voucher: {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
+                pe.Note += $" (voucher {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
             }
             return remainVoucher;
         }

@@ -209,7 +209,7 @@
                                                     *ngIf="isShowDeleteBtn()" [isDisable]="isLoading || isAddingEmployee || isEditingEmployee || employee.updateMode" (delete)="onDelete(employee)"></app-delete-button>
                                             </div>
                                             <div *ngIf="employee.createMode || employee.updateMode">
-                                                <app-save-cancel-button [isDisable]="!employee.employeeId || !employee.money || isLoading" (save)="onSave(employee)" (cancel)="onCancel(employee, i)"></app-save-cancel-button>
+                                                <app-save-cancel-button [isDisable]="!employee.employeeId || employee.money === undefined || isLoading" (save)="onSave(employee)" (cancel)="onCancel(employee, i)"></app-save-cancel-button>
                                             </div>
                                         </td>
                                     </tr>

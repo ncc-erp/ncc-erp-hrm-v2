@@ -70,7 +70,7 @@
                                         *ngIf="isShowDeleteBtn()"></app-delete-button>
                                 </div>
                                 <div *ngIf="punish.createMode">
-                                    <app-save-cancel-button [isDisable]="!punish.money || !punishment" (save)="onSave(punish)" (cancel)="onCancel(punish)"></app-save-cancel-button>
+                                    <app-save-cancel-button [isDisable]="punish.money === undefined || !punishment" (save)="onSave(punish)" (cancel)="onCancel(punish)"></app-save-cancel-button>
                                 </div>
                             </td>
                         </tr>

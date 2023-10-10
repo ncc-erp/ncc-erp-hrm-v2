@@ -15,7 +15,6 @@ using HRMv2.Manager.Salaries.Payslips;
 
 namespace HRMv2.APIs.VoucherTool
 {
-    [AbpAuthorize]
     public class VoucherToolAppService : HRMv2AppServiceBase
     {
         private readonly PayslipManager _payslipManager;
