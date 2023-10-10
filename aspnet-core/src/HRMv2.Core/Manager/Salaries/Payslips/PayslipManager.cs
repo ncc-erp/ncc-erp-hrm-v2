@@ -639,7 +639,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public async Task<string> UpdatePayslipDetailPunishment(UpdatePayslipDetailDto input)
         {
-            if (input.Money<0)
+            if (input.Money < 0)
                 throw new UserFriendlyException("The amount of punishment money cannot be less than zero");
 
             var payslipDetailExt = WorkScope.GetAll<PayslipDetail>()

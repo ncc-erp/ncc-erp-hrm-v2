@@ -330,8 +330,6 @@ namespace HRMv2.Manager.Punishments
         }
         public async Task<UpdateEmployeeInPunishmentDto> UpdateEmployeeInPunishment(UpdateEmployeeInPunishmentDto input)
         {
-            if (input.Money < 0)
-                throw new UserFriendlyException("The amount of punishment money cannot be less than zero");
             await ValidUpdateEmployee(input);
             return await UpdatePunishmentEmployee(input);
         }
@@ -352,7 +350,6 @@ namespace HRMv2.Manager.Punishments
 
         public async Task ValidUpdatePunishmentOfEmployee(UpdateEmployeeInPunishmentDto input)
         {
-            var data = await WorkScope.GetAll<PunishmentEmployee>().ToListAsync();
             var isExist = await WorkScope.GetAll<PunishmentEmployee>()
                 .AnyAsync(x => x.Id != input.Id && x.PunishmentId == input.PunishmentId);
             if (isExist)
@@ -362,7 +359,8 @@ namespace HRMv2.Manager.Punishments
         }
         private async Task ValidUpdateEmployee(UpdateEmployeeInPunishmentDto input)
         {
-            var data = await WorkScope.GetAll<PunishmentEmployee>().ToListAsync();
+            if (input.Money < 0)
+                throw new UserFriendlyException("The amount of punishment money cannot be less than zero");
             var isExist = await WorkScope.GetAll<PunishmentEmployee>()
                 .AnyAsync(x => x.Id != input.Id && x.PunishmentId == input.PunishmentId && x.EmployeeId == input.EmployeeId);
             if (isExist)
