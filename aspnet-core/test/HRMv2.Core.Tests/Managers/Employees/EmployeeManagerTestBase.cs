@@ -10,7 +10,6 @@ using Abp.Net.Mail;
 using Abp.ObjectMapping;
 using Abp.Runtime.Session;
 using Abp.Threading.Timers;
-using Amazon.Runtime.Internal.Util;
 using HRMv2.Editions;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories;
