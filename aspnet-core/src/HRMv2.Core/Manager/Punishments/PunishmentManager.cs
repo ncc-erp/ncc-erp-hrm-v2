@@ -90,7 +90,8 @@ namespace HRMv2.Manager.Punishments
                     Note = x.Note,
                     UpdatedTime = x.LastModificationTime,
                     UpdatedUser = x.LastModifierUser != null ? x.LastModifierUser.FullName : "",
-                });
+                })
+                .OrderBy(x => x.Id);
             return await query.GetGridResult(query, input);
         }
 
@@ -329,6 +330,8 @@ namespace HRMv2.Manager.Punishments
         }
         public async Task<UpdateEmployeeInPunishmentDto> UpdateEmployeeInPunishment(UpdateEmployeeInPunishmentDto input)
         {
+            if (input.Money < 0)
+                throw new UserFriendlyException("The amount of punishment money cannot be less than zero");
             await ValidUpdateEmployee(input);
             return await UpdatePunishmentEmployee(input);
         }
