@@ -10,6 +10,7 @@ using Abp.Net.Mail;
 using Abp.ObjectMapping;
 using Abp.Runtime.Session;
 using Abp.Threading.Timers;
+using Amazon.Runtime.Internal.Util;
 using HRMv2.Editions;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories;
@@ -33,6 +34,7 @@ using HRMv2.WebServices.Project;
 using HRMv2.WebServices.Talent;
 using HRMv2.WebServices.Timesheet;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NccCore.Paging;
@@ -177,6 +179,7 @@ namespace HRMv2.Core.Tests.Managers.Employees
             mockSalaryRequestManager.Object.ObjectMapper = Resolve<IObjectMapper>();
 
             var mockUserTypeManager = new Mock<UserTypeManager>(mockIWorkScope);
+            var mockLogger = new Mock<ILogger<EmployeeManager>>();
 
             var employeeManager = new EmployeeManager(
                 mockUploadFileService.Object,
@@ -192,7 +195,8 @@ namespace HRMv2.Core.Tests.Managers.Employees
                 mockUserTypeManager.Object,
                 mockChangeEmployeeWorkingStatusManager.Object,
                 mockBackgroundJobManager.Object,
-                mockBackgroundJobInfoRepository.Object);
+                mockBackgroundJobInfoRepository.Object,
+                mockLogger.Object);
             employeeManager.ObjectMapper = Resolve<IObjectMapper>();
             employeeManager.UnitOfWorkManager = Resolve<IUnitOfWorkManager>();
             employeeManager.AbpSession = Resolve<IAbpSession>();
