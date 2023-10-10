@@ -2803,7 +2803,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 var applyVoucher = Math.Min(pe.Money, remainVoucher);
                 pe.Money -= applyVoucher;
                 remainVoucher-= applyVoucher;                
-                pe.Note += $" (voucher: {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
+                pe.Note += $" (voucher {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
             }
             return remainVoucher;
         }
