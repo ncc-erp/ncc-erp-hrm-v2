@@ -2730,5 +2730,76 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             return new { successList, failedList };
         } 
+        public async Task<List<ResponseApplyVoucherDto>> ApplyVoucherToAllEmployee(List<InputApplyVoucherDto> input)
+        {            
+            var payrolls = WorkScope.GetAll<Payroll>()
+                                    .Where(x => (x.Status == PayrollStatus.New || x.Status == PayrollStatus.RejectedByKT))
+                                    .ToList();
+            if (payrolls.Count > 1)
+            {
+                throw new UserFriendlyException($"Cannot apply voucher because there are more than 1 New or RejectedByKT Payroll.");
+            }
+            
+            if (payrolls.Count == 0)
+            {
+                throw new UserFriendlyException($"Cannot apply voucher because there is no New or RejectedByKT Payroll.");
+            }
+            
+            var inputEmails = input.Select(s => s.Email).ToList();
+            var month = payrolls.FirstOrDefault().ApplyMonth.Month;
+            var year = payrolls.FirstOrDefault().ApplyMonth.Year;
+
+            var dicPunishmentEmployees = WorkScope.GetAll<PunishmentEmployee>()
+                .Select(s => new { s.Punishment.Date.Month, s.Punishment.Date.Year, s.Employee.Email, PunishmentEmployee = s })
+                .Where(s => (s.Month == month && s.Year == year))
+                .Where(s => inputEmails.Contains(s.Email))                
+                .ToList()
+                .GroupBy(s => s.Email)
+                .ToDictionary(s => s.Key, s => s.Select(x=> x.PunishmentEmployee).ToList());
+
+            var listResponseApplyVoucherDto = new List<ResponseApplyVoucherDto>();
+
+            foreach (var emailVoucher in input)
+            {
+                if (!dicPunishmentEmployees.ContainsKey(emailVoucher.Email)) continue;
+
+                var listPunishmentEmployee = dicPunishmentEmployees[emailVoucher.Email];
+
+                listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
+                {
+                    Email = emailVoucher.Email,
+                    RemainVoucherValue = ApplyVoucherToEmployee(listPunishmentEmployee, emailVoucher.VoucherValue)
+                }); 
+            }
+            await CurrentUnitOfWork.SaveChangesAsync();
+            return listResponseApplyVoucherDto;
+            
+        }
+
+        /// <summary>
+        /// voucher 50k
+        /// phat di muon    20k -> 0
+        /// phat sao do     40k -> 10k
+        /// return 0
+        /// </summary>
+        /// <param name="punishmentEmployees"></param>
+        /// <param name="voucher">voucher value</param>
+        /// <returns>remain voucher value</returns>
+        public double ApplyVoucherToEmployee(List<PunishmentEmployee> punishmentEmployees, double voucher)
+        {
+            if (voucher <= 0) return 0d;
+
+            var remainVoucher = voucher;
+            foreach(var pe in punishmentEmployees)
+            {
+                if (remainVoucher <= 0) break;
+                if (pe.Money == 0) continue;
+                var applyVoucher = Math.Min(pe.Money, remainVoucher);
+                pe.Money -= applyVoucher;
+                remainVoucher-= applyVoucher;                
+                pe.Note += $" (voucher: {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
+            }
+            return remainVoucher;
+        }
     }
 }
