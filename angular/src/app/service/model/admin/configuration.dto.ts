@@ -6,8 +6,9 @@ export interface ConfigurationDto {
     projectService: SettingDto,
     timesheetService: SettingDto,
     hrmV2Service: string,
-    finfastService: SettingDto
-    komuService:KomuSettingDto
+    finfastService: SettingDto,
+    komuService:KomuSettingDto,
+    hrmService: SettingDto
 }
 export interface SettingDto {
     baseAddress: string;
