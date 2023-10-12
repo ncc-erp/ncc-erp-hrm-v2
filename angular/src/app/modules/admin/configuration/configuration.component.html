@@ -3,6 +3,27 @@
     <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
   </div>
   <div class="row">
+    <div class="col-lg-6 col-xs-12" *ngIf="isShowHRMSettingView()">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-md-11 row">
+             <div class="title">HRM Setting</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col col-12 col-md-12">
+              <mat-form-field class="w-100 mt-2">
+                <input readonly class="w-100" type="text" matInput placeholder="Security Code"
+                  [(ngModel)]="configuration.hrmService.securityCode" #HRMSecretKey />
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="col-lg-6 col-xs-12" *ngIf="isShowProjectSettingView()">
       <div class="card">
         <div class="card-header">
@@ -341,7 +362,42 @@
           </div>
         </div>
       </div>
-    </div>    
+    </div>
+    <div class="col-lg-6 col-xs-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="title">Komu Setting</div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col col-12 col-md-12">
+              <mat-form-field class="w-100 mt-2">
+                <input readonly class="w-100" type="text" matInput placeholder="komu Uri"
+                  [(ngModel)]="configuration?.komuService.baseAddress" #komuServicetUri />
+              </mat-form-field>
+            </div>
+            <div class="col col-12 col-md-12">
+              <mat-form-field class="w-100 mt-2">
+                <input readonly class="w-100" type="text" matInput placeholder="Security Code"
+                  [(ngModel)]="configuration?.komuService.securityCode" #komuServiceSecretKey />
+              </mat-form-field>
+            </div>
+            <div class="col col-12 col-md-12">
+              <mat-form-field class="w-100 mt-2">
+                <input readonly class="w-100" type="text" matInput placeholder="Channel Id devMode"
+                  [(ngModel)]="configuration?.komuService.channelIdDevMode" #channelIdDevMode />
+              </mat-form-field>
+            </div>
+            <div class="col col-12 col-md-12">
+              <mat-form-field class="w-100 mt-2">
+                <input readonly class="w-100" type="text" matInput placeholder="Enable notice Komu"
+                  [(ngModel)]="configuration?.komuService.enableNoticeKomu" #enableNoticeKomu />
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>     
     <div class="col-lg-6 col-xs-12">
         <div class="card">
           <div class="card-header">
@@ -385,42 +441,7 @@
             </div>
           </div>
         </div>
-      </div>
-    <div class="col-lg-6 col-xs-12">
-        <div class="card">
-          <div class="card-header">
-            <div class="title">Komu Setting</div>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col col-12 col-md-12">
-                <mat-form-field class="w-100 mt-2">
-                  <input readonly class="w-100" type="text" matInput placeholder="komu Uri"
-                    [(ngModel)]="configuration?.komuService.baseAddress" #komuServicetUri />
-                </mat-form-field>
-              </div>
-              <div class="col col-12 col-md-12">
-                <mat-form-field class="w-100 mt-2">
-                  <input readonly class="w-100" type="text" matInput placeholder="Security Code"
-                    [(ngModel)]="configuration?.komuService.securityCode" #komuServiceSecretKey />
-                </mat-form-field>
-              </div>
-              <div class="col col-12 col-md-12">
-                <mat-form-field class="w-100 mt-2">
-                  <input readonly class="w-100" type="text" matInput placeholder="Channel Id devMode"
-                    [(ngModel)]="configuration?.komuService.channelIdDevMode" #channelIdDevMode />
-                </mat-form-field>
-              </div>
-              <div class="col col-12 col-md-12">
-                <mat-form-field class="w-100 mt-2">
-                  <input readonly class="w-100" type="text" matInput placeholder="Enable notice Komu"
-                    [(ngModel)]="configuration?.komuService.enableNoticeKomu" #enableNoticeKomu />
-                </mat-form-field>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>     
+      </div>    
     <div class="col-lg-6 col-xs-12">
         <div class="card">
           <div class="card-header">

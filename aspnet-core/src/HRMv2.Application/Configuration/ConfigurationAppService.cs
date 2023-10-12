@@ -106,7 +106,10 @@ namespace HRMv2.Configuration
                     EnableNoticeKomu = _appConfiguration.GetValue<string>("KomuService:EnableKomuNotification"),
                     ChannelIdDevMode = _appConfiguration.GetValue<string>("KomuService:ChannelIdDevMode"),
                 },
-
+                HRMService = new SettingDto
+                {
+                    SecurityCode = _appConfiguration.GetValue<string>("App:SecurityCode")
+                },
             };
         }
 
