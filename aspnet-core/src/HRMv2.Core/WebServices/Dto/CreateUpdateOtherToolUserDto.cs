@@ -23,5 +23,8 @@ namespace HRMv2.WebServices.Dto
         public string PositionCode { get; set; }
         public DateTime WorkingStartDate { get; set; }
         public List<string> SkillNames { get; set; }
+        public long JobPositionId { get; set; }
+        public string Phone { get; set; }
+        public EmployeeStatus Status { get; set; }
     }
 }

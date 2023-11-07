@@ -1192,6 +1192,9 @@ namespace HRMv2.Manager.Employees
                 PositionCode = jobPosition,
                 SkillNames = listSkillName,
                 WorkingStartDate = input.StartWorkingDate,
+                JobPositionId = input.JobPositionId,
+                Phone = input.Phone,
+                Status = input.Status
             };
             if (mode == ActionMode.Create)
             {
