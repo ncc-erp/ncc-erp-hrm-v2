@@ -18,6 +18,7 @@ namespace HRMv2.Configuration.Dto
         public SettingDto IMSService { get; set; }
         public SettingDto TalentService { get; set; }
         public KomuSettingDto KomuService { get; set; }
+        public SettingDto HRMService { get; set; }
     }
 
     public class KomuSettingDto
