@@ -652,7 +652,8 @@ namespace HRMv2.Manager.Notifications.Email
                 .Select(x => new PayslipDetailEmailDto
                 {
                     Money = x.Money,
-                    Note = x.Note
+                    Note = x.Note,
+                    Type = x.Type
                 })
                 .ToList();
 

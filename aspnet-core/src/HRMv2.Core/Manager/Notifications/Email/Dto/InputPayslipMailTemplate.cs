@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Notifications.Email.Dto
 {
@@ -37,7 +38,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public List<PayslipSalaryEmailDto> ListPayslipSalary { get; set; }
         public string Subject => $"[NCC][{EmployeeFullName}] THÔNG BÁO CHI TIẾT LƯƠNG THÁNG {PayrollMonth}/{PayrollYear}";
         public string TotalBonus => CommonUtil.FormatDisplayMoney(CommonUtil.RoundMoneyVND(ListPayslipDetail.Where(x=> x.Money > 0).Sum(x => x.Money)));
-        public string TotalMinus => CommonUtil.FormatDisplayMoney(CommonUtil.RoundMoneyVND(ListPayslipDetail.Where(x => x.Money < 0).Sum(x => x.Money)));
+        public string TotalMinus => CommonUtil.FormatDisplayMoney(CommonUtil.RoundMoneyVND(ListPayslipDetail.Where(x => x.Money <= 0).Where(x => x.Type == PayslipDetailType.Punishment).Sum(x => x.Money)));
 
         public string PayslipSalaries => "<table style='width:100%;border-collapse: collapse;'><tbody>"+string.Join("", ListPayslipSalary.Select(s =>
         @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width:60%;border-width:0;vertical-align:top"">" + s.Note
@@ -47,7 +48,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 60%;border-width:0;vertical-align:top"">" + s.Note
             + @":</td><td style=""height:50px;font-size:14pt;border-width:0;width: 40%;vertical-align:top;text-align:right;""><strong>"
             + s.FormatMoney + "&nbsp;VND</strong></td></tr>"))+"</tbody></table>";
-        public string PayslipMinuses => "<table style='width:100%;border-collapse: collapse;'><tbody>"+ string.Join("", ListPayslipDetail.Where(x => x.Money < 0).Select(s =>
+        public string PayslipMinuses => "<table style='width:100%;border-collapse: collapse;'><tbody>"+ string.Join("", ListPayslipDetail.Where(x => x.Money <= 0).Where(x => x.Type == PayslipDetailType.Punishment).Select(s =>
         @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 60%;border-width:0;vertical-align:top"">" + s.Note
             + @"</td><td style=""height:50px;font-size:14pt;border-width:0;width: 40%;vertical-align:top;text-align:right; color: hsl(357deg 85% 52%)""><strong>"
             + s.FormatMoney + "&nbsp;VND</strong></td></tr>"))+ "</tbody></table>";
@@ -60,6 +61,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public double Money { get; set; }
         public string Note { get; set; }
         public string FormatMoney => CommonUtil.FormatDisplayMoney(Money);
+        public PayslipDetailType Type { get; set; }
     }
 
     public class PayslipSalaryEmailDto

@@ -2252,7 +2252,8 @@ namespace HRMv2.Manager.Salaries.Payslips
                {
                    PayslipId = x.PayslipId,
                    Money = x.Money,
-                   Note = x.Note
+                   Note = x.Note,
+                   Type = x.Type
                })
                .ToList()
                .GroupBy(s => s.PayslipId)
@@ -2767,15 +2768,24 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             foreach (var emailVoucher in input)
             {
-                if (!dicPunishmentEmployees.ContainsKey(emailVoucher.Email)) continue;
-
-                var listPunishmentEmployee = dicPunishmentEmployees[emailVoucher.Email];
-
-                listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
+                if (!dicPunishmentEmployees.ContainsKey(emailVoucher.Email)) 
                 {
-                    Email = emailVoucher.Email,
-                    RemainVoucherValue = ApplyVoucherToEmployee(listPunishmentEmployee, emailVoucher.VoucherValue)
-                }); 
+                    listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
+                    {
+                        Email = emailVoucher.Email,
+                        RemainVoucherValue = emailVoucher.VoucherValue
+                    });
+                }
+                else
+                {
+                    var listPunishmentEmployee = dicPunishmentEmployees[emailVoucher.Email];
+
+                    listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
+                    {
+                        Email = emailVoucher.Email,
+                        RemainVoucherValue = ApplyVoucherToEmployee(listPunishmentEmployee, emailVoucher.VoucherValue)
+                    }); 
+                }
             }
             await CurrentUnitOfWork.SaveChangesAsync();
             return listResponseApplyVoucherDto;
@@ -2803,7 +2813,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 var applyVoucher = Math.Min(pe.Money, remainVoucher);
                 pe.Money -= applyVoucher;
                 remainVoucher-= applyVoucher;                
-                pe.Note += $" (voucher {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
+                pe.Note += $" ({CommonUtil.FormatDisplayMoneyK(applyVoucher)} voucher: {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
             }
             return remainVoucher;
         }
