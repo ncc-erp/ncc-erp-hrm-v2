@@ -239,14 +239,17 @@ namespace HRMv2.Manager.Notifications.Templates
                      new PayslipDetailEmailDto {
                         Money = 3000000,
                         Note = "Lương Normal",
+                        Type = PayslipDetailType.SalaryNormal
                     },
                      new PayslipDetailEmailDto {
                         Money = 200000,
                         Note = "Lương OT",
+                        Type = PayslipDetailType.SalaryOT
                     },
                      new PayslipDetailEmailDto {
                         Money = -10000,
                         Note = "Phạt đi muộn",
+                        Type = PayslipDetailType.Punishment
                     }
                 },
                 ListPayslipSalary = new List<PayslipSalaryEmailDto>
