@@ -649,10 +649,12 @@ namespace HRMv2.Manager.Notifications.Email
 
             var payslipdetails = WorkScope.GetAll<PayslipDetail>()
                 .Where(x => x.PayslipId == payslipId)
+                .OrderBy(x => x.ReferenceId)
                 .Select(x => new PayslipDetailEmailDto
                 {
                     Money = x.Money,
-                    Note = x.Note
+                    Note = x.Note,
+                    Type = x.Type
                 })
                 .ToList();
 

@@ -1,4 +1,5 @@
 ﻿using Abp.Timing;
+using DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using HRMv2.Entities;
 using HRMv2.Manager.BackgroundJobInfos.Dto;
 using HRMv2.Manager.Categories.UserTypes.Dto;
@@ -212,7 +213,7 @@ namespace HRMv2.Utils
         {
             if(money == 0)
             {
-                return money.ToString();
+                return "0";
             }
             return String.Format("{0:0,0}", Math.Round(money));
         }
