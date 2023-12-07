@@ -41,16 +41,16 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public string TotalMinus => CommonUtil.FormatDisplayMoney(CommonUtil.RoundMoneyVND(ListPayslipDetail.Where(x => x.Money < 0).Sum(x => x.Money)));
 
         public string PayslipSalaries => "<table style='width:100%;border-collapse: collapse;'><tbody>"+string.Join("", ListPayslipSalary.Select(s =>
-        @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width:60%;border-width:0;vertical-align:top"">" + s.Note
-            + @":</td><td style=""height:50px;font-size:14pt;width:40%;;border-width:0;vertical-align:top""><strong>"
+        @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width:75%;border-width:0;vertical-align:top"">" + s.Note
+            + @":</td><td style=""height:50px;font-size:14pt;width:25%;border-width:0;vertical-align:top""><strong>"
             + s.FormatMoney + "&nbsp;VND</strong><span style='font-size:12pt'> (" + s.FormatDate + ")</span></td></tr>")) + "</tbody></table>";
         public string PayslipBonuses => "<table style='width:100%;border-collapse: collapse;'><tbody>"+string.Join("", ListPayslipDetail.Where(x => x.Money > 0).Select(s =>
-        @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 60%;border-width:0;vertical-align:top"">" + s.Note
-            + @":</td><td style=""height:50px;font-size:14pt;border-width:0;width: 40%;vertical-align:top;text-align:right;""><strong>"
+        @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 75%;border-width:0;vertical-align:top"">" + s.Note
+            + @":</td><td style=""height:50px;font-size:14pt;border-width:0;width: 25%;vertical-align:top;text-align:right;""><strong>"
             + s.FormatMoney + "&nbsp;VND</strong></td></tr>"))+"</tbody></table>";
         public string PayslipMinuses => "<table style='width:100%;border-collapse: collapse;'><tbody>"+ string.Join("", ListPayslipDetail.Where(x => (x.Money <= 0 && x.Type == PayslipDetailType.Punishment)||(x.Money < 0 && x.Type != PayslipDetailType.Punishment)).Select(s =>
-        @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 60%;border-width:0;vertical-align:top"">" + s.Note
-            + @"</td><td style=""height:50px;font-size:14pt;border-width:0;width: 40%;vertical-align:top;text-align:right; color: hsl(357deg 85% 52%)""><strong>"
+        @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 75%;border-width:0;vertical-align:top"">" + s.Note
+            + @"</td><td style=""height:50px;font-size:14pt;border-width:0;width: 25%;vertical-align:top;text-align:right; color: hsl(357deg 85% 52%)""><strong>"
             + s.FormatMoney + "&nbsp;VND</strong></td></tr>"))+ "</tbody></table>";
 
     }
