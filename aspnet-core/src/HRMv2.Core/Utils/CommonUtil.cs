@@ -213,7 +213,7 @@ namespace HRMv2.Utils
         {
             if(money == 0)
             {
-                return Math.Abs(money).ToString();
+                return "0";
             }
             return String.Format("{0:0,0}", Math.Round(money));
         }

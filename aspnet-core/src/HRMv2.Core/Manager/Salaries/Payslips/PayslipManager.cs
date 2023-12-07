@@ -2768,24 +2768,14 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             foreach (var emailVoucher in input)
             {
-                if (!dicPunishmentEmployees.ContainsKey(emailVoucher.Email)) 
+                var remainVoucherValue = dicPunishmentEmployees.ContainsKey(emailVoucher.Email)
+                                    ? ApplyVoucherToEmployee(dicPunishmentEmployees[emailVoucher.Email], emailVoucher.VoucherValue)
+                                    : emailVoucher.VoucherValue;
+                listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
                 {
-                    listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
-                    {
-                        Email = emailVoucher.Email,
-                        RemainVoucherValue = emailVoucher.VoucherValue
-                    });
-                }
-                else
-                {
-                    var listPunishmentEmployee = dicPunishmentEmployees[emailVoucher.Email];
-
-                    listResponseApplyVoucherDto.Add(new ResponseApplyVoucherDto
-                    {
-                        Email = emailVoucher.Email,
-                        RemainVoucherValue = ApplyVoucherToEmployee(listPunishmentEmployee, emailVoucher.VoucherValue)
-                    }); 
-                }
+                    Email = emailVoucher.Email,
+                    RemainVoucherValue = remainVoucherValue
+                });
             }
             await CurrentUnitOfWork.SaveChangesAsync();
             return listResponseApplyVoucherDto;
