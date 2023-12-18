@@ -23,6 +23,7 @@ namespace HRMv2.Constants.Enum
             Quit = 3,
             MaternityLeave = 4
         }
+
         public enum InsuranceStatus
         {
             BHXH = 1,
@@ -58,6 +59,7 @@ namespace HRMv2.Constants.Enum
             ApprovedByCEO = 6,
             Executed = 7
         }
+
         public enum PayslipDetaiType
         {
             SalaryNormal = 1,
@@ -76,7 +78,6 @@ namespace HRMv2.Constants.Enum
             Rejected = 4,
             Executed = 5,
         }
-
 
         public enum SalaryRequestType
         {
@@ -114,8 +115,6 @@ namespace HRMv2.Constants.Enum
             ProbationaryStaff = 3,
             Vendor = 5
         }
-
-       
 
         public enum SeniorityComparision
         {
@@ -166,6 +165,7 @@ namespace HRMv2.Constants.Enum
             RejectedOffer = 9,
             Onboarded = 10
         }
+
         public enum RequestStatus
         {
             Pending = 1,
@@ -179,11 +179,24 @@ namespace HRMv2.Constants.Enum
             InLastMonthOnly = 1,
             InThisMonthOnly = 2,
         }
+
         public enum Comparision
         {
             Equal = 0,
             LessThan = 1,
             GreaterThan = 3,
+        }
+
+        public enum ChartType
+        {
+            Line = 0,
+            Circle = 1,
+        }
+
+        public enum TimePeriodType
+        {
+            Month = 0,
+            Year = 1,
         }
     }
 }
