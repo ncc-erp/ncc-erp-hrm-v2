@@ -22,18 +22,21 @@ namespace HRMv2.Manager.Categories.Banks
 
         public IQueryable<BankDto> QueryAllBank()
         {
-            return WorkScope.GetAll<Bank>().Select(x => new BankDto
+            var query = WorkScope.GetAll<Bank>().Select(x => new BankDto
             {
                 Id = x.Id,
                 Name = x.Name,
                 Code = x.Code,
             });
+
+            return query;
         }
 
         public async Task<GridResult<BankDto>> GetAllPaging(GridParam input)
         {
             var query = QueryAllBank();
-            return await query.GetGridResult(query, input);
+            var result = await query.GetGridResult(query, input);
+            return result;
         }
 
         public List<BankDto> GetAll()

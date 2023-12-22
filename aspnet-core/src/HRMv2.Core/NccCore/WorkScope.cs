@@ -67,7 +67,8 @@ namespace HRMv2.NccCore
 
         IQueryable<TEntity> IWorkScope.GetAll<TEntity, TPrimaryKey>()
         {
-            return (this as IWorkScope).GetRepo<TEntity, TPrimaryKey>().GetAll();
+            var result = (this as IWorkScope).GetRepo<TEntity, TPrimaryKey>().GetAll();
+            return result;
         }
 
         IQueryable<TEntity> IWorkScope.GetAll<TEntity>()
