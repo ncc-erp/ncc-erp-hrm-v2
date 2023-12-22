@@ -185,17 +185,5 @@ namespace HRMv2.Constants.Enum
             LessThan = 1,
             GreaterThan = 3,
         }
-
-        public enum ChartType
-        {
-            Line = 0,
-            Circle = 1,
-        }
-
-        public enum TimePeriodType
-        {
-            Month = 0,
-            Year = 1,
-        }
     }
 }
