@@ -47,6 +47,10 @@ namespace HRMv2.EntityFrameworkCore
         public DbSet<RefundEmployee> RefundEmployees { get; set; }
         public DbSet<PunishmentFund> PunishmentFunds { get; set; }
 
+        public DbSet<Chart> Charts { get; set; }
+
+        public DbSet<ChartDetail> ChartDetails { get; set; }
+        
         public HRMv2DbContext(DbContextOptions<HRMv2DbContext> options)
             : base(options)
         {
