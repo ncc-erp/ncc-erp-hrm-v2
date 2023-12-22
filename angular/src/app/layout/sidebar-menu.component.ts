@@ -86,7 +86,14 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                     this.l('AuditLog'),
                     '/app/admin/audit-logs',
                     'fas fa-cogs',
-                    'Admin.AuditLog.View'),
+                    'Admin.AuditLog.View'
+                ),
+                new MenuItem(
+                    this.l('Chart Setting'),
+                    '/app/admin/charts',
+                    'fas fa-line-chart',
+
+                )
             ]),
             new MenuItem(
                 "Category",
