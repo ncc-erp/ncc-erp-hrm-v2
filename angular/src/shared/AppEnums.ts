@@ -200,6 +200,7 @@ export const APP_ENUMS = {
         "Punishment" : 6,
         "Debt" : 7
     },
+    
 
     ESalaryRequestEmployeeType: {
         Initial : 1,
@@ -245,6 +246,18 @@ export const APP_ENUMS = {
         BasicDate: 1,
         Birthday: 2,
         HomeMonthYear: 3
+    },
+    ChartType: {
+        Line: 0,
+        Circle: 1
+    },
+    TimePeriodType: {
+        Month: 0,
+        Year: 1
+    },
+    ActiveStatus: {
+        Active: 1,
+        InActive: 0,
     }
 }
 

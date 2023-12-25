@@ -10,6 +10,8 @@ import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.comp
 import { EmailTemplatesComponent } from './email-templates/email-templates.component';
 import { BackgroundJobsComponent } from './background-jobs/background-jobs.component';
 import { AuditLogsComponent } from './audit-logs/audit-logs.component';
+import { ChartSettingsComponent } from './chart-settings/chart-settings.component';
+import { ChartDetailSettingsComponent } from './chart-detail-settings/chart-detail-settings.component';
 
 const routes: Routes = [
   {
@@ -57,6 +59,16 @@ const routes: Routes = [
     component: AuditLogsComponent,
     canActivate: [AppRouteGuard],
   },
+  {
+    path: "charts",
+    component: ChartSettingsComponent,
+    canActivate: [AppRouteGuard]
+  },
+  {
+    path: "chart-details",
+    component: ChartDetailSettingsComponent,
+    canActivate: [AppRouteGuard]
+  }
 ];
 
 @NgModule({

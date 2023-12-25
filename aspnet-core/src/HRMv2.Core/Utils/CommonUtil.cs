@@ -552,5 +552,26 @@ namespace HRMv2.Utils
         {
             return $"Chi Bảng lương tháng {payrollApplyMonth.Month}/{payrollApplyMonth.Year}";
         }
+
+        public static void MergeDataTwoEntites<TSource, TDestination>(TSource source, TDestination destination)
+        {
+            var propertiesToUpdate = source.GetType().GetProperties();
+
+            foreach (var property in propertiesToUpdate)
+            {
+                var updateValue = property.GetValue(source);
+
+                // Only update the property if the value is not null
+                if (updateValue != null)
+                {
+                    var chartProperty = destination.GetType().GetProperty(property.Name);
+
+                    if (chartProperty != null)
+                    {
+                        chartProperty.SetValue(destination, updateValue);
+                    }
+                }
+            }
+        }    
     }
 }

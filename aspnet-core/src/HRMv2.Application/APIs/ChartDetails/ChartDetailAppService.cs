@@ -6,8 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+<<<<<<< HEAD
+=======
 using NccCore.Paging;
 using HRMv2.Entities;
+>>>>>>> origin/dev-add-chart
 
 namespace HRMv2.APIs.ChartDetails
 {
@@ -28,10 +31,17 @@ namespace HRMv2.APIs.ChartDetails
             return chartDetails;
         }
 
+<<<<<<< HEAD
+        [HttpGet]
+        public async Task<List<ChartDetailDto>> GetAllFilter(bool? isActive)
+        {
+            var chartDetails = await _chartDetailManager.GetAllFilter(isActive);
+=======
         [HttpPost]
         public async Task<GridResult<ChartDetailDto>> GetAllPaging(GridParam input)
         {
             var chartDetails = await _chartDetailManager.GetAllPaging(input);
+>>>>>>> origin/dev-add-chart
 
             return chartDetails;
         }
@@ -45,7 +55,11 @@ namespace HRMv2.APIs.ChartDetails
         }
 
         [HttpPost]
+<<<<<<< HEAD
+        public async Task<ChartDetailDto> Create(CreateChartDetailDto createChartDetailDto)
+=======
         public async Task<ChartDetail> Create(CreateChartDetailDto createChartDetailDto)
+>>>>>>> origin/dev-add-chart
         {
             var chartDetail = await _chartDetailManager.Create(createChartDetailDto);
 
@@ -53,7 +67,11 @@ namespace HRMv2.APIs.ChartDetails
         }
 
         [HttpPut]
+<<<<<<< HEAD
+        public async Task<ChartDetailDto> Update(UpdateChartDetailDto updateChartDetailDto)
+=======
         public async Task<ChartDetail> Update(UpdateChartDetailDto updateChartDetailDto)
+>>>>>>> origin/dev-add-chart
         {
             var chartDetail = await _chartDetailManager.Update(updateChartDetailDto);
 
