@@ -29,7 +29,7 @@ export class ChartSettingsComponent
   public chartList = [] as ChartSettingDto[];
   public menu: MatMenuTrigger;
   public contextMenuPosition = { x: '0px', y: '0px' };
-  public statusList = this.getListFormEnum(APP_ENUMS.ActiveStatus, true)
+  public statusList = this.getListFormEnum(APP_ENUMS.ActiveStatus)
   public defaultValue = APP_ENUMS.ActiveStatus.Active
 
   protected list(

@@ -13,7 +13,7 @@
       </div>
       <div class="col-3">
         <table-filter
-          [filterType]="filterTypeEnum.MultiSelect"
+          [filterType]="filterTypeEnum.Dropdown"
           [dropdownData]="statusList"
           [placeholder]="'Status'"
           [defaultValue]="defaultValue"
@@ -59,15 +59,12 @@
                 <td class="text-center">
                   {{ (pageNumber - 1) * pageSize + i + 1 }}
                 </td>
-                <td>{{ chart.name }}</td>
-                <td class="col-address">{{ chart.chartTypeName }}</td>
-                <td class="text-center">{{ chart.timePeriodTypeName }}</td>
-                <!-- <td class="col-color text-center">
-                              <span class="badge text-white" [style.backgroundColor]="chart.color">
-                                {{chart.color}}
-                              </span>
-                            </td> -->
-                <td class="text-center">
+                <td class="col-6">{{ chart.name }}</td>
+                <td class="col-1 text-center">{{ chart.chartTypeName }}</td>
+                <td class="col-2 text-center">
+                  {{ chart.timePeriodTypeName }}
+                </td>
+                <td class="col-1 text-center">
                   <div class="custom-control custom-checkbox">
                     <input
                       type="checkbox"
@@ -78,7 +75,7 @@
                     <label class="custom-control-label"></label>
                   </div>
                 </td>
-                <td class="text-center">
+                <td class="col-1 text-center">
                   <div
                     style="visibility: hidden; position: fixed"
                     [style.right]="contextMenuPosition.x"

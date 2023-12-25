@@ -10,6 +10,7 @@
     "lint": "tslint --force --project src/tsconfig.json src/**/*.ts -t verbose",
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4200",
+    "start2": "node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng s -o",
     "test": "ng test"
   },
   "dependencies": {
@@ -41,8 +42,8 @@
     "famfamfam-flags": "^1.0.0",
     "file-saver": "2.0.5",
     "lodash-es": "^4.17.15",
-    "moment": "^2.29.4",
-    "moment-timezone": "^0.5.43",
+    "moment": "2.24.0",
+    "moment-timezone": "0.5.33",
     "ngx-bootstrap": "^5.6.1",
     "ngx-easy-table": "15.3.0",
     "ngx-image-cropper": "6.2.1",
@@ -52,7 +53,7 @@
     "push.js": "1.0.12",
     "rxjs": "^6.4.0",
     "sweetalert2": "^10.15.6",
-    "tinymce": "^6.8.2",
+    "tinymce": "6.2.0",
     "ts-helpers": "^1.1.2",
     "tslib": "^2.0.0",
     "web-animations-js": "^2.3.2",
