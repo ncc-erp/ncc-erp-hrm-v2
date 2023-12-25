@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using HRMv2.Entities;
+using NccCore.Anotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace HRMv2.Manager.ChartDetails.Dto
     {
         public long ChartId { get; set; }
 
+        [ApplySearch]
         public string Name { get; set; }
 
         public string Color { get; set; }
