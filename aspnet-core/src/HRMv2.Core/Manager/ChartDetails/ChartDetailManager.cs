@@ -2,8 +2,16 @@
 using HRMv2.Entities;
 using HRMv2.Manager.ChartDetails.Dto;
 using HRMv2.Manager.Charts;
+<<<<<<< HEAD
 using HRMv2.NccCore;
 using HRMv2.Utils;
+=======
+using HRMv2.Manager.Charts.Dto;
+using HRMv2.NccCore;
+using HRMv2.Utils;
+using NccCore.Extension;
+using NccCore.Paging;
+>>>>>>> origin/dev-add-chart
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +30,7 @@ namespace HRMv2.Manager.ChartDetails
             _chartManager = chartManager;
         }
 
+<<<<<<< HEAD
         public List<ChartDetailDto> GetAll()
         {
             var chartDetails = WorkScope.GetAll<ChartDetail>().ToList();
@@ -36,6 +45,41 @@ namespace HRMv2.Manager.ChartDetails
                 .ToList();
 
             return ObjectMapper.Map<List<ChartDetailDto>>(chartDetails);
+=======
+        public IQueryable<ChartDetailDto> QueryAllChartDetail()
+        {
+            var query = WorkScope.GetAll<ChartDetail>().Select(c => new ChartDetailDto
+            {
+                Id = c.Id,
+                IsActive = c.IsActive,
+                Name = c.Name,
+                BranchIds = c.BranchIds,
+                ChartId = c.ChartId,
+                Color = c.Color,
+                JobPositionIds = c.JobPositionIds,
+                LevelIds = c.LevelIds,
+                PayslipDetailTypes = c.PayslipDetailTypes,
+                TeamIds = c.TeamIds,
+                UserTypes = c.UserTypes,
+                WorkingStatuses = c.WorkingStatuses
+            });
+
+            return query;
+        }
+
+        public List<ChartDetailDto> GetAll()
+        {
+            var chartDetails = QueryAllChartDetail().ToList();
+
+            return chartDetails;
+        }
+
+        public async Task<GridResult<ChartDetailDto>> GetAllPaging(GridParam input)
+        {
+            var query = QueryAllChartDetail();
+            var chartDetails = await query.GetGridResult(query, input);
+            return chartDetails;
+>>>>>>> origin/dev-add-chart
         }
 
         public async Task<ChartDetailDto> Get(long id)
@@ -47,7 +91,11 @@ namespace HRMv2.Manager.ChartDetails
             return chartDetailDto;
         }
 
+<<<<<<< HEAD
         public async Task<ChartDetailDto> Create(CreateChartDetailDto createChartDetailDto)
+=======
+        public async Task<ChartDetail> Create(CreateChartDetailDto createChartDetailDto)
+>>>>>>> origin/dev-add-chart
         {
             //var chart = await _chartManager.Get(createChartDetailDto.ChartId);
 
@@ -63,12 +111,19 @@ namespace HRMv2.Manager.ChartDetails
 
             chartDetail.Id = await WorkScope.InsertAndGetIdAsync<ChartDetail>(chartDetail);
 
+<<<<<<< HEAD
             var chartDetailDto = ObjectMapper.Map<ChartDetailDto>(chartDetail);
 
             return chartDetailDto;
         }
 
         public async Task<ChartDetailDto> Update(UpdateChartDetailDto updateChartDetailDto)
+=======
+            return chartDetail;
+        }
+
+        public async Task<ChartDetail> Update(UpdateChartDetailDto updateChartDetailDto)
+>>>>>>> origin/dev-add-chart
         {
 
             var chartDetail = await WorkScope.GetAsync<ChartDetail>(updateChartDetailDto.Id);
@@ -82,6 +137,7 @@ namespace HRMv2.Manager.ChartDetails
             }
 
             // update
+<<<<<<< HEAD
             CommonUtil.MergeDataTwoEntites<UpdateChartDetailDto, ChartDetail>(updateChartDetailDto, chartDetail);
 
             await WorkScope.UpdateAsync(chartDetail);
@@ -89,6 +145,13 @@ namespace HRMv2.Manager.ChartDetails
             var chartDetailDto = ObjectMapper.Map<ChartDetailDto>(chartDetail);
 
             return chartDetailDto;
+=======
+            ObjectMapper.Map<UpdateChartDetailDto, ChartDetail>(updateChartDetailDto, chartDetail);
+
+            await WorkScope.UpdateAsync(chartDetail);
+
+            return chartDetail;
+>>>>>>> origin/dev-add-chart
         }
 
 
