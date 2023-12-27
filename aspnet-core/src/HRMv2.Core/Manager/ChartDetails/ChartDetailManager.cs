@@ -1,51 +1,117 @@
 ﻿using Abp.UI;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using HRMv2.Entities;
+using HRMv2.Manager.Categories;
+using HRMv2.Manager.Categories.JobPositions;
+using HRMv2.Manager.Categories.Levels;
+using HRMv2.Manager.Categories.Teams;
 using HRMv2.Manager.ChartDetails.Dto;
 using HRMv2.Manager.Charts;
-<<<<<<< HEAD
-using HRMv2.NccCore;
-using HRMv2.Utils;
-=======
 using HRMv2.Manager.Charts.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
 using NccCore.Extension;
 using NccCore.Paging;
->>>>>>> origin/dev-add-chart
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.ChartDetails
 {
     public class ChartDetailManager : BaseManager
     {
         protected readonly ChartManager _chartManager;
+        protected readonly BranchManager _branchManager;
+        protected readonly LevelManager _levelManager;
+        protected readonly JobPositionManager _jobPositionManager;
+        protected readonly TeamManager _teamManager;
+
 
         public ChartDetailManager(IWorkScope workScope,
-            ChartManager chartManager) : base(workScope)
+            ChartManager chartManager,
+            BranchManager branchManager,
+            LevelManager levelManager,
+            JobPositionManager jobPositionManager,
+            TeamManager teamManager
+            ) : base(workScope)
         {
             _chartManager = chartManager;
+            _branchManager = branchManager;
+            _levelManager = levelManager;
+            _jobPositionManager = jobPositionManager;
+            _teamManager = teamManager;
         }
 
-<<<<<<< HEAD
-        public List<ChartDetailDto> GetAll()
+        public ChartDetailSelectionDataDto GetChartDetailSelectionData()
         {
-            var chartDetails = WorkScope.GetAll<ChartDetail>().ToList();
+            var branches = _branchManager
+                .QueryAllBranch()
+                .Select(x => new BaseInfoDto
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList();
 
-            return ObjectMapper.Map<List<ChartDetailDto>>(chartDetails);
+            var levels = _levelManager
+                .QueryAllLevel()
+                .Select(x => new BaseInfoDto
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList();
+
+            var jobPositions = _jobPositionManager
+                .QueryAllJobPosition()
+                .Select(x => new BaseInfoDto
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList();
+
+            var teams = _teamManager
+                .QueryAllTeam()
+                .Select(x => new BaseInfoDto
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList();
+
+            var selectionData = new ChartDetailSelectionDataDto
+            {
+                Branches = branches,
+                JobPositions = jobPositions,
+                Levels = levels,
+                Teams = teams,
+                PayslipDetailTypes = GetEnumIdNameList<PayslipDetailType>(),
+                UserTypes = GetEnumIdNameList<UserType>(),
+                WorkingStatuses = GetEnumIdNameList<EmployeeStatus>(),
+
+            };
+
+            return selectionData;
         }
 
-        public async Task<List<ChartDetailDto>> GetAllFilter(bool? IsActive)
+        public static List<BaseInfoDto> GetEnumIdNameList<TEnum>() where TEnum : Enum
         {
-            var chartDetails = WorkScope.GetAll<ChartDetail>()
-                .Where(c => IsActive == null || c.IsActive == IsActive)
-                .ToList();
+            List<BaseInfoDto> enumKeyValueList = new List<BaseInfoDto>();
 
-            return ObjectMapper.Map<List<ChartDetailDto>>(chartDetails);
-=======
+            foreach (TEnum value in Enum.GetValues(typeof(TEnum)))
+            {
+                string name = Enum.GetName(typeof(TEnum), value);
+                long id = Convert.ToInt64(value);
+                enumKeyValueList.Add(new BaseInfoDto
+                {
+                    Id = id,
+                    Name = name
+                });
+            }
+
+            return enumKeyValueList;
+        }
+
         public IQueryable<ChartDetailDto> QueryAllChartDetail()
         {
             var query = WorkScope.GetAll<ChartDetail>().Select(c => new ChartDetailDto
@@ -69,17 +135,22 @@ namespace HRMv2.Manager.ChartDetails
 
         public List<ChartDetailDto> GetAll()
         {
-            var chartDetails = QueryAllChartDetail().ToList();
-
-            return chartDetails;
+            return QueryAllChartDetail().ToList();
         }
 
-        public async Task<GridResult<ChartDetailDto>> GetAllPaging(GridParam input)
+        public async Task<ChartFullDetailDto> GetAllDetailsByChartId(long chartId)
         {
             var query = QueryAllChartDetail();
-            var chartDetails = await query.GetGridResult(query, input);
-            return chartDetails;
->>>>>>> origin/dev-add-chart
+            var chartDetails = query
+                .Where(c => c.ChartId == chartId)
+                .ToList();
+
+            var chart = await _chartManager.Get(chartId);
+
+            var chartFullDetail = ObjectMapper.Map<ChartFullDetailDto>(chart);
+            chartFullDetail.ChartDetails = chartDetails;
+
+            return chartFullDetail;
         }
 
         public async Task<ChartDetailDto> Get(long id)
@@ -91,11 +162,7 @@ namespace HRMv2.Manager.ChartDetails
             return chartDetailDto;
         }
 
-<<<<<<< HEAD
-        public async Task<ChartDetailDto> Create(CreateChartDetailDto createChartDetailDto)
-=======
         public async Task<ChartDetail> Create(CreateChartDetailDto createChartDetailDto)
->>>>>>> origin/dev-add-chart
         {
             //var chart = await _chartManager.Get(createChartDetailDto.ChartId);
 
@@ -111,19 +178,10 @@ namespace HRMv2.Manager.ChartDetails
 
             chartDetail.Id = await WorkScope.InsertAndGetIdAsync<ChartDetail>(chartDetail);
 
-<<<<<<< HEAD
-            var chartDetailDto = ObjectMapper.Map<ChartDetailDto>(chartDetail);
-
-            return chartDetailDto;
-        }
-
-        public async Task<ChartDetailDto> Update(UpdateChartDetailDto updateChartDetailDto)
-=======
             return chartDetail;
         }
 
         public async Task<ChartDetail> Update(UpdateChartDetailDto updateChartDetailDto)
->>>>>>> origin/dev-add-chart
         {
 
             var chartDetail = await WorkScope.GetAsync<ChartDetail>(updateChartDetailDto.Id);
@@ -137,21 +195,11 @@ namespace HRMv2.Manager.ChartDetails
             }
 
             // update
-<<<<<<< HEAD
-            CommonUtil.MergeDataTwoEntites<UpdateChartDetailDto, ChartDetail>(updateChartDetailDto, chartDetail);
-
-            await WorkScope.UpdateAsync(chartDetail);
-
-            var chartDetailDto = ObjectMapper.Map<ChartDetailDto>(chartDetail);
-
-            return chartDetailDto;
-=======
             ObjectMapper.Map<UpdateChartDetailDto, ChartDetail>(updateChartDetailDto, chartDetail);
 
             await WorkScope.UpdateAsync(chartDetail);
 
             return chartDetail;
->>>>>>> origin/dev-add-chart
         }
 
 
