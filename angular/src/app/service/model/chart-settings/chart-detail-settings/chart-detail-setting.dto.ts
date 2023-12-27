@@ -3,7 +3,7 @@ export class ChartDetailSettingDto {
   chartId: number;
   name: string;
   color: string;
-  isActive: boolean;
+  isActive: number;
   jobPositionIds: number[];
   levelIds: number[];
   branchIds: number[];

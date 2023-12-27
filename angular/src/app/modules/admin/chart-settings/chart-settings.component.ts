@@ -9,6 +9,9 @@ import { ChartSettingService } from "@app/service/api/chart-settings/chart-setti
 import { finalize } from "rxjs/operators";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { APP_ENUMS } from "@shared/AppEnums";
+import { ListBenefitDefaultFilter } from "@app/modules/benefits/list-benefit/list-benefit.component";
+import { FILTER_VALUE } from "@app/modules/categories/punishment-types/punishment-types.component";
+import { startWithTap } from "@shared/helpers/observerHelper";
 
 @Component({
   selector: "app-chart-settings",
@@ -28,15 +31,37 @@ export class ChartSettingsComponent
 
   public chartList = [] as ChartSettingDto[];
   public menu: MatMenuTrigger;
-  public contextMenuPosition = { x: '0px', y: '0px' };
-  public statusList = this.getListFormEnum(APP_ENUMS.ActiveStatus)
-  public defaultValue = APP_ENUMS.ActiveStatus.Active
+  public contextMenuPosition = { x: "0px", y: "0px" };
+  public statusList = this.getListFormEnum(APP_ENUMS.ActiveStatus);
+  public defaultValue = APP_ENUMS.ActiveStatus.Active;
+  public readonly filterList = [
+    {
+      key: "All",
+      value: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE,
+    },
+    {
+      key: "Active",
+      value: FILTER_VALUE.ACTIVE,
+    },
+    {
+      key: "Inactive",
+      value: FILTER_VALUE.INACTIVE,
+    },
+  ];
 
   protected list(
     request: PagedRequestDto,
     pageNumber: number,
     finishedCallback: Function
   ): void {
+    // if(request.filterItems.length == 0) {
+    //   request.filterItems = [{
+    //     propertyName: "isActive",
+    //     value: 1,
+    //     comparision: 0
+    //   }]
+    // }
+
     this.subscription.push(
       this.chartSettingService
         .getAllPagging(request)
@@ -53,11 +78,6 @@ export class ChartSettingsComponent
   }
 
   ngOnInit() {
-    this.listBreadCrumb = [
-      { name: '<i class="fa-solid fa-house fa-sm"></i>', url: "" },
-      { name: ' <i class="fa-solid fa-chevron-right"></i> ' },
-      { name: "Chart setting" },
-    ];
     this.refresh();
   }
 
@@ -82,16 +102,33 @@ export class ChartSettingsComponent
   }
 
   goToChartDetailPage(id: number) {
-    this.router.navigate(['/app/admin/charts-detail', id]);
+    this.router.navigate(["/app/admin/chart-details"], {
+      queryParams: {
+        id: id
+      }
+    })
   }
 
   onUpdate(chart: ChartSettingDto) {
     this.openDialog(CreateEditChartDialogComponent, { ...chart });
-
   }
 
   onActive(chart: ChartSettingDto) {
+    const data: ChartSettingDto = {
+      ...chart,
+      isActive:
+        chart.isActive == this.APP_ENUM.ActiveStatus.Active
+          ? this.APP_ENUM.ActiveStatus.InActive
+          : this.APP_ENUM.ActiveStatus.Active,
+    };
     
+    this.subscription.push(this.chartSettingService.update(data)
+      .pipe(startWithTap(() => { this.isLoading = true }))
+      .pipe(finalize(() => { this.isLoading = false }))
+      .subscribe(rs => {
+        abp.notify.success(`Active chart successfull`)
+        this.refresh();
+      }))
   }
 
   onDelete(chart: ChartSettingDto) {

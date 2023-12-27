@@ -1,28 +1,17 @@
 <div class="px-4 pt-1">
-  <div class="breadcrumb">
-    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
-    <span>ChartType</span>
-    <span>Status</span>
+  <div class="breadcrumb al-center">
+    <a [routerLink]="['/']"><i class="fa-solid fa-house fa-sm"></i></a>
+    <i class="fa-solid fa-chevron-right fa-sm"></i>
+    <a [routerLink]="'/app/admin/charts'" class="hyperlink">Chart</a>
+    <i class="fa-solid fa-chevron-right fa-sm"></i>
+    <span class="p-2">{{ chartFullDetail.name }}</span>
+    <span [ngClass]="chartTypeTemplate[chartFullDetail.chartType].class">{{
+      chartTypeTemplate[chartFullDetail.chartType].name
+    }}</span>
   </div>
   <div class="card">
-    <div class="card-header d-flex">
-      <div class="col-6 p-0">
-        <app-search
-          [placeholder]="'Search by Chart Detail Name'"
-          [seachText]="searchText"
-          (onSearch)="onSearchEnter($event)"
-        ></app-search>
-      </div>
-      <div class="col-3">
-        <table-filter
-          [filterType]="filterTypeEnum.MultiSelect"
-          [dropdownData]="statusList"
-          [placeholder]="'Status'"
-          [defaultValue]="defaultValue"
-        >
-        </table-filter>
-      </div>
-      <div class="col-3 p-0 mt-1 text-right">
+    <div class="card-header d-flex jc-right">
+      <div class="p-0 mt-1 text-right">
         <app-create-button
           *ngIf="isShowCreateBtn()"
           (create)="onCreate()"
@@ -44,32 +33,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                *ngFor="
-                  let chartDetail of chartDetailList
-                    | paginate
-                      : {
-                          id: 'server',
-                          itemsPerPage: pageSize,
-                          currentPage: pageNumber,
-                          totalItems: totalItems
-                        };
-                  let i = index
-                "
-                (dblclick)="goToChartPage()"
-              >
+              <tr *ngFor="let chartDetail of chartDetailList; let i = index">
                 <td class="text-center">
                   {{ (pageNumber - 1) * pageSize + i + 1 }}
                 </td>
                 <td>{{ chartDetail.name }}</td>
                 <td class="col-color text-center">
-                    <span
-                      class="badge text-white"
-                      [style.backgroundColor]="chartDetail.color"
-                    >
-                      {{ chartDetail.color }}
-                    </span>
-                  </td>
+                  <span
+                    class="badge text-white"
+                    [style.backgroundColor]="chartDetail.color"
+                  >
+                    {{ chartDetail.color }}
+                  </span>
+                </td>
                 <td class="text-center">
                   {{ chartDetail.Selected }}
                 </td>
@@ -84,7 +60,7 @@
                     <label class="custom-control-label"></label>
                   </div>
                 </td>
-                <td class="text-center"> 
+                <td class="text-center">
                   <div
                     style="visibility: hidden; position: fixed"
                     [style.right]="contextMenuPosition.x"
@@ -126,13 +102,6 @@
           </table>
         </div>
       </div>
-    </div>
-    <div class="card-footer">
-      <pagination-control
-        [totalItems]="totalItems"
-        [pageSize]="pageSizeType"
-        (pageAction)="pageControlActions($event)"
-      ></pagination-control>
     </div>
   </div>
 </div>

@@ -30,7 +30,7 @@
         <mat-form-field class="w-100 center-flex" appearance="outline">
           <mat-select
             name="Chart type"
-            placeholder="select chart  type"
+            placeholder="select chart type"
             [(ngModel)]="chart.chartType"
             #employeeInfo="ngModel"
           >
@@ -58,22 +58,6 @@
         </mat-form-field>
       </div>
     </div>
-    <!-- <div class="form-group d-flex">
-      <label class="col-3 mt-2 col-form-label"> Color: </label>
-      <div class="d-flex align-items-center pl-2">
-        <mat-form-field appearance="outline" class="pr-3">
-          <input matInput name="color" [(ngModel)]="chart.color" />
-        </mat-form-field>
-        <div class="d-flex align-items-center">
-          <input
-            class="color-picker"
-            type="color"
-            name="color"
-            [(ngModel)]="chart.color"
-          />
-        </div>
-      </div>
-    </div> -->
   </div>
   <app-dialog-footer
     (onSave)="saveAndClose()"

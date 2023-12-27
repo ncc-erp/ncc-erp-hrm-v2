@@ -183,6 +183,17 @@ export class AppConsts {
         "Plan pause": "badge badge-pill statusPendingCEO",
 
     }
+
+    static readonly ChartType = {
+        0: {
+            name: "Line",
+            class: "badge badge-success"
+        },
+        1: {
+            name: "Circle",
+            class: "badge badge-warning"
+        }
+    }
 }
 
 export const BenefitType =
