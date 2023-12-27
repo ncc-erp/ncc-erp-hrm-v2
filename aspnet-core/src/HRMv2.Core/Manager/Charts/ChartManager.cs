@@ -22,14 +22,16 @@ namespace HRMv2.Manager.Charts
 
         public IQueryable<ChartDto> QueryAllChart()
         {
-            var query = WorkScope.GetAll<Chart>().Select(c => new ChartDto
-            {
-                ChartType = c.ChartType,
-                Id = c.Id,
-                IsActive = c.IsActive,
-                Name = c.Name,
-                TimePeriodType = c.TimePeriodType
-            });
+            var query = WorkScope.GetAll<Chart>()
+                .OrderByDescending(c => c.LastModificationTime)
+                .Select(c => new ChartDto
+                {
+                    ChartType = c.ChartType,
+                    Id = c.Id,
+                    IsActive = c.IsActive,
+                    Name = c.Name,
+                    TimePeriodType = c.TimePeriodType
+                });
 
             return query;
         }

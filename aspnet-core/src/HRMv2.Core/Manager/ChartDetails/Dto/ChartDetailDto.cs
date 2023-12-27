@@ -23,8 +23,6 @@ namespace HRMv2.Manager.ChartDetails.Dto
 
         public bool IsActive { get; set; }
 
-        public List<UserType> UserTypes { get; set; }
-
         public List<long> JobPositionIds { get; set; }
 
         public List<long> LevelIds { get; set; }
@@ -32,6 +30,8 @@ namespace HRMv2.Manager.ChartDetails.Dto
         public List<long> BranchIds { get; set; }
 
         public List<long> TeamIds { get; set; }
+
+        public List<UserType> UserTypes { get; set; }
 
         public List<PayslipDetailType> PayslipDetailTypes { get; set; }
 

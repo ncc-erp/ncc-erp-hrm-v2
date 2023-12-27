@@ -20,21 +20,7 @@ namespace HRMv2.APIs.ChartDetails
             _chartDetailManager = chartDetailManager;
         }
 
-        [HttpGet]
-        public async Task<List<ChartDetailDto>> GetAll()
-        {
-            var chartDetails = _chartDetailManager.GetAll();
-
-            return chartDetails;
-        }
-        [HttpPost]
-        public async Task<GridResult<ChartDetailDto>> GetAllPaging(GridParam input)
-        {
-            var chartDetails = await _chartDetailManager.GetAllPaging(input);
-
-            return chartDetails;
-        }
-
+        #region Get
         [HttpGet]
         public async Task<ChartDetailDto> Get(long id)
         {
@@ -42,6 +28,23 @@ namespace HRMv2.APIs.ChartDetails
 
             return chartDetail;
         }
+
+        [HttpGet]
+        public async Task<ChartFullDetailDto> GetAllDetailsByChartId(long id)
+        {
+            var chartFullDetail = await _chartDetailManager.GetAllDetailsByChartId(id);
+
+            return chartFullDetail;
+        }
+
+        [HttpGet]
+        public ChartDetailSelectionDataDto GetChartDetailSelectionData()
+        {
+            var selectionData = _chartDetailManager.GetChartDetailSelectionData();
+
+            return selectionData;
+        } 
+        #endregion
 
         [HttpPost]
         public async Task<ChartDetail> Create(CreateChartDetailDto createChartDetailDto)
@@ -84,5 +87,7 @@ namespace HRMv2.APIs.ChartDetails
 
             return chartDetailId;
         }
+
+        
     }
 }
