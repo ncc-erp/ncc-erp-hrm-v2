@@ -40,6 +40,7 @@
               <tr>
                 <th class="col-stt">#</th>
                 <th>Name</th>
+                <th>Chart data type</th>
                 <th>Chart type</th>
                 <th>Time period type</th>
                 <th>Active</th>
@@ -59,7 +60,6 @@
                         };
                   let i = index
                 "
-                (dblclick)="goToChartDetailPage(chart.id)"
               >
                 <td class="text-center">
                   {{ (pageNumber - 1) * pageSize + i + 1 }}
@@ -71,6 +71,7 @@
                     >{{ chart.name }}</a
                   >
                 </td>
+                <td class="col-1 text-center">{{ chart.chartDataTypeName }}</td>
                 <td class="col-1 text-center">{{ chart.chartTypeName }}</td>
                 <td class="col-2 text-center">
                   {{ chart.timePeriodTypeName }}
@@ -108,10 +109,14 @@
                     <button
                       *ngIf="isShowActiveBtn()"
                       class="mat-menu-item"
-                      (click)="onActive(chart)"
+                      (click)="
+                        chart.isActive
+                          ? onDeActive(chart.id)
+                          : onActive(chart.id)
+                      "
                     >
                       <i class="fas fa-edit fa-lg mr-1"></i>
-                      <span>Active</span>
+                      <span>{{ chart.isActive ? "Deactive" : "Active" }}</span>
                     </button>
                     <button
                       *ngIf="isShowDeleteBtn()"

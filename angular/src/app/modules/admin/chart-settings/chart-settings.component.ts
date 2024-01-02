@@ -1,4 +1,11 @@
-import { Component, Injector, OnInit } from "@angular/core";
+import {
+  AfterContentChecked,
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  Injector,
+  OnInit,
+} from "@angular/core";
 import {
   PagedListingComponentBase,
   PagedRequestDto,
@@ -33,7 +40,7 @@ export class ChartSettingsComponent
   public menu: MatMenuTrigger;
   public contextMenuPosition = { x: "0px", y: "0px" };
   public statusList = this.getListFormEnum(APP_ENUMS.ActiveStatus);
-  public defaultValue = APP_ENUMS.ActiveStatus.Active;
+  public defaultValue = FILTER_VALUE.ACTIVE;
   public readonly filterList = [
     {
       key: "All",
@@ -54,14 +61,6 @@ export class ChartSettingsComponent
     pageNumber: number,
     finishedCallback: Function
   ): void {
-    // if(request.filterItems.length == 0) {
-    //   request.filterItems = [{
-    //     propertyName: "isActive",
-    //     value: 1,
-    //     comparision: 0
-    //   }]
-    // }
-
     this.subscription.push(
       this.chartSettingService
         .getAllPagging(request)
@@ -78,11 +77,15 @@ export class ChartSettingsComponent
   }
 
   ngOnInit() {
-    this.refresh();
-  }
+    if (this.filterItems.length == 0) {
+      this.filterItems.push({
+        propertyName: "isActive",
+        value: 1,
+        comparision: 0,
+      });
+    }
 
-  onCreate() {
-    this.openDialog(CreateEditChartDialogComponent);
+    this.refresh();
   }
 
   isShowCreateBtn() {
@@ -101,34 +104,54 @@ export class ChartSettingsComponent
     return true;
   }
 
-  goToChartDetailPage(id: number) {
-    this.router.navigate(["/app/admin/chart-details"], {
-      queryParams: {
-        id: id
-      }
-    })
+  onCreate() {
+    this.openDialog(CreateEditChartDialogComponent);
   }
 
   onUpdate(chart: ChartSettingDto) {
     this.openDialog(CreateEditChartDialogComponent, { ...chart });
   }
 
-  onActive(chart: ChartSettingDto) {
-    const data: ChartSettingDto = {
-      ...chart,
-      isActive:
-        chart.isActive == this.APP_ENUM.ActiveStatus.Active
-          ? this.APP_ENUM.ActiveStatus.InActive
-          : this.APP_ENUM.ActiveStatus.Active,
-    };
-    
-    this.subscription.push(this.chartSettingService.update(data)
-      .pipe(startWithTap(() => { this.isLoading = true }))
-      .pipe(finalize(() => { this.isLoading = false }))
-      .subscribe(rs => {
-        abp.notify.success(`Active chart successfull`)
-        this.refresh();
-      }))
+  onActive(id: number) {
+    this.subscription.push(
+      this.chartSettingService
+        .active(id)
+        .pipe(
+          startWithTap(() => {
+            this.isLoading = true;
+          })
+        )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
+        .subscribe((rs) => {
+          abp.notify.success(`Active chart successfull`);
+          this.refresh();
+        })
+    );
+  }
+
+  onDeActive(id: number) {
+    this.subscription.push(
+      this.chartSettingService
+        .deActive(id)
+        .pipe(
+          startWithTap(() => {
+            this.isLoading = true;
+          })
+        )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
+        .subscribe((rs) => {
+          abp.notify.success(`Deactive chart successfull`);
+          this.refresh();
+        })
+    );
   }
 
   onDelete(chart: ChartSettingDto) {

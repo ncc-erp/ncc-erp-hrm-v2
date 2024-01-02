@@ -247,6 +247,10 @@ export const APP_ENUMS = {
         Birthday: 2,
         HomeMonthYear: 3
     },
+    ChartDataType: {
+        Employee: 0,
+        Salary: 1,
+    },
     ChartType: {
         Line: 0,
         Circle: 1

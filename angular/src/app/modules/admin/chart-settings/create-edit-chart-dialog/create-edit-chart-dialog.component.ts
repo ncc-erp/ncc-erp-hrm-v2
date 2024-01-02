@@ -15,12 +15,14 @@ export class CreateEditChartDialogComponent extends DialogComponentBase<ChartSet
   public chart = {} as ChartSettingDto;
   public chartType = this.getListFormEnum(APP_ENUMS.ChartType, true);
   public timePeriodType = this.getListFormEnum(APP_ENUMS.TimePeriodType, true);
+  public chartDataType = this.getListFormEnum(APP_ENUMS.ChartDataType, true);
   
   constructor(injector: Injector,
     private chartService: ChartSettingService) {
     super(injector);
     this.chart.chartType = APP_ENUMS.ChartType.Line;
     this.chart.timePeriodType = APP_ENUMS.TimePeriodType.Month;
+    this.chart.chartDataType = APP_ENUMS.ChartDataType.Employee
   }
 
   ngOnInit(): void {

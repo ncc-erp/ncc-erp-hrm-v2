@@ -4,10 +4,22 @@
     <i class="fa-solid fa-chevron-right fa-sm"></i>
     <a [routerLink]="'/app/admin/charts'" class="hyperlink">Chart</a>
     <i class="fa-solid fa-chevron-right fa-sm"></i>
-    <span class="p-2">{{ chartFullDetail.name }}</span>
-    <span [ngClass]="chartTypeTemplate[chartFullDetail.chartType].class">{{
-      chartTypeTemplate[chartFullDetail.chartType].name
-    }}</span>
+    <span class="p-2">{{ chartFull.name }}</span>
+    <span
+      class="mr-1 ml-1 p-2 badge"
+      [ngClass]="chartFull.chartType ? 'badge-success' : 'badge-warning'"
+      >{{ chartFull.chartTypeName }}</span
+    >
+    <span
+      class="mr-1 ml-1 p-2 badge"
+      [ngClass]="chartFull.isActive ? 'badge-success' : 'badge-error'"
+      >{{ chartFull.isActive ? "Active" : "Inactive" }}</span
+    >
+    <span
+      class="mr-1 ml-1 p-2 badge"
+      [ngClass]="chartFull.chartDataType ? 'badge-success' : 'badge-warning'"
+      >{{ chartFull.chartDataTypeName }}</span
+    >
   </div>
   <div class="card">
     <div class="card-header d-flex jc-right">
@@ -26,41 +38,107 @@
               <tr>
                 <th class="col-stt">#</th>
                 <th>Name</th>
-                <th>Color</th>
-                <th>Selected</th>
+                <th>Filtered Data</th>
                 <th>Active</th>
                 <th class="col-action">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let chartDetail of chartDetailList; let i = index">
+              <tr
+                *ngFor="
+                  let chartFullDetail of chartFullDetailList;
+                  let i = index
+                "
+              >
                 <td class="text-center">
                   {{ (pageNumber - 1) * pageSize + i + 1 }}
                 </td>
-                <td>{{ chartDetail.name }}</td>
-                <td class="col-color text-center">
-                  <span
-                    class="badge text-white"
-                    [style.backgroundColor]="chartDetail.color"
+                <td [style.color]="chartFullDetail.color">
+                  {{ chartFullDetail.name }}
+                </td>
+                <td class="col-6">
+                  <div
+                    *ngIf="chartFullDetail.branches.length > 0"
+                    class="filter-box border-red"
                   >
-                    {{ chartDetail.color }}
-                  </span>
+                    <span *ngFor="let item of chartFullDetail.branches ; index as i">
+                      {{ item.name }}{{i < chartFullDetail.branches.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="chartFullDetail.jobPositions.length > 0"
+                    class="filter-box border-yellow"
+                  >
+                    <span *ngFor="let item of chartFullDetail.jobPositions ; index as i">
+                      {{ item.name }}{{i < chartFullDetail.jobPositions.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="chartFullDetail.levels.length > 0"
+                    class=" filter-box border-orange"
+                  >
+                    <span *ngFor="let item of chartFullDetail.levels ; index as i">
+                      {{ item.name }}{{i < chartFullDetail.levels.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="chartFullDetail.teams.length > 0"
+                    class=" filter-box border-purple"
+                  >
+                    <span *ngFor="let item of chartFullDetail.teams ; index as i">
+                      {{ item.name }}{{i < chartFullDetail.teams.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="chartFullDetail.payslipDetailTypes.length > 0"
+                    class=" filter-box border-lime"
+                  >
+                    <span
+                      *ngFor="let enum of chartFullDetail.payslipDetailTypes ; index as i"
+                    >
+                      {{ enum.key }}{{i < chartFullDetail.payslipDetailTypes.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="chartFullDetail.userTypes.length > 0"
+                    class=" filter-box border-blue"
+                  >
+                    <span *ngFor="let enum of chartFullDetail.userTypes ; index as i">
+                      {{ enum.key }}{{i < chartFullDetail.userTypes.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="chartFullDetail.workingStatuses.length > 0"
+                    class=" filter-box border-green"
+                  >
+                    <span *ngFor="let enum of chartFullDetail.workingStatuses ; index as i">
+                      {{ enum.key }}{{i < chartFullDetail.workingStatuses.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
+                  <div
+                    *ngIf="chartFullDetail.sexes.length > 0"
+                    class=" filter-box border-cyan"
+                  >
+                    <span
+                      *ngFor="let enum of chartFullDetail.sexes ; index as i"
+                      class=""
+                    >
+                      {{ enum.key }}{{i < chartFullDetail.sexes.length - 1 ? ',' : ''}}
+                    </span>
+                  </div>
                 </td>
-                <td class="text-center">
-                  {{ chartDetail.Selected }}
-                </td>
-                <td class="text-center">
+                <td class="col-1 text-center">
                   <div class="custom-control custom-checkbox">
                     <input
                       type="checkbox"
                       class="custom-control-input"
                       disabled
-                      [checked]="chartDetail.isActive"
+                      [checked]="chartFullDetail.isActive"
                     />
                     <label class="custom-control-label"></label>
                   </div>
                 </td>
-                <td class="text-center">
+                <td class="col-1 text-center">
                   <div
                     style="visibility: hidden; position: fixed"
                     [style.right]="contextMenuPosition.x"
@@ -73,7 +151,7 @@
                   <mat-menu #menu="matMenu" class="p-2">
                     <button
                       *ngIf="isShowEditBtn()"
-                      (click)="onUpdate(chartDetail)"
+                      (click)="onUpdate(chartFullDetail)"
                       class="mat-menu-item w-100"
                     >
                       <i class="fas fa-pencil-alt mr-1"></i>
@@ -82,15 +160,21 @@
                     <button
                       *ngIf="isShowActiveBtn()"
                       class="mat-menu-item"
-                      (click)="onActive(chartDetail)"
+                      (click)="
+                        chartFullDetail.isActive
+                          ? onDeActive(chartFullDetail.id)
+                          : onActive(chartFullDetail.id)
+                      "
                     >
                       <i class="fas fa-edit fa-lg mr-1"></i>
-                      <span>Active</span>
+                      <span>{{
+                        chartFullDetail.isActive ? "Deactive" : "Active"
+                      }}</span>
                     </button>
                     <button
                       *ngIf="isShowDeleteBtn()"
                       class="mat-menu-item w-100"
-                      (click)="onDelete(chartDetail)"
+                      (click)="onDelete(chartFullDetail)"
                     >
                       <i class="fas fa-trash fa-lg mr-1"></i>
                       <span>Delete</span>

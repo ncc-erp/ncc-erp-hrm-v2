@@ -194,6 +194,28 @@ export class AppConsts {
             class: "badge badge-warning"
         }
     }
+
+    static readonly ChartDataType = {
+        0: {
+            name: "Employee",
+            class: "badge badge-success"
+        },
+        1: {
+            name: "Salary",
+            class: "badge badge-warning"
+        }
+    }
+
+    static readonly Status = {
+        1: {
+            name: "Active",
+            class: "badge badge-success"
+        },
+        0: {
+            name: "Inactive",
+            class: "badge badge-error"
+        }
+    }
 }
 
 export const BenefitType =

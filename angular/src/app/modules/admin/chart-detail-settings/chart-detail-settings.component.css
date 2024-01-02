@@ -9,3 +9,73 @@
 .jc-right {
     justify-content: right;
 }
+
+.badge {
+    /* line-height: unset; */
+}
+
+.border-red {
+    border: 2px solid red;
+}
+
+.border-black {
+    border: 2px solid #000000;
+}
+
+.border-blue {
+    border: 2px solid #0000FF;
+}
+
+.border-cyan {
+    border: 2px solid #86e9ff;
+}
+
+.border-green {
+    border: 2px solid #008000;
+}
+
+.border-orange {
+    border: 2px solid #FFA500;
+}
+
+.border-brown {
+    border: 2px solid #A52A2A;
+}
+
+.border-gray {
+    border: 2px solid #808080;
+}
+
+.border-pink {
+    border: 2px solid #FFC0CB;
+}
+
+.border-yellow {
+    border: 2px solid #ffc800;
+}
+
+.border-purple {
+    border: 2px solid #800080;
+}
+
+.border-lime {
+    border: 2px solid #008000;
+}
+
+.w-content {
+    width: fit-content;
+}
+
+.filter-box {
+    width: fit-content;
+    padding: 0 4px;
+    margin: 4px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.filter-box:hover {
+    transform: scaleX(1.02);
+    transition: all 0.3s;
+}

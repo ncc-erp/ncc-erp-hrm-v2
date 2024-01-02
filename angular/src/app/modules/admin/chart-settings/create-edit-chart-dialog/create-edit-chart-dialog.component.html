@@ -25,6 +25,23 @@
       </div>
     </div>
     <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Chart data type</label>
+      <div class="col-9">
+        <mat-form-field class="w-100 center-flex" appearance="outline">
+          <mat-select
+            name="Chart data type"
+            placeholder="select chart data type"
+            [(ngModel)]="chart.chartDataType"
+            #employeeInfo="ngModel"
+          >
+            <mat-option *ngFor="let type of chartDataType" [value]="type.value">{{
+              type.key
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Chart type</label>
       <div class="col-9">
         <mat-form-field class="w-100 center-flex" appearance="outline">

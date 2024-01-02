@@ -4,11 +4,12 @@ export class ChartDetailSettingDto {
   name: string;
   color: string;
   isActive: number;
+  branchIds: number[];
   jobPositionIds: number[];
   levelIds: number[];
-  branchIds: number[];
   teamIds: number[];
-  userTypes: number[]; // app enum usertype
   payslipDetailTypes: number[]; // app enum ESalaryType
+  userTypes: number[]; // app enum usertype
   workingStatuses: number[]; // app enum UserStatus
+  sexes: number[];
 }
