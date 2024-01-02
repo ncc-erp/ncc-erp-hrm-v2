@@ -17,8 +17,11 @@ export class ChartSettingService extends BaseApiService {
     super(injector)
   }
 
-  public getAllChart(): Observable<ApiResponseDto<ChartSettingDto[]>>{
-    const any = this.processGet(`GetAll`);
-    return any;
-  }
+   public active(id: number): Observable<ApiResponseDto<ChartSettingDto>> {
+    return this.processPut('Active', id)
+   }
+   
+   public deActive(id: number): Observable<ApiResponseDto<ChartSettingDto>> {
+    return this.processPut('DeActive', id);
+   }
 }

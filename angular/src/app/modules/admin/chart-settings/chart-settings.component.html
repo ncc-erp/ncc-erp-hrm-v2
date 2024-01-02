@@ -1,6 +1,8 @@
 <div class="px-4 pt-1">
-  <div class="breadcrumb">
-    <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
+  <div class="breadcrumb al-center">
+    <a [routerLink]="['/']"><i class="fa-solid fa-house fa-sm"></i></a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a [routerLink]="'/app/admin/charts'" class="hyperlink">Chart</a>
   </div>
   <div class="card">
     <div class="card-header d-flex">
@@ -14,9 +16,12 @@
       <div class="col-3">
         <table-filter
           [filterType]="filterTypeEnum.Dropdown"
-          [dropdownData]="statusList"
+          [dropdownData]="filterList"
           [placeholder]="'Status'"
           [defaultValue]="defaultValue"
+          (onTableFilter)="
+            onTableFilter(filterTypeEnum.Dropdown, $event, 'isActive')
+          "
         >
         </table-filter>
       </div>
@@ -35,6 +40,7 @@
               <tr>
                 <th class="col-stt">#</th>
                 <th>Name</th>
+                <th>Chart data type</th>
                 <th>Chart type</th>
                 <th>Time period type</th>
                 <th>Active</th>
@@ -54,12 +60,18 @@
                         };
                   let i = index
                 "
-                (dblclick)="goToChartDetailPage(chart.id)"
               >
                 <td class="text-center">
                   {{ (pageNumber - 1) * pageSize + i + 1 }}
                 </td>
-                <td class="col-6">{{ chart.name }}</td>
+                <td class="col-6">
+                  <a
+                    [routerLink]="['/app/admin/chart-details']"
+                    [queryParams]="{ id: chart.id }"
+                    >{{ chart.name }}</a
+                  >
+                </td>
+                <td class="col-1 text-center">{{ chart.chartDataTypeName }}</td>
                 <td class="col-1 text-center">{{ chart.chartTypeName }}</td>
                 <td class="col-2 text-center">
                   {{ chart.timePeriodTypeName }}
@@ -97,10 +109,14 @@
                     <button
                       *ngIf="isShowActiveBtn()"
                       class="mat-menu-item"
-                      (click)="onActive(chart)"
+                      (click)="
+                        chart.isActive
+                          ? onDeActive(chart.id)
+                          : onActive(chart.id)
+                      "
                     >
                       <i class="fas fa-edit fa-lg mr-1"></i>
-                      <span>Active</span>
+                      <span>{{ chart.isActive ? "Deactive" : "Active" }}</span>
                     </button>
                     <button
                       *ngIf="isShowDeleteBtn()"

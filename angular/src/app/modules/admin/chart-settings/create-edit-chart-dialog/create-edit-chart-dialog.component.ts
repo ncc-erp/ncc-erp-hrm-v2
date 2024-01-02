@@ -13,12 +13,16 @@ import { APP_ENUMS } from '@shared/AppEnums';
 })
 export class CreateEditChartDialogComponent extends DialogComponentBase<ChartSettingDto> implements OnInit {
   public chart = {} as ChartSettingDto;
-  chartType = this.getListFormEnum(APP_ENUMS.ChartType, true);
-  timePeriodType = this.getListFormEnum(APP_ENUMS.TimePeriodType, true);
+  public chartType = this.getListFormEnum(APP_ENUMS.ChartType, true);
+  public timePeriodType = this.getListFormEnum(APP_ENUMS.TimePeriodType, true);
+  public chartDataType = this.getListFormEnum(APP_ENUMS.ChartDataType, true);
   
   constructor(injector: Injector,
     private chartService: ChartSettingService) {
     super(injector);
+    this.chart.chartType = APP_ENUMS.ChartType.Line;
+    this.chart.timePeriodType = APP_ENUMS.TimePeriodType.Month;
+    this.chart.chartDataType = APP_ENUMS.ChartDataType.Employee
   }
 
   ngOnInit(): void {

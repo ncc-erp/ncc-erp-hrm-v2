@@ -1,1 +1,152 @@
-<p>create-edit-chart-detail-dialog works!</p>
+<form  class="form-horizontal" [busy]="isLoading">
+  <app-dialog-header [dialogTitle]="title"></app-dialog-header>
+  <div class="p-3">
+    <div class="form-group d-flex required">
+      <label class="col-3 mt-2 col-form-label">Name:</label>
+      <div class="col-9">
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            name="name"
+            [(ngModel)]="chartDetail.name"
+            #name="ngModel"
+            cdkFocusInitial
+            #nameEl
+            required
+          />
+        </mat-form-field>
+        <abp-validation-summary [control]="name" [controlEl]="nameEl">
+        </abp-validation-summary>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Sex: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listSexes"
+          [searchPlaceholder]="'Find sex'"
+          [multiControl]="formGroup.controls.sex"
+        >
+        </app-multi-select-box>
+        <!-- <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listSexes"
+          [placeholder]="'Sex'"
+          (onTableMultiSelectFilter)="onTableMultiSelect($event, 'sexes')"
+        >
+        </table-filter> -->
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Branch: </label>
+      <div class="col-9">
+        <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listBranches"
+          [placeholder]="'Branch'"
+          (onTableMultiSelectFilter)="onTableMultiSelect($event, 'branchIds')"
+        >
+        </table-filter>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Job position: </label>
+      <div class="col-9">
+        <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listJobPositions"
+          [placeholder]="'Job Position'"
+          (onTableMultiSelectFilter)="
+            onTableMultiSelect($event, 'jobPositionIds')
+          "
+        >
+        </table-filter>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Level: </label>
+      <div class="col-9">
+        <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listLevels"
+          [placeholder]="'Level'"
+          (onTableMultiSelectFilter)="onTableMultiSelect($event, 'levelIds')"
+        >
+        </table-filter>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Team: </label>
+      <div class="col-9">
+        <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listTeams"
+          [placeholder]="'Team'"
+          (onTableMultiSelectFilter)="onTableMultiSelect($event, 'teamIds')"
+        >
+        </table-filter>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">UserType: </label>
+      <div class="col-9">
+        <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listUserTypes"
+          [placeholder]="'UserType'"
+          (onTableMultiSelectFilter)="onTableMultiSelect($event, 'userTypes')"
+        >
+        </table-filter>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">WorkingStatus: </label>
+      <div class="col-9">
+        <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listWorkingStatuses"
+          [placeholder]="'WorkingStatus'"
+          (onTableMultiSelectFilter)="
+            onTableMultiSelect($event, 'workingStatuses')
+          "
+        >
+        </table-filter>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">PayslipDetailType: </label>
+      <div class="col-9">
+        <table-filter
+          [filterType]="filterTypeEnum.MultiSelect"
+          [dropdownData]="listPayslipDetailTypes"
+          [placeholder]="'PayslipDetailType'"
+          (onTableMultiSelectFilter)="
+            onTableMultiSelect($event, 'payslipDetailTypes')
+          "
+        >
+        </table-filter>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label"> Color: </label>
+      <div class="d-flex align-items-center pl-2">
+        <mat-form-field appearance="outline" class="common-input">
+          <input matInput name="color" [(ngModel)]="chartDetail.color" />
+        </mat-form-field>
+        <div class="d-flex align-items-center">
+          <input
+            class="ml-3 color-picker"
+            type="color"
+            name="color"
+            [(ngModel)]="chartDetail.color"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-dialog-footer
+    (onSave)="saveAndClose()"
+    [isDisable]="isLoading"
+  ></app-dialog-footer>
+</form>
