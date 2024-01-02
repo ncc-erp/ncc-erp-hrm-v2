@@ -19,7 +19,11 @@ namespace HRMv2.Manager.Charts.Dto
 
         public ChartType ChartType { get; set; }
 
+        public ChartDataType ChartDataType { get; set; }
+
         public TimePeriodType TimePeriodType { get; set; }
+
+        public string ChartDataTypeName => Enum.GetName(typeof(ChartDataType), ChartDataType);
 
         public string ChartTypeName => Enum.GetName(typeof(ChartType), ChartType);
 

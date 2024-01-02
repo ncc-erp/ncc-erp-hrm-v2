@@ -27,6 +27,7 @@ namespace HRMv2.Manager.Charts
                 .Select(c => new ChartDto
                 {
                     ChartType = c.ChartType,
+                    ChartDataType = c.ChartDataType,
                     Id = c.Id,
                     IsActive = c.IsActive,
                     Name = c.Name,

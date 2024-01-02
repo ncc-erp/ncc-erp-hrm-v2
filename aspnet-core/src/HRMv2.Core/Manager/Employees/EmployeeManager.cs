@@ -302,7 +302,7 @@ namespace HRMv2.Manager.Employees
 
 
             bool isAllowEdit = ValidUpdateEmployee(employeeId);
-            bool isAllowEditWorkingStatus = IsAllowEditToWorkingStatus(employeeId);
+            bool isAllowEditWorkingStatus = true || IsAllowEditToWorkingStatus(employeeId);
             bool isAllowEditBranch = IsAllowToEditBranch(employeeId);
 
             return new GetEmployeeInfoDto

@@ -1,5 +1,4 @@
 ﻿using Abp.UI;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories;
 using HRMv2.Manager.Categories.JobPositions;
@@ -11,11 +10,9 @@ using HRMv2.Manager.Charts.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
 using NccCore.Extension;
-using NccCore.Paging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
@@ -45,7 +42,7 @@ namespace HRMv2.Manager.ChartDetails
             _teamManager = teamManager;
         }
 
-        public ChartDetailSelectionDataDto GetChartDetailSelectionData()
+        public ChartDetailSelectionDto GetChartDetailSelectionData()
         {
             var branches = _branchManager
                 .QueryAllBranch()
@@ -79,37 +76,20 @@ namespace HRMv2.Manager.ChartDetails
                     Name = x.Name
                 }).ToList();
 
-            var selectionData = new ChartDetailSelectionDataDto
+            var selectionData = new ChartDetailSelectionDto
             {
                 Branches = branches,
                 JobPositions = jobPositions,
                 Levels = levels,
                 Teams = teams,
-                PayslipDetailTypes = GetEnumIdNameList<PayslipDetailType>(),
-                UserTypes = GetEnumIdNameList<UserType>(),
-                WorkingStatuses = GetEnumIdNameList<EmployeeStatus>(),
+                PayslipDetailTypes = CommonUtil.GetEnumKeyValueList<PayslipDetailType>(),
+                UserTypes = CommonUtil.GetEnumKeyValueList<UserType>(),
+                WorkingStatuses = CommonUtil.GetEnumKeyValueList<EmployeeStatus>(),
+                Sexes = CommonUtil.GetEnumKeyValueList<Sex>(),
 
             };
 
             return selectionData;
-        }
-
-        public static List<BaseInfoDto> GetEnumIdNameList<TEnum>() where TEnum : Enum
-        {
-            List<BaseInfoDto> enumKeyValueList = new List<BaseInfoDto>();
-
-            foreach (TEnum value in Enum.GetValues(typeof(TEnum)))
-            {
-                string name = Enum.GetName(typeof(TEnum), value);
-                long id = Convert.ToInt64(value);
-                enumKeyValueList.Add(new BaseInfoDto
-                {
-                    Id = id,
-                    Name = name
-                });
-            }
-
-            return enumKeyValueList;
         }
 
         public IQueryable<ChartDetailDto> QueryAllChartDetail()
@@ -127,28 +107,66 @@ namespace HRMv2.Manager.ChartDetails
                 PayslipDetailTypes = c.PayslipDetailTypes,
                 TeamIds = c.TeamIds,
                 UserTypes = c.UserTypes,
-                WorkingStatuses = c.WorkingStatuses
+                WorkingStatuses = c.WorkingStatuses,
+                Sexes = c.Sexes
             });
 
             return query;
         }
+
 
         public List<ChartDetailDto> GetAll()
         {
             return QueryAllChartDetail().ToList();
         }
 
-        public async Task<ChartFullDetailDto> GetAllDetailsByChartId(long chartId)
+        public async Task<ChartFullDto> GetAllDetailsByChartId(long chartId)
         {
+            var chart = await _chartManager.Get(chartId);
+            var chartFullDetail = ObjectMapper.Map<ChartFullDto>(chart);
+
             var query = QueryAllChartDetail();
             var chartDetails = query
                 .Where(c => c.ChartId == chartId)
                 .ToList();
 
-            var chart = await _chartManager.Get(chartId);
+            foreach (var chartDetail in chartDetails)
+            {
+                var chartDetailContainBaseInfo = new ChartDetailFullDto
+                {
+                    Id = chartDetail.Id,
+                    ChartId = chartDetail.ChartId,
+                    Color = chartDetail.Color,
+                    Name = chartDetail.Name,
+                    IsActive = chartDetail.IsActive,
+                    Branches = chartDetail.BranchIds.Select(id => new BaseInfoDto
+                    {
+                        Id = id,
+                        Name = _branchManager.QueryAllBranch().SingleOrDefault(b => b.Id == id)?.ShortName
+                    }).ToList(),
+                    JobPositions = chartDetail.JobPositionIds.Select(id => new BaseInfoDto
+                    {
+                        Id = id,
+                        Name = _jobPositionManager.QueryAllJobPosition().SingleOrDefault(j => j.Id == id)?.ShortName
+                    }).ToList(),
+                    Levels = chartDetail.LevelIds.Select(id => new BaseInfoDto
+                    {
+                        Id = id,
+                        Name = _levelManager.QueryAllLevel().SingleOrDefault(j => j.Id == id)?.ShortName
+                    }).ToList(),
+                    Teams = chartDetail.TeamIds.Select(id => new BaseInfoDto
+                    {
+                        Id = id,
+                        Name = _teamManager.QueryAllTeam().SingleOrDefault(j => j.Id == id)?.Name
+                    }).ToList(),
+                    PayslipDetailTypes = CommonUtil.GetEnumKeyValueList(chartDetail.PayslipDetailTypes),
+                    UserTypes= CommonUtil.GetEnumKeyValueList(chartDetail.UserTypes),
+                    WorkingStatuses = CommonUtil.GetEnumKeyValueList(chartDetail.WorkingStatuses),
+                    Sexes = CommonUtil.GetEnumKeyValueList(chartDetail.Sexes)
+                };
 
-            var chartFullDetail = ObjectMapper.Map<ChartFullDetailDto>(chart);
-            chartFullDetail.ChartDetails = chartDetails;
+                chartFullDetail.ChartDetails.Add(chartDetailContainBaseInfo);
+            }
 
             return chartFullDetail;
         }
