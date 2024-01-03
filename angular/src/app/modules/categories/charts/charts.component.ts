@@ -1,7 +1,4 @@
 import {
-  AfterContentChecked,
-  AfterContentInit,
-  AfterViewInit,
   Component,
   Injector,
   OnInit,
@@ -12,20 +9,19 @@ import {
 } from "@shared/paged-listing-component-base";
 import { ChartDto } from "../../../service/model/chart-settings/chart.dto";
 import { CreateEditChartDialogComponent } from "./create-edit-chart-dialog/create-edit-chart-dialog.component";
-import { ChartSettingService } from "@app/service/api/chart-settings/chart-setting.service";
+import { ChartSettingService } from "@app/service/api/categories/charts/chart.service";
 import { finalize } from "rxjs/operators";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { APP_ENUMS } from "@shared/AppEnums";
-import { ListBenefitDefaultFilter } from "@app/modules/benefits/list-benefit/list-benefit.component";
 import { FILTER_VALUE } from "@app/modules/categories/punishment-types/punishment-types.component";
 import { startWithTap } from "@shared/helpers/observerHelper";
 
 @Component({
-  selector: "app-chart-settings",
-  templateUrl: "./chart-settings.component.html",
-  styleUrls: ["./chart-settings.component.css"],
+  selector: 'app-charts',
+  templateUrl: './charts.component.html',
+  styleUrls: ['./charts.component.css']
 })
-export class ChartSettingsComponent
+export class ChartsComponent
   extends PagedListingComponentBase<ChartDto>
   implements OnInit
 {

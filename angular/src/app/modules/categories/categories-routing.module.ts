@@ -11,6 +11,8 @@ import { TeamsComponent } from './teams/teams.component';
 import { UserTypesComponent } from './user-types/user-types.component';
 import { BanksComponent } from './banks/banks.component';
 import { IssuedByComponent } from './issued-by/issued-by.component';
+import { ChartsComponent } from './charts/charts.component';
+import { ChartDetailsComponent } from './charts/chart-details/chart-details.component';
 const routes: Routes = [
     {
       path: "branches",
@@ -57,6 +59,16 @@ const routes: Routes = [
       component: IssuedByComponent,
       canActivate: [AppRouteGuard],
     },
+    {
+      path: "charts",
+      component: ChartsComponent,
+      canActivate: [AppRouteGuard],
+    },
+    {
+      path: "chart-details",
+      component: ChartDetailsComponent,
+      canActivate: [AppRouteGuard]
+    }
   ];
   
   @NgModule({

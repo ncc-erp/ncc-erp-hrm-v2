@@ -5,22 +5,21 @@ import {
   PagedListingComponentBase,
   PagedRequestDto,
 } from "@shared/paged-listing-component-base";
-import { ChartDetailSettingService } from "@app/service/api/chart-settings/chart-detail-settings/chart-detail-setting.service";
+import { ChartDetailService } from "@app/service/api/categories/charts/chart-details/chart-detail.service";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { APP_ENUMS } from "@shared/AppEnums";
 import { CreateEditChartDetailDialogComponent } from "./create-edit-chart-detail-dialog/create-edit-chart-detail-dialog.component";
 import { FILTER_VALUE } from "@app/modules/categories/punishment-types/punishment-types.component";
-import { AppConsts } from "@shared/AppConsts";
 import { ChartDetailFullDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-full.dto";
 import { startWithTap } from "@shared/helpers/observerHelper";
 import { finalize } from "rxjs/operators";
 
 @Component({
-  selector: "app-chart-detail-settings",
-  templateUrl: "./chart-detail-settings.component.html",
-  styleUrls: ["./chart-detail-settings.component.css"],
+  selector: 'app-chart-details',
+  templateUrl: './chart-details.component.html',
+  styleUrls: ['./chart-details.component.css']
 })
-export class ChartDetailSettingsComponent
+export class ChartDetailsComponent
   extends PagedListingComponentBase<any>
   implements OnInit
 {
@@ -36,7 +35,7 @@ export class ChartDetailSettingsComponent
 
   constructor(
     injector: Injector,
-    private chartDetailService: ChartDetailSettingService
+    private chartDetailService: ChartDetailService
   ) {
     super(injector);
   }

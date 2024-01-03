@@ -1,7 +1,7 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { ChartDto } from '@app/service/model/chart-settings/chart.dto';
 import { DialogComponentBase } from '@shared/dialog-component-base';
-import { ChartSettingService } from '@app/service/api/chart-settings/chart-setting.service';
+import { ChartSettingService } from '@app/service/api/categories/charts/chart.service';
 import { startWithTap } from '@shared/helpers/observerHelper';
 import { finalize } from 'rxjs/operators';
 import { APP_ENUMS } from '@shared/AppEnums';

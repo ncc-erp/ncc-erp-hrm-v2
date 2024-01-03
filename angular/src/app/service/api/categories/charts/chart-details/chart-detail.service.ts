@@ -1,9 +1,9 @@
 import { Injectable, Injector } from "@angular/core";
-import { BaseApiService } from "../../base-api.service";
+import { BaseApiService } from "@app/service/api/base-api.service";
 import { Observable } from "rxjs";
-import { ChartDetailSettingDto } from "../../../model/chart-settings/chart-detail-settings/chart-detail-setting.dto";
-import { ChartDetailSelectionDto } from "../../../model/chart-settings/chart-detail-settings/chart-detail-selection.dto";
-import { ApiResponseDto } from "../../../model/common.dto";
+import { ChartDetailSettingDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-setting.dto";
+import { ChartDetailSelectionDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-selection.dto";
+import { ApiResponseDto } from "@app/service/model/common.dto";
 import {
   PagedRequestDto,
   PagedResultDto,
@@ -13,7 +13,7 @@ import { ChartFullDto } from "@app/service/model/chart-settings/chart.dto";
 @Injectable({
   providedIn: "root",
 })
-export class ChartDetailSettingService extends BaseApiService {
+export class ChartDetailService extends BaseApiService {
   changeUrl() {
     return "ChartDetail";
   }

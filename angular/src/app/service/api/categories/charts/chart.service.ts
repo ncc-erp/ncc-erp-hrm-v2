@@ -1,5 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
-import { BaseApiService } from '../base-api.service';
+import { BaseApiService } from '../../base-api.service';
 import { ApiResponseDto } from '@app/service/model/common.dto';
 import { Observable } from 'rxjs';
 import { ChartDto } from '@app/service/model/chart-settings/chart.dto';

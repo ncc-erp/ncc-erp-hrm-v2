@@ -7,10 +7,9 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ChartDetailSettingService } from "@app/service/api/chart-settings/chart-detail-settings/chart-detail-setting.service";
+import { ChartDetailService } from "@app/service/api/categories/charts/chart-details/chart-detail.service";
 import { ChartDetailFullDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-full.dto";
 import { ChartDetailSelectionDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-selection.dto";
-import { ChartDetailSettingDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-setting.dto";
 import { CreateChartDetailDto } from "@app/service/model/chart-settings/chart-detail-settings/create-chart-detail.dto";
 import { UpdateChartDetailDto } from "@app/service/model/chart-settings/chart-detail-settings/update-chart-detail.dto";
 import { KeyValueDto } from "@app/service/model/common.dto";
@@ -33,7 +32,7 @@ export class CreateEditChartDetailDialogComponent
 
   constructor(
     injector: Injector,
-    private chartDetailService: ChartDetailSettingService,
+    private chartDetailService: ChartDetailService,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder
   ) {
@@ -111,39 +110,54 @@ export class CreateEditChartDetailDialogComponent
     });
   }
 
+  // render value to form from database
   setValueToUpdate() {
     this.formGroup.patchValue({
       id: this.chartDetail.id,
       name: this.chartDetail.name,
       color: this.chartDetail.color,
-      branches: this.listBranches.filter((b) =>
-        this.chartDetail.branches.find((x) => x.key == b.key)
+      branches: this.listBranches.filter((element) =>
+        this.chartDetail.branches.find(
+          (selected) => selected.value == element.value
+        )
       ),
-      jobPositions: this.listJobPositions.filter((b) =>
-        this.chartDetail.jobPositions.find((x) => x.key == b.key)
+      jobPositions: this.listJobPositions.filter((element) =>
+        this.chartDetail.jobPositions.find(
+          (selected) => selected.value == element.value
+        )
       ),
-      levels: this.listLevels.filter((b) =>
-        this.chartDetail.levels.find((x) => x.key == b.key)
+      levels: this.listLevels.filter((element) =>
+        this.chartDetail.levels.find(
+          (selected) => selected.value == element.value
+        )
       ),
-      teams: this.listTeams.filter((b) =>
-        this.chartDetail.teams.find((x) => x.key == b.key)
+      teams: this.listTeams.filter((element) =>
+        this.chartDetail.teams.find(
+          (selected) => selected.value == element.value
+        )
       ),
-      payslipDetailTypes: this.listPayslipDetailTypes.filter((b) =>
-        this.chartDetail.payslipDetailTypes.find((x) => x.key == b.key)
+      payslipDetailTypes: this.listPayslipDetailTypes.filter((element) =>
+        this.chartDetail.payslipDetailTypes.find(
+          (selected) => selected.value == element.value
+        )
       ),
-      userTypes: this.listUserTypes.filter((b) =>
-        this.chartDetail.userTypes.find((x) => x.key == b.key)
+      userTypes: this.listUserTypes.filter((element) =>
+        this.chartDetail.userTypes.find(
+          (selected) => selected.value == element.value
+        )
       ),
-      gender: this.listGender.filter((sex) =>
-        this.chartDetail.gender.find((x) => x.key == sex.key)
+      gender: this.listGender.filter((element) =>
+        this.chartDetail.gender.find(
+          (selected) => selected.value == element.value
+        )
       ),
-      workingStatuses: this.listWorkingStatuses.filter((b) =>
-        this.chartDetail.workingStatuses.find((x) => x.key == b.key)
+      workingStatuses: this.listWorkingStatuses.filter((element) =>
+        this.chartDetail.workingStatuses.find(
+          (selected) => selected.value == element.value
+        )
       ),
     });
   }
-
-  setFromValue() {}
 
   saveAndClose() {
     // create entity by formGroup data

@@ -149,8 +149,8 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                     'Category.IssuedBy.View'
                 ),
                 new MenuItem(
-                    this.l('Chart Setting'),
-                    '/app/admin/charts',
+                    this.l('Chart'),
+                    '/app/categories/charts',
                     'fas fa-line-chart',
                 )
             ]
