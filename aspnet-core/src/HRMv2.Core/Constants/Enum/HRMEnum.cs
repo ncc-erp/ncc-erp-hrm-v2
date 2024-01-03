@@ -193,6 +193,12 @@ namespace HRMv2.Constants.Enum
             Circle = 1,
         }
 
+        public enum ChartDataType
+        {
+            Employee = 0,
+            Salary = 1,
+        }
+
         public enum TimePeriodType
         {
             Month = 0,

@@ -37,5 +37,7 @@ namespace HRMv2.Entities
 
         public List<EmployeeStatus> WorkingStatuses { get; set; }
 
+        public List<Sex> Sexes { get; set; }
+
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NccCore.Paging;
 using HRMv2.Entities;
+using HRMv2.Manager.Charts.Dto;
 
 namespace HRMv2.APIs.ChartDetails
 {
@@ -30,7 +31,7 @@ namespace HRMv2.APIs.ChartDetails
         }
 
         [HttpGet]
-        public async Task<ChartFullDetailDto> GetAllDetailsByChartId(long id)
+        public async Task<ChartFullDto> GetAllDetailsByChartId(long id)
         {
             var chartFullDetail = await _chartDetailManager.GetAllDetailsByChartId(id);
 
@@ -38,7 +39,7 @@ namespace HRMv2.APIs.ChartDetails
         }
 
         [HttpGet]
-        public ChartDetailSelectionDataDto GetChartDetailSelectionData()
+        public ChartDetailSelectionDto GetChartDetailSelectionData()
         {
             var selectionData = _chartDetailManager.GetChartDetailSelectionData();
 
@@ -48,7 +49,6 @@ namespace HRMv2.APIs.ChartDetails
 
         [HttpPost]
         public async Task<ChartDetail> Create(CreateChartDetailDto createChartDetailDto)
-
         {
             var chartDetail = await _chartDetailManager.Create(createChartDetailDto);
 
@@ -57,7 +57,6 @@ namespace HRMv2.APIs.ChartDetails
 
         [HttpPut]
         public async Task<ChartDetail> Update(UpdateChartDetailDto updateChartDetailDto)
-
         {
             var chartDetail = await _chartDetailManager.Update(updateChartDetailDto);
 
@@ -65,7 +64,7 @@ namespace HRMv2.APIs.ChartDetails
         }
 
         [HttpPut]
-        public async Task<ChartDetailDto> Active(long id)
+        public async Task<ChartDetailDto> Active([FromBody] long id)
         {
             var chartDetail = await _chartDetailManager.Active(id);
 
@@ -73,7 +72,7 @@ namespace HRMv2.APIs.ChartDetails
         }
 
         [HttpPut]
-        public async Task<ChartDetailDto> DeActive(long id)
+        public async Task<ChartDetailDto> DeActive([FromBody] long id)
         {
             var chartDetail = await _chartDetailManager.DeActive(id);
 

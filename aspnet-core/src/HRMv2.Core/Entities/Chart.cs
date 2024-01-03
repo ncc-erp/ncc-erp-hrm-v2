@@ -15,6 +15,8 @@ namespace HRMv2.Entities
 
         public ChartType ChartType { get; set; }
 
+        public ChartDataType ChartDataType { get; set; }
+
         public TimePeriodType TimePeriodType { get; set; }
 
         public bool IsActive { get; set; } = true;

@@ -17,6 +17,8 @@ namespace HRMv2.Manager.Charts.Dto
 
         public ChartType ChartType { get; set; }
 
+        public ChartDataType ChartDataType { get; set; }
+
         public TimePeriodType TimePeriodType { get; set; }
 
     }

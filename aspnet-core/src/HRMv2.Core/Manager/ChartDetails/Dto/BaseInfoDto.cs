@@ -9,6 +9,6 @@ namespace HRMv2.Manager.ChartDetails.Dto
 {
     public class BaseInfoDto : EntityDto<long>
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
 }

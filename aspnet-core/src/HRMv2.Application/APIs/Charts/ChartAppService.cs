@@ -64,7 +64,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPut]
-        public async Task<ChartDto> Active(long id)
+        public async Task<ChartDto> Active([FromBody] long id)
         {
             var chart = await _chartManager.Active(id);
             
@@ -72,7 +72,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPut]
-        public async Task<ChartDto> DeActive(long id)
+        public async Task<ChartDto> DeActive([FromBody] long id)
         {
             var chart = await _chartManager.DeActive(id);
 

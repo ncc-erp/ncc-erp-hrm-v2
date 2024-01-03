@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    [Migration("20231218024127_Add_Chart")]
+    [Migration("20240102023125_Add_Chart")]
     partial class Add_Chart
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1926,6 +1926,9 @@ namespace HRMv2.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<int>("ChartDataType")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ChartType")
                         .HasColumnType("integer");
 
@@ -2021,6 +2024,9 @@ namespace HRMv2.Migrations
                         .HasColumnType("text");
 
                     b.Property<int[]>("PayslipDetailTypes")
+                        .HasColumnType("integer[]");
+
+                    b.Property<int[]>("Sexes")
                         .HasColumnType("integer[]");
 
                     b.Property<List<long>>("TeamIds")

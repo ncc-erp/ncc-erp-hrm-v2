@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using HRMv2.Entities;
 using HRMv2.Manager.BackgroundJobInfos.Dto;
 using HRMv2.Manager.Categories.UserTypes.Dto;
+using HRMv2.Manager.ChartDetails.Dto;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Notifications.Email.Dto;
 using System;
@@ -28,7 +29,7 @@ namespace HRMv2.Utils
         public static UserTypeDto GetUserType(UserType userType)
         {
             return USERTYPE_COLOR.Where(x => (UserType)x.Id == userType).FirstOrDefault();
-        
+
         }
 
         public static List<UserTypeDto> USERTYPE_COLOR = new List<UserTypeDto>{
@@ -46,9 +47,9 @@ namespace HRMv2.Utils
             var userTypeValue = ((UserType[])Enum.GetValues(typeof(UserType)))
                 .Select(c => new { Value = (int)c, Name = c.ToString() })
                 .Where(c => c.Name.ToLower() == userTypeName.ToLower())
-                .Select(c => new {c.Value, c.Name})
+                .Select(c => new { c.Value, c.Name })
                 .FirstOrDefault();
-            if(userTypeValue == default) { return -1; }
+            if (userTypeValue == default) { return -1; }
             return userTypeValue.Value;
 
         }
@@ -100,14 +101,14 @@ namespace HRMv2.Utils
 
         public static string GetSalaryRequestTypeName(SalaryRequestType type)
         {
-            switch(type)
+            switch (type)
             {
                 case SalaryRequestType.Initial: return "Lương khởi tạo";
                 case SalaryRequestType.Change: return "Tăng lương";
                 case SalaryRequestType.MaternityLeave: return "Nghỉ sinh";
                 case SalaryRequestType.BackToWork: return "BackToWork";
                 case SalaryRequestType.StopWorking: return "StopWorking";
-            }   
+            }
             return type.ToString();
         }
 
@@ -138,7 +139,7 @@ namespace HRMv2.Utils
         {
             switch (type)
             {
-                case UserType.Internship: return "TTS"; 
+                case UserType.Internship: return "TTS";
                 case UserType.Staff: return "Staff";
                 case UserType.ProbationaryStaff: return "T.Việc";
                 case UserType.Collaborators: return "CTV";
@@ -159,7 +160,7 @@ namespace HRMv2.Utils
                     return "";
                 case UserType.Staff:
                     return "Staff";
-                    default : return userType.ToString();
+                default: return userType.ToString();
             }
 
         }
@@ -211,7 +212,7 @@ namespace HRMv2.Utils
 
         public static string FormatDisplayMoney(double money)
         {
-            if(money == 0)
+            if (money == 0)
             {
                 return "0";
             }
@@ -268,21 +269,21 @@ namespace HRMv2.Utils
 
         public static string ContractTypeName(UserType userType)
         {
-                switch (userType)
-                {
-                    case UserType.ProbationaryStaff:
-                        return "HĐTV-NCC";
-                    case UserType.Staff:
-                        return "HĐLĐ-NCC";
+            switch (userType)
+            {
+                case UserType.ProbationaryStaff:
+                    return "HĐTV-NCC";
+                case UserType.Staff:
+                    return "HĐLĐ-NCC";
 
-                    case UserType.Collaborators:
-                        return "HĐCTV-NCC";
-                    case UserType.Internship:
-                        return "HĐĐT-NCC";
-                    default: return userType.ToString();
+                case UserType.Collaborators:
+                    return "HĐCTV-NCC";
+                case UserType.Internship:
+                    return "HĐĐT-NCC";
+                default: return userType.ToString();
 
-                }       
-    }
+            }
+        }
 
         public static string GenerateContractCode(string email, int month, int year, UserType userType)
         {
@@ -347,7 +348,7 @@ namespace HRMv2.Utils
 
         public static UserType MaptalentUsertype(UserType typeFromTalent)
         {
-            var userTypeMapers = new UserType[] { UserType.Internship, UserType.Staff};
+            var userTypeMapers = new UserType[] { UserType.Internship, UserType.Staff };
             return userTypeMapers[(int)typeFromTalent];
         }
 
@@ -355,7 +356,7 @@ namespace HRMv2.Utils
         {
             var rs = "";
             var index = 1;
-            foreach(var s in input)
+            foreach (var s in input)
             {
                 rs += @"<table style=""border-collapse:collapse;width:100%;border-width:0""><tr style=""border - width:0"">
                 <td style=""border-width:0;text-align: center;width:10%"">" + index + @"</td><td style=""text-align: right;height:50px;font-size:14pt;border-width:0;width:25%""><strong>" + FormatDisplayMoney(s.Money) + @"&nbsp;VND</strong><span style=""font-size:12pt""></span></td><td style=""text-align: center;height:50px;font-size:14pt;border-width:0;width:65%"">" + s.MethodPaidNote + "</td></tr></table>";
@@ -381,7 +382,7 @@ namespace HRMv2.Utils
 
             int ones, tens, hundreds;
 
-            int positionDigit = sNumber.Length;  
+            int positionDigit = sNumber.Length;
 
             string result = " ";
 
@@ -553,25 +554,34 @@ namespace HRMv2.Utils
             return $"Chi Bảng lương tháng {payrollApplyMonth.Month}/{payrollApplyMonth.Year}";
         }
 
-        public static void MergeDataTwoEntites<TSource, TDestination>(TSource source, TDestination destination)
+        public static List<EnumKeyValueDto<TEnum>> GetEnumKeyValueList<TEnum>() where TEnum : Enum
         {
-            var propertiesToUpdate = source.GetType().GetProperties();
+            List<EnumKeyValueDto<TEnum>> enumKeyValueList = new List<EnumKeyValueDto<TEnum>>();
 
-            foreach (var property in propertiesToUpdate)
+            foreach (TEnum value in Enum.GetValues(typeof(TEnum)))
             {
-                var updateValue = property.GetValue(source);
+                string name = Enum.GetName(typeof(TEnum), value);
 
-                // Only update the property if the value is not null
-                if (updateValue != null)
+                enumKeyValueList.Add(new EnumKeyValueDto<TEnum>(name, value));
+            }
+
+            return enumKeyValueList;
+        }
+
+        public static List<EnumKeyValueDto<TEnum>> GetEnumKeyValueList<TEnum>(List<TEnum> listEnums) where TEnum : Enum
+        {
+            List<EnumKeyValueDto<TEnum>> enumKeyValueList = new List<EnumKeyValueDto<TEnum>>();
+            if (listEnums != null && listEnums.Count != 0)
+            {
+                foreach (TEnum value in listEnums)
                 {
-                    var chartProperty = destination.GetType().GetProperty(property.Name);
+                    string name = Enum.GetName(typeof(TEnum), value);
 
-                    if (chartProperty != null)
-                    {
-                        chartProperty.SetValue(destination, updateValue);
-                    }
+                    enumKeyValueList.Add(new EnumKeyValueDto<TEnum>(name, value));
                 }
             }
-        }    
+
+            return enumKeyValueList;
+        }
     }
 }
