@@ -8,7 +8,7 @@ import {
   PagedRequestDto,
   PagedResultDto,
 } from "@shared/paged-listing-component-base";
-import { ChartFullDto } from "@app/service/model/chart-settings/chart-full-detail.dto";
+import { ChartFullDto } from "@app/service/model/chart-settings/chart.dto";
 
 @Injectable({
   providedIn: "root",
@@ -31,7 +31,7 @@ export class ChartDetailSettingService extends BaseApiService {
     return chartFullDetail;
   }
 
-  getChartDetailSelectionData(): Observable<ApiResponseDto<ChartDetailSelectionDto>> {
+  public getChartDetailSelectionData(): Observable<ApiResponseDto<ChartDetailSelectionDto>> {
     const selectionData = this.processGet('GetChartDetailSelectionData')
       
     selectionData.subscribe((rs) => {
@@ -40,5 +40,13 @@ export class ChartDetailSettingService extends BaseApiService {
 
     return selectionData
   }
+
+  public active(id: number): Observable<ApiResponseDto<ChartDetailSettingDto>> {
+    return this.processPut('Active', id)
+   }
+   
+   public deActive(id: number): Observable<ApiResponseDto<ChartDetailSettingDto>> {
+    return this.processPut('DeActive', id);
+   }
 
 }

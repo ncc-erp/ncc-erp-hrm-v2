@@ -1,6 +1,6 @@
 import { Component, Injector, OnInit } from "@angular/core";
 import { ChartDetailSettingDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-setting.dto";
-import { ChartFullDto } from "@app/service/model/chart-settings/chart-full-detail.dto";
+import { ChartFullDto } from "@app/service/model/chart-settings/chart.dto";
 import {
   PagedListingComponentBase,
   PagedRequestDto,
@@ -120,7 +120,47 @@ export class ChartDetailSettingsComponent
     this.openDialog(CreateEditChartDetailDialogComponent, { ...chartDetail });
   }
 
-  onActive(chartDetail: ChartDetailSettingDto) {}
+  onActive(id: number) {
+    this.subscription.push(
+      this.chartDetailService
+        .active(id)
+        .pipe(
+          startWithTap(() => {
+            this.isLoading = true;
+          })
+        )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
+        .subscribe((rs) => {
+          abp.notify.success(`Deactive chart successfull`);
+          this.refresh();
+        })
+    );
+  }
+
+  onDeActive(id: number) {
+    this.subscription.push(
+      this.chartDetailService
+        .deActive(id)
+        .pipe(
+          startWithTap(() => {
+            this.isLoading = true;
+          })
+        )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
+        .subscribe((rs) => {
+          abp.notify.success(`Deactive chart successfull`);
+          this.refresh();
+        })
+    );
+  }
 
   onDelete(chartDetail: ChartDetailFullDto) {
     this.confirmDelete(

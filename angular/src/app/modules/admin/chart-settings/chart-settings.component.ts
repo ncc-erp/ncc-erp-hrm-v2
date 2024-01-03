@@ -10,7 +10,7 @@ import {
   PagedListingComponentBase,
   PagedRequestDto,
 } from "@shared/paged-listing-component-base";
-import { ChartSettingDto } from "../../../service/model/chart-settings/chart-setting.dto";
+import { ChartDto } from "../../../service/model/chart-settings/chart.dto";
 import { CreateEditChartDialogComponent } from "./create-edit-chart-dialog/create-edit-chart-dialog.component";
 import { ChartSettingService } from "@app/service/api/chart-settings/chart-setting.service";
 import { finalize } from "rxjs/operators";
@@ -26,7 +26,7 @@ import { startWithTap } from "@shared/helpers/observerHelper";
   styleUrls: ["./chart-settings.component.css"],
 })
 export class ChartSettingsComponent
-  extends PagedListingComponentBase<ChartSettingDto>
+  extends PagedListingComponentBase<ChartDto>
   implements OnInit
 {
   constructor(
@@ -36,7 +36,7 @@ export class ChartSettingsComponent
     super(injector);
   }
 
-  public chartList = [] as ChartSettingDto[];
+  public chartList = [] as ChartDto[];
   public menu: MatMenuTrigger;
   public contextMenuPosition = { x: "100px", y: "100px" };
   public statusList = this.getListFormEnum(APP_ENUMS.ActiveStatus);
@@ -108,7 +108,7 @@ export class ChartSettingsComponent
     this.openDialog(CreateEditChartDialogComponent);
   }
 
-  onUpdate(chart: ChartSettingDto) {
+  onUpdate(chart: ChartDto) {
     this.openDialog(CreateEditChartDialogComponent, { ...chart });
   }
 
@@ -154,7 +154,7 @@ export class ChartSettingsComponent
     );
   }
 
-  onDelete(chart: ChartSettingDto) {
+  onDelete(chart: ChartDto) {
     this.confirmDelete(`Delete chart <strong>${chart.name}</strong>`, () =>
       this.chartSettingService
         .delete(chart.id)

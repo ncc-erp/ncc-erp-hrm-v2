@@ -1,13 +1,13 @@
-import { SelectionNameIdDto, SelectionKeyValueDto } from './selection-base-info.dto'
+import { KeyValueDto } from '../../common.dto'
 
 export class ChartDetailSelectionDto {
-    branches: SelectionNameIdDto[] 
-    jobPositions: SelectionNameIdDto[] 
-    levels: SelectionNameIdDto[] 
-    teams: SelectionNameIdDto[] 
-    payslipDetailTypes: SelectionKeyValueDto[] 
-    userTypes: SelectionKeyValueDto[] 
-    workingStatuses: SelectionKeyValueDto[] 
-    gender: SelectionKeyValueDto[]
+    branches: KeyValueDto[] 
+    jobPositions: KeyValueDto[] 
+    levels: KeyValueDto[] 
+    teams: KeyValueDto[] 
+    payslipDetailTypes: KeyValueDto[] 
+    userTypes: KeyValueDto[] 
+    workingStatuses: KeyValueDto[] 
+    gender: KeyValueDto[]
 
 }

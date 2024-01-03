@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { BaseApiService } from '../base-api.service';
 import { ApiResponseDto } from '@app/service/model/common.dto';
 import { Observable } from 'rxjs';
-import { ChartSettingDto } from '@app/service/model/chart-settings/chart-setting.dto';
+import { ChartDto } from '@app/service/model/chart-settings/chart.dto';
 
 @Injectable({
     providedIn: "root"
@@ -17,11 +17,11 @@ export class ChartSettingService extends BaseApiService {
     super(injector)
   }
 
-   public active(id: number): Observable<ApiResponseDto<ChartSettingDto>> {
+   public active(id: number): Observable<ApiResponseDto<ChartDto>> {
     return this.processPut('Active', id)
    }
    
-   public deActive(id: number): Observable<ApiResponseDto<ChartSettingDto>> {
+   public deActive(id: number): Observable<ApiResponseDto<ChartDto>> {
     return this.processPut('DeActive', id);
    }
 }

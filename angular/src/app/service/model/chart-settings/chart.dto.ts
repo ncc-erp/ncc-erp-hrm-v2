@@ -1,4 +1,6 @@
-export class ChartSettingDto {
+import { ChartDetailFullDto } from "./chart-detail-settings/chart-detail-full.dto";
+
+export class ChartDto {
   id: number;
   name: string;
   chartType: number;
@@ -8,4 +10,9 @@ export class ChartSettingDto {
   chartTypeName: string;
   timePeriodTypeName: string;
   isActive: number;
+}
+
+
+export class ChartFullDto extends ChartDto {
+  chartDetails: ChartDetailFullDto[];
 }

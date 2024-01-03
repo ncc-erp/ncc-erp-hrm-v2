@@ -1,5 +1,5 @@
 import { Component, Injector, OnInit } from '@angular/core';
-import { ChartSettingDto } from '@app/service/model/chart-settings/chart-setting.dto';
+import { ChartDto } from '@app/service/model/chart-settings/chart.dto';
 import { DialogComponentBase } from '@shared/dialog-component-base';
 import { ChartSettingService } from '@app/service/api/chart-settings/chart-setting.service';
 import { startWithTap } from '@shared/helpers/observerHelper';
@@ -11,8 +11,8 @@ import { APP_ENUMS } from '@shared/AppEnums';
   templateUrl: './create-edit-chart-dialog.component.html',
   styleUrls: ['./create-edit-chart-dialog.component.css']
 })
-export class CreateEditChartDialogComponent extends DialogComponentBase<ChartSettingDto> implements OnInit {
-  public chart = {} as ChartSettingDto;
+export class CreateEditChartDialogComponent extends DialogComponentBase<ChartDto> implements OnInit {
+  public chart = {} as ChartDto;
   public chartType = this.getListFormEnum(APP_ENUMS.ChartType, true);
   public timePeriodType = this.getListFormEnum(APP_ENUMS.TimePeriodType, true);
   public chartDataType = this.getListFormEnum(APP_ENUMS.ChartDataType, true);

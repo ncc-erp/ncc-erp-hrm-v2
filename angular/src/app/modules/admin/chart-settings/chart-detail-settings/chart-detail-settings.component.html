@@ -1,28 +1,32 @@
 <div class="px-4 pt-1">
-  <div class="breadcrumb al-center">
-    <a [routerLink]="['/']"><i class="fa-solid fa-house fa-sm"></i></a>
-    <i class="fa-solid fa-chevron-right fa-sm"></i>
-    <a [routerLink]="'/app/admin/charts'" class="hyperlink">Chart</a>
-    <i class="fa-solid fa-chevron-right fa-sm"></i>
-    <span class="p-2">{{ chartFull.name }}</span>
-    <span
-      class="mr-1 ml-1 p-2 badge"
-      [ngClass]="chartFull.chartType ? 'badge-success' : 'badge-warning'"
-      >{{ chartFull.chartTypeName }}</span
-    >
-    <span
-      class="mr-1 ml-1 p-2 badge"
-      [ngClass]="chartFull.isActive ? 'badge-success' : 'badge-error'"
-      >{{ chartFull.isActive ? "Active" : "Inactive" }}</span
-    >
-    <span
-      class="mr-1 ml-1 p-2 badge"
-      [ngClass]="chartFull.chartDataType ? 'badge-success' : 'badge-warning'"
-      >{{ chartFull.chartDataTypeName }}</span
-    >
-  </div>
-  <div class="card">
-    <div class="card-header d-flex jc-right">
+  <div class="header">
+    <div class="header-start">
+      <div class="breadcrumb al-center">
+        <a [routerLink]="['/']"><i class="fa-solid fa-house fa-sm"></i></a>
+        <i class="fa-solid fa-chevron-right fa-sm p-1"></i>
+        <a [routerLink]="'/app/admin/charts'" class="hyperlink">Chart</a>
+        <i class="fa-solid fa-chevron-right fa-sm p-1"></i>
+        <span class="">{{ chartFull.name }}</span>
+        <span
+          class="ml-2 badge"
+          [ngClass]="chartFull.chartType ? 'badge-success' : 'badge-warning'"
+          >{{ chartFull.chartTypeName }}</span
+        >
+        <span
+          class="ml-2 badge"
+          [ngClass]="chartFull.isActive ? 'badge-success' : 'badge-error'"
+          >{{ chartFull.isActive ? "Active" : "Inactive" }}</span
+        >
+        <span
+          class="ml-2 badge"
+          [ngClass]="
+            chartFull.chartDataType ? 'badge-success' : 'badge-warning'
+          "
+          >{{ chartFull.chartDataTypeName }}</span
+        >
+      </div>
+    </div>
+    <div class="header-end">
       <div class="p-0 mt-1 text-right">
         <app-create-button
           *ngIf="isShowCreateBtn()"
@@ -30,6 +34,16 @@
         ></app-create-button>
       </div>
     </div>
+  </div>
+  <div class="card">
+    <!-- <div class="card-header d-flex jc-right">
+      <div class="p-0 mt-1 text-right">
+        <app-create-button
+          *ngIf="isShowCreateBtn()"
+          (create)="onCreate()"
+        ></app-create-button>
+      </div>
+    </div> -->
     <div class="card-body pb-1" id="bg-table">
       <div class="table-responsive">
         <div class="fixTableHead">
@@ -37,10 +51,10 @@
             <thead>
               <tr>
                 <th class="col-stt">#</th>
-                <th>Name</th>
-                <th>Filtered Data</th>
-                <th>Active</th>
-                <th class="col-action">Action</th>
+                <th class="col-3">Name</th>
+                <th class="col-7">Filtered Data</th>
+                <th class="col-1">Active</th>
+                <th class="col-1">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -50,22 +64,22 @@
                   let i = index
                 "
               >
-                <td class="text-center">
+                <td class=" text-center">
                   {{ (pageNumber - 1) * pageSize + i + 1 }}
                 </td>
-                <td [style.color]="chartFullDetail.color">
+                <td class="" [style.color]="chartFullDetail.color">
                   {{ chartFullDetail.name }}
                 </td>
-                <td class="col-6">
+                <td class="">
                   <div
                     *ngIf="chartFullDetail.gender.length > 0"
                     class="filter-box border-cyan"
                   >
                     <span
-                      *ngFor="let enum of chartFullDetail.gender; index as i"
+                      *ngFor="let item of chartFullDetail.gender; index as i"
                       class=""
                     >
-                      {{ enum.key
+                      {{ item.key
                       }}{{ i < chartFullDetail.gender.length - 1 ? "," : "" }}
                     </span>
                   </div>
@@ -76,7 +90,7 @@
                     <span
                       *ngFor="let item of chartFullDetail.branches; index as i"
                     >
-                      {{ item.name
+                      {{ item.key
                       }}{{ i < chartFullDetail.branches.length - 1 ? "," : "" }}
                     </span>
                   </div>
@@ -90,7 +104,7 @@
                         index as i
                       "
                     >
-                      {{ item.name
+                      {{ item.key
                       }}{{
                         i < chartFullDetail.jobPositions.length - 1 ? "," : ""
                       }}
@@ -103,7 +117,7 @@
                     <span
                       *ngFor="let item of chartFullDetail.levels; index as i"
                     >
-                      {{ item.name
+                      {{ item.key
                       }}{{ i < chartFullDetail.levels.length - 1 ? "," : "" }}
                     </span>
                   </div>
@@ -114,7 +128,7 @@
                     <span
                       *ngFor="let item of chartFullDetail.teams; index as i"
                     >
-                      {{ item.name
+                      {{ item.key
                       }}{{ i < chartFullDetail.teams.length - 1 ? "," : "" }}
                     </span>
                   </div>
@@ -123,9 +137,9 @@
                     class="filter-box border-blue"
                   >
                     <span
-                      *ngFor="let enum of chartFullDetail.userTypes; index as i"
+                      *ngFor="let item of chartFullDetail.userTypes; index as i"
                     >
-                      {{ enum.key
+                      {{ item.key
                       }}{{
                         i < chartFullDetail.userTypes.length - 1 ? "," : ""
                       }}
@@ -137,11 +151,11 @@
                   >
                     <span
                       *ngFor="
-                        let enum of chartFullDetail.workingStatuses;
+                        let item of chartFullDetail.workingStatuses;
                         index as i
                       "
                     >
-                      {{ enum.key
+                      {{ item.key
                       }}{{
                         i < chartFullDetail.workingStatuses.length - 1
                           ? ","
@@ -155,11 +169,11 @@
                   >
                     <span
                       *ngFor="
-                        let enum of chartFullDetail.payslipDetailTypes;
+                        let item of chartFullDetail.payslipDetailTypes;
                         index as i
                       "
                     >
-                      {{ enum.key
+                      {{ item.key
                       }}{{
                         i < chartFullDetail.payslipDetailTypes.length - 1
                           ? ","
@@ -168,7 +182,7 @@
                     </span>
                   </div>
                 </td>
-                <td class="col-1 text-center">
+                <td class="text-center">
                   <div class="custom-control custom-checkbox">
                     <input
                       type="checkbox"
@@ -179,7 +193,7 @@
                     <label class="custom-control-label"></label>
                   </div>
                 </td>
-                <td class="col-1 text-center">
+                <td class="text-center">
                   <div
                     style="visibility: hidden; position: fixed"
                     [style.right]="contextMenuPosition.x"
@@ -193,7 +207,7 @@
                     <button
                       *ngIf="isShowEditBtn()"
                       (click)="onUpdate(chartFullDetail)"
-                      class="mat-menu-item w-100"
+                      class="mat-menu-item"
                     >
                       <i class="fas fa-pencil-alt mr-1"></i>
                       <span>Edit</span>
@@ -214,7 +228,7 @@
                     </button>
                     <button
                       *ngIf="isShowDeleteBtn()"
-                      class="mat-menu-item w-100"
+                      class="mat-menu-item"
                       (click)="onDelete(chartFullDetail)"
                     >
                       <i class="fas fa-trash fa-lg mr-1"></i>
