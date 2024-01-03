@@ -58,72 +58,113 @@
                 </td>
                 <td class="col-6">
                   <div
+                    *ngIf="chartFullDetail.gender.length > 0"
+                    class="filter-box border-cyan"
+                  >
+                    <span
+                      *ngFor="let enum of chartFullDetail.gender; index as i"
+                      class=""
+                    >
+                      {{ enum.key
+                      }}{{ i < chartFullDetail.gender.length - 1 ? "," : "" }}
+                    </span>
+                  </div>
+                  <div
                     *ngIf="chartFullDetail.branches.length > 0"
                     class="filter-box border-red"
                   >
-                    <span *ngFor="let item of chartFullDetail.branches ; index as i">
-                      {{ item.name }}{{i < chartFullDetail.branches.length - 1 ? ',' : ''}}
+                    <span
+                      *ngFor="let item of chartFullDetail.branches; index as i"
+                    >
+                      {{ item.name
+                      }}{{ i < chartFullDetail.branches.length - 1 ? "," : "" }}
                     </span>
                   </div>
                   <div
                     *ngIf="chartFullDetail.jobPositions.length > 0"
-                    class="filter-box border-yellow"
+                    class="filter-box border-green"
                   >
-                    <span *ngFor="let item of chartFullDetail.jobPositions ; index as i">
-                      {{ item.name }}{{i < chartFullDetail.jobPositions.length - 1 ? ',' : ''}}
+                    <span
+                      *ngFor="
+                        let item of chartFullDetail.jobPositions;
+                        index as i
+                      "
+                    >
+                      {{ item.name
+                      }}{{
+                        i < chartFullDetail.jobPositions.length - 1 ? "," : ""
+                      }}
                     </span>
                   </div>
                   <div
                     *ngIf="chartFullDetail.levels.length > 0"
-                    class=" filter-box border-orange"
+                    class="filter-box border-orange"
                   >
-                    <span *ngFor="let item of chartFullDetail.levels ; index as i">
-                      {{ item.name }}{{i < chartFullDetail.levels.length - 1 ? ',' : ''}}
+                    <span
+                      *ngFor="let item of chartFullDetail.levels; index as i"
+                    >
+                      {{ item.name
+                      }}{{ i < chartFullDetail.levels.length - 1 ? "," : "" }}
                     </span>
                   </div>
                   <div
                     *ngIf="chartFullDetail.teams.length > 0"
-                    class=" filter-box border-purple"
-                  >
-                    <span *ngFor="let item of chartFullDetail.teams ; index as i">
-                      {{ item.name }}{{i < chartFullDetail.teams.length - 1 ? ',' : ''}}
-                    </span>
-                  </div>
-                  <div
-                    *ngIf="chartFullDetail.payslipDetailTypes.length > 0"
-                    class=" filter-box border-lime"
+                    class="filter-box border-purple"
                   >
                     <span
-                      *ngFor="let enum of chartFullDetail.payslipDetailTypes ; index as i"
+                      *ngFor="let item of chartFullDetail.teams; index as i"
                     >
-                      {{ enum.key }}{{i < chartFullDetail.payslipDetailTypes.length - 1 ? ',' : ''}}
+                      {{ item.name
+                      }}{{ i < chartFullDetail.teams.length - 1 ? "," : "" }}
                     </span>
                   </div>
                   <div
                     *ngIf="chartFullDetail.userTypes.length > 0"
-                    class=" filter-box border-blue"
+                    class="filter-box border-blue"
                   >
-                    <span *ngFor="let enum of chartFullDetail.userTypes ; index as i">
-                      {{ enum.key }}{{i < chartFullDetail.userTypes.length - 1 ? ',' : ''}}
+                    <span
+                      *ngFor="let enum of chartFullDetail.userTypes; index as i"
+                    >
+                      {{ enum.key
+                      }}{{
+                        i < chartFullDetail.userTypes.length - 1 ? "," : ""
+                      }}
                     </span>
                   </div>
                   <div
                     *ngIf="chartFullDetail.workingStatuses.length > 0"
-                    class=" filter-box border-green"
+                    class="filter-box border-yellow"
                   >
-                    <span *ngFor="let enum of chartFullDetail.workingStatuses ; index as i">
-                      {{ enum.key }}{{i < chartFullDetail.workingStatuses.length - 1 ? ',' : ''}}
+                    <span
+                      *ngFor="
+                        let enum of chartFullDetail.workingStatuses;
+                        index as i
+                      "
+                    >
+                      {{ enum.key
+                      }}{{
+                        i < chartFullDetail.workingStatuses.length - 1
+                          ? ","
+                          : ""
+                      }}
                     </span>
                   </div>
                   <div
-                    *ngIf="chartFullDetail.sexes.length > 0"
-                    class=" filter-box border-cyan"
+                    *ngIf="chartFullDetail.payslipDetailTypes.length > 0"
+                    class="filter-box border-lime"
                   >
                     <span
-                      *ngFor="let enum of chartFullDetail.sexes ; index as i"
-                      class=""
+                      *ngFor="
+                        let enum of chartFullDetail.payslipDetailTypes;
+                        index as i
+                      "
                     >
-                      {{ enum.key }}{{i < chartFullDetail.sexes.length - 1 ? ',' : ''}}
+                      {{ enum.key
+                      }}{{
+                        i < chartFullDetail.payslipDetailTypes.length - 1
+                          ? ","
+                          : ""
+                      }}
                     </span>
                   </div>
                 </td>

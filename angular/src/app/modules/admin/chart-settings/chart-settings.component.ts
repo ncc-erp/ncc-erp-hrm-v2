@@ -38,7 +38,7 @@ export class ChartSettingsComponent
 
   public chartList = [] as ChartSettingDto[];
   public menu: MatMenuTrigger;
-  public contextMenuPosition = { x: "0px", y: "0px" };
+  public contextMenuPosition = { x: "100px", y: "100px" };
   public statusList = this.getListFormEnum(APP_ENUMS.ActiveStatus);
   public defaultValue = FILTER_VALUE.ACTIVE;
   public readonly filterList = [

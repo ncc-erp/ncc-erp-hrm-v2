@@ -25,8 +25,8 @@ import { AuditLogsComponent } from './audit-logs/audit-logs.component';
 import { RetryBackgroundJobComponent } from './background-jobs/retry-background-job/retry-background-job.component';
 import { ChartSettingsComponent } from './chart-settings/chart-settings.component';
 import { CreateEditChartDialogComponent } from './chart-settings/create-edit-chart-dialog/create-edit-chart-dialog.component';
-import { ChartDetailSettingsComponent } from './chart-detail-settings/chart-detail-settings.component';
-import { CreateEditChartDetailDialogComponent } from './chart-detail-settings/create-edit-chart-detail-dialog/create-edit-chart-detail-dialog.component';
+import { ChartDetailSettingsComponent } from './chart-settings/chart-detail-settings/chart-detail-settings.component';
+import { CreateEditChartDetailDialogComponent } from './chart-settings/chart-detail-settings/create-edit-chart-detail-dialog/create-edit-chart-detail-dialog.component';
 
 
 @NgModule({

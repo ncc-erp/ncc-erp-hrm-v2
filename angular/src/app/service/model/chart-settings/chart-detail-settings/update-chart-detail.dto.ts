@@ -1,9 +1,8 @@
-export class ChartDetailSettingDto {
+export class UpdateChartDetailDto {
   id: number;
   chartId: number;
   name: string;
   color: string;
-  isActive: number;
   branchIds: number[];
   jobPositionIds: number[];
   levelIds: number[];

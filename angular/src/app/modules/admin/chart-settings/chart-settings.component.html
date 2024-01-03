@@ -88,16 +88,13 @@
                   </div>
                 </td>
                 <td class="col-1 text-center">
-                  <div
-                    style="visibility: hidden; position: fixed"
-                    [style.right]="contextMenuPosition.x"
-                    [style.top]="contextMenuPosition.y"
-                    [matMenuTriggerFor]="menu"
-                  ></div>
                   <button mat-button [matMenuTriggerFor]="menu">
                     <i class="fas fa-bars fa-lg"></i>
                   </button>
-                  <mat-menu #menu="matMenu" class="p-2">
+                  <mat-menu
+                    #menu="matMenu"
+                    class="p-2"
+                  >
                     <button
                       *ngIf="isShowEditBtn()"
                       (click)="onUpdate(chart)"

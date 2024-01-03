@@ -10,7 +10,6 @@
     "lint": "tslint --force --project src/tsconfig.json src/**/*.ts -t verbose",
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4200",
-    "start2": "node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng s -o",
     "test": "ng test"
   },
   "dependencies": {

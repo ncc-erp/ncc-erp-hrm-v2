@@ -8,6 +8,6 @@ export class ChartDetailSelectionDto {
     payslipDetailTypes: SelectionKeyValueDto[] 
     userTypes: SelectionKeyValueDto[] 
     workingStatuses: SelectionKeyValueDto[] 
-    sexes: SelectionKeyValueDto[]
+    gender: SelectionKeyValueDto[]
 
 }

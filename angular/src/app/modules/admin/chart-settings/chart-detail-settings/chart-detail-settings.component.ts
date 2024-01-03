@@ -88,8 +88,6 @@ export class ChartDetailSettingsComponent
         .subscribe((rs) => {
           this.chartFull = rs.result;
           this.chartFullDetailList = this.chartFull.chartDetails;
-          console.log(this.chartFullDetailList);
-          
         })
     );
   }

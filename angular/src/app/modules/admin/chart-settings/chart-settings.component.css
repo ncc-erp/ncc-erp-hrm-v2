@@ -1,3 +1,7 @@
 .al-center {
     align-items: center;
 }
+
+.mat-menu-panel {
+    min-width: 130px;
+}

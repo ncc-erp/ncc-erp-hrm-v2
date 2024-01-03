@@ -11,7 +11,7 @@ import { EmailTemplatesComponent } from './email-templates/email-templates.compo
 import { BackgroundJobsComponent } from './background-jobs/background-jobs.component';
 import { AuditLogsComponent } from './audit-logs/audit-logs.component';
 import { ChartSettingsComponent } from './chart-settings/chart-settings.component';
-import { ChartDetailSettingsComponent } from './chart-detail-settings/chart-detail-settings.component';
+import { ChartDetailSettingsComponent } from './chart-settings/chart-detail-settings/chart-detail-settings.component';
 
 const routes: Routes = [
   {

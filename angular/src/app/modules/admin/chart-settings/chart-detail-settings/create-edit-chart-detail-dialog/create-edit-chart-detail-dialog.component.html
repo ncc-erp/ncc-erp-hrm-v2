@@ -1,0 +1,146 @@
+<form [formGroup]="formGroup" class="form-horizontal" [busy]="isLoading">
+  <app-dialog-header [dialogTitle]="title"></app-dialog-header>
+  <div class="p-3">
+    <div class="form-group d-flex required">
+      <label class="col-3 mt-2 col-form-label">Name:</label>
+      <div class="col-9">
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            formControlName="name"
+            cdkFocusInitial
+            #nameEl
+            required
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="formGroup.get('name')"
+          [controlEl]="nameEl"
+        >
+        </abp-validation-summary>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Gender: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listGender"
+          [searchPlaceholder]="'Find gender'"
+          [multiControl]="formGroup.controls.gender"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Branch: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listBranches"
+          [searchPlaceholder]="'Find Branch'"
+          [multiControl]="formGroup.controls.branches"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Job position: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listJobPositions"
+          [searchPlaceholder]="'Find Job Position'"
+          [multiControl]="formGroup.controls.jobPositions"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Level: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listLevels"
+          [searchPlaceholder]="'Find Level'"
+          [multiControl]="formGroup.controls.levels"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Team: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listTeams"
+          [searchPlaceholder]="'Find Team'"
+          [multiControl]="formGroup.controls.teams"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">UserType: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listUserTypes"
+          [searchPlaceholder]="'Find UserType'"
+          [multiControl]="formGroup.controls.userTypes"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">WorkingStatus: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listWorkingStatuses"
+          [searchPlaceholder]="'Find WorkingStatus'"
+          [multiControl]="formGroup.controls.workingStatuses"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">PayslipDetailType: </label>
+      <div class="col-9">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listPayslipDetailTypes"
+          [searchPlaceholder]="'Find PayslipDetailType'"
+          [multiControl]="formGroup.controls.payslipDetailTypes"
+        >
+        </app-multi-select-box>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label"> Color: </label>
+      <div class="d-flex align-items-center pl-2">
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            name="color"
+            [value]="formGroup.value.color"
+            formControlName="color"
+          />
+        </mat-form-field>
+        <div class="d-flex align-items-center">
+          <input
+            class="ml-3 color-picker"
+            type="color"
+            name="color"
+            [value]="formGroup.value.color"
+            formControlName="color"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-dialog-footer
+    (onSave)="saveAndClose()"
+    [isDisable]="isLoading"
+  ></app-dialog-footer>
+</form>

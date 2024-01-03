@@ -10,8 +10,8 @@
     justify-content: right;
 }
 
-.badge {
-    /* line-height: unset; */
+.badge-error {
+    background-color: red;
 }
 
 .border-red {
@@ -27,11 +27,11 @@
 }
 
 .border-cyan {
-    border: 2px solid #86e9ff;
+    border: 2px solid #37daff;
 }
 
 .border-green {
-    border: 2px solid #008000;
+    border: 2px solid #41cb41;
 }
 
 .border-orange {
