@@ -23,7 +23,7 @@ namespace HRMv2.APIs.ChartDetails
 
         #region Get
         [HttpGet]
-        public async Task<ChartDetailDto> Get(long id)
+        public async Task<ChartDetailFullDto> Get(long id)
         {
             var chartDetail = await _chartDetailManager.Get(id);
 

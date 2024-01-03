@@ -554,30 +554,30 @@ namespace HRMv2.Utils
             return $"Chi Bảng lương tháng {payrollApplyMonth.Month}/{payrollApplyMonth.Year}";
         }
 
-        public static List<EnumKeyValueDto<TEnum>> GetEnumKeyValueList<TEnum>() where TEnum : Enum
+        public static List<KeyValueDto> GetEnumKeyValueList<TEnum>() where TEnum : Enum
         {
-            List<EnumKeyValueDto<TEnum>> enumKeyValueList = new List<EnumKeyValueDto<TEnum>>();
+            List<KeyValueDto> enumKeyValueList = new List<KeyValueDto>();
 
             foreach (TEnum value in Enum.GetValues(typeof(TEnum)))
             {
-                string name = Enum.GetName(typeof(TEnum), value);
+                string key = Enum.GetName(typeof(TEnum), value);
 
-                enumKeyValueList.Add(new EnumKeyValueDto<TEnum>(name, value));
+                enumKeyValueList.Add(new KeyValueDto(key, Convert.ToInt64(value)));
             }
 
             return enumKeyValueList;
         }
 
-        public static List<EnumKeyValueDto<TEnum>> GetEnumKeyValueList<TEnum>(List<TEnum> listEnums) where TEnum : Enum
+        public static List<KeyValueDto> GetEnumKeyValueList<TEnum>(List<TEnum> listEnums) where TEnum : Enum
         {
-            List<EnumKeyValueDto<TEnum>> enumKeyValueList = new List<EnumKeyValueDto<TEnum>>();
+            List<KeyValueDto> enumKeyValueList = new List<KeyValueDto>();
             if (listEnums != null && listEnums.Count != 0)
             {
                 foreach (TEnum value in listEnums)
                 {
-                    string name = Enum.GetName(typeof(TEnum), value);
+                    string key = Enum.GetName(typeof(TEnum), value);
 
-                    enumKeyValueList.Add(new EnumKeyValueDto<TEnum>(name, value));
+                    enumKeyValueList.Add(new KeyValueDto(key, Convert.ToInt64(value)));
                 }
             }
 

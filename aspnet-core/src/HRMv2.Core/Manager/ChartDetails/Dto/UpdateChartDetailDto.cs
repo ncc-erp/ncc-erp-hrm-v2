@@ -31,7 +31,7 @@ namespace HRMv2.Manager.ChartDetails.Dto
 
         public List<PayslipDetailType> PayslipDetailTypes { get; set; }
 
-        public List<Sex> Sexes { get; set; }
+        public List<Sex> Gender { get; set; }
 
         public List<EmployeeStatus> WorkingStatuses { get; set; }
     }

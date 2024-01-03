@@ -9,14 +9,14 @@ namespace HRMv2.Manager.ChartDetails.Dto
 {
     public class ChartDetailSelectionDto
     {
-        public List<BaseInfoDto> JobPositions {  get; set; }
-        public List<BaseInfoDto> Branches { get; set; }
-        public List<BaseInfoDto> Levels { get; set; }
-        public List<BaseInfoDto> Teams { get; set; }
-        public List<EnumKeyValueDto<UserType>> UserTypes { get; set; }
-        public List<EnumKeyValueDto<PayslipDetailType>> PayslipDetailTypes { get; set; }
-        public List<EnumKeyValueDto<Sex>> Sexes { get; set; }
-        public List<EnumKeyValueDto<EmployeeStatus>> WorkingStatuses { get; set; }
+        public List<KeyValueDto> JobPositions {  get; set; }
+        public List<KeyValueDto> Branches { get; set; }
+        public List<KeyValueDto> Levels { get; set; }
+        public List<KeyValueDto> Teams { get; set; }
+        public List<KeyValueDto> UserTypes { get; set; }
+        public List<KeyValueDto> PayslipDetailTypes { get; set; }
+        public List<KeyValueDto> Gender { get; set; }
+        public List<KeyValueDto> WorkingStatuses { get; set; }
 
     }
 }

@@ -1652,7 +1652,7 @@ namespace HRMv2.Migrations
                     UserTypes = table.Column<int[]>(type: "integer[]", nullable: true),
                     PayslipDetailTypes = table.Column<int[]>(type: "integer[]", nullable: true),
                     WorkingStatuses = table.Column<int[]>(type: "integer[]", nullable: true),
-                    Sexes = table.Column<int[]>(type: "integer[]", nullable: true),
+                    Gender = table.Column<int[]>(type: "integer[]", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),

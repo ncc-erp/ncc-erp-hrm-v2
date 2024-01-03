@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    [Migration("20240102023125_Add_Chart")]
+    [Migration("20240103031459_Add_Chart")]
     partial class Add_Chart
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2001,6 +2001,9 @@ namespace HRMv2.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int[]>("Gender")
+                        .HasColumnType("integer[]");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -2024,9 +2027,6 @@ namespace HRMv2.Migrations
                         .HasColumnType("text");
 
                     b.Property<int[]>("PayslipDetailTypes")
-                        .HasColumnType("integer[]");
-
-                    b.Property<int[]>("Sexes")
                         .HasColumnType("integer[]");
 
                     b.Property<List<long>>("TeamIds")

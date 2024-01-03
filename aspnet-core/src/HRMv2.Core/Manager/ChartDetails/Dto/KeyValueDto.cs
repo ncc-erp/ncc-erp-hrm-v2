@@ -6,15 +6,19 @@ using System.Threading.Tasks;
 
 namespace HRMv2.Manager.ChartDetails.Dto
 {
-    public class EnumKeyValueDto<TEnum>
+    public class KeyValueDto
     {
         public string Key {  get; set; }
 
-        public TEnum Value { get; set; }
+        public long Value { get; set; }
 
-        public EnumKeyValueDto(string key, TEnum value) { 
+        public KeyValueDto(string key, long value) { 
             Key = key;
             Value = value;
+        }
+
+        public KeyValueDto()
+        {
         }
     }
 }

@@ -1999,6 +1999,9 @@ namespace HRMv2.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int[]>("Gender")
+                        .HasColumnType("integer[]");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -2022,9 +2025,6 @@ namespace HRMv2.Migrations
                         .HasColumnType("text");
 
                     b.Property<int[]>("PayslipDetailTypes")
-                        .HasColumnType("integer[]");
-
-                    b.Property<int[]>("Sexes")
                         .HasColumnType("integer[]");
 
                     b.Property<List<long>>("TeamIds")
