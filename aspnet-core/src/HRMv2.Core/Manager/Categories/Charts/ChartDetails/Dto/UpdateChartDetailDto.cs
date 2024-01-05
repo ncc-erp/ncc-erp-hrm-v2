@@ -8,16 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.ChartDetails.Dto
+namespace HRMv2.Manager.Categories.Charts.ChartDetails.Dto
 {
     [AutoMap(typeof(ChartDetail))]
-    public class CreateChartDetailDto 
+    public class UpdateChartDetailDto : EntityDto<long>
     {
-        public long ChartId { get; set; }
-
         public string Name { get; set; }
 
         public string Color { get; set; }
+
+        public bool IsActive { get; set; } = true;
 
         public List<long> JobPositionIds { get; set; }
 

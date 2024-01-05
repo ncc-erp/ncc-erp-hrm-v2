@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using HRMv2.Entities;
-using HRMv2.Manager.ChartDetails.Dto;
 using NccCore.Anotations;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.Charts.Dto
+namespace HRMv2.Manager.Categories.Charts.Dto
 {
     [AutoMap(typeof(Chart))]
     public class ChartDto : EntityDto<long>
@@ -34,8 +33,4 @@ namespace HRMv2.Manager.Charts.Dto
         public bool IsActive { get; set; }
     }
 
-    public class ChartInfoDto : ChartDto
-    {
-        public List<ChartDetailDto> Details { get; set; }
-    }
 }

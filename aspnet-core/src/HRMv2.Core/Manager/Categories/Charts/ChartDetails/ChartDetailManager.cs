@@ -1,12 +1,12 @@
 ﻿using Abp.UI;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories;
+using HRMv2.Manager.Categories.Charts;
+using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
+using HRMv2.Manager.Categories.Charts.Dto;
 using HRMv2.Manager.Categories.JobPositions;
 using HRMv2.Manager.Categories.Levels;
 using HRMv2.Manager.Categories.Teams;
-using HRMv2.Manager.ChartDetails.Dto;
-using HRMv2.Manager.Charts;
-using HRMv2.Manager.Charts.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
 using NccCore.Extension;
@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.ChartDetails
+namespace HRMv2.Manager.Categories.Charts.ChartDetails
 {
     public class ChartDetailManager : BaseManager
     {
@@ -106,10 +106,10 @@ namespace HRMv2.Manager.ChartDetails
             return QueryAllChartDetail().ToList();
         }
 
-        public async Task<ChartFullDto> GetAllDetailsByChartId(long chartId)
+        public async Task<ChartFullInfoDto> GetAllDetailsByChartId(long chartId)
         {
             var chart = await _chartManager.Get(chartId);
-            var chartFullDetail = ObjectMapper.Map<ChartFullDto>(chart);
+            var chartFullDetail = ObjectMapper.Map<ChartFullInfoDto>(chart);
 
             var query = QueryAllChartDetail();
             var chartDetails = query
@@ -214,7 +214,7 @@ namespace HRMv2.Manager.ChartDetails
 
             var chartDetail = ObjectMapper.Map<ChartDetail>(createChartDetailDto);
 
-            chartDetail.Id = await WorkScope.InsertAndGetIdAsync<ChartDetail>(chartDetail);
+            chartDetail.Id = await WorkScope.InsertAndGetIdAsync(chartDetail);
 
             return chartDetail;
         }
@@ -233,7 +233,7 @@ namespace HRMv2.Manager.ChartDetails
             }
 
             // update
-            ObjectMapper.Map<UpdateChartDetailDto, ChartDetail>(updateChartDetailDto, chartDetail);
+            ObjectMapper.Map(updateChartDetailDto, chartDetail);
 
             await WorkScope.UpdateAsync(chartDetail);
 
@@ -247,7 +247,7 @@ namespace HRMv2.Manager.ChartDetails
 
             chartDetail.IsActive = true;
 
-            await WorkScope.UpdateAsync<ChartDetail>(chartDetail);
+            await WorkScope.UpdateAsync(chartDetail);
 
             var chartDetailDto = ObjectMapper.Map<ChartDetailDto>(chartDetail);
 
@@ -260,7 +260,7 @@ namespace HRMv2.Manager.ChartDetails
 
             chartDetail.IsActive = false;
 
-            await WorkScope.UpdateAsync<ChartDetail>(chartDetail);
+            await WorkScope.UpdateAsync(chartDetail);
 
             var chartDetailDto = ObjectMapper.Map<ChartDetailDto>(chartDetail);
 

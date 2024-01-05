@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.Charts.Dto
+namespace HRMv2.Manager.Categories.Charts.Dto
 {
     [AutoMapTo(typeof(Chart))]
     public class UpdateChartDto : EntityDto<long>

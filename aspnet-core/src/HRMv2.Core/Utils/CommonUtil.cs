@@ -2,8 +2,8 @@
 using DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using HRMv2.Entities;
 using HRMv2.Manager.BackgroundJobInfos.Dto;
+using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.UserTypes.Dto;
-using HRMv2.Manager.ChartDetails.Dto;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Notifications.Email.Dto;
 using System;

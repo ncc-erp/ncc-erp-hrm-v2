@@ -1,6 +1,4 @@
-﻿using HRMv2.Manager.ChartDetails.Dto;
-using HRMv2.Manager.ChartDetails;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using NccCore.Paging;
 using HRMv2.Entities;
-using HRMv2.Manager.Charts.Dto;
+using HRMv2.Manager.Categories.Charts.ChartDetails;
+using HRMv2.Manager.Categories.Charts.Dto;
+using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 
 namespace HRMv2.APIs.ChartDetails
 {
@@ -31,7 +31,7 @@ namespace HRMv2.APIs.ChartDetails
         }
 
         [HttpGet]
-        public async Task<ChartFullDto> GetAllDetailsByChartId(long id)
+        public async Task<ChartFullInfoDto> GetAllDetailsByChartId(long id)
         {
             var chartFullDetail = await _chartDetailManager.GetAllDetailsByChartId(id);
 

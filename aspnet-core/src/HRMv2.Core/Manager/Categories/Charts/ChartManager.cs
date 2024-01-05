@@ -2,8 +2,7 @@
 using Amazon.S3.Model;
 using DocumentFormat.OpenXml.Wordprocessing;
 using HRMv2.Entities;
-using HRMv2.Manager.ChartDetails.Dto;
-using HRMv2.Manager.Charts.Dto;
+using HRMv2.Manager.Categories.Charts.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
 using NccCore.Extension;
@@ -14,11 +13,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRMv2.Manager.Charts
+namespace HRMv2.Manager.Categories.Charts
 {
     public class ChartManager : BaseManager
     {
-        public ChartManager(IWorkScope workScope) : base(workScope) {}
+        public ChartManager(IWorkScope workScope) : base(workScope) { }
 
         public IQueryable<ChartDto> QueryAllChart()
         {
@@ -64,15 +63,15 @@ namespace HRMv2.Manager.Charts
             // validate
             var isExistedName = WorkScope.GetAll<Chart>().Any(c => c.Name == createChartDto.Name);
 
-            if(isExistedName)
+            if (isExistedName)
             {
                 throw new UserFriendlyException($"Chart name {createChartDto.Name} is already existed");
             }
 
             var chart = ObjectMapper.Map<Chart>(createChartDto);
 
-            chart.Id = await WorkScope.InsertAndGetIdAsync<Chart>(chart);
-            
+            chart.Id = await WorkScope.InsertAndGetIdAsync(chart);
+
             return chart;
         }
 
@@ -90,7 +89,7 @@ namespace HRMv2.Manager.Charts
             }
 
             // update
-            ObjectMapper.Map<UpdateChartDto, Chart>(updateChartDto, chart);
+            ObjectMapper.Map(updateChartDto, chart);
 
             await WorkScope.UpdateAsync(chart);
 
@@ -103,7 +102,7 @@ namespace HRMv2.Manager.Charts
 
             chart.IsActive = true;
 
-            await WorkScope.UpdateAsync<Chart>(chart);
+            await WorkScope.UpdateAsync(chart);
 
             var chartDto = ObjectMapper.Map<ChartDto>(chart);
 
@@ -116,12 +115,12 @@ namespace HRMv2.Manager.Charts
 
             chart.IsActive = false;
 
-            await WorkScope.UpdateAsync<Chart>(chart);
+            await WorkScope.UpdateAsync(chart);
 
             var chartDto = ObjectMapper.Map<ChartDto>(chart);
 
             return chartDto;
-        } 
+        }
 
         public async Task<long> Delete(long id)
         {

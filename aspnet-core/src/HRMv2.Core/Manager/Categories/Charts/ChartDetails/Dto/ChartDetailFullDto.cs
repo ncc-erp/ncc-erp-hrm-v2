@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRMv2.Manager.ChartDetails.Dto
+namespace HRMv2.Manager.Categories.Charts.ChartDetails.Dto
 {
     [AutoMap(typeof(ChartDetailDto))]
     public class ChartDetailFullDto : ChartDetailSelectionDto

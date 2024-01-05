@@ -1,7 +1,7 @@
 
 using HRMv2.Entities;
-using HRMv2.Manager.Charts;
-using HRMv2.Manager.Charts.Dto;
+using HRMv2.Manager.Categories.Charts;
+using HRMv2.Manager.Categories.Charts.Dto;
 using Microsoft.AspNetCore.Mvc;
 using NccCore.Paging;
 using System;

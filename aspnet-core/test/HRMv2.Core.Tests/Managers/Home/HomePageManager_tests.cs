@@ -14,7 +14,7 @@ namespace HRMv2.Core.Tests.Managers.Home
         public HomePageManager_tests()
         {
             var mockWorkingHistoryManager = new Mock<WorkingHistoryManager>(_workScope);
-            _homePage = new HomePageManager(_workScope, mockWorkingHistoryManager.Object);
+            //_homePage = new HomePageManager(_workScope, mockWorkingHistoryManager.Object);
             _homePage = Resolve<HomePageManager>();
         }
 
