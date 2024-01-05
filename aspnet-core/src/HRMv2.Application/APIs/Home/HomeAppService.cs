@@ -1,7 +1,7 @@
 ﻿using Abp.Authorization;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
-using HRMv2.Manager.Home.Dtos.Chart;
+using HRMv2.Manager.Home.Dtos.ChartDto;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -35,10 +35,10 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpGet]
-        public async Task<List<ResultChartDto>> GetDataChart(
+        public async Task<List<ResultLineChartDto>> GetDataLineChart(
             InputListChartDto input)
         {
-            var result = _homePageManager.GetDataChart(input.ChartIds, input.ChartType, input.StartDate, input.EndDate);
+            var result = _homePageManager.GetDataLineChart(input.ChartIds, input.StartDate, input.EndDate);
             return await result;
         }
 

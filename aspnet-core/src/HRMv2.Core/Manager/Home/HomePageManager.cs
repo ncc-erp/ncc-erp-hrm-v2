@@ -8,9 +8,11 @@ using HRMv2.Manager.Categories.JobPositions;
 using HRMv2.Manager.Categories.Levels;
 using HRMv2.Manager.Categories.Teams;
 using HRMv2.Manager.ChartDetails;
+using HRMv2.Manager.ChartDetails.Dto;
 using HRMv2.Manager.Charts;
+using HRMv2.Manager.Charts.Dto;
 using HRMv2.Manager.Home.Dtos;
-using HRMv2.Manager.Home.Dtos.Chart;
+using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
 using HRMv2.Manager.WorkingHistories.Dtos;
 using HRMv2.NccCore;
@@ -171,15 +173,14 @@ namespace HRMv2.Manager.Home
 
             return null;
         }
-        public async Task<List<ResultChartDto>> GetDataChart(
+        public async Task<List<ResultLineChartDto>> GetDataLineChart(
                 List<long> chartIds,
-                ChartType chartType,
                 [Required] DateTime startDate,
                 [Required] DateTime endDate)
         {
             var query = WorkScope.GetAll<Chart>()
                 .Where(s => s.IsActive == true)
-                .Where(s => s.ChartType == chartType);
+                .Where(s => s.ChartType == ChartType.Line);
 
             if (chartIds != null && chartIds.Any())
             {
@@ -191,10 +192,9 @@ namespace HRMv2.Manager.Home
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    ChartDataType = s.ChartDataType,
                     TimePeriodType = s.TimePeriodType,
                     Details = s.ChartDetails.Where(x => x.IsActive == true)
-                                            .Select(x => new ChartInfoDetailDto
+                                            .Select(x => new ChartDetailDto
                                             {
                                                 Id = x.Id,
                                                 ChartId = x.ChartId,
@@ -206,7 +206,7 @@ namespace HRMv2.Manager.Home
                                                 TeamIds = x.TeamIds,
                                                 UserTypes = x.UserTypes,
                                                 PayslipDetailTypes = x.PayslipDetailTypes,
-                                                Sexes = x.Sexes,
+                                                Gender = x.Gender,
                                                 WorkingStatuses = x.WorkingStatuses
                                             }).ToList()
                 }).ToListAsync();
@@ -216,37 +216,27 @@ namespace HRMv2.Manager.Home
                 return null;
             }
 
-            var totalResult = new List<ResultChartDto>();
+            var totalResult = new List<ResultLineChartDto>();
 
-            if (chartType == ChartType.Line)
+            foreach (var chartInfo in listChartInfo)
             {
-                foreach (var chartInfo in listChartInfo)
-                {
-                    var result = await GetDataLineChart(chartInfo, startDate, endDate);
-                    totalResult.Add(result);
-                }
+                var result = await GetDataLineChart(chartInfo, startDate, endDate);
+                totalResult.Add(result);
             }
-            else
-            {
-                foreach (var chartInfo in listChartInfo)
-                {
-                    var result = await GetDataLineChart(chartInfo, startDate, endDate);
-                    totalResult.Add(result);
-                }
-            }
+
             return totalResult;
 
         }
 
-        private async Task<ResultChartDto> GetDataLineChart(
+        private async Task<ResultLineChartDto> GetDataLineChart(
             ChartInfoDto chartInfo,
             [Required] DateTime startDate,
             [Required] DateTime endDate)
         {
             var labels = DateTimeUtils.GetMonthYearLabelChartFromDate(startDate, endDate);
 
-            var resultLineChart = new ResultLineChartDto();
-            resultLineChart.Labels = labels;
+            var result = new ResultLineChartDto();
+            result.Labels = labels;
 
             foreach (var detail in chartInfo.Details)
             {
@@ -264,11 +254,8 @@ namespace HRMv2.Manager.Home
                     chart.Data = GetLineChartEmployee(startDate, endDate, chartInfo.TimePeriodType, labels, detail);
                 }
 
-                resultLineChart.Charts.Add(chart);
+                result.Charts.Add(chart);
             }
-
-            var result = new ResultChartDto();
-            result.ResultLineChartDto = resultLineChart;
 
             return result;
 
@@ -279,7 +266,7 @@ namespace HRMv2.Manager.Home
             DateTime endDate,
             TimePeriodType timePeriodType,
             IEnumerable<string> labels,
-            ChartInfoDetailDto detail
+            ChartDetailDto detail
         )
         {
             var employees = WorkScope.GetAll<Employee>()
@@ -302,7 +289,7 @@ namespace HRMv2.Manager.Home
                 .WhereIf(detail.LevelIds.Any(), x => detail.LevelIds.Contains(x.LevelId))
                 .WhereIf(detail.TeamIds.Any(), x => detail.TeamIds.Any(teamIds => x.TeamIds.Contains(teamIds)))
                 .WhereIf(detail.UserTypes.Any(), x => detail.UserTypes.Contains(x.UserType))
-                .WhereIf(detail.Sexes.Any(), x => detail.Sexes.Contains(x.Sex))
+                .WhereIf(detail.Gender.Any(), x => detail.Gender.Contains(x.Sex))
                 .ToList();
 
 
@@ -312,19 +299,19 @@ namespace HRMv2.Manager.Home
             {
                 // Xử lý WorkingHistories và BranchHistories trong khoảng thời gian đã cho
                 var histories = employee.WorkingHistories
-                            .Select(h => new 
-                            { 
-                                h.DateAt, 
-                                Type = "Status", 
-                                Value = h.Status.ToString() 
+                            .Select(h => new
+                            {
+                                h.DateAt,
+                                Type = "Status",
+                                Value = h.Status.ToString()
                             })
                             .Concat(
                                 employee.BranchHistories
-                                .Select(b => new 
-                                { 
-                                    b.DateAt, 
-                                    Type = "Branch", 
-                                    Value = b.BranchId.ToString() 
+                                .Select(b => new
+                                {
+                                    b.DateAt,
+                                    Type = "Branch",
+                                    Value = b.BranchId.ToString()
                                 }))
                             .OrderBy(h => h.DateAt)
                             .ToList();

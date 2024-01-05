@@ -1,9 +1,11 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using HRMv2.Entities;
+using HRMv2.Manager.ChartDetails.Dto;
 using NccCore.Anotations;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,5 +32,10 @@ namespace HRMv2.Manager.Charts.Dto
         public string TimePeriodTypeName => Enum.GetName(typeof(TimePeriodType), TimePeriodType);
 
         public bool IsActive { get; set; }
+    }
+
+    public class ChartInfoDto : ChartDto
+    {
+        public List<ChartDetailDto> Details { get; set; }
     }
 }
