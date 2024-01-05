@@ -142,6 +142,39 @@ namespace NccCore.Uitls
             return results;
         }
 
+        public static string GetMonthYearLabelChart(DateTime date)
+        {
+            return date.ToString("MM-yyyy");
+        }
 
+        public static string GetYearLabelChart(DateTime date)
+        {
+            return date.ToString("yyyy");
+        }
+
+        public static List<string> GetMonthYearLabelChartFromDate(DateTime startDate, DateTime endDate)
+        {
+            var result = new List<string>();
+            var date = startDate;
+            while (date <= endDate)
+            {
+                result.Add(GetMonthYearLabelChart(date));
+                date = date.AddMonths(1);
+            }
+            return result;
+        }
+        public static List<DateTime> GetMonthYearLabelDateTime(DateTime startDate, DateTime endDate)
+        {
+            var result = new List<DateTime>();
+            var date = GetFirstDayOfMonth(startDate);
+
+            while (date <= endDate)
+            {
+                result.Add(date);
+                date = date.AddMonths(1);
+            }
+
+            return result;
+        }
     }
 }

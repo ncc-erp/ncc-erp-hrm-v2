@@ -51,6 +51,7 @@ using Abp.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using NccCore.Helper;
 using System.Threading;
+using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
 
 namespace HRMv2.Manager.Employees
 {

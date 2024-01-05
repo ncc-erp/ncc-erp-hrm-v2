@@ -60,4 +60,9 @@ namespace HRMv2.Manager.WorkingHistories.Dtos
         public HRMEnum.EmployeeStatus Status { get; set; }
     }
 
+    public class TeamInfo
+    {
+        public string TeamName { get; set; }
+    }
+
 }
