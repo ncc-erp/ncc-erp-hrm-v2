@@ -482,7 +482,7 @@ namespace HRMv2.Manager.Home
                             Gender = x.Sex,
                             Status = x.Status,
                             Month = firstDayOfCurrentMonth
-                        })
+                        }).ToList()
                     );
 
                 foreach (var kvp in dicEmployeesDetailCurrentMonth)

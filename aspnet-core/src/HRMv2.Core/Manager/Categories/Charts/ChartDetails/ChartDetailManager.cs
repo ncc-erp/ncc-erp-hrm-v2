@@ -68,7 +68,9 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                 Teams = teams,
                 PayslipDetailTypes = CommonUtil.GetEnumKeyValueList<PayslipDetailType>(),
                 UserTypes = CommonUtil.GetEnumKeyValueList<UserType>(),
-                WorkingStatuses = CommonUtil.GetEnumKeyValueList<EmployeeStatus>(),
+                WorkingStatuses = CommonUtil.GetEnumKeyValueList<EmployeeStatus>()
+                                    .Where(x => x.Value != Convert.ToInt64(EmployeeStatus.Pausing))
+                                    .ToList(),
                 Gender = CommonUtil.GetEnumKeyValueList<Sex>(),
 
             };

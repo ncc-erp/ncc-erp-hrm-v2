@@ -17,6 +17,10 @@
     justify-content: right;
 }
 
+.fs-16 {
+    font-size: 16px;
+}
+
 .badge-error {
     background-color: red;
 }

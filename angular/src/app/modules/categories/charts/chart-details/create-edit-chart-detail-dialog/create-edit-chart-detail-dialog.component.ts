@@ -52,6 +52,7 @@ export class CreateEditChartDetailDialogComponent
 
   public filterMultipleTypeParamEnum = APP_ENUMS.FilterMultipleTypeParamEnum;
   public filterTypeEnum = APP_ENUMS.FilterTypeEnum;
+  public isChartSalaryDataType: boolean;
 
   ngOnInit(): void {
     this.getAllFilterData();
@@ -65,6 +66,8 @@ export class CreateEditChartDetailDialogComponent
     } else {
       this.title = "Create new chart detail";
     }
+    this.isChartSalaryDataType =
+      this.APP_ENUM.ChartDataType.Salary === this.dialogData.chartDataType;
 
     const id: number = this.activatedRoute.snapshot.queryParams["id"];
     this.chartDetail.chartId = id;

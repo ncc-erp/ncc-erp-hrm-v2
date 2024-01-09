@@ -36,14 +36,6 @@
       </div>
     </div>
     <div class="card">
-      <!-- <div class="card-header d-flex jc-right">
-        <div class="p-0 mt-1 text-right">
-          <app-create-button
-            *ngIf="isShowCreateBtn()"
-            (create)="onCreate()"
-          ></app-create-button>
-        </div>
-      </div> -->
       <div class="card-body pb-1" id="bg-table">
         <div class="table-responsive">
           <div class="fixTableHead">
@@ -64,20 +56,21 @@
                     let i = index
                   "
                 >
-                  <td class=" text-center">
+                  <td class="text-center">
                     {{ (pageNumber - 1) * pageSize + i + 1 }}
                   </td>
-                  <td class="" [style.color]="chartFullDetail.color">
-                    {{ chartFullDetail.name }}
+                  <td>
+                    <span class="badge fs-16" [style.background-color]="chartFullDetail.color">
+                      {{ chartFullDetail.name }}
+                    </span>
                   </td>
-                  <td class="">
+                  <td>
                     <div
                       *ngIf="chartFullDetail.gender.length > 0"
                       class="filter-box border-cyan"
                     >
                       <span
                         *ngFor="let item of chartFullDetail.gender; index as i"
-                        class=""
                       >
                         {{ item.key
                         }}{{ i < chartFullDetail.gender.length - 1 ? "," : "" }}

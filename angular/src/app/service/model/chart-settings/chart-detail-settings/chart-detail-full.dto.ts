@@ -6,4 +6,5 @@ export class ChartDetailFullDto extends ChartDetailSelectionDto {
   name: string;
   color: string;
   isActive: number;
+  chartDataType?: number;
 }

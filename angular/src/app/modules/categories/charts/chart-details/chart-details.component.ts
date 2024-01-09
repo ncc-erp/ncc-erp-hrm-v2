@@ -15,9 +15,9 @@ import { startWithTap } from "@shared/helpers/observerHelper";
 import { finalize } from "rxjs/operators";
 
 @Component({
-  selector: 'app-chart-details',
-  templateUrl: './chart-details.component.html',
-  styleUrls: ['./chart-details.component.css']
+  selector: "app-chart-details",
+  templateUrl: "./chart-details.component.html",
+  styleUrls: ["./chart-details.component.css"],
 })
 export class ChartDetailsComponent
   extends PagedListingComponentBase<any>
@@ -112,11 +112,16 @@ export class ChartDetailsComponent
   }
 
   onCreate() {
-    this.openDialog(CreateEditChartDetailDialogComponent);
+    const chartDataType = this.chartFull.chartDataType;
+    this.openDialog(CreateEditChartDetailDialogComponent, { chartDataType });
   }
 
   onUpdate(chartDetail: ChartDetailFullDto) {
-    this.openDialog(CreateEditChartDetailDialogComponent, { ...chartDetail });
+    const chartDataType = this.chartFull.chartDataType;
+    this.openDialog(CreateEditChartDetailDialogComponent, {
+      ...chartDetail,
+      chartDataType,
+    });
   }
 
   onActive(id: number) {
