@@ -42,6 +42,7 @@ namespace HRMv2.Manager.Employees.Dto
         public string TaxCode { get; set; }
         public InsuranceStatus InsuranceStatus { get; set; }
         public string PersonalEmail { get; set; }
+        public WorkingStatus WorkingStatus { get; set; }
 
         public DateBetweenDto Seniority
         {
@@ -142,6 +143,12 @@ namespace HRMv2.Manager.Employees.Dto
         public DateTime ApplyDate { get; set; }
         public EmployeeStatus? Status { get; set; }
 
+    }
+
+    public class WorkingStatus
+    {
+        public EmployeeStatus Status { get; set; }
+        public DateTime DateAt { get; set; }
     }
 
     public class SeniorityFilterInput

@@ -5,6 +5,7 @@ using HRMv2.Manager.Categories.Benefits.Dto;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Employees;
 using HRMv2.Manager.Employees.Dto;
+using HRMv2.Manager.WorkingHistories;
 using HRMv2.NccCore;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
@@ -21,10 +22,8 @@ namespace HRMv2.Manager.Categories.Benefits
 {
     public class BenefitManager : BaseManager
     {
-
         public BenefitManager(IWorkScope workScope) : base(workScope)
         {
-            
         }
 
         public IQueryable<GetBenefitDto> QueryAllBenefit()
@@ -115,7 +114,7 @@ namespace HRMv2.Manager.Categories.Benefits
         {
             var currentEmployeeIds = QueryAllBenefitEmployee()
                 .Where(x => x.BenefitId == input.BenefitId)
-                .Select(x => x.Id);
+                .Select(x => x.EmployeeId);
             var listToInsert = new List<BenefitEmployee>();
             foreach (var employeeId in input.ListEmployeeId)
             {
@@ -288,7 +287,7 @@ namespace HRMv2.Manager.Categories.Benefits
         public List<GetEmployeeDto> GetAllEmployeeNotInBenefit(long benefitId)
         {
             var employeeIdsInBenefit = GetListEmployeeIdInBenefit(benefitId);
-            
+
             var query = WorkScope.GetAll<Employee>()
                 .Select(x => new GetEmployeeDto
                 {
@@ -326,6 +325,15 @@ namespace HRMv2.Manager.Categories.Benefits
                         Name = x.JobPosition.Name,
                         Color = x.JobPosition.Color
                     },
+                    WorkingStatus = WorkScope.GetAll<EmployeeWorkingHistory>()
+                            .Where(e => e.EmployeeId == x.Id && e.Status == EmployeeStatus.Working)
+                            .Select(e => new WorkingStatus
+                            {
+                                Status = e.Status,
+                                DateAt = e.DateAt
+                            })
+                            .OrderByDescending(e => e.DateAt)
+                            .FirstOrDefault()
                 })
                 .Where(x=> !employeeIdsInBenefit.Contains(x.Id))
                 .ToList();
