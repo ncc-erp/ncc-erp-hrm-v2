@@ -1,4 +1,5 @@
 import { BadgeInfoDto, BaseEmployeeDto } from "@shared/dto/user-infoDto";
+import { GetEmployeeWorkingHistoryDto } from "../working-history/GetEmployeeWorkingHistoryDto";
 
 export interface GetEmployeeDto extends BaseEmployeeDto {
     id: number;
@@ -27,7 +28,11 @@ export interface GetEmployeeDto extends BaseEmployeeDto {
     levelId: number;
     userType: number,
     teamsName?: string,
-    personalEmail:string
+    personalEmail:string,
+    workingStatus: {
+        status: number,
+        dateAt: string
+    }
 }
 
 export interface ContractEmployeeExpiredDto extends GetEmployeeDto{

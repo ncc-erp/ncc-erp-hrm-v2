@@ -141,18 +141,19 @@
                                                 *ngIf="employee.createMode && !isEditingEmployee">
                                                 <mat-form-field class="w-100 mx-2 mt-3 center-flex"
                                                     appearance="outline">
-                                                    <mat-select (closed)="searchEmployee=''" name="projectEmployee"
-                                                        placeholder="select account *" [(ngModel)]="employee.employeeId" #employeeId="ngModel" #employeeIdEl
+                                                    <mat-select (selectionChange)="onSelectChange($event)"(closed)="searchEmployee=''" name="projectEmployee"
+                                                        placeholder="select account *"  #employeeIdEl
+                                                        [(ngModel)]="quickAddEmployee.id" #employeeId="ngModel"
                                                         required>
                                                         <mat-option>
                                                             <ngx-mat-select-search cdkFocusInitial noEntriesFoundLabel="No matching item found" [placeholderLabel]="'Search Employee'" [(ngModel)]="searchEmployee"></ngx-mat-select-search>
                                                         </mat-option>                                                       
                                                         <mat-option
-                                                            *ngFor="let em of employeeList | listFilter:'fullName': searchEmployee : 'email'"
+                                                            *ngFor="let em of employeeNotInBenefitList | listFilter:'fullName': searchEmployee : 'email'"
                                                             [value]="em.id">
                                                             {{em.fullName}} - {{em.email}}
                                                         </mat-option>
-                                                        <mat-option *ngIf="!employeeList.length">No data!</mat-option>
+                                                        <mat-option *ngIf="!employeeNotInBenefitList.length">No data!</mat-option>
                                                     </mat-select>
                                                     <mat-error class="mt-3">This field is required</mat-error>
                                                 </mat-form-field>
@@ -174,7 +175,7 @@
                                                 appearance="outline">
                                                 <mat-label>Choose a date</mat-label>
                                                 <input matInput [matDatepicker]="picker" name="startDate"
-                                                    [(ngModel)]="employee.startDate" #startDate="ngModel" #startDateEl
+                                                    [(ngModel)]="quickAddEmployee.workingStatus.dateAt" #startDate="ngModel" #startDateEl
                                                     required>
                                                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                                 <mat-datepicker #picker></mat-datepicker>
@@ -223,13 +224,13 @@
                                             <div *ngIf="employee.createMode">
                                                 <ng-container *ngIf="benefit.type == APP_ENUM.BenefitType.CheDoChung">
                                                     <app-save-cancel-button
-                                                        [isDisable]="isLoading || !employee.employeeId || endDate.status == 'INVALID'"
+                                                        [isDisable]="isLoading || !quickAddEmployee.id || endDate.status == 'INVALID'"
                                                         (save)="onSave(employee)" (cancel)="onCancel(employee)">
                                                     </app-save-cancel-button>
                                                 </ng-container>
                                                 <ng-container *ngIf="benefit.type !== APP_ENUM.BenefitType.CheDoChung">
                                                     <app-save-cancel-button
-                                                        [isDisable]="isLoading || !employee.employeeId || !employee.startDate || endDate.status == 'INVALID'"
+                                                        [isDisable]="isLoading || !quickAddEmployee.id || !quickAddEmployee.workingStatus.dateAt || endDate.status == 'INVALID'"
                                                         (save)="onSave(employee)" (cancel)="onCancel(employee)">
                                                     </app-save-cancel-button>
                                                 </ng-container>

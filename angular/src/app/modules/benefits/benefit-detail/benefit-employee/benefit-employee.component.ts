@@ -84,7 +84,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
   private benefitId: number;
   public benefitName: string = ""
   public benefit = {} as benefitDto;
-  public employeeList: GetEmployeeDto[] = [];
+  public employeeNotInBenefitList: GetEmployeeDto[] = [];
   public listBenefitEmployee: BenefitEmployeeDto[] = [];
   public isEditingEmployee: boolean = false;
   public isAddingEmployee: boolean = false;
@@ -104,6 +104,8 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
   public isActive: boolean = true
   public benefitType: number
   public filterMultipleTypeParamEnum = APP_ENUMS.FilterMultipleTypeParamEnum;
+  public quickAddEmployee = {} as GetEmployeeDto;
+
   ngOnInit(): void {
     this.benefitId = Number(this.route.snapshot.queryParamMap.get('id'))
     this.benefitName = this.route.snapshot.queryParamMap.get('name')
@@ -119,8 +121,9 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
     this.setDefaultValue()
     this.getBenefitById();
     this.getListApplyDate()
-    this.getAllEmployee()
+    this.getAllEmployeeNotInBenefit()
     this.refresh();
+    
   }
 
   ngAfterViewInit(): void {
@@ -196,7 +199,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
     }))
   }
 
-  private getAllEmployee() {
+  private getAllEmployeeNotInBenefit() {
     this.subscription.push(this.benefitService.GetAllEmployeeNotInBenefit(this.benefitId)
     .pipe(startWithTap(() => {
       this.isLoading = true;
@@ -205,7 +208,8 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
       this.isLoading = false;
     }))
     .subscribe(rs => {
-      this.employeeList = rs.result
+      this.employeeNotInBenefitList = rs.result;
+      this.quickAddEmployee = { ...rs.result[0] }; // deep copy
     }))
   }
 
@@ -218,7 +222,6 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
           benefitId: this.benefitId,
           benefitName: this.benefitName,
           benefitType: this.benefit.type,
-          startDate: this.benefit.applyDate
         }
       })
       ref.afterClosed().subscribe((result: AddEmployeeToBenefitDto) => {
@@ -304,13 +307,18 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
     this.isEditingEmployee = true;
   }
 
+  public onSelectChange(event) {
+    const employee = this.employeeNotInBenefitList.find(emp => emp.id == event.value);
+    this.quickAddEmployee = {...employee}; // deep copy
+  }
+
   public onSave(employee: BenefitEmployeeDto) {
-    employee.startDate = employee.startDate ? this.formatDateYMD(employee.startDate) : null
     employee.endDate = employee.endDate ? this.formatDateYMD(employee.endDate) : null
-    let { employeeId, startDate, endDate } = employee
+    let startDate = this.formatDateYMD(this.quickAddEmployee.workingStatus.dateAt)
+    let { endDate } = employee
     let input = {
       benefitId: this.benefitId,
-      employeeId: employeeId,
+      employeeId: this.quickAddEmployee.id,
       startDate: startDate,
       endDate: endDate
     } as QuickAddEmployeeDto
@@ -324,7 +332,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
           this.isLoading = false;
           this.isEditingEmployee = false;
           employee.createMode = false;
-          this.getAllEmployee();
+          this.getAllEmployeeNotInBenefit();
         }))
         .subscribe(rs => {
           abp.notify.success(`Added new employee to benefit`)
@@ -340,7 +348,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
         }))
         .pipe(finalize(() => {
           this.isLoading = false;
-          this.getAllEmployee();
+          this.getAllEmployeeNotInBenefit();
         }))
         .subscribe(rs => {
           this.isEditingEmployee = false;
@@ -378,7 +386,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
   public onQuickAdd() {
     let employee = {} as BenefitEmployeeDto;
     if (this.benefit.type !== APP_ENUMS.BenefitType.CheDoChung) {
-      employee.startDate = this.formatDateYMD(new Date())
+      // employee.startDate = this.formatDateYMD(new Date)
       employee.endDate = null
     }
     employee.createMode = true;
