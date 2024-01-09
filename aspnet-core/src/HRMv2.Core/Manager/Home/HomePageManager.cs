@@ -1,7 +1,4 @@
 ﻿using Abp.Collections.Extensions;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Wordprocessing;
-using HRMv2.Constants.Enum;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories;
 using HRMv2.Manager.Categories.Charts;
@@ -16,8 +13,6 @@ using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
 using HRMv2.Manager.WorkingHistories.Dtos;
 using HRMv2.NccCore;
-using HRMv2.Utils;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
 using NccCore.Uitls;
@@ -359,14 +354,14 @@ namespace HRMv2.Manager.Home
 
             var allMonths = DateTimeUtils.GetMonthYearLabelDateTime(startDate, endDate);
             var previousMonths = allMonths.Where(m => m < firstDayOfCurrentMonth).ToList();
-            var currentMonth = allMonths.FirstOrDefault(m => m == firstDayOfCurrentMonth);
 
 
-            var employees1 = WorkScope.GetAll<Payslip>()
+            var employeeMonthlyDetails = WorkScope.GetAll<Payslip>()
                 .Select(payslip => new
                 {
-                    payslip.Id,
                     payslip.EmployeeId,
+                    payslip.Employee.FullName,
+                    payslip.JobPositionId,
                     payslip.BranchId,
                     payslip.UserType,
                     payslip.LevelId,
@@ -375,86 +370,135 @@ namespace HRMv2.Manager.Home
                     payslip.Payroll.ApplyMonth
 
                 })
-                .Where(payslip => payslip.ApplyMonth.Month >= previousMonths.FirstOrDefault().Month 
-                                && payslip.ApplyMonth.Month <= previousMonths.LastOrDefault().Month)
+                .Where(payslip => payslip.ApplyMonth >= DateTimeUtils.GetFirstDayOfMonth(previousMonths.FirstOrDefault())
+                                && payslip.ApplyMonth <= DateTimeUtils.GetLastDayOfMonth(previousMonths.LastOrDefault()))
                 .ToList()
-                .GroupBy(p => p.ApplyMonth.ToString("MM-yyyy"))
+                .GroupBy(p => p.EmployeeId)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.Select(p => new
+                    g => g.Select(p => new EmployeeDetailDto
                     {
-                        p.Id,
-                        p.EmployeeId,
-                        p.BranchId,
-                        p.UserType,
-                        p.LevelId,
-                        p.PayslipTeams,
-                        p.ApplyMonth
+                        EmployeeId = p.EmployeeId,
+                        FullName = p.FullName,
+                        JobPositionId = p.JobPositionId,
+                        LevelId = p.LevelId,
+                        TeamIds = p.PayslipTeams,
+                        UserType = p.UserType,
+                        BranchId = p.BranchId,
+                        Month = p.ApplyMonth
                     }).ToList()
                 );
 
+            var listEmployeeIds = employeeMonthlyDetails.Keys.ToList();
 
-
-            var employees = WorkScope.GetAll<Employee>()
-                .Select(x => new
+            var emloyeeWorkingHistories = WorkScope.GetAll<EmployeeWorkingHistory>()
+                .Select(wh => new
                 {
-                    x.Id,
-                    x.FullName,
-                    x.Sex,
-                    WorkingHistories = x.WorkingHistories
-                                    .Where(h => h.DateAt <= endDate)
-                                    .Select(h => new { h.EmployeeId, h.Status, h.DateAt }).ToList(),
+                    wh.EmployeeId,
+                    wh.Status,
+                    wh.DateAt
+                })
+                .Where(wh => listEmployeeIds.Contains(wh.EmployeeId))
+                .Where(wh => wh.DateAt >= DateTimeUtils.GetFirstDayOfMonth(previousMonths.FirstOrDefault())
+                        && wh.DateAt <= DateTimeUtils.GetLastDayOfMonth(previousMonths.LastOrDefault()))
+                .ToList();
 
-                }).ToList();
-
-            var workingHistories = employees.SelectMany(e => e.WorkingHistories).ToList();
-            //.WhereIf(detail.JobPositionIds.Any(), x => detail.JobPositionIds.Contains(x.JobPositionId))
-            //.WhereIf(detail.LevelIds.Any(), x => detail.LevelIds.Contains(x.LevelId))
-            //.WhereIf(detail.TeamIds.Any(), x => detail.TeamIds.Any(teamIds => x.TeamIds.Contains(teamIds)))
-            //.WhereIf(detail.UserTypes.Any(), x => detail.UserTypes.Contains(x.UserType))
-            //.WhereIf(detail.Sexes.Any(), x => detail.Sexes.Contains(x.Sex))
-            //.ToList();
-
-            var employeeMonthlyDetails = employees.Select(emp => new
+            foreach (var employeeDetailsEntry in employeeMonthlyDetails)
             {
-                emp.Id,
-                emp.FullName,
-                emp.Sex,
-                MonthlyDetails = allMonths.Select(month => new
+                var employeeId = employeeDetailsEntry.Key;
+                var employeeDetails = employeeDetailsEntry.Value;
+
+                foreach (var employeeDetail in employeeDetails)
                 {
-                    Month = month,
-                    StatusInMonth = workingHistories
-                        .Where(w => w.EmployeeId == emp.Id && w.DateAt <= month)
-                        .OrderByDescending(w => w.DateAt)
-                        .Select(w => w.Status)
-                        .FirstOrDefault()
-                }).ToList()
-            }).ToList();
+                    // Tìm kiếm bản ghi lịch sử làm việc tương ứng
+                    var matchingHistory = emloyeeWorkingHistories
+                        .Where(wh => wh.EmployeeId == employeeId && DateTimeUtils.GetFirstDayOfMonth(wh.DateAt) == DateTimeUtils.GetFirstDayOfMonth(employeeDetail.Month))
+                        .OrderByDescending(wh => wh.DateAt)
+                        .FirstOrDefault();
 
-            var employeeMonthlyDetailsDictionary = employeeMonthlyDetails
-                .SelectMany(emp => emp.MonthlyDetails
-                    //.Where(md => md.StatusInMonth == EmployeeStatus.Working)
-                    .Select(md => new 
-                    { 
-                        emp.Id, 
-                        emp.FullName,
-                        emp.Sex,
-                        md.Month, 
-                        md.StatusInMonth 
-                    }))
-                .GroupBy(md => md.Month.ToString("MM-yyyy"))
-                .ToDictionary(
-                    group => group.Key,
-                    //group => group.Select(md => new EmployeeMonthlyDetail
-                    //{
-                    //    Id = md.Id,
-                    //    FullName = md.FullName,
-                    //    Sex = md.Sex,
-                    //    StatusInMonth = md.StatusInMonth
-                    //}).ToList());
-                    group => group.Select(md =>  md.StatusInMonth));
+                    if (matchingHistory != null)
+                    {
+                        // Cập nhật trạng thái dựa trên lịch sử làm việc
+                        employeeDetail.Status = matchingHistory.Status switch
+                        {
+                            EmployeeStatus.Pausing or EmployeeStatus.Quit or EmployeeStatus.MaternityLeave => matchingHistory.Status,
+                            EmployeeStatus.Working => emloyeeWorkingHistories.Any(wh => wh.EmployeeId == employeeId && wh.DateAt < matchingHistory.DateAt && wh.Status == EmployeeStatus.MaternityLeave) ? EmployeeStatus.Working : EmployeeStatus.Onboard,
+                            _ => employeeDetail.Status
+                        };
+                    }
+                    else
+                    {
+                        // Nếu không có lịch sử làm việc phù hợp, kiểm tra trạng thái gần nhất trước ApplyMonth
+                        var lastStatusBeforeApplyMonth = emloyeeWorkingHistories
+                            .Where(wh => wh.EmployeeId == employeeId && wh.DateAt < employeeDetail.Month)
+                            .OrderByDescending(wh => wh.DateAt)
+                            .Select(wh => wh.Status)
+                            .FirstOrDefault();
+
+                        employeeDetail.Status = lastStatusBeforeApplyMonth == EmployeeStatus.MaternityLeave ? EmployeeStatus.MaternityLeave : EmployeeStatus.Working;
+                    }
+                }
+            }
 
 
+            if (allMonths.Contains(firstDayOfCurrentMonth))
+            {
+                var employeesDetailCurrentMonth = WorkScope.GetAll<Employee>()
+                    .Select(x => new
+                    {
+                        EmployeeId = x.Id,
+                        x.FullName,
+                        x.JobPositionId,
+                        x.LevelId,
+                        x.BranchId,
+                        TeamIds = x.EmployeeTeams.Select(t => t.TeamId).ToList(),
+                        x.UserType,
+                        x.Sex,
+                        x.Status,
+                        WorkingHistories = x.WorkingHistories
+                                            .Select(wh => new { wh.Status, wh.DateAt })
+                                            .OrderByDescending(wh => wh.DateAt)
+                                            .FirstOrDefault(),
+                    })
+                    .Where(x => listEmployeeIds.Contains(x.EmployeeId))
+                    .ToList();
+
+
+
+
+                var dicEmployeesDetailCurrentMonth = employeesDetailCurrentMonth
+                    .GroupBy(x => x.EmployeeId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(x => new EmployeeDetailDto
+                        {
+                            EmployeeId = x.EmployeeId,
+                            FullName = x.FullName,
+                            JobPositionId = x.JobPositionId,
+                            LevelId = x.LevelId,
+                            BranchId = x.BranchId,
+                            TeamIds = x.TeamIds,
+                            UserType = x.UserType,
+                            Gender = x.Sex,
+                            Status = x.Status,
+                            Month = firstDayOfCurrentMonth
+                        })
+                    );
+
+                foreach (var kvp in dicEmployeesDetailCurrentMonth)
+                {
+                    if (employeeMonthlyDetails.TryGetValue(kvp.Key, out var listEmployeeMonthlyDetail))
+                    {
+                        listEmployeeMonthlyDetail.AddRange(kvp.Value);
+                    }
+                    else
+                    {
+                        // Nếu key chưa tồn tại, thêm key và giá trị mới từ dictionary2 vào dictionary1
+                        employeeMonthlyDetails[kvp.Key] = kvp.Value;
+                    }
+
+                }
+            }
             return null;
         }
     }

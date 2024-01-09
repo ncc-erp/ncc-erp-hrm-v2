@@ -21,7 +21,8 @@ namespace HRMv2.Constants.Enum
             Working = 1,
             Pausing = 2,
             Quit = 3,
-            MaternityLeave = 4
+            MaternityLeave = 4,
+            Onboard = 5
         }
 
         public enum InsuranceStatus
