@@ -36,7 +36,7 @@ namespace HRMv2.APIs.Home
             return result;
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<List<ResultLineChartDto>> GetDataLineChart(
             InputListChartDto input)
         {
