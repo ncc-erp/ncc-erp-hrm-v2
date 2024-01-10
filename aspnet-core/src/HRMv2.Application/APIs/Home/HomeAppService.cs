@@ -43,11 +43,11 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpGet]
-        public List<double> TestDataChart(
+        public int TestDataChart(
             DateTime startDate, DateTime endDate)
         {
-            var result = _homePageManager.GetLineChartEmployeeTest(startDate, endDate);
-            return result;
+            var result = _homePageManager.GetEmployeeMonthlyDetail(startDate, endDate);
+            return result.Count;
         }
     }
 }
