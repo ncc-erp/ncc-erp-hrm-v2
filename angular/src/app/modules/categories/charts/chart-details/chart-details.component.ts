@@ -45,6 +45,7 @@ export class ChartDetailsComponent
   public chartUpdateData = {} as ChartDetailSettingDto;
   public menu: MatMenuTrigger;
   public contextMenuPosition = { x: "0px", y: "0px" };
+  public isShowWorkingStatus: boolean;
   // public chartTypeTemplate = AppConsts.ChartType;
   // public chartDataTypeTemplate = AppConsts.ChartDataType;
   // public chartIsActiveTemplate = AppConsts.Status;
@@ -87,6 +88,7 @@ export class ChartDetailsComponent
         .subscribe((rs) => {
           this.chartFull = rs.result;
           this.chartFullDetailList = this.chartFull.chartDetails;
+          this.isShowWorkingStatus = this.chartFull.chartDataType == APP_ENUMS.ChartDataType.Employee 
         })
     );
   }

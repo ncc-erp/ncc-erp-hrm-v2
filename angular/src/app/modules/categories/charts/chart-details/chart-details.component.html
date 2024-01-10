@@ -139,7 +139,7 @@
                       </span>
                     </div>
                     <div
-                      *ngIf="chartFullDetail.workingStatuses.length > 0"
+                      *ngIf="chartFullDetail.workingStatuses.length > 0 && isShowWorkingStatus"
                       class="filter-box border-yellow"
                     >
                       <span
@@ -157,7 +157,7 @@
                       </span>
                     </div>
                     <div
-                      *ngIf="chartFullDetail.payslipDetailTypes.length > 0"
+                      *ngIf="chartFullDetail.payslipDetailTypes.length > 0 && !isShowWorkingStatus"
                       class="filter-box border-lime"
                     >
                       <span

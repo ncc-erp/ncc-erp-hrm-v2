@@ -58,7 +58,6 @@ export class CreateEditChartDetailDialogComponent
     this.getAllFilterData();
     this.initForm();
     this.formGroup.enable();
-
     if (this.dialogData?.id) {
       this.getChartDetail(this.dialogData.id);
 
@@ -234,7 +233,15 @@ export class CreateEditChartDetailDialogComponent
     }
   }
 
-  onTableMultiSelect(listData: any, property: string) {
-    this.chartDetail[property] = listData;
+  onClearAllFilter(key) {
+    const control = this.formGroup.get(key);
+
+    if (control) {
+      if (Array.isArray(control.value)) {
+        control.setValue([]);  // Set value to an empty array
+      } else {
+        control.setValue('');  // Set value to an empty string (for non-array controls)
+      }
+    }
   }
 }

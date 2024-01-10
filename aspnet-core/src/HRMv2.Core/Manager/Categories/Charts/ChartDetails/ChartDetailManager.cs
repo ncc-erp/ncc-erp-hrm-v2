@@ -227,7 +227,10 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             var chartDetail = await WorkScope.GetAsync<ChartDetail>(updateChartDetailDto.Id);
 
             // validate
-            var isExistedName = WorkScope.GetAll<ChartDetail>().Any(c => c.Name == updateChartDetailDto.Name && c.Id != updateChartDetailDto.Id);
+            var isExistedName = WorkScope.GetAll<ChartDetail>().Any(c => 
+                c.ChartId == chartDetail.ChartId &&
+                c.Name == updateChartDetailDto.Name && 
+                c.Id != updateChartDetailDto.Id);
 
             if (isExistedName)
             {

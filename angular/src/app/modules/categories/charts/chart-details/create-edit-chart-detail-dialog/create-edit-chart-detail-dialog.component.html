@@ -3,7 +3,7 @@
   <div class="p-3">
     <div class="form-group d-flex required">
       <label class="col-3 mt-2 col-form-label">Name:</label>
-      <div class="col-9">
+      <div class="col-8">
         <mat-form-field appearance="outline" class="w-100">
           <input
             matInput
@@ -22,7 +22,7 @@
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Gender: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listGender"
@@ -31,10 +31,11 @@
         >
         </app-multi-select-box>
       </div>
+      <button class="btn-clear-all" (click)="onClearAllFilter('gender')" ><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Branch: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listBranches"
@@ -43,10 +44,11 @@
         >
         </app-multi-select-box>
       </div>
+      <button (click)="onClearAllFilter('branches')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Job position: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listJobPositions"
@@ -55,10 +57,11 @@
         >
         </app-multi-select-box>
       </div>
+      <button (click)="onClearAllFilter('jobPositions')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Level: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listLevels"
@@ -67,10 +70,11 @@
         >
         </app-multi-select-box>
       </div>
+      <button (click)="onClearAllFilter('levels')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Team: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listTeams"
@@ -79,10 +83,11 @@
         >
         </app-multi-select-box>
       </div>
+      <button (click)="onClearAllFilter('teams')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">UserType: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listUserTypes"
@@ -91,12 +96,13 @@
         >
         </app-multi-select-box>
       </div>
+      <button (click)="onClearAllFilter('userTypes')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div 
     *ngIf="!isChartSalaryDataType"
     class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">WorkingStatus: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listWorkingStatuses"
@@ -105,13 +111,14 @@
         >
         </app-multi-select-box>
       </div>
+      <button (click)="onClearAllFilter('workingStatuses')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div
       *ngIf="isChartSalaryDataType"
       class="form-group d-flex"
     >
       <label class="col-3 mt-2 col-form-label">PayslipDetailType: </label>
-      <div class="col-9">
+      <div class="col-8">
         <app-multi-select-box
           class="w-100"
           [list]="listPayslipDetailTypes"
@@ -120,6 +127,7 @@
         >
         </app-multi-select-box>
       </div>
+      <button (click)="onClearAllFilter('payslipDetailTypes')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label"> Color: </label>
