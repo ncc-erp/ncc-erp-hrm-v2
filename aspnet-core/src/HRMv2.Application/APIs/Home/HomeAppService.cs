@@ -3,9 +3,11 @@ using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using Microsoft.AspNetCore.Mvc;
+using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Home
@@ -42,12 +44,5 @@ namespace HRMv2.APIs.Home
             return await result;
         }
 
-        [HttpGet]
-        public int TestDataChart(
-            DateTime startDate, DateTime endDate)
-        {
-            var result = _homePageManager.GetEmployeeMonthlyDetail(startDate, endDate);
-            return result.Count;
-        }
     }
 }
