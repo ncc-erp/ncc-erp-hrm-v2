@@ -45,6 +45,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public long BranchId { get; set; }
         public List<long> TeamIds { get; set; }
         public Sex Gender { get; set; }
+        public string MonthYear => Month.ToString("MM-yyyy");
 
     }
 }
