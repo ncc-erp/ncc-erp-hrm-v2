@@ -1,4 +1,5 @@
 ﻿using HRMv2.Entities;
+using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories.Dtos;
 using HRMv2.NccCore;
 using System;
@@ -98,6 +99,23 @@ namespace HRMv2.Manager.WorkingHistories
             return results;
 
         }
-
+        public IQueryable<EmployeeWorkingHistoryDetailDto> QueryAllWorkingHistoryForChart()
+        {
+            var result = WorkScope.GetAll<EmployeeWorkingHistory>()
+                .Select(x => new EmployeeWorkingHistoryDetailDto
+                {
+                    EmployeeId = x.EmployeeId,
+                    FullName = x.Employee.FullName,
+                    JobPositionId = x.Employee.JobPositionId,
+                    LevelId = x.Employee.LevelId,
+                    BranchId = x.Employee.BranchId,
+                    TeamIds = x.Employee.EmployeeTeams.Select(t => t.TeamId).ToList(),
+                    UserType = x.Employee.UserType,
+                    Gender = x.Employee.Sex,
+                    Status = x.Status,
+                    DateAt = x.DateAt,
+                });
+            return result;
+        }
     }
 }

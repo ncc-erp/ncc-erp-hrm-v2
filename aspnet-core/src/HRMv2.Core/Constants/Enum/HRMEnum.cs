@@ -23,8 +23,8 @@ namespace HRMv2.Constants.Enum
             Quit = 3,
             MaternityLeave = 4,
             Onboard = 5,
-            OnOffInMonth = 6,
-            BackToWork = 7
+            OnOffInMonth =6,
+            BackToWork = 7,
         }
 
         public enum InsuranceStatus
