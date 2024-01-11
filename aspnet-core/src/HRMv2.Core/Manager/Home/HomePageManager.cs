@@ -257,18 +257,13 @@ namespace HRMv2.Manager.Home
                 };
                 result.Charts.Add(chart);
             }
-
             return result;
-
         }
-
-        
 
         public List<EmployeeDetailDto> GetEmployeeMonthlyDetail(List<DateTime> allMonths)
         {
-            DateTime firstDayOfCurrentMonth = DateTimeUtils.GetFirstDayOfMonth(DateTime.Now);
-            var previousMonths = allMonths.Where(m => m < firstDayOfCurrentMonth).ToList();
-
+            DateTime firstDayOfCurrentMonth = DateTimeUtils.GetFirstDayOfMonth(DateTime.Now); //lấy ngày đầu tiên của tháng hiện tại
+            var previousMonths = allMonths.Where(m => m < firstDayOfCurrentMonth).ToList(); //lấy các tháng trước tháng hiện tại
 
             var employeesDetail = GetEmployeeDetailFromPreviousMonths(previousMonths).ToList();
 
@@ -276,7 +271,7 @@ namespace HRMv2.Manager.Home
 
             var allEmloyeeWorkingHistories = _workingHistoryManager.QueryAllWorkingHistoryForChart().ToList();
 
-            if (allMonths.Contains(firstDayOfCurrentMonth))
+            if (allMonths.Contains(firstDayOfCurrentMonth)) //nếu tháng được chọn có chứa tháng hiện tại
             {
                 var employeeInCurrentMonth = GetEmployeeDetailFromCurrentMonth(firstDayOfCurrentMonth, allEmloyeeWorkingHistories);
                 employeesDetail = employeeInCurrentMonth != null
@@ -284,7 +279,7 @@ namespace HRMv2.Manager.Home
                                 : employeesDetail;
             }
 
-            foreach (var employee in employeesDetail)
+            foreach (var employee in employeesDetail) //set trạng thái employee cho từng tháng dựa trên EmployeeWorkingHistory
             {
                 employee.Status = GetMontlyStatus(employee, allEmloyeeWorkingHistories);
             }
@@ -292,11 +287,32 @@ namespace HRMv2.Manager.Home
             return employeesDetail;
         }
 
+        public List<double> GetDataEmpoyeeLineChart(List<EmployeeDetailDto> employeeMonthlyDetail, ChartDetailDto detail, List<string> labels)
+        {
+            //lấy data theo chart setting 
+            var employeeMonthlyDetailForChart = employeeMonthlyDetail
+                        .WhereIf(detail.JobPositionIds.Any(), x => detail.JobPositionIds.Contains(x.JobPositionId))
+                        .WhereIf(detail.LevelIds.Any(), x => detail.LevelIds.Contains(x.LevelId))
+                        .WhereIf(detail.BranchIds.Any(), x => detail.BranchIds.Contains(x.BranchId))
+                        .WhereIf(detail.TeamIds.Any(), x => detail.TeamIds.Any(teamIds => x.TeamIds.Contains(teamIds)))
+                        .WhereIf(detail.UserTypes.Any(), x => detail.UserTypes.Contains(x.UserType))
+                        .WhereIf(detail.Gender.Any(), x => detail.Gender.Contains(x.Gender))
+                        .WhereIf(detail.WorkingStatuses.Any(), x => detail.WorkingStatuses.Contains(x.Status))
+                        .OrderBy(x => x.Month)
+                        .GroupBy(x => x.MonthYear)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => (double)g.ToList().Count
+                        );
+            // lấy data string dựa trên label
+            List<double> result = labels.Select(label => employeeMonthlyDetailForChart.ContainsKey(label) 
+                                                        ? employeeMonthlyDetailForChart[label] : 0).ToList();
+            return result;
+        }
 
         public IEnumerable<EmployeeDetailDto> GetEmployeeDetailFromPreviousMonths (List<DateTime> previousMonths)
         {
             var employeesInPreviousMonth = WorkScope.GetAll<Payslip>()
-                //.Include(p => p.Employee)
                 .Select(p => new EmployeeDetailDto
                 {
                     EmployeeId = p.EmployeeId,
@@ -314,47 +330,6 @@ namespace HRMv2.Manager.Home
             return employeesInPreviousMonth;
         }
 
-        public EmployeeStatus GetMontlyStatus(EmployeeDetailDto employee, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
-        {
-            // Tìm kiếm bản ghi lịch sử làm việc tương ứng với tháng
-            var matchingHistory = allEmloyeeWorkingHistories
-                .Where(wh => wh.EmployeeId == employee.EmployeeId && DateTimeUtils.GetFirstDayOfMonth(wh.DateAt) == DateTimeUtils.GetFirstDayOfMonth(employee.Month))
-                .OrderByDescending(wh => wh.DateAt)
-                .FirstOrDefault();
-
-            if (matchingHistory != null)
-            {
-                // Cập nhật trạng thái dựa trên lịch sử làm việc 
-                employee.Status = matchingHistory.Status switch
-                {
-                    EmployeeStatus.Pausing or EmployeeStatus.MaternityLeave => matchingHistory.Status,
-                    EmployeeStatus.Working => allEmloyeeWorkingHistories.Any(wh => wh.EmployeeId == employee.EmployeeId
-                                                                                    && wh.DateAt < matchingHistory.DateAt
-                                                                                    && (wh.Status == EmployeeStatus.MaternityLeave || wh.Status == EmployeeStatus.Pausing))
-                                            ? EmployeeStatus.BackToWork
-                                            : EmployeeStatus.Onboard,
-                    EmployeeStatus.Quit => allEmloyeeWorkingHistories.Any(wh => wh.EmployeeId == employee.EmployeeId
-                                                                                    && wh.DateAt < matchingHistory.DateAt
-                                                                                    && wh.DateAt >= DateTimeUtils.GetFirstDayOfMonth(matchingHistory.DateAt)
-                                                                                    && wh.Status == EmployeeStatus.Working)
-                                            ? EmployeeStatus.OnOffInMonth
-                                            : EmployeeStatus.Quit,
-                    _ => employee.Status
-                };
-            }
-            else
-            {
-                // Nếu không có lịch sử làm việc phù hợp, kiểm tra trạng thái gần nhất trước ApplyMonth
-                var lastStatusBeforeApplyMonth = allEmloyeeWorkingHistories
-                    .Where(wh => wh.EmployeeId == employee.EmployeeId && wh.DateAt < employee.Month)
-                    .OrderByDescending(wh => wh.DateAt)
-                    .Select(wh => wh.Status)
-                    .FirstOrDefault();
-
-                employee.Status = lastStatusBeforeApplyMonth == EmployeeStatus.MaternityLeave ? EmployeeStatus.MaternityLeave : EmployeeStatus.Working;
-            }
-            return employee.Status;
-        }
         public List<EmployeeDetailDto> GetEmployeeDetailFromCurrentMonth(DateTime firstDayOfCurrentMonth, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
         {
             //lấy các Employee đang working và MaternityLeave ở hiện tại
@@ -407,25 +382,46 @@ namespace HRMv2.Manager.Home
             return employeesInCurrentMonth;
         }
 
-        public List<double> GetDataEmpoyeeLineChart(List<EmployeeDetailDto> employeeMonthlyDetail, ChartDetailDto detail, List<string> labels)
+        public EmployeeStatus GetMontlyStatus(EmployeeDetailDto employee, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
         {
-            var employeeMonthlyDetailForChart = employeeMonthlyDetail
-                        .WhereIf(detail.JobPositionIds.Any(), x => detail.JobPositionIds.Contains(x.JobPositionId))
-                        .WhereIf(detail.LevelIds.Any(), x => detail.LevelIds.Contains(x.LevelId))
-                        .WhereIf(detail.BranchIds.Any(), x => detail.BranchIds.Contains(x.BranchId))
-                        .WhereIf(detail.TeamIds.Any(), x => detail.TeamIds.Any(teamIds => x.TeamIds.Contains(teamIds)))
-                        .WhereIf(detail.UserTypes.Any(), x => detail.UserTypes.Contains(x.UserType))
-                        .WhereIf(detail.Gender.Any(), x => detail.Gender.Contains(x.Gender))
-                        .WhereIf(detail.WorkingStatuses.Any(), x => detail.WorkingStatuses.Contains(x.Status))
-                        .OrderBy(x => x.Month)
-                        .GroupBy(x => x.Month.ToString("MM-yyyy"))
-                        .ToDictionary(
-                            g => g.Key,
-                            g => (double)g.ToList().Count
-                        );
+            // Tìm kiếm bản ghi lịch sử làm việc tương ứng với tháng
+            var matchingHistory = allEmloyeeWorkingHistories
+                .Where(wh => wh.EmployeeId == employee.EmployeeId && DateTimeUtils.GetFirstDayOfMonth(wh.DateAt) == DateTimeUtils.GetFirstDayOfMonth(employee.Month))
+                .OrderByDescending(wh => wh.DateAt)
+                .FirstOrDefault();
 
-            List<double> result = labels.Select(label => employeeMonthlyDetailForChart.ContainsKey(label) ? employeeMonthlyDetailForChart[label] : 0).ToList();
-            return result;
+            if (matchingHistory != null)
+            {
+                // Cập nhật trạng thái dựa trên lịch sử làm việc 
+                employee.Status = matchingHistory.Status switch
+                {
+                    EmployeeStatus.Pausing or EmployeeStatus.MaternityLeave => matchingHistory.Status,
+                    EmployeeStatus.Working => allEmloyeeWorkingHistories.Any(wh => wh.EmployeeId == employee.EmployeeId
+                                                                                    && wh.DateAt < matchingHistory.DateAt
+                                                                                    && (wh.Status == EmployeeStatus.MaternityLeave || wh.Status == EmployeeStatus.Pausing))
+                                            ? EmployeeStatus.BackToWork
+                                            : EmployeeStatus.Onboard,
+                    EmployeeStatus.Quit => allEmloyeeWorkingHistories.Any(wh => wh.EmployeeId == employee.EmployeeId
+                                                                                    && wh.DateAt < matchingHistory.DateAt
+                                                                                    && wh.DateAt >= DateTimeUtils.GetFirstDayOfMonth(matchingHistory.DateAt)
+                                                                                    && wh.Status == EmployeeStatus.Working)
+                                            ? EmployeeStatus.OnOffInMonth
+                                            : EmployeeStatus.Quit,
+                    _ => employee.Status
+                };
+            }
+            else
+            {
+                // Nếu không có lịch sử làm việc phù hợp, kiểm tra trạng thái gần nhất trước ApplyMonth
+                var lastStatusBeforeApplyMonth = allEmloyeeWorkingHistories
+                    .Where(wh => wh.EmployeeId == employee.EmployeeId && wh.DateAt < employee.Month)
+                    .OrderByDescending(wh => wh.DateAt)
+                    .Select(wh => wh.Status)
+                    .FirstOrDefault();
+
+                employee.Status = lastStatusBeforeApplyMonth == EmployeeStatus.MaternityLeave ? EmployeeStatus.MaternityLeave : EmployeeStatus.Working;
+            }
+            return employee.Status;
         }
     }
 }
