@@ -11,8 +11,9 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
     public class ResultLineChartDto
     {
+        public string ChartName { get; set; }
         public IEnumerable<string> Labels { get; set; }
-        public List<DataLineChartDto> Charts { get; set; } = new List<DataLineChartDto>();
+        public List<DataLineChartDto> ChartDetails { get; set; } = new List<DataLineChartDto>();
 
     }
     

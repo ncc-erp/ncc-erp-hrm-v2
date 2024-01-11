@@ -29,14 +29,6 @@ namespace HRMv2.APIs.Home
             return _homePageManager.GetAllEmployeeWorkingHistoryByTimeSpan(startDate, endDate);
         }
 
-        [HttpGet]
-        public List<dynamic> GetAllCharts(HomepageChartFilterDto homepageChartFilterDto)
-        {
-            var result = _homePageManager.GetAllCharts(homepageChartFilterDto);
-
-            return result;
-        }
-
         [HttpPost]
         public async Task<List<ResultLineChartDto>> GetDataLineChart(
             InputListChartDto input)
