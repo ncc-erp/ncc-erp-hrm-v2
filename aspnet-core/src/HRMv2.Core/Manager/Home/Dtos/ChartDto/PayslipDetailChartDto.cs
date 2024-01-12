@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using HRMv2.Entities;
+using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,6 +16,8 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public long PayslipId { get; set; }
         public double Money { get; set; }
         public PayslipDetailType Type { get; set; }
-        public long? ReferenceId { get; set; }
+        public DateTime CreationTime { get; set; }
+        public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(CreationTime);
+        public PayslipChartDto Payslip { get; set; }
     }
 }

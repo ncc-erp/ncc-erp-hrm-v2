@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
+using HRMv2.Utils;
+using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public List<long> TeamIds { get; set; }
         public UserType UserType { get; set; }
         public DateTime CreationTime { get; set; }
+        public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(CreationTime);
     }
 
 }
