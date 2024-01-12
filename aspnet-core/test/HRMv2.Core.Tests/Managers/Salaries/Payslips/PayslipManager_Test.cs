@@ -2279,9 +2279,9 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[1].Money);
             Assert.Equal(30000, punishmentEmployees[2].Money);
 
-            Assert.Equal("Punishment 1 (voucher: 60k -> 40k)", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 40k -> 10k)", punishmentEmployees[1].Note);
-            Assert.Equal("Punishment 3 (voucher: 10k -> 0)", punishmentEmployees[2].Note);
+            Assert.Equal("Punishment 1 (20k voucher: 60k -> 40k)", punishmentEmployees[0].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 40k -> 10k)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 3 (10k voucher: 10k -> 0)", punishmentEmployees[2].Note);
         }
 
         /// <summary>
@@ -2309,9 +2309,9 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[1].Money);
             Assert.Equal(0, punishmentEmployees[2].Money);
 
-            Assert.Equal("Punishment 1 (voucher: 100k -> 80k)", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 80k -> 50k)", punishmentEmployees[1].Note);
-            Assert.Equal("Punishment 3 (voucher: 50k -> 10k)", punishmentEmployees[2].Note);
+            Assert.Equal("Punishment 1 (20k voucher: 100k -> 80k)", punishmentEmployees[0].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 80k -> 50k)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 3 (40k voucher: 50k -> 10k)", punishmentEmployees[2].Note);
         }
 
         /// <summary>
@@ -2339,8 +2339,8 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[1].Money);
             Assert.Equal(40000, punishmentEmployees[2].Money);
 
-            Assert.Equal("Punishment 1 (voucher: 50k -> 30k)", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 30k -> 0)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 1 (20k voucher: 50k -> 30k)", punishmentEmployees[0].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 30k -> 0)", punishmentEmployees[1].Note);
             Assert.Equal("Punishment 3", punishmentEmployees[2].Note);
         }
 
@@ -2370,8 +2370,8 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[2].Money);
 
             Assert.Equal("Punishment 1", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 100k -> 70k)", punishmentEmployees[1].Note);
-            Assert.Equal("Punishment 3 (voucher: 70k -> 30k)", punishmentEmployees[2].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 100k -> 70k)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 3 (40k voucher: 70k -> 30k)", punishmentEmployees[2].Note);
         }
 
         /// <summary>
