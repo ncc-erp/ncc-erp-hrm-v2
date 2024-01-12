@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.Collections.Extensions;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
 using HRMv2.Manager.Home.Dtos.ChartDto;
@@ -43,7 +44,7 @@ namespace HRMv2.APIs.Home
             var allMonths = DateTimeUtils.GetMonthYearLabelDateTime(DateTimeUtils.GetFirstDayOfMonth(startDate), endDate);
             var labels = allMonths.Select(x => x.ToString("MM-yyyy")).ToList();
             var employeeMonthlyDetailForChart = _homePageManager.GetEmployeeMonthlyDetail(allMonths)
-                        .Where(x => status.Contains(x.Status))
+                        .WhereIf(status.Any(), x => status.Contains(x.Status))
                         .OrderBy(x => x.Month)
                         .GroupBy(x => x.Month.ToString("MM-yyyy"))
                         .ToDictionary(

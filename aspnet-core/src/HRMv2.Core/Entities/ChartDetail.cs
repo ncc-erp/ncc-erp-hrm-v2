@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,21 +24,14 @@ namespace HRMv2.Entities
 
         public bool IsActive { get; set; } = true;
 
-        public List<long> JobPositionIds { get; set; }
-
-        public List<long> LevelIds { get; set; }
-
-        public List<long> BranchIds { get; set; }
-
-        public List<long> TeamIds { get; set; }
-
-        public List<UserType> UserTypes { get; set; }
-
-        public List<PayslipDetailType> PayslipDetailTypes { get; set; }
-
-        public List<EmployeeStatus> WorkingStatuses { get; set; }
-
-        public List<Sex> Gender { get; set; }
+        public string JobPositionIds { get; set; }
+        public string LevelIds { get; set; }
+        public string BranchIds { get; set; }
+        public string TeamIds { get; set; }
+        public string UserTypes { get; set; }
+        public string PayslipDetailTypes { get; set; }
+        public string WorkingStatuses { get; set; }
+        public string Gender { get; set; }
 
     }
 }

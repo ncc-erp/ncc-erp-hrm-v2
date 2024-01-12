@@ -33,20 +33,13 @@ namespace HRMv2.Manager.Home
     public class HomePageManager : BaseManager
     {
         protected readonly WorkingHistoryManager _workingHistoryManager;
-        protected readonly ChartManager _chartManager;
-        protected readonly ChartDetailManager _chartDetailManager;
-        
 
         public HomePageManager(
             IWorkScope workScope,
-            WorkingHistoryManager workingHistoryManager,
-            ChartManager chartManager,
-            ChartDetailManager chartDetailManager
+            WorkingHistoryManager workingHistoryManager
             ) : base(workScope)
         {
             _workingHistoryManager = workingHistoryManager;
-            _chartManager = chartManager;
-            _chartDetailManager = chartDetailManager;
         }
 
         public List<HomepageEmployeeStatisticDto> GetAllEmployeeWorkingHistoryByTimeSpan(DateTime startDate, DateTime endDate)
@@ -142,10 +135,10 @@ namespace HRMv2.Manager.Home
                                                 LevelIds = x.LevelIds,
                                                 BranchIds = x.BranchIds,
                                                 TeamIds = x.TeamIds,
-                                                UserTypes = x.UserTypes,
                                                 PayslipDetailTypes = x.PayslipDetailTypes,
+                                                UserTypes = x.UserTypes,
+                                                WorkingStatuses = x.WorkingStatuses,
                                                 Gender = x.Gender,
-                                                WorkingStatuses = x.WorkingStatuses
                                             }).ToList()
                 }).ToListAsync();
 
@@ -240,13 +233,13 @@ namespace HRMv2.Manager.Home
         public Dictionary<string, List<EmployeeDetailDto>> FilterDataEmployeeLineChart(List<EmployeeDetailDto> employeeMonthlyDetail, ChartDetailDto detail)
         {
             var employeeMonthlyDetailForChart = employeeMonthlyDetail
-                        .WhereIf(detail.JobPositionIds.Any(), x => detail.JobPositionIds.Contains(x.JobPositionId))
-                        .WhereIf(detail.LevelIds.Any(), x => detail.LevelIds.Contains(x.LevelId))
-                        .WhereIf(detail.BranchIds.Any(), x => detail.BranchIds.Contains(x.BranchId))
-                        .WhereIf(detail.TeamIds.Any(), x => detail.TeamIds.Any(teamIds => x.TeamIds.Contains(teamIds)))
-                        .WhereIf(detail.UserTypes.Any(), x => detail.UserTypes.Contains(x.UserType))
-                        .WhereIf(detail.Gender.Any(), x => detail.Gender.Contains(x.Gender))
-                        .WhereIf(detail.WorkingStatuses.Any(), x => detail.WorkingStatuses.Contains(x.Status))
+                        .WhereIf(detail.ListJobPositionIds.Any(), x => detail.ListJobPositionIds.Contains(x.JobPositionId))
+                        .WhereIf(detail.ListLevelIds.Any(), x => detail.ListLevelIds.Contains(x.LevelId))
+                        .WhereIf(detail.ListBranchIds.Any(), x => detail.ListBranchIds.Contains(x.BranchId))
+                        .WhereIf(detail.ListTeamIds.Any(), x => detail.ListTeamIds.Any(teamIds => x.TeamIds.Contains(teamIds)))
+                        .WhereIf(detail.ListUserTypes.Any(), x => detail.ListUserTypes.Contains(x.UserType))
+                        .WhereIf(detail.ListGender.Any(), x => detail.ListGender.Contains(x.Gender))
+                        .WhereIf(detail.ListWorkingStatuses.Any(), x => detail.ListWorkingStatuses.Contains(x.Status))
                         .OrderBy(x => x.Month)
                         .GroupBy(x => x.MonthYear)
                         .ToDictionary(
@@ -293,7 +286,7 @@ namespace HRMv2.Manager.Home
                         UserType = x.UserType,
                         Gender = x.Sex,
                         Status = x.Status,
-                        Month = firstDayOfCurrentMonth
+                        Month = firstDayOfCurrentMonth,
                     })
                     .Where(x => x.Status == EmployeeStatus.Working || x.Status == EmployeeStatus.MaternityLeave)
                     .ToList();
@@ -314,7 +307,7 @@ namespace HRMv2.Manager.Home
                     TeamIds = x.TeamIds,
                     UserType = x.UserType,
                     Gender = x.Gender,
-                    Month = DateTimeUtils.GetLastDayOfMonth(x.DateAt)
+                    Month = DateTimeUtils.GetFirstDayOfMonth(x.DateAt)
                 }).ToList();
 
             workingEmployees = workingEmployees ?? new List<EmployeeDetailDto>();
@@ -342,9 +335,7 @@ namespace HRMv2.Manager.Home
                 employee.Status = matchingHistory.Status switch
                 {
                     EmployeeStatus.Pausing or EmployeeStatus.MaternityLeave => matchingHistory.Status,
-                    EmployeeStatus.Working => allEmloyeeWorkingHistories.Any(wh => wh.EmployeeId == employee.EmployeeId
-                                                                                    && wh.DateAt < matchingHistory.DateAt
-                                                                                    && (wh.Status == EmployeeStatus.MaternityLeave || wh.Status == EmployeeStatus.Pausing))
+                    EmployeeStatus.Working => IsBackToWork(employee, matchingHistory, allEmloyeeWorkingHistories)
                                             ? EmployeeStatus.BackToWork
                                             : EmployeeStatus.Onboard,
                     EmployeeStatus.Quit => IsOnOffInMonth(employee, matchingHistory, allEmloyeeWorkingHistories)
@@ -365,6 +356,18 @@ namespace HRMv2.Manager.Home
                 employee.Status = lastStatusBeforeApplyMonth == EmployeeStatus.MaternityLeave ? EmployeeStatus.MaternityLeave : EmployeeStatus.Working;
             }
             return employee.Status;
+        }
+
+        public bool IsBackToWork(EmployeeDetailDto employee, EmployeeWorkingHistoryDetailDto matchingHistory, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
+        {
+            var historiesBeforeWorking = allEmloyeeWorkingHistories
+                        .Where(wh => wh.EmployeeId == employee.EmployeeId
+                                        && wh.DateAt < matchingHistory.DateAt)
+                        .OrderByDescending(wh => wh.DateAt)
+                        .FirstOrDefault();
+            if (historiesBeforeWorking != null && (historiesBeforeWorking.Status == EmployeeStatus.Pausing || historiesBeforeWorking.Status == EmployeeStatus.MaternityLeave))
+                return true;
+            return false;
         }
 
 
