@@ -13,15 +13,15 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
     {
         public string ChartName { get; set; }
         public IEnumerable<string> Labels { get; set; }
-        public List<DataLineChartDto> ChartDetails { get; set; } = new List<DataLineChartDto>();
+        public ChartType ChartType { get; set; }
+        public List<DataLineChartDetailDto> ChartDetails { get; set; } = new List<DataLineChartDetailDto>();
 
     }
     
-    public class DataLineChartDto
+    public class DataLineChartDetailDto
     {
         public string Name { get; set; }
         public ChartStyleDto ItemStyle { get; set; }
-        public ChartType Type { get; set; }
         public List<double> Data { get; set; }
         public string Total => Data.Sum().ToString();
         public int BarGap => 0;

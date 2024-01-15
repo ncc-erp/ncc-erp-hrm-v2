@@ -151,11 +151,18 @@ namespace HRMv2.Manager.Home
                 return null;
             }
 
+            var payslipsInSelectedTime = QueryAllPayslipInSelectedTime(startDate, endDate).ToList();
+
+            var payslipDetailsInSelectedTime = QueryAllPayslipDetailInSelectedTime(startDate, endDate)
+                .ToList();
+
+            payslipDetailsInSelectedTime.ForEach(pd => pd.Payslip = payslipsInSelectedTime.FirstOrDefault(p => p.Id == pd.PayslipId));
+
             var totalResult = new List<ResultLineChartDto>();
 
             foreach (var chartInfo in listChartInfo)
             {
-                var result = GetDataLineChart(chartInfo, startDate, endDate);
+                var result = GetDataLineChart(chartInfo, startDate, endDate, payslipsInSelectedTime, payslipDetailsInSelectedTime);
                 totalResult.Add(result);
             }
 
@@ -205,7 +212,9 @@ namespace HRMv2.Manager.Home
         public ResultLineChartDto GetDataLineChart(
             ChartInfoDto chartInfo,
             [Required] DateTime startDate,
-            [Required] DateTime endDate)
+            [Required] DateTime endDate,
+            List<PayslipChartDto> payslipsInSelectedTime,
+            List<PayslipDetailChartDto> payslipDetailsInSelectedTime)
         {
             var allMonths = DateTimeUtils.GetMonthYearLabelDateTime(DateTimeUtils.GetFirstDayOfMonth(startDate), endDate);
             var labels = allMonths.Select(x => x.ToString("MM-yyyy")).ToList();
@@ -213,34 +222,24 @@ namespace HRMv2.Manager.Home
 
             var result = new ResultLineChartDto
             {
-                Labels = labels
+                Labels = labels,
+                ChartName = chartInfo.Name,
+                ChartType = chartInfo.ChartType,
             };
 
-            var payslipsInSelectedTime = QueryAllPayslipInSelectedTime(startDate, endDate).ToList();
-
-            var payslipDetailsInSelectedTime = QueryAllPayslipDetailInSelectedTime(startDate, endDate)
-                .Select(pd => new PayslipDetailChartDto
-                {
-                    Id = pd.Id,
-                    Type = pd.Type,
-                    CreationTime = pd.CreationTime,
-                    PayslipId = pd.PayslipId,
-                    Money = pd.Money,
-                    Payslip = payslipsInSelectedTime.FirstOrDefault(p => p.Id == pd.PayslipId)
-                })
-                .ToList();
+            
 
             foreach (var detail in chartInfo.Details)
             {
-                var chart = new DataLineChartDto 
+                var chart = new DataLineChartDetailDto
                 {
                     Name = detail.Name,
                     ItemStyle = new ChartStyleDto
                     {
                         Color = detail.Color
                     },
-                    Type = ChartType.Line,
-                    Data = chartInfo.ChartDataType switch {
+                    Data = chartInfo.ChartDataType switch
+                    {
                         ChartDataType.Employee => GetDataEmployeeLineChart(employeeMonthlyDetail, detail, labels),
                         ChartDataType.Salary => GetDataLineSalaryChart(detail, payslipsInSelectedTime, payslipDetailsInSelectedTime, labels),
                         _ => new List<double>(),
@@ -283,7 +282,7 @@ namespace HRMv2.Manager.Home
             //lấy data theo chart setting 
             var employeeMonthlyDetailForChart = FilterDataEmployeeLineChart(employeeMonthlyDetail, detail);
             // lấy data string dựa trên label
-            List<double> result = labels.Select(label => employeeMonthlyDetailForChart.ContainsKey(label) 
+            List<double> result = labels.Select(label => employeeMonthlyDetailForChart.ContainsKey(label)
                                                         ? (double)employeeMonthlyDetailForChart[label].ToList().Count : 0).ToList();
             return result;
         }
@@ -307,7 +306,7 @@ namespace HRMv2.Manager.Home
             return employeeMonthlyDetailForChart;
         }
 
-            public IEnumerable<EmployeeDetailDto> GetEmployeeDetailFromPreviousMonths (List<DateTime> previousMonths)
+        public IEnumerable<EmployeeDetailDto> GetEmployeeDetailFromPreviousMonths(List<DateTime> previousMonths)
         {
             var employeesInPreviousMonth = WorkScope.GetAll<Payslip>()
                 .Select(p => new EmployeeDetailDto
@@ -461,7 +460,7 @@ namespace HRMv2.Manager.Home
         /// </summary>
         /// <returns>List data</returns>
         public List<double> GetDataLineSalaryChart(
-            ChartDetailDto detail, 
+            ChartDetailDto detail,
             List<PayslipChartDto> payslipsInSelectedTime,
             List<PayslipDetailChartDto> payslipDetailsInSelectedTime,
             List<string> labels)
@@ -476,48 +475,59 @@ namespace HRMv2.Manager.Home
         }
 
         //Filter data and render to Dictionary
-        public Dictionary<string, double> FilterDataSalaryLineChart (
+        public Dictionary<string, double> FilterDataSalaryLineChart(
             ChartDetailDto detail,
             List<PayslipChartDto> payslipsInSelectedTime,
             List<PayslipDetailChartDto> payslipDetailsInSelectedTime)
         {
-            if (detail.PayslipDetailTypes.Any())
+            if (detail.ListPayslipDetailTypes.Any())
             {
                 var payslipDetailFilteredData = payslipDetailsInSelectedTime
-                    .Where(pd => detail.PayslipDetailTypes.Contains(pd.Type))
-                    .WhereIf(detail.Gender.Any(), p => detail.Gender.Contains(p.Payslip.Gender))
-                    .WhereIf(detail.BranchIds.Any(), p => detail.BranchIds.Contains(p.Payslip.BranchId))
-                    .WhereIf(detail.JobPositionIds.Any(), p => detail.JobPositionIds.Contains(p.Payslip.JobPositionId))
-                    .WhereIf(detail.LevelIds.Any(), p => detail.LevelIds.Contains(p.Payslip.LevelId))
-                    .WhereIf(detail.UserTypes.Any(), p => detail.UserTypes.Contains(p.Payslip.UserType))
-                    .WhereIf(detail.TeamIds.Any(), p => detail.TeamIds.Any(teamId => p.Payslip.TeamIds.Contains(teamId)))
+                    .Where(pd => detail.ListPayslipDetailTypes.Contains(pd.Type))
+                    .WhereIf(detail.ListGender.Any(), p => detail.ListGender.Contains(p.Payslip.Gender))
+                    .WhereIf(detail.ListBranchIds.Any(), p => detail.ListBranchIds.Contains(p.Payslip.BranchId))
+                    .WhereIf(detail.ListJobPositionIds.Any(), p => detail.ListJobPositionIds.Contains(p.Payslip.JobPositionId))
+                    .WhereIf(detail.ListLevelIds.Any(), p => detail.ListLevelIds.Contains(p.Payslip.LevelId))
+                    .WhereIf(detail.ListUserTypes.Any(), p => detail.ListUserTypes.Contains(p.Payslip.UserType))
+                    .WhereIf(detail.ListTeamIds.Any(), p => detail.ListTeamIds.Any(teamId => p.Payslip.TeamIds.Contains(teamId)))
                     .OrderBy(pd => pd.CreationTime)
                     .GroupBy(pd => pd.MonthYear)
                     .ToDictionary(
                         g => g.Key,
-                        g => g.Select(p => p.Money).Sum()
+                        g => g.ToList()
                     );
 
-                return payslipDetailFilteredData;
+                var result = payslipDetailFilteredData.ToDictionary(
+                        g => g.Key,
+                        g => g.Value.Sum(p => p.Money)
+                    );
+
+                return result;
             }
             else
             {
                 var payslipFilteredData = payslipsInSelectedTime
-                    .WhereIf(detail.Gender.Any(), p => detail.Gender.Contains(p.Gender))
-                    .WhereIf(detail.BranchIds.Any(), p => detail.BranchIds.Contains(p.BranchId))
-                    .WhereIf(detail.JobPositionIds.Any(), p => detail.JobPositionIds.Contains(p.JobPositionId))
-                    .WhereIf(detail.LevelIds.Any(), p => detail.LevelIds.Contains(p.LevelId))
-                    .WhereIf(detail.UserTypes.Any(), p => detail.UserTypes.Contains(p.UserType))
-                    .WhereIf(detail.TeamIds.Any(), p => detail.TeamIds.Any(teamId => p.TeamIds.Contains(teamId))) //p.TeamIds.Any(teamId => detail.TeamIds.Contains(teamId))
+                    .WhereIf(detail.ListGender.Any(), p => detail.ListGender.Contains(p.Gender))
+                    .WhereIf(detail.ListBranchIds.Any(), p => detail.ListBranchIds.Contains(p.BranchId))
+                    .WhereIf(detail.ListJobPositionIds.Any(), p => detail.ListJobPositionIds.Contains(p.JobPositionId))
+                    .WhereIf(detail.ListLevelIds.Any(), p => detail.ListLevelIds.Contains(p.LevelId))
+                    .WhereIf(detail.ListUserTypes.Any(), p => detail.ListUserTypes.Contains(p.UserType))
+                    .WhereIf(detail.ListTeamIds.Any(), p => detail.ListTeamIds.Any(teamId => p.TeamIds.Contains(teamId)))
                     .OrderBy(p => p.CreationTime)
                     .GroupBy(p => p.MonthYear)
                     .ToDictionary(
                             g => g.Key,
-                            g => g.Select(p => p.Salary).Sum()
+                            g => g.ToList()
                     );
 
-                return payslipFilteredData;
+                var result = payslipFilteredData.ToDictionary(
+                         g => g.Key,
+                         g => g.Value.Sum(p => p.Salary)
+                     );
+
+                return result;
             }
+
         }
     }
 }

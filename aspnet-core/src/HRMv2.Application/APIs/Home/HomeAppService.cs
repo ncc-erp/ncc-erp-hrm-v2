@@ -34,8 +34,8 @@ namespace HRMv2.APIs.Home
         public async Task<List<ResultLineChartDto>> GetDataLineChart(
             InputListChartDto input)
         {
-            var result = _homePageManager.GetDataLineChart(input.ChartIds, input.StartDate, input.EndDate);
-            return await result;
+            var result = await _homePageManager.GetDataLineChart(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
         }
 
         [HttpPost]

@@ -74,10 +74,22 @@ export class CreateEditChartDetailDialogComponent
 
   getChartDetail(id: number) {
     this.subscription.push(
-      this.chartDetailService.get(id).subscribe((rs) => {
-        this.chartDetail = rs.result;
-        this.setValueToUpdate();
-      })
+      this.chartDetailService
+        .get(id)
+        .pipe(
+          startWithTap(() => {
+            this.isLoading = true;
+          })
+        )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
+        .subscribe((rs) => {
+          this.chartDetail = rs.result;
+          this.setValueToUpdate();
+        })
     );
   }
 
@@ -238,9 +250,9 @@ export class CreateEditChartDetailDialogComponent
 
     if (control) {
       if (Array.isArray(control.value)) {
-        control.setValue([]);  // Set value to an empty array
+        control.setValue([]); // Set value to an empty array
       } else {
-        control.setValue('');  // Set value to an empty string (for non-array controls)
+        control.setValue(""); // Set value to an empty string (for non-array controls)
       }
     }
   }
