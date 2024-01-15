@@ -105,14 +105,59 @@ namespace HRMv2.Manager.Home
             return item;
         }
 
-        public async Task<List<ResultLineChartDto>> GetDataLineChart(
+        public async Task<List<ResultLineChartDto>> GetDataLineCharts(
                 List<long> chartIds,
                 [Required] DateTime startDate,
                 [Required] DateTime endDate)
         {
+            var listChartInfo = await GetActiveChartByIdAndTypeChart(chartIds, ChartType.Line);
+
+            if (listChartInfo.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            var totalResult = new List<ResultLineChartDto>();
+
+            foreach (var chartInfo in listChartInfo)
+            {
+                var result = GetDataLineChart(chartInfo, startDate, endDate);
+                totalResult.Add(result);
+            }
+
+            return totalResult;
+
+        }
+
+        public async Task<List<ResultLineChartDto>> GetDataCircleCharts(
+                List<long> chartIds,
+                [Required] DateTime startDate,
+                [Required] DateTime endDate)
+        {
+            var listChartInfo = await GetActiveChartByIdAndTypeChart(chartIds, ChartType.Circle);
+
+            if (listChartInfo.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            var totalResult = new List<ResultLineChartDto>();
+
+            foreach (var chartInfo in listChartInfo)
+            {
+                var result = GetDataLineChart(chartInfo, startDate, endDate);
+                totalResult.Add(result);
+            }
+
+            return totalResult;
+
+        }
+
+        public async Task<List<ChartInfoDto>> GetActiveChartByIdAndTypeChart(List<long> chartIds, ChartType chartType)
+        {
             var query = WorkScope.GetAll<Chart>()
                 .Where(s => s.IsActive == true)
-                .Where(s => s.ChartType == ChartType.Line);
+                .Where(s => s.ChartType == chartType);
 
             if (chartIds != null && chartIds.Any())
             {
@@ -142,21 +187,7 @@ namespace HRMv2.Manager.Home
                                             }).ToList()
                 }).ToListAsync();
 
-            if (listChartInfo.IsNullOrEmpty())
-            {
-                return null;
-            }
-
-            var totalResult = new List<ResultLineChartDto>();
-
-            foreach (var chartInfo in listChartInfo)
-            {
-                var result = GetDataLineChart(chartInfo, startDate, endDate);
-                totalResult.Add(result);
-            }
-
-            return totalResult;
-
+            return listChartInfo;
         }
 
         public ResultLineChartDto GetDataLineChart(
@@ -249,7 +280,7 @@ namespace HRMv2.Manager.Home
             return employeeMonthlyDetailForChart;
         }
 
-            public IEnumerable<EmployeeDetailDto> GetEmployeeDetailFromPreviousMonths (List<DateTime> previousMonths)
+        public IEnumerable<EmployeeDetailDto> GetEmployeeDetailFromPreviousMonths (List<DateTime> previousMonths)
         {
             var employeesInPreviousMonth = WorkScope.GetAll<Payslip>()
                 .Select(p => new EmployeeDetailDto
