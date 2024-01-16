@@ -30,6 +30,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 using Chart = HRMv2.Entities.Chart;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 namespace HRMv2.Manager.Home
 {
@@ -200,7 +201,7 @@ namespace HRMv2.Manager.Home
                 {
                     Id = pd.Id,
                     PayslipId = pd.PayslipId,
-                    Money = pd.Money,
+                    Money = Math.Abs(pd.Money), // Case: Punishment value is minus
                     Type = pd.Type,
                     CreationTime = pd.CreationTime
                 });
@@ -226,8 +227,6 @@ namespace HRMv2.Manager.Home
                 ChartName = chartInfo.Name,
                 ChartType = chartInfo.ChartType,
             };
-
-            
 
             foreach (var detail in chartInfo.Details)
             {
@@ -528,6 +527,133 @@ namespace HRMv2.Manager.Home
                 return result;
             }
 
+        }
+
+        public async Task<List<ResultCircleChartDto>> GetCircleCharts(List<long> chartIds, DateTime startDate, DateTime endDate)
+        {
+            var query = WorkScope.GetAll<Chart>()
+                .Where(s => s.IsActive == true)
+                .Where(s => s.ChartType == ChartType.Circle);
+
+            if (chartIds != null && chartIds.Any())
+            {
+                query = query.Where(s => chartIds.Contains(s.Id));
+            }
+
+            var listChartInfo = await query
+                .Select(s => new ChartInfoDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    ChartDataType = s.ChartDataType,
+                    Details = s.ChartDetails.Where(x => x.IsActive == true)
+                                            .Select(x => new ChartDetailDto
+                                            {
+                                                Id = x.Id,
+                                                ChartId = x.ChartId,
+                                                Name = x.Name,
+                                                Color = x.Color,
+                                                JobPositionIds = x.JobPositionIds,
+                                                LevelIds = x.LevelIds,
+                                                BranchIds = x.BranchIds,
+                                                TeamIds = x.TeamIds,
+                                                PayslipDetailTypes = x.PayslipDetailTypes,
+                                                UserTypes = x.UserTypes,
+                                                WorkingStatuses = x.WorkingStatuses,
+                                                Gender = x.Gender,
+                                            }).ToList()
+                }).ToListAsync();
+
+            if (listChartInfo.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            var payslipsInSelectedTime = QueryAllPayslipInSelectedTime(startDate, endDate).ToList();
+
+            var payslipDetailsInSelectedTime = QueryAllPayslipDetailInSelectedTime(startDate, endDate)
+                .ToList();
+
+            payslipDetailsInSelectedTime.ForEach(pd => pd.Payslip = payslipsInSelectedTime.FirstOrDefault(p => p.Id == pd.PayslipId));
+
+            var totalResult = new List<ResultCircleChartDto>();
+
+            foreach (var chartInfo in listChartInfo)
+            {
+                var result = GetDataCircleChart(chartInfo, payslipsInSelectedTime, payslipDetailsInSelectedTime);
+                totalResult.Add(result);
+            }
+
+            return totalResult;
+        }
+
+        public ResultCircleChartDto GetDataCircleChart(
+            ChartInfoDto chartInfo,
+            List<PayslipChartDto> payslipsInSelectedTime,
+            List<PayslipDetailChartDto> payslipDetailsInSelectedTime)
+        {
+            var result = new ResultCircleChartDto
+            {
+                Id = chartInfo.Id,
+                ChartName = chartInfo.Name,
+            };
+
+            foreach (var chartDetail in chartInfo.Details)
+            {
+                var chart = new DataCircleChartDetailDto
+                {
+                    Id = chartDetail.Id,
+                    ChartDetailName = chartDetail.Name,
+                    ItemStyle = new ChartStyleDto
+                    {
+                        Color = chartDetail.Color
+                    },
+                    Data = chartInfo.ChartDataType switch
+                    {
+                        ChartDataType.Employee => 0,
+                        ChartDataType.Salary => GetDataCircleSalaryChart(chartDetail, payslipsInSelectedTime, payslipDetailsInSelectedTime),
+                        _ => 0,
+                    }
+                };
+                result.ChartDetails.Add(chart);
+            }
+            return result;
+        }
+
+        public double GetDataCircleSalaryChart(
+            ChartDetailDto chartDetail,
+            List<PayslipChartDto> payslipsInSelectedTime,
+            List<PayslipDetailChartDto> payslipDetailsInSelectedTime)
+        {
+            if (chartDetail.ListPayslipDetailTypes.Any())
+            {
+                var payslipDetailFilteredData = payslipDetailsInSelectedTime
+                    .Where(pd => chartDetail.ListPayslipDetailTypes.Contains(pd.Type))
+                .WhereIf(chartDetail.ListGender.Any(), p => chartDetail.ListGender.Contains(p.Payslip.Gender))
+                .WhereIf(chartDetail.ListBranchIds.Any(), p => chartDetail.ListBranchIds.Contains(p.Payslip.BranchId))
+                .WhereIf(chartDetail.ListJobPositionIds.Any(), p => chartDetail.ListJobPositionIds.Contains(p.Payslip.JobPositionId))
+                .WhereIf(chartDetail.ListLevelIds.Any(), p => chartDetail.ListLevelIds.Contains(p.Payslip.LevelId))
+                .WhereIf(chartDetail.ListUserTypes.Any(), p => chartDetail.ListUserTypes.Contains(p.Payslip.UserType))
+                .WhereIf(chartDetail.ListTeamIds.Any(), p => chartDetail.ListTeamIds.Any(teamId => p.Payslip.TeamIds.Contains(teamId)));
+
+                var result = payslipDetailFilteredData.Sum(p => p.Money);
+
+                return result;
+            }
+            else
+            {
+                var payslipFilteredData = payslipsInSelectedTime
+                .WhereIf(chartDetail.ListGender.Any(), p => chartDetail.ListGender.Contains(p.Gender))
+                .WhereIf(chartDetail.ListBranchIds.Any(), p => chartDetail.ListBranchIds.Contains(p.BranchId))
+                .WhereIf(chartDetail.ListJobPositionIds.Any(), p => chartDetail.ListJobPositionIds.Contains(p.JobPositionId))
+                .WhereIf(chartDetail.ListLevelIds.Any(), p => chartDetail.ListLevelIds.Contains(p.LevelId))
+                .WhereIf(chartDetail.ListUserTypes.Any(), p => chartDetail.ListUserTypes.Contains(p.UserType))
+                .WhereIf(chartDetail.ListTeamIds.Any(), p => chartDetail.ListTeamIds.Any(teamId => p.TeamIds.Contains(teamId)));
+                
+                var result = payslipFilteredData.Sum(p => p.Salary);
+
+                return result;
+            }
         }
     }
 }

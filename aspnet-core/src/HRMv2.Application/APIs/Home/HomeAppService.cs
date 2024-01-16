@@ -39,6 +39,14 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
+        public async Task<List<ResultCircleChartDto>> GetCircleCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetCircleCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
+        }
+
+        [HttpPost]
         public List<int> TestDataChart(DateTime startDate, DateTime endDate, List<EmployeeStatus> status)
         {
             var allMonths = DateTimeUtils.GetMonthYearLabelDateTime(DateTimeUtils.GetFirstDayOfMonth(startDate), endDate);
