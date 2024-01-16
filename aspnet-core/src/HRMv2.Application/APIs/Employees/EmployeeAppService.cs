@@ -29,11 +29,11 @@ namespace HRMv2.APIs.Employees
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_View, PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail)]
         public GetEmployeeInfoDto Get(long id)
         {
-            bool isViewAll = IsGranted(PermissionNames.Employee_View);
-            if (!isViewAll) _employeeManager.CheckEmployeeInCurrentBranch(id);
+            _employeeManager.CheckEmployeeInCurrentBranch(id);
             return _employeeManager.Get(id);
         }
                
