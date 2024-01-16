@@ -15,7 +15,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
 
     public class CircleChartData : EntityDto<long>
     {
-        public string ChartDetailName { get; set; }
+        public string PieName { get; set; }
         public string Color { get; set; }
         public double Data { get; set; }
     }

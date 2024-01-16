@@ -1,4 +1,5 @@
-﻿using HRMv2.Manager.Common.Dto;
+﻿using Abp.Application.Services.Dto;
+using HRMv2.Manager.Common.Dto;
 using NccCore.Helper;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
-    public class ResultLineChartDto
+    public class ResultLineChartDto : EntityDto<long>
     {
         public string ChartName { get; set; }
         public IEnumerable<string> Labels { get; set; }
@@ -20,7 +21,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
     
     public class LineChartData
     {
-        public string Name { get; set; }
+        public string LineName { get; set; }
         public string Color { get; set; }
         public List<double> Data { get; set; }
         public int BarGap => 0;

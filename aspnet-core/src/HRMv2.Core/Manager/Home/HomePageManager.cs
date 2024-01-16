@@ -166,6 +166,7 @@ namespace HRMv2.Manager.Home
                 {
                     Id = s.Id,
                     Name = s.Name,
+                    ChartType = s.ChartType,
                     ChartDataType = s.ChartDataType,
                     Details = s.ChartDetails.Where(x => x.IsActive == true)
                                             .Select(x => new ChartDetailDto
@@ -195,13 +196,14 @@ namespace HRMv2.Manager.Home
             var lineChartIds = charts.Where(c => c.ChartType == ChartType.Line).Select(c => c.Id).ToList();
             var resultLineCharts = await GetDataLineCharts(lineChartIds, startDate, endDate);
 
-            var circleChartIds = charts.Where(c => c.ChartType == ChartType.Line).Select(c => c.Id).ToList();
+            var circleChartIds = charts.Where(c => c.ChartType == ChartType.Circle).Select(c => c.Id).ToList();
             var resultCircleCharts = await GetDataCircleCharts(circleChartIds, startDate, endDate);
 
             var result = new List<ResultChartDto>();
 
             result.AddRange(resultLineCharts.Select(c => new ResultChartDto
             {
+                Id = c.Id,
                 ChartName = c.ChartName,
                 ChartType = ChartType.Line,
                 Lines = c.Lines
@@ -209,6 +211,7 @@ namespace HRMv2.Manager.Home
 
             result.AddRange(resultCircleCharts.Select(c => new ResultChartDto
             {
+                Id = c.Id,
                 ChartName = c.ChartName,
                 ChartType = ChartType.Circle,
                 Pies = c.Pies
@@ -257,6 +260,7 @@ namespace HRMv2.Manager.Home
 
             var result = new ResultLineChartDto
             {
+                Id = chartInfo.Id,
                 Labels = labels,
                 ChartName = chartInfo.Name,
                 ChartType = chartInfo.ChartType,
@@ -266,7 +270,7 @@ namespace HRMv2.Manager.Home
             {
                 var chart = new LineChartData
                 {
-                    Name = detail.Name,
+                    LineName = detail.Name,
                     Color = detail.Color,
                     Data = chartInfo.ChartDataType switch
                     {
@@ -582,6 +586,7 @@ namespace HRMv2.Manager.Home
             {
                 Id = chartInfo.Id,
                 ChartName = chartInfo.Name,
+                Pies = new List<CircleChartData>()
             };
 
             foreach (var chartDetail in chartInfo.Details)
@@ -589,7 +594,7 @@ namespace HRMv2.Manager.Home
                 var chart = new CircleChartData
                 {
                     Id = chartDetail.Id,
-                    ChartDetailName = chartDetail.Name,
+                    PieName = chartDetail.Name,
                     Color = chartDetail.Color,
                     Data = chartInfo.ChartDataType switch
                     {

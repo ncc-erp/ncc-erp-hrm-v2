@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Abp.Application.Services.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
-    public class ResultChartDto
+    public class ResultChartDto : EntityDto<long>
     {
         public string ChartName { get; set; }
         public ChartType ChartType { get; set; }
