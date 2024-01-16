@@ -12,9 +12,10 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
-    public class PayslipChartDto : EntityDto<long>
+    public class PayslipDataChartDto : EntityDto<long>
     {
         public long EmployeeId { get; set; }
+        public long PayrollId { get; set; }
         public string FullName { get; set; }
         public double Salary { get; set; }
         public Sex Gender { get; set; }
@@ -23,8 +24,9 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public long LevelId { get; set; }
         public List<long> TeamIds { get; set; }
         public UserType UserType { get; set; }
-        public DateTime CreationTime { get; set; }
-        public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(CreationTime);
+        public DateTime ApplyMonth { get; set; }// Payroll ApplyMonth 
+        public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(ApplyMonth);
+        
     }
 
 }
