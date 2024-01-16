@@ -46,6 +46,8 @@ namespace HRMv2.APIs.Debts
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabDebt_View)]
         public async Task<GridResult<DebtDto>> GetByEmployeeId(long id, GridParam input)
         {
+            bool isViewAll = IsGranted(PermissionNames.Employee_View);
+            if (!isViewAll) _debtManager.CheckEmployeeInCurrentBranch(id);
             return await _debtManager.GetByEmployeeId(id, input);
         }
 

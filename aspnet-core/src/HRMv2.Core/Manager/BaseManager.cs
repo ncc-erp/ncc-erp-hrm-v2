@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Dependency;
+using Abp.UI;
 using HRMv2.Authorization.Users;
 using HRMv2.Entities;
 using HRMv2.MultiTenancy;
@@ -115,6 +116,25 @@ namespace HRMv2.Manager
         public string GetSurNameByFullName(string fullName)
         {
             return fullName.Substring(0, fullName.LastIndexOf(" "));
+        }
+        public void CheckEmployeeInCurrentBranch(long employeeId)
+        {
+            var currentUserBranch = GetBranchByCurrentUser();
+            var employeeBranchInfo = WorkScope.GetAll<Employee>().Where(x => x.Id == employeeId && x.BranchId == currentUserBranch).FirstOrDefault();
+            if (employeeBranchInfo == null) throw new UserFriendlyException("Employee is not in your branch!");
+        }
+
+        public long? GetBranchByCurrentUser()
+        {
+            var currentUserEmail = WorkScope.GetAll<User>()
+                                    .Where(s => s.Id == AbpSession.UserId)
+                                    .Select(s => s.EmailAddress).FirstOrDefault();
+
+            var currentUserBranch = WorkScope.GetAll<Employee>()
+                                    .Where(s => s.Email == currentUserEmail)
+                                    .Select(s => s.BranchId).FirstOrDefault();
+
+            return currentUserBranch;
         }
     }
 }

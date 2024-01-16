@@ -24,6 +24,7 @@ export class EmployeeFilterComponent extends AppComponentBase implements OnInit 
   @Input() isOnDialog: boolean
   @Input() isExistFilterContractEndDate: boolean;
   @Input() isExistFilterBirthday:boolean;
+  @Input() isShowAllBranch:boolean;
   @Output() onFilter?= new EventEmitter()
   @Output() onMultiFilterWithCondition? = new EventEmitter()
   @Output() onMultiFilter? = new EventEmitter()

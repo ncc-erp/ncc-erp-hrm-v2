@@ -39,7 +39,8 @@
         </div>
         <div class="col-3">
             <table-filter [filterType]="filterTypeEnum.MultiSelect" [dropdownData]="branchList" [placeholder]="'Branch'"
-                [defaultValue]="defaultValue.branch" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)">
+                [defaultValue]="defaultValue.branch" (onTableMultiSelectFilter)="onTableMultiSelectFilter($event, filterMultipleTypeParamEnum.Branch)"
+                [disabled]="!isShowAllBranch">
             </table-filter>
         </div>
         <div class="col-3">

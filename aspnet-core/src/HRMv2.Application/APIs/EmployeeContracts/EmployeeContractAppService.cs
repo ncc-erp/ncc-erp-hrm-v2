@@ -40,6 +40,14 @@ namespace HRMv2.APIs.EmployeeContracts
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabContract_View)]
         public async Task<GridResult<EmployeeContractDto>> GetAllPaging(GridParam input)
         {
+            bool isViewAll = IsGranted(PermissionNames.Employee_View);
+            if (!isViewAll)
+            {
+                long.TryParse(input.FilterItems.Where(s => s.PropertyName == "EmployeeId")
+                                               .Select(s => s.Value).FirstOrDefault().ToString(), out long employeeId);
+                _contracManager.CheckEmployeeInCurrentBranch(employeeId);
+            }
+
             return await _contracManager.GetAllPaging(input);
         }
 

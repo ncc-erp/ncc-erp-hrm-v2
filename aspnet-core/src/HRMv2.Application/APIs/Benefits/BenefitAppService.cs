@@ -71,8 +71,9 @@ namespace HRMv2.APIs.Benefits
         [HttpPost]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabBenefit_View)]
         public async Task<GridResult<GetBenefitsOfEmployeeDto>> GetBenefitByEmployeeId(long id, GridParam input)
-
         {
+            bool isViewAll = IsGranted(PermissionNames.Employee_View);
+            if (!isViewAll) _benefitManager.CheckEmployeeInCurrentBranch(id);
             return await _benefitManager.GetBenefitByEmployeeId(id, input);
         }
 

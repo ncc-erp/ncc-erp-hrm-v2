@@ -59,6 +59,9 @@ export class EmployeeListComponent extends PagedListingComponentBase<GetEmployee
     return this.isShowDownCreateTemp() || this.isShowDownUpdateTemp()
     || this.isShowCreateEmpByFile() || this.isShowUpdateEmpByFile();
   }
+  isShowAllBranch(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Employee_View);
+  }
   public onFilter(filterItem: FilterDto): void {
     this.listEmployeeComp.onFilter(filterItem)
   }

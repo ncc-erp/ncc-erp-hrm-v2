@@ -49,6 +49,8 @@ namespace HRMv2.APIs.Punishments
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPunishment_View)]
         public async Task<GridResult<GetPunishmentsOfEmployeeDto>> GetPunishmentByEmployeeId(long id, GridParam input)
         {
+            bool isViewAll = IsGranted(PermissionNames.Employee_View);
+            if (!isViewAll) _punishmentManager.CheckEmployeeInCurrentBranch(id);
             return await _punishmentManager.GetPunishmentByEmployeeId(id, input);
         }
 

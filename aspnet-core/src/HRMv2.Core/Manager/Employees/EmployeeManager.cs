@@ -231,10 +231,6 @@ namespace HRMv2.Manager.Employees
             .OrderByDescending(x => x.StartDate)
             .FirstOrDefault();
 
-            var employeeInfo = WorkScope.GetAll<Employee>().Where(x => x.Id == employeeId);
-
-
-
             var employee = WorkScope.GetAll<Employee>()
                 .Where(x => x.Id == employeeId)
                 .Select(x => new GetEmployeeDetailDto
@@ -381,15 +377,23 @@ namespace HRMv2.Manager.Employees
 
 
 
-        public async Task<GridResult<GetEmployeeDto>> GetEmployeeExcept(GetEmployeeToAddDto input)
+        public async Task<GridResult<GetEmployeeDto>> GetEmployeeExcept(GetEmployeeToAddDto input, bool isViewAll = true)
         {
+
             var query = QueryAllEmployee()
                 .WhereIf(input.AddedEmployeeIds != null && !input.AddedEmployeeIds.IsEmpty(), x => !input.AddedEmployeeIds.Contains(x.Id));
 
             if (input.StatusIds != null && input.StatusIds.Count == 1) query = query.Where(x => input.StatusIds[0] == x.Status);
             else if (input.StatusIds != null && input.StatusIds.Count > 1) query = query.Where(x => input.StatusIds.Contains(x.Status));
 
-            if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
+            if (!isViewAll)
+            {
+                var currentUserBranch = GetBranchByCurrentUser();
+                if (currentUserBranch != null) query = query.Where(x => x.BranchId == currentUserBranch);
+                else throw new UserFriendlyException("Current User Branch is invalid!");
+            }
+             
+            else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
 
             if (input.Usertypes != null && input.Usertypes.Count == 1) query = query.Where(x => input.Usertypes[0] == x.UserType);

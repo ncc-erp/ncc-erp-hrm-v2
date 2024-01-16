@@ -144,6 +144,8 @@ namespace HRMv2.APIs.Bonuses
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabBonus_View)]
         public async Task<GridResult<GetBonusesOfEmployeeDto>> GetAllPagingBonusesByEmployeeId(long employeeId, GridParam input)
         {
+            bool isViewAll = IsGranted(PermissionNames.Employee_View);
+            if (!isViewAll) _bonusManager.CheckEmployeeInCurrentBranch(employeeId);
             return await _bonusManager.GetAllPagingBonusesByEmployeeId(employeeId, input);
         }
 
