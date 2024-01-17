@@ -7,6 +7,8 @@ namespace HRMv2.Authorization
     public static class PermissionNames
     {
         public const string Home = "Home";
+        public const string Home_ViewLineChart = "Home.ViewLineChart";
+        public const string Home_ViewCircleChart = "Home.ViewCircleChart";
         public const string Admin = "Admin";
 
         //User
@@ -458,6 +460,8 @@ namespace HRMv2.Authorization
                     new List<string>()
                     {
                         PermissionNames.Home,
+                        PermissionNames.Home_ViewLineChart,
+                        PermissionNames.Home_ViewCircleChart,
                         PermissionNames.Admin,
 
                         PermissionNames.Admin_User,
@@ -588,7 +592,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Category_Chart_ChartDetail_Delete,
                         PermissionNames.Category_Chart_ChartDetail_ActiveDeactive,
 
-            PermissionNames.Punishment,
+                        PermissionNames.Punishment,
                         PermissionNames.Punishment_View,
                         PermissionNames.Punishment_Create,
                         PermissionNames.Punishment_Generate,
@@ -2102,6 +2106,8 @@ namespace HRMv2.Authorization
             public static List<SystemPermission> ListPermissions = new List<SystemPermission>()
             {
                   new SystemPermission{ Name =  PermissionNames.Home, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "Home" },
+                  new SystemPermission{ Name =  PermissionNames.Home_ViewLineChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View Line Chart" },
+                  new SystemPermission{ Name =  PermissionNames.Home_ViewCircleChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View CircleChart" },
                   new SystemPermission{ Name =  PermissionNames.Admin ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Admin"},
                   new SystemPermission{ Name =  PermissionNames.Admin_User ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "User"},
                   new SystemPermission{ Name =  PermissionNames.Admin_User_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
@@ -2524,7 +2530,13 @@ namespace HRMv2.Authorization
 
             public static List<SystemPermission> TreePermissions = new List<SystemPermission>()
             {
-                new SystemPermission{ Name =  PermissionNames.Home, MultiTenancySides = MultiTenancySides.Host , DisplayName = "Home" },
+                new SystemPermission{ Name =  PermissionNames.Home, MultiTenancySides = MultiTenancySides.Host , DisplayName = "Home" ,
+                        Childrens = new List<SystemPermission>()
+                        {
+                            new SystemPermission{ Name =  PermissionNames.Home_ViewLineChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View Line Chart" },
+                            new SystemPermission{ Name =  PermissionNames.Home_ViewCircleChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View CircleChart" },
+                        },
+                },
                 new SystemPermission { Name =  PermissionNames.Admin, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Admin",
                         Childrens = new List<SystemPermission>()
                         {
