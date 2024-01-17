@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {

@@ -200,23 +200,26 @@ namespace HRMv2.Manager.Home
             var resultCircleCharts = await GetDataCircleCharts(circleChartIds, startDate, endDate);
 
             var result = new List<ResultChartDto>();
-
-            result.AddRange(resultLineCharts.Select(c => new ResultChartDto
+            if (resultLineCharts != null)
             {
-                Id = c.Id,
-                ChartName = c.ChartName,
-                ChartType = ChartType.Line,
-                Lines = c.Lines
-            }));
-
-            result.AddRange(resultCircleCharts.Select(c => new ResultChartDto
+                result.AddRange(resultLineCharts.Select(c => new ResultChartDto
+                {
+                    Id = c.Id,
+                    ChartName = c.ChartName,
+                    ChartType = ChartType.Line,
+                    Lines = c.Lines
+                }));
+            }
+            if (resultCircleCharts != null)
             {
-                Id = c.Id,
-                ChartName = c.ChartName,
-                ChartType = ChartType.Circle,
-                Pies = c.Pies
-            }));
-
+                result.AddRange(resultCircleCharts.Select(c => new ResultChartDto
+                {
+                    Id = c.Id,
+                    ChartName = c.ChartName,
+                    ChartType = ChartType.Circle,
+                    Pies = c.Pies
+                }));
+            }
             return result;
         }
 
