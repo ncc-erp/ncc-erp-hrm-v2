@@ -156,7 +156,7 @@ namespace HRMv2.Manager.Home
             return result;
         }
 
-        public async Task<List<ChartSettingDto>> QueryAllActiveChartSetting()
+        public async Task<List<ChartSettingDto>> GetAllActiveChartSetting()
         {
             var query = WorkScope.GetAll<Chart>()
                 .Where(s => s.IsActive == true);
@@ -189,9 +189,9 @@ namespace HRMv2.Manager.Home
             return listChartInfo;
         }
 
-        public async Task<List<ResultChartDto>> GetAllActiveCharts(DateTime startDate, DateTime endDate)
+        public async Task<List<ResultChartDto>> GetAllDataCharts(DateTime startDate, DateTime endDate)
         {
-            var charts = await QueryAllActiveChartSetting();
+            var charts = await GetAllActiveChartSetting();
 
             var lineChartIds = charts.Where(c => c.ChartType == ChartType.Line).Select(c => c.Id).ToList();
             var resultLineCharts = await GetDataLineCharts(lineChartIds, startDate, endDate);
@@ -225,7 +225,7 @@ namespace HRMv2.Manager.Home
                 [Required] DateTime startDate,
                 [Required] DateTime endDate)
         {
-            var listChartInfo = (await QueryAllActiveChartSetting())
+            var listChartInfo = (await GetAllActiveChartSetting())
                 .Where(c => c.ChartType == ChartType.Line && chartIds.Contains(c.Id))
                 .ToList();
 
@@ -555,7 +555,7 @@ namespace HRMv2.Manager.Home
         public async Task<List<ResultCircleChartDto>> GetDataCircleCharts(List<long> chartIds, DateTime startDate, DateTime endDate)
         {
            
-            var listChartInfo = (await QueryAllActiveChartSetting())
+            var listChartInfo = (await GetAllActiveChartSetting())
                 .Where(c => c.ChartType == ChartType.Circle && chartIds.Contains(c.Id))
                 .ToList();
 

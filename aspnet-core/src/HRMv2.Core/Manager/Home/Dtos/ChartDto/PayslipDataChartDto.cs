@@ -24,7 +24,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public long LevelId { get; set; }
         public List<long> TeamIds { get; set; }
         public UserType UserType { get; set; }
-        public DateTime ApplyMonth { get; set; }// Payroll ApplyMonth 
+        public DateTime ApplyMonth { get; set; } // Payroll ApplyMonth 
         public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(ApplyMonth);
         
     }

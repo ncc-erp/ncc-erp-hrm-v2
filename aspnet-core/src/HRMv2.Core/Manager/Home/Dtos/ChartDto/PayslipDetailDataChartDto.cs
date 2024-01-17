@@ -16,7 +16,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public long PayslipId { get; set; }
         public double Money { get; set; }
         public PayslipDetailType Type { get; set; }
-        public DateTime ApplyMonth { get; set; }// Payroll ApplyMonth 
+        public DateTime ApplyMonth { get; set; } // Payroll ApplyMonth 
         public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(ApplyMonth);
         public PayslipDataChartDto Payslip { get; set; }
     }

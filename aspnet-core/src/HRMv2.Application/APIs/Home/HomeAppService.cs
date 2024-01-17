@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.Collections.Extensions;
+using HRMv2.Authorization;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
 using HRMv2.Manager.Home.Dtos.ChartDto;
@@ -50,28 +51,8 @@ namespace HRMv2.APIs.Home
         public async Task<List<ResultChartDto>> GetAllActiveCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetAllActiveCharts(input.StartDate, input.EndDate);
+            var result = await _homePageManager.GetAllDataCharts(input.StartDate, input.EndDate);
             return result;
         }
-
-        [HttpPost]
-        public List<int> TestDataChart(DateTime startDate, DateTime endDate, List<EmployeeStatus> status)
-        {
-            var allMonths = DateTimeUtils.GetMonthYearLabelDateTime(DateTimeUtils.GetFirstDayOfMonth(startDate), endDate);
-            var labels = allMonths.Select(x => x.ToString("MM-yyyy")).ToList();
-            var employeeMonthlyDetailForChart = _homePageManager.GetEmployeeMonthlyDetail(allMonths)
-                        .WhereIf(status.Any(), x => status.Contains(x.Status))
-                        .OrderBy(x => x.Month)
-                        .GroupBy(x => x.Month.ToString("MM-yyyy"))
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.ToList().Count
-                        );
-
-            List<int> result = labels.Select(label => employeeMonthlyDetailForChart.ContainsKey(label) ? employeeMonthlyDetailForChart[label] : 0).ToList();
-
-            return result;
-        }
-
     }
 }
