@@ -34,16 +34,24 @@ namespace HRMv2.APIs.Home
         public async Task<List<ResultLineChartDto>> GetDataLineCharts(
             InputListChartDto input)
         {
-            var result = _homePageManager.GetDataLineCharts(input.ChartIds, input.StartDate, input.EndDate);
-            return await result;
+            var result = await _homePageManager.GetDataLineCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
         }
 
         [HttpPost]
-        public async Task<List<ResultLineChartDto>> GetDataCircleCharts(
+        public async Task<List<ResultCircleChartDto>> GetDataCircleCharts(
             InputListChartDto input)
         {
-            var result = _homePageManager.GetDataCircleCharts(input.ChartIds, input.StartDate, input.EndDate);
-            return await result;
+            var result = await _homePageManager.GetDataCircleCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
+        }
+
+        [HttpPost]
+        public async Task<List<ResultChartDto>> GetAllActiveCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetAllActiveCharts(input.StartDate, input.EndDate);
+            return result;
         }
 
         [HttpPost]

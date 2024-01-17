@@ -106,7 +106,10 @@ export const APP_ENUMS = {
         Working: 1,
         Pausing: 2,
         Quit: 3,
-        MaternityLeave: 4
+        MaternityLeave: 4,
+        Onboard: 5,
+        OnOffInMonth: 6,
+        BackToWork: 7
     },
 
     BenefitType:
@@ -198,7 +201,8 @@ export const APP_ENUMS = {
         "Benefit" : 4,
         "Bonus" : 5,
         "Punishment" : 6,
-        "Debt" : 7
+        "Debt" : 7,
+        "Refund": 8
     },
     
 

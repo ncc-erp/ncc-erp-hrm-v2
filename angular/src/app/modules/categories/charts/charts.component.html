@@ -39,12 +39,11 @@
               <thead>
                 <tr>
                   <th class="col-stt">#</th>
-                  <th>Name</th>
-                  <th>Chart data type</th>
-                  <th>Chart type</th>
-                  <th>Time period type</th>
-                  <th>Active</th>
-                  <th class="col-action">Action</th>
+                  <th class="col-8">Name</th>
+                  <th class="col-1">Chart data type</th>
+                  <th class="col-1">Chart type</th>
+                  <th class="col-1">Active</th>
+                  <th class="col-1">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -64,20 +63,17 @@
                   <td class="text-center">
                     {{ (pageNumber - 1) * pageSize + i + 1 }}
                   </td>
-                  <td class="col-6">
+                  <td>
                     <a
                       [routerLink]="['/app/categories/chart-details']"
                       [queryParams]="{ id: chart.id }"
                       >{{ chart.name }}</a
                     >
                   </td>
-                  <td class="col-1 text-center">{{ chart.chartDataTypeName }}</td>
-                  <td class="col-1 text-center">{{ chart.chartTypeName }}</td>
-                  <td class="col-2 text-center">
-                    {{ chart.timePeriodTypeName }}
-                  </td>
-                  <td class="col-1 text-center">
-                    <div class="custom-control custom-checkbox">
+                  <td class="text-center">{{ chart.chartDataTypeName }}</td>
+                  <td class="text-center">{{ chart.chartTypeName }}</td>
+                  <td class="text-center">
+                    <div class="custom-control custom-checkbox ml-2 mt-1">
                       <input
                         type="checkbox"
                         class="custom-control-input"
@@ -87,7 +83,7 @@
                       <label class="custom-control-label"></label>
                     </div>
                   </td>
-                  <td class="col-1 text-center">
+                  <td class="text-center">
                     <button mat-button [matMenuTriggerFor]="menu">
                       <i class="fas fa-bars fa-lg"></i>
                     </button>

@@ -52,12 +52,12 @@ export class CreateEditChartDetailDialogComponent
 
   public filterMultipleTypeParamEnum = APP_ENUMS.FilterMultipleTypeParamEnum;
   public filterTypeEnum = APP_ENUMS.FilterTypeEnum;
+  public isChartSalaryDataType: boolean;
 
   ngOnInit(): void {
     this.getAllFilterData();
     this.initForm();
     this.formGroup.enable();
-
     if (this.dialogData?.id) {
       this.getChartDetail(this.dialogData.id);
 
@@ -65,6 +65,8 @@ export class CreateEditChartDetailDialogComponent
     } else {
       this.title = "Create new chart detail";
     }
+    this.isChartSalaryDataType =
+      this.APP_ENUM.ChartDataType.Salary === this.dialogData.chartDataType;
 
     const id: number = this.activatedRoute.snapshot.queryParams["id"];
     this.chartDetail.chartId = id;
@@ -72,10 +74,22 @@ export class CreateEditChartDetailDialogComponent
 
   getChartDetail(id: number) {
     this.subscription.push(
-      this.chartDetailService.get(id).subscribe((rs) => {
-        this.chartDetail = rs.result;
-        this.setValueToUpdate();
-      })
+      this.chartDetailService
+        .get(id)
+        .pipe(
+          startWithTap(() => {
+            this.isLoading = true;
+          })
+        )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
+        .subscribe((rs) => {
+          this.chartDetail = rs.result;
+          this.setValueToUpdate();
+        })
     );
   }
 
@@ -231,7 +245,15 @@ export class CreateEditChartDetailDialogComponent
     }
   }
 
-  onTableMultiSelect(listData: any, property: string) {
-    this.chartDetail[property] = listData;
+  onClearAllFilter(key) {
+    const control = this.formGroup.get(key);
+
+    if (control) {
+      if (Array.isArray(control.value)) {
+        control.setValue([]); // Set value to an empty array
+      } else {
+        control.setValue(""); // Set value to an empty string (for non-array controls)
+      }
+    }
   }
 }

@@ -15,9 +15,9 @@ import { startWithTap } from "@shared/helpers/observerHelper";
 import { finalize } from "rxjs/operators";
 
 @Component({
-  selector: 'app-chart-details',
-  templateUrl: './chart-details.component.html',
-  styleUrls: ['./chart-details.component.css']
+  selector: "app-chart-details",
+  templateUrl: "./chart-details.component.html",
+  styleUrls: ["./chart-details.component.css"],
 })
 export class ChartDetailsComponent
   extends PagedListingComponentBase<any>
@@ -45,6 +45,7 @@ export class ChartDetailsComponent
   public chartUpdateData = {} as ChartDetailSettingDto;
   public menu: MatMenuTrigger;
   public contextMenuPosition = { x: "0px", y: "0px" };
+  public isShowWorkingStatus: boolean;
   // public chartTypeTemplate = AppConsts.ChartType;
   // public chartDataTypeTemplate = AppConsts.ChartDataType;
   // public chartIsActiveTemplate = AppConsts.Status;
@@ -87,6 +88,7 @@ export class ChartDetailsComponent
         .subscribe((rs) => {
           this.chartFull = rs.result;
           this.chartFullDetailList = this.chartFull.chartDetails;
+          this.isShowWorkingStatus = this.chartFull.chartDataType == APP_ENUMS.ChartDataType.Employee 
         })
     );
   }
@@ -112,11 +114,16 @@ export class ChartDetailsComponent
   }
 
   onCreate() {
-    this.openDialog(CreateEditChartDetailDialogComponent);
+    const chartDataType = this.chartFull.chartDataType;
+    this.openDialog(CreateEditChartDetailDialogComponent, { chartDataType });
   }
 
   onUpdate(chartDetail: ChartDetailFullDto) {
-    this.openDialog(CreateEditChartDetailDialogComponent, { ...chartDetail });
+    const chartDataType = this.chartFull.chartDataType;
+    this.openDialog(CreateEditChartDetailDialogComponent, {
+      ...chartDetail,
+      chartDataType,
+    });
   }
 
   onActive(id: number) {

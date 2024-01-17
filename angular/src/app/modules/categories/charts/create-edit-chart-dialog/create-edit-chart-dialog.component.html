@@ -58,23 +58,6 @@
         </mat-form-field>
       </div>
     </div>
-    <div class="form-group d-flex">
-      <label class="col-3 mt-2 col-form-label">Time period type</label>
-      <div class="col-9">
-        <mat-form-field class="w-100 center-flex" appearance="outline">
-          <mat-select
-            name="Time period"
-            placeholder="select time period type"
-            [(ngModel)]="chart.timePeriodType"
-            #employeeInfo="ngModel"
-          >
-            <mat-option *ngFor="let type of timePeriodType" [value]="type.value">{{
-              type.key
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
   </div>
   <app-dialog-footer
     (onSave)="saveAndClose()"

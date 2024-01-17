@@ -21,15 +21,6 @@ namespace HRMv2.APIs.Charts
             _chartManager = chartManager;
         }
 
-        [HttpGet]
-        public async Task<List<ChartDto>> GetAll()
-        {
-            var charts = _chartManager.GetAll();
-
-            return charts;
-        }
-
-
         [HttpPost]
         public async Task<GridResult<ChartDto>> GetAllPaging(GridParam input)
         {

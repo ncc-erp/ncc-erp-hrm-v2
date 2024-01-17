@@ -8,16 +8,11 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
-    public class ResultCircleChartDto : EntityDto<long>
+    public class ResultChartDto : EntityDto<long>
     {
         public string ChartName { get; set; }
+        public ChartType ChartType { get; set; }
         public List<CircleChartData> Pies { get; set; } = new List<CircleChartData>();
-    }
-
-    public class CircleChartData : EntityDto<long>
-    {
-        public string PieName { get; set; }
-        public string Color { get; set; }
-        public double Data { get; set; }
+        public List<LineChartData> Lines { get; set; } = new List<LineChartData>();
     }
 }
