@@ -43,7 +43,7 @@ export class EmployeeContractService extends BaseApiService {
     }
 
     public getContractByEmployeeId(employeeId: number, payload: PagedRequestDto): Observable<ApiResponseDto<PagedResultDto>> {
-        return this.processPost(`GetAllPaging?id=${employeeId}`, payload)
+        return this.processPost(`GetAllPaging?employeeId=${employeeId}`, payload)
     }
 
 }
