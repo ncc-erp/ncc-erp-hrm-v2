@@ -142,6 +142,7 @@ namespace HRMv2.Authorization
         //Employee
         public const string Employee = "Employee";
         public const string Employee_View = "Employee.View";
+        public const string Employee_ViewMyBranchEmployee = "Employee.ViewMyBranchEmployee";
         public const string Employee_Create = "Employee.Create";
         public const string Employee_Edit= "Employee.Edit";
         public const string Employee_Export = "Employee.Export";
@@ -587,6 +588,7 @@ namespace HRMv2.Authorization
 
                         PermissionNames.Employee,
                         PermissionNames.Employee_View,
+                        PermissionNames.Employee_ViewMyBranchEmployee,
                         PermissionNames.Employee_Create,
                         PermissionNames.Employee_Edit,
                         PermissionNames.Employee_Export,
@@ -2203,7 +2205,8 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.PunishmentFund_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
 
                   new SystemPermission{ Name =  PermissionNames.Employee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Employee"},
-                  new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                  new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View All"},
+                  new SystemPermission{ Name =  PermissionNames.Employee_ViewMyBranchEmployee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View My Branch Employee"},
                   new SystemPermission{ Name =  PermissionNames.Employee_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
                   new SystemPermission{ Name =  PermissionNames.Employee_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                   new SystemPermission{ Name =  PermissionNames.Employee_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
@@ -2757,7 +2760,8 @@ namespace HRMv2.Authorization
                 new SystemPermission{ Name =  PermissionNames.Employee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Employee",
                         Childrens = new List<SystemPermission>()
                         {
-                          new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                          new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View All"},
+                          new SystemPermission{ Name =  PermissionNames.Employee_ViewMyBranchEmployee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View My Branch Employee"},
                           new SystemPermission{ Name =  PermissionNames.Employee_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
                           new SystemPermission{ Name =  PermissionNames.Employee_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                           new SystemPermission{ Name =  PermissionNames.Employee_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},

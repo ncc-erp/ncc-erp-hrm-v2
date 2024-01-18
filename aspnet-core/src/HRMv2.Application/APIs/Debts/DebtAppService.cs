@@ -46,6 +46,7 @@ namespace HRMv2.APIs.Debts
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabDebt_View)]
         public async Task<GridResult<DebtDto>> GetByEmployeeId(long id, GridParam input)
         {
+            _debtManager.CheckEmployeeInSessionBranch(id);
             return await _debtManager.GetByEmployeeId(id, input);
         }
 

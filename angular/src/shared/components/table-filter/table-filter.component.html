@@ -27,7 +27,7 @@
 <div *ngIf="filterType == filterTypeEnum?.MultiSelect">
   <mat-form-field appearance="outline" class="w-100">
     <mat-label>{{placeholder}}</mat-label>
-    <mat-select placeholder="Status" multiple (selectionChange)="onDropdownMultiFilter()" [(ngModel)]="dropdownMultiValueFilter">
+    <mat-select placeholder="Status" multiple (selectionChange)="onDropdownMultiFilter()" [(ngModel)]="dropdownMultiValueFilter" [disabled]="isDisabled">
       <mat-option *ngFor="let item of dropdownData" [value]="item.value">
         {{ item.key }}
       </mat-option>
