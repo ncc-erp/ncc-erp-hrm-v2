@@ -32,7 +32,7 @@ namespace HRMv2.APIs.Employees
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_View, PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail)]
         public GetEmployeeInfoDto Get(long id)
         {
-            _employeeManager.CheckEmployeeInCurrentBranch(id);
+            _employeeManager.CheckEmployeeInSessionBranch(id);
             return _employeeManager.Get(id);
         }
                

@@ -49,7 +49,7 @@ namespace HRMv2.APIs.Punishments
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPunishment_View)]
         public async Task<GridResult<GetPunishmentsOfEmployeeDto>> GetPunishmentByEmployeeId(long id, GridParam input)
         {
-            _punishmentManager.CheckEmployeeInCurrentBranch(id);
+            _punishmentManager.CheckEmployeeInSessionBranch(id);
             return await _punishmentManager.GetPunishmentByEmployeeId(id, input);
         }
 

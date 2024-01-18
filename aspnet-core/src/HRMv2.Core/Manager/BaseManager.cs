@@ -120,7 +120,7 @@ namespace HRMv2.Manager
             return fullName.Substring(0, fullName.LastIndexOf(" "));
         }
 
-        public void CheckEmployeeInCurrentBranch(long employeeId)
+        public void CheckEmployeeInSessionBranch(long employeeId)
         {
             if (IsGranted(PermissionNames.Employee_View))
             {

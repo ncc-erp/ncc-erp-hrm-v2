@@ -72,7 +72,7 @@ namespace HRMv2.APIs.Benefits
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabBenefit_View)]
         public async Task<GridResult<GetBenefitsOfEmployeeDto>> GetBenefitByEmployeeId(long id, GridParam input)
         {
-            _benefitManager.CheckEmployeeInCurrentBranch(id);
+            _benefitManager.CheckEmployeeInSessionBranch(id);
             return await _benefitManager.GetBenefitByEmployeeId(id, input);
         }
 

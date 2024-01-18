@@ -24,7 +24,7 @@ namespace HRMv2.APIs.Histories
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabBranchHistory_View)]
         public List<EmployeeBranchHistoryDto> GetAllEmployeeBranchHistory(long employeeId)
         {
-            _historyManager.CheckEmployeeInCurrentBranch(employeeId);
+            _historyManager.CheckEmployeeInSessionBranch(employeeId);
             return _historyManager.GetAllEmployeeBranchHistory(employeeId);
         }
 
@@ -32,7 +32,7 @@ namespace HRMv2.APIs.Histories
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabWorkingHistory_View)]
         public List<EmployeeWorkingHistoryDto> GetAllEmployeeWorkingHistory(long employeeId)
         {
-            _historyManager.CheckEmployeeInCurrentBranch(employeeId);
+            _historyManager.CheckEmployeeInSessionBranch(employeeId);
             return _historyManager.GetAllEmployeeWorkingHistory(employeeId);
         }
 
@@ -40,7 +40,7 @@ namespace HRMv2.APIs.Histories
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabSalaryHistory_View)]
         public List<EmployeeSalaryHistoryDto> GetAllEmployeeSalaryHistory(long employeeId)
         {
-            _historyManager.CheckEmployeeInCurrentBranch(employeeId);
+            _historyManager.CheckEmployeeInSessionBranch(employeeId);
             return _historyManager.GetAllEmployeeSalaryHistory(employeeId);
         }
 
@@ -48,7 +48,7 @@ namespace HRMv2.APIs.Histories
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPayslipHistory_View)]
         public List<EmployeePayslipHistoryDto> GetAllEmployeePayslipHistory(long employeeId)
         {
-            _historyManager.CheckEmployeeInCurrentBranch(employeeId);
+            _historyManager.CheckEmployeeInSessionBranch(employeeId);
             return _historyManager.GetAllEmployeePayslipHistory(employeeId);
         } 
         
