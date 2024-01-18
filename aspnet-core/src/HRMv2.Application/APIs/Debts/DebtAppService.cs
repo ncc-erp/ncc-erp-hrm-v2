@@ -43,7 +43,6 @@ namespace HRMv2.APIs.Debts
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabDebt_View)]
         public async Task<GridResult<DebtDto>> GetByEmployeeId(long id, GridParam input)
         {

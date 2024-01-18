@@ -24,7 +24,7 @@ export class EmployeeFilterComponent extends AppComponentBase implements OnInit 
   @Input() isOnDialog: boolean
   @Input() isExistFilterContractEndDate: boolean;
   @Input() isExistFilterBirthday:boolean;
-  @Input() isShowAllBranch:boolean;
+  @Input() disabled: string[] = [];
   @Output() onFilter?= new EventEmitter()
   @Output() onMultiFilterWithCondition? = new EventEmitter()
   @Output() onMultiFilter? = new EventEmitter()
@@ -46,7 +46,8 @@ export class EmployeeFilterComponent extends AppComponentBase implements OnInit 
   public genderList = []
   public defaultValue = {} as DefaulEmployeeFilterDto
   public daysLeftContractEnd : number = 20;
-  public listDateOptions= [];
+  public listDateOptions = [];
+  public disableBranch: boolean;
   constructor(injector: Injector, private branchService: BranchService,
     private levelService: LevelService, private positionService: JobPositionService,
     private teamService: TeamService,
@@ -67,6 +68,11 @@ export class EmployeeFilterComponent extends AppComponentBase implements OnInit 
     this.setDefaultValue()
     this.getDateOptions()
   }
+
+  getPermission(tableFilter: string){
+    return this.disabled.includes(tableFilter);
+  }
+
   getDateOptions(){
     this.listDateOptions = [APP_ENUMS.DATE_TIME_OPTIONS.All, APP_ENUMS.DATE_TIME_OPTIONS.Day
       ,APP_ENUMS.DATE_TIME_OPTIONS.Month, APP_ENUMS.DATE_TIME_OPTIONS.CustomTime];

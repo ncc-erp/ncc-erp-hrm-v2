@@ -5,6 +5,7 @@ import { Observable } from 'rxjs'
 import { BaseApiService } from '../base-api.service'
 import { UpdateContractNoteDto } from '@app/service/model/employee/UpdateContracNoteDto'
 import { EmployeeContractDto } from '@app/modules/employees/employee-detail/employee-contract/employee-contract.component'
+import { PagedRequestDto, PagedResultDto } from '@shared/paged-listing-component-base'
 @Injectable({
     providedIn: 'root'
 })
@@ -39,6 +40,10 @@ export class EmployeeContractService extends BaseApiService {
 
     public GetContractTemplate(contractId: number , type : number): Observable<ApiResponseDto<any>>{
         return this.processGet(`GetContractTemplate?contractId=${contractId}&type=${type}`,);
+    }
+
+    public getContractByEmployeeId(employeeId: number, payload: PagedRequestDto): Observable<ApiResponseDto<PagedResultDto>> {
+        return this.processPost(`GetAllPaging?id=${employeeId}`, payload)
     }
 
 }

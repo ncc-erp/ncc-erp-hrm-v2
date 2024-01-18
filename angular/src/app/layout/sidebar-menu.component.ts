@@ -153,7 +153,7 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                 this.l('Employee'),
                 '/app/employees/list-employee',
                 'fas fa-users',
-                'Employee.View | Employee.ViewMyBranchEmployee'
+                'Employee.View|Employee.ViewMyBranchEmployee'
             ),
             new MenuItem(
                 this.l('Warning Employee'),
@@ -319,16 +319,16 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
         if (!item.permissionName) {
             return true;
         }
+        
+        if (this.permission.isGranted(item.permissionName)) {
+            return true;
+        }
 
         if (item.permissionName.includes('|')){
-            var permissions = item.permissionName.split('|').map(permission => permission.trim());
+            var permissions = item.permissionName.split('|');
             if (permissions.some(permission => this.permission.isGranted(permission))) {
                 return true;
             }
-        }
-
-        if (this.permission.isGranted(item.permissionName)) {
-            return true;
         }
 
         if (item.children != null && item.children.length > 0) {

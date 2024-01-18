@@ -2205,7 +2205,7 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.PunishmentFund_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
 
                   new SystemPermission{ Name =  PermissionNames.Employee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Employee"},
-                  new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                  new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View All"},
                   new SystemPermission{ Name =  PermissionNames.Employee_ViewMyBranchEmployee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View My Branch Employee"},
                   new SystemPermission{ Name =  PermissionNames.Employee_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
                   new SystemPermission{ Name =  PermissionNames.Employee_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
@@ -2760,7 +2760,7 @@ namespace HRMv2.Authorization
                 new SystemPermission{ Name =  PermissionNames.Employee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Employee",
                         Childrens = new List<SystemPermission>()
                         {
-                          new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                          new SystemPermission{ Name =  PermissionNames.Employee_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View All"},
                           new SystemPermission{ Name =  PermissionNames.Employee_ViewMyBranchEmployee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View My Branch Employee"},
                           new SystemPermission{ Name =  PermissionNames.Employee_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
                           new SystemPermission{ Name =  PermissionNames.Employee_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},

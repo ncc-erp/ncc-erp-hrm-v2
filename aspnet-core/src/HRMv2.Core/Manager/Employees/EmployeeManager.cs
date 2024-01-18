@@ -388,7 +388,7 @@ namespace HRMv2.Manager.Employees
 
             if (!isViewAll)
             {
-                var currentUserBranch = GetBranchByCurrentUser();
+                var currentUserBranch = GetSessionUserBranchId();
                 if (currentUserBranch != null) query = query.Where(x => x.BranchId == currentUserBranch);
                 else throw new UserFriendlyException("Current User Branch is invalid!");
             }

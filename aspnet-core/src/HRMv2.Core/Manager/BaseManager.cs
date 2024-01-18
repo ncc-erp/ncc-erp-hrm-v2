@@ -120,22 +120,25 @@ namespace HRMv2.Manager
             return fullName.Substring(0, fullName.LastIndexOf(" "));
         }
 
-        public void CheckViewOrViewMyBranchEmployee(string permission)
-        {
-            if (IsGranted(permission)) throw new AbpAuthorizationException($"Required permissions are not granted. [{permission}]");
-        }
         public void CheckEmployeeInCurrentBranch(long employeeId)
         {
-            bool isViewAll = IsGranted(PermissionNames.Employee_View);
-            if (!isViewAll)
+            if (IsGranted(PermissionNames.Employee_View))
             {
-                var currentUserBranch = GetBranchByCurrentUser();
-                var employeeBranchInfo = WorkScope.GetAll<Employee>().Where(x => x.Id == employeeId && x.BranchId == currentUserBranch).FirstOrDefault();
-                if (employeeBranchInfo == null) throw new UserFriendlyException("Employee is not in your branch!");
+                return;
             }
+            if (IsGranted(PermissionNames.Employee_ViewMyBranchEmployee))
+            {
+                var sessionUserBranchId = GetSessionUserBranchId();
+                var employeeBranchId = WorkScope.GetAll<Employee>()
+                                        .Where(x => x.Id == employeeId)
+                                        .Select(x => x.BranchId)
+                                        .FirstOrDefault();
+                if (employeeBranchId == sessionUserBranchId) return;
+            }
+            throw new UserFriendlyException("You don't have permission to view the employee.");
         }
 
-        public long? GetBranchByCurrentUser()
+        public long? GetSessionUserBranchId()
         {
             var currentUserEmail = WorkScope.GetAll<User>()
                                     .Where(s => s.Id == AbpSession.UserId)

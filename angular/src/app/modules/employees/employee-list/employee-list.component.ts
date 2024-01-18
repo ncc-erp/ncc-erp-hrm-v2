@@ -25,6 +25,7 @@ export class EmployeeListComponent extends PagedListingComponentBase<GetEmployee
     throw new Error('Method not implemented.');
   }
   public menu: MatMenuTrigger;
+  public listNotHavePermission: string[] = [];
   public contextMenuPosition = { x: '0px', y: '0px' };
   @ViewChild('listEmployee') listEmployeeComp: ListEmployeeComponent;
   @ViewChild('employeeFilter') employeeFilterComp: EmployeeFilterComponent;
@@ -32,6 +33,7 @@ export class EmployeeListComponent extends PagedListingComponentBase<GetEmployee
     super(injector);
   }
   ngOnInit(): void {
+    this.getListNotHavePermission()
     this.listBreadCrumb = [
       {name: '<i class="fa-solid fa-house fa-sm"></i>',url:''},
       {name: ' <i class="fa-solid fa-chevron-right"></i> '},
@@ -59,9 +61,14 @@ export class EmployeeListComponent extends PagedListingComponentBase<GetEmployee
     return this.isShowDownCreateTemp() || this.isShowDownUpdateTemp()
     || this.isShowCreateEmpByFile() || this.isShowUpdateEmpByFile();
   }
-  isShowAllBranch(){
+  isShowBranch() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_View);
   }
+
+  getListNotHavePermission(){
+    if (!this.isShowBranch()) this.listNotHavePermission.push("Branch")
+  }
+
   public onFilter(filterItem: FilterDto): void {
     this.listEmployeeComp.onFilter(filterItem)
   }

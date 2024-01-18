@@ -141,7 +141,6 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabBonus_View)]
         public async Task<GridResult<GetBonusesOfEmployeeDto>> GetAllPagingBonusesByEmployeeId(long employeeId, GridParam input)
         {

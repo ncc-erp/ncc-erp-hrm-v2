@@ -21,7 +21,6 @@ namespace HRMv2.APIs.Histories
         }
 
         [HttpGet]
-        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabBranchHistory_View)]
         public List<EmployeeBranchHistoryDto> GetAllEmployeeBranchHistory(long employeeId)
         {
@@ -30,7 +29,6 @@ namespace HRMv2.APIs.Histories
         }
 
         [HttpGet]
-        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabWorkingHistory_View)]
         public List<EmployeeWorkingHistoryDto> GetAllEmployeeWorkingHistory(long employeeId)
         {
@@ -39,7 +37,6 @@ namespace HRMv2.APIs.Histories
         }
 
         [HttpGet]
-        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabSalaryHistory_View)]
         public List<EmployeeSalaryHistoryDto> GetAllEmployeeSalaryHistory(long employeeId)
         {
@@ -48,7 +45,6 @@ namespace HRMv2.APIs.Histories
         }
 
         [HttpGet]
-        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPayslipHistory_View)]
         public List<EmployeePayslipHistoryDto> GetAllEmployeePayslipHistory(long employeeId)
         {
