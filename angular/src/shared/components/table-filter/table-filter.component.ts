@@ -31,7 +31,7 @@ export class TableFilterComponent extends AppComponentBase implements OnInit {
   @Input() placeholder?: string = ""
   @Input() dropdownData: any[] = []
   @Input() defaultValue: any;
-  @Input() disabled: boolean
+  @Input() isDisabled: boolean
   @Output() onTableFilter = new EventEmitter()
   @Output() onTableMultiSelectWithConditionFilter = new EventEmitter()
   @Output() onTableMultiSelectFilter = new EventEmitter();

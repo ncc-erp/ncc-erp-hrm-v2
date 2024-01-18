@@ -137,7 +137,7 @@ export class EmployeeContractComponent extends PagedListingComponentBase<Employe
         },
       ],
       this.subscription.push(
-        this.employeeContractService.getContractByEmployeeId(this.employeeId, request).pipe(finalize(()=>finishedCallback())).subscribe(rs => {
+        this.employeeContractService.getContractPagingByEmployeeId(this.employeeId, request).pipe(finalize(()=>finishedCallback())).subscribe(rs => {
           this.employeeContractList = rs.result.items
           this.showPaging(rs.result,pageNumber)
         })

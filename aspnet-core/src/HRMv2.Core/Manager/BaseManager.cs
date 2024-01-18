@@ -140,15 +140,15 @@ namespace HRMv2.Manager
 
         public long? GetSessionUserBranchId()
         {
-            var currentUserEmail = WorkScope.GetAll<User>()
+            var sessionUserEmail = WorkScope.GetAll<User>()
                                     .Where(s => s.Id == AbpSession.UserId)
                                     .Select(s => s.EmailAddress).FirstOrDefault();
 
-            var currentUserBranch = WorkScope.GetAll<Employee>()
-                                    .Where(s => s.Email == currentUserEmail)
+            var sessionUserBranchId = WorkScope.GetAll<Employee>()
+                                    .Where(s => s.Email == sessionUserEmail)
                                     .Select(s => s.BranchId).FirstOrDefault();
 
-            return currentUserBranch;
+            return sessionUserBranchId;
         }
     }
 }

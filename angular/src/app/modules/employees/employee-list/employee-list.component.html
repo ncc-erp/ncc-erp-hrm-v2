@@ -56,7 +56,7 @@
                     (onDateSelectorChange)="onDateSelectorChange($event)"
                     (onFilter)="onFilter($event)" #employeeFilter
                     [isExistFilterBirthday]="true"
-                    [disabled]="listNotHavePermission"></app-employee-filter>
+                    [disableComponentList]="listNotHavePermission"></app-employee-filter>
                 </div>
             </div>
             <app-list-employee [isOnDialog]="false" #listEmployee></app-list-employee>

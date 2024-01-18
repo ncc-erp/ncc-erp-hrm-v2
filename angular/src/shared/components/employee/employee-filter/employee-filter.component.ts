@@ -24,7 +24,7 @@ export class EmployeeFilterComponent extends AppComponentBase implements OnInit 
   @Input() isOnDialog: boolean
   @Input() isExistFilterContractEndDate: boolean;
   @Input() isExistFilterBirthday:boolean;
-  @Input() disabled: string[] = [];
+  @Input() disableComponentList: string[] = [];
   @Output() onFilter?= new EventEmitter()
   @Output() onMultiFilterWithCondition? = new EventEmitter()
   @Output() onMultiFilter? = new EventEmitter()
@@ -69,8 +69,12 @@ export class EmployeeFilterComponent extends AppComponentBase implements OnInit 
     this.getDateOptions()
   }
 
-  getPermission(tableFilter: string){
-    return this.disabled.includes(tableFilter);
+  isDisableBranchFilter(){
+    return this.isDisable('Branch');
+  }
+
+  isDisable(tableFilter: string){
+    return this.disableComponentList.includes(tableFilter);
   }
 
   getDateOptions(){
