@@ -146,6 +146,7 @@ export const PERMISSIONS_CONSTANT = {
     //Employee
     Employee: 'Employee',
     Employee_View: 'Employee.View',
+    Employee_ViewMyBranchEmployee: 'Employee.ViewMyBranchEmployee',
     Employee_Create: 'Employee.Create',
     Employee_Edit: 'Employee.Edit',
     Employee_Delete: 'Employee.Delete',
