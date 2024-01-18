@@ -1,4 +1,6 @@
 
+using Abp.Authorization;
+using HRMv2.Authorization;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts;
 using HRMv2.Manager.Categories.Charts.Dto;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Charts
 {
+    [AbpAuthorize]
     public class ChartAppService : HRMv2AppServiceBase
     {
         private readonly ChartManager _chartManager;
@@ -22,6 +25,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Category_Chart_View)]
         public async Task<GridResult<ChartDto>> GetAllPaging(GridParam input)
         {
             var charts = await _chartManager.GetAllPaging(input);
@@ -30,6 +34,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Category_Chart_View)]
         public async Task<ChartDto> Get(long id)
         {
             var chart = await _chartManager.Get(id);
@@ -38,6 +43,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Category_Chart_Create)]
         public async Task<Chart> Create(CreateChartDto createChartDto)
         {
             var chart = await _chartManager.Create(createChartDto);
@@ -47,6 +53,7 @@ namespace HRMv2.APIs.Charts
 
         [HttpPut]
 
+        [AbpAuthorize(PermissionNames.Category_Chart_Edit)]
         public async Task<Chart> Update(UpdateChartDto updateChartDto)
         {
             var chart = await _chartManager.Update(updateChartDto);
@@ -55,6 +62,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPut]
+        [AbpAuthorize(PermissionNames.Category_Chart_ActiveDeactive)]
         public async Task<ChartDto> Active([FromBody] long id)
         {
             var chart = await _chartManager.Active(id);
@@ -63,6 +71,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPut]
+        [AbpAuthorize(PermissionNames.Category_Chart_ActiveDeactive)]
         public async Task<ChartDto> DeActive([FromBody] long id)
         {
             var chart = await _chartManager.DeActive(id);
@@ -71,6 +80,7 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpDelete]
+        [AbpAuthorize(PermissionNames.Category_Chart_Delete)]
         public async Task<long> Delete(long id)
         {
             var chartId = await _chartManager.Delete(id);

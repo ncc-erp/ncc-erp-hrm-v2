@@ -588,5 +588,14 @@ namespace HRMv2.Utils
         {
             return list == null || !list.Any() ? null : JsonConvert.SerializeObject(list);
         }
+
+        public static List<T> ConvertStringToList<T>(string jsonString)
+        {
+            var result = (string.IsNullOrWhiteSpace(jsonString))
+                ? new List<T>()
+                : JsonConvert.DeserializeObject<List<T>>(jsonString);
+
+            return result;
+        }
     }
 }

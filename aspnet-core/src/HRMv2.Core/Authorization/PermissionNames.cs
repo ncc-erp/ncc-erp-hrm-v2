@@ -2107,7 +2107,7 @@ namespace HRMv2.Authorization
             {
                   new SystemPermission{ Name =  PermissionNames.Home, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "Home" },
                   new SystemPermission{ Name =  PermissionNames.Home_ViewLineChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View Line Chart" },
-                  new SystemPermission{ Name =  PermissionNames.Home_ViewCircleChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View CircleChart" },
+                  new SystemPermission{ Name =  PermissionNames.Home_ViewCircleChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View Circle Chart" },
                   new SystemPermission{ Name =  PermissionNames.Admin ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Admin"},
                   new SystemPermission{ Name =  PermissionNames.Admin_User ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "User"},
                   new SystemPermission{ Name =  PermissionNames.Admin_User_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
@@ -2534,7 +2534,7 @@ namespace HRMv2.Authorization
                         Childrens = new List<SystemPermission>()
                         {
                             new SystemPermission{ Name =  PermissionNames.Home_ViewLineChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View Line Chart" },
-                            new SystemPermission{ Name =  PermissionNames.Home_ViewCircleChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View CircleChart" },
+                            new SystemPermission{ Name =  PermissionNames.Home_ViewCircleChart, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant , DisplayName = "View Circle Chart" },
                         },
                 },
                 new SystemPermission { Name =  PermissionNames.Admin, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Admin",

@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using HRMv2.Entities;
+using HRMv2.Utils;
 using NccCore.Anotations;
 using Newtonsoft.Json;
 using System;
@@ -40,39 +41,14 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails.Dto
         [JsonIgnore]
         public string WorkingStatuses { get; set; }
 
-
-
-        public List<long> ListJobPositionIds => (string.IsNullOrWhiteSpace(JobPositionIds))
-                                                ? new List<long>()
-                                                : JsonConvert.DeserializeObject<List<long>>(JobPositionIds);
-
-        public List<long> ListLevelIds => (string.IsNullOrWhiteSpace(LevelIds))
-                                                ? new List<long>()
-                                                : JsonConvert.DeserializeObject<List<long>>(LevelIds);
-
-        public List<long> ListBranchIds => (string.IsNullOrWhiteSpace(BranchIds))
-                                                ? new List<long>()
-                                                : JsonConvert.DeserializeObject<List<long>>(BranchIds);
-
-        public List<long> ListTeamIds => (string.IsNullOrWhiteSpace(TeamIds))
-                                                ? new List<long>()
-                                                : JsonConvert.DeserializeObject<List<long>>(TeamIds);
-
-        public List<UserType> ListUserTypes => (string.IsNullOrWhiteSpace(UserTypes))
-                                                ? new List<UserType>()
-                                                : JsonConvert.DeserializeObject<List<UserType>>(UserTypes);
-
-        public List<PayslipDetailType> ListPayslipDetailTypes => (string.IsNullOrWhiteSpace(PayslipDetailTypes))
-                                                ? new List<PayslipDetailType>()
-                                                : JsonConvert.DeserializeObject<List<PayslipDetailType>>(PayslipDetailTypes);
-
-        public List<Sex> ListGender => (string.IsNullOrWhiteSpace(Gender))
-                                                ? new List<Sex>()
-                                                : JsonConvert.DeserializeObject<List<Sex>>(Gender);
-
-        public List<EmployeeStatus> ListWorkingStatuses => (string.IsNullOrWhiteSpace(WorkingStatuses))
-                                                ? new List<EmployeeStatus>()
-                                                : JsonConvert.DeserializeObject<List<EmployeeStatus>>(WorkingStatuses);
+        public List<long> ListJobPositionId => CommonUtil.ConvertStringToList<long>(JobPositionIds);
+        public List<long> ListLevelId => CommonUtil.ConvertStringToList<long>(LevelIds);
+        public List<long> ListBranchId => CommonUtil.ConvertStringToList<long>(BranchIds);
+        public List<long> ListTeamId => CommonUtil.ConvertStringToList<long>(TeamIds);
+        public List<UserType> ListUserType => CommonUtil.ConvertStringToList<UserType>(UserTypes);
+        public List<PayslipDetailType> ListPayslipDetailType => CommonUtil.ConvertStringToList<PayslipDetailType>(PayslipDetailTypes);
+        public List<Sex> ListGender => CommonUtil.ConvertStringToList<Sex>(Gender);
+        public List<EmployeeStatus> ListWorkingStatus => CommonUtil.ConvertStringToList<EmployeeStatus>(WorkingStatuses);
 
     }
 }

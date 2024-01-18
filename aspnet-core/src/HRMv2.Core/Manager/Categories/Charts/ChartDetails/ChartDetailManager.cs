@@ -162,29 +162,29 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                 Color = chartDetail.Color,
                 Name = chartDetail.Name,
                 IsActive = chartDetail.IsActive,
-                Branches = chartDetail.ListBranchIds.Select(id => new KeyValueDto
+                Branches = chartDetail.ListBranchId.Select(id => new KeyValueDto
                 {
                     Key = selectionData.Branches.SingleOrDefault(s => s.Value == id).Key,
                     Value = id
                 }).ToList(),
-                JobPositions = chartDetail.ListJobPositionIds.Select(id => new KeyValueDto
+                JobPositions = chartDetail.ListJobPositionId.Select(id => new KeyValueDto
                 {
                     Key = selectionData.JobPositions.SingleOrDefault(s => s.Value == id).Key,
                     Value = id
                 }).ToList(),
-                Levels = chartDetail.ListLevelIds.Select(id => new KeyValueDto
+                Levels = chartDetail.ListLevelId.Select(id => new KeyValueDto
                 {
                     Key = selectionData.Levels.SingleOrDefault(s => s.Value == id).Key,
                     Value = id
                 }).ToList(),
-                Teams = chartDetail.ListTeamIds.Select(id => new KeyValueDto
+                Teams = chartDetail.ListTeamId.Select(id => new KeyValueDto
                 {
                     Key = selectionData.Teams.SingleOrDefault(s => s.Value == id).Key,
                     Value = id
                 }).ToList(),
-                PayslipDetailTypes = CommonUtil.GetEnumKeyValueList(chartDetail.ListPayslipDetailTypes),
-                UserTypes = CommonUtil.GetEnumKeyValueList(chartDetail.ListUserTypes),
-                WorkingStatuses = CommonUtil.GetEnumKeyValueList(chartDetail.ListWorkingStatuses),
+                PayslipDetailTypes = CommonUtil.GetEnumKeyValueList(chartDetail.ListPayslipDetailType),
+                UserTypes = CommonUtil.GetEnumKeyValueList(chartDetail.ListUserType),
+                WorkingStatuses = CommonUtil.GetEnumKeyValueList(chartDetail.ListWorkingStatus),
                 Gender = CommonUtil.GetEnumKeyValueList(chartDetail.ListGender)
             };
 

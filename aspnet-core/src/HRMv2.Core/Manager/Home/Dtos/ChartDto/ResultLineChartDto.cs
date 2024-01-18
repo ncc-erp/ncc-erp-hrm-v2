@@ -13,8 +13,6 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
     public class ResultLineChartDto : EntityDto<long>
     {
         public string ChartName { get; set; }
-        public IEnumerable<string> Labels { get; set; }
-        public ChartType ChartType { get; set; }
         public List<LineChartData> Lines { get; set; } = new List<LineChartData>();
 
     }

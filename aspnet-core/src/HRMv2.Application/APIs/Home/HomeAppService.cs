@@ -32,26 +32,40 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        public async Task<List<ResultLineChartDto>> GetDataLineCharts(
+        [AbpAuthorize(PermissionNames.Home_ViewLineChart)]
+        public async Task<ResultChartDto> GetAllDataEmployeeCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetDataLineCharts(input.ChartIds, input.StartDate, input.EndDate);
+            var result = await _homePageManager.GetAllDataEmployeeCharts(input.StartDate, input.EndDate);
             return result;
         }
 
         [HttpPost]
-        public async Task<List<ResultCircleChartDto>> GetDataCircleCharts(
+        [AbpAuthorize(PermissionNames.Home_ViewLineChart)]
+        public async Task<ResultChartDto> GetDataEmployeeCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetDataCircleCharts(input.ChartIds, input.StartDate, input.EndDate);
+            var result = await _homePageManager.GetDataEmployeeCharts(input.ChartIds, input.StartDate, input.EndDate);
             return result;
         }
 
         [HttpPost]
-        public async Task<List<ResultChartDto>> GetAllActiveCharts(
+        [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
+
+        public async Task<ResultChartDto> GetAllDataPayslipCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetAllDataCharts(input.StartDate, input.EndDate);
+            var result = await _homePageManager.GetAllDataPayslipCharts(input.StartDate, input.EndDate);
+            return result;
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
+
+        public async Task<ResultChartDto> GetDataPayslipCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
             return result;
         }
     }

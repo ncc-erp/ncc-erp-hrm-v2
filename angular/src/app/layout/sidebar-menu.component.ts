@@ -152,6 +152,7 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                     this.l('Chart'),
                     '/app/categories/charts',
                     'fas fa-line-chart',
+                    'Category.Chart.View',
                 )
             ]
             ),
