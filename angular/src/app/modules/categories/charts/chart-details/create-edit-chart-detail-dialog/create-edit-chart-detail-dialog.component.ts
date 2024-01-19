@@ -76,16 +76,16 @@ export class CreateEditChartDetailDialogComponent
     this.subscription.push(
       this.chartDetailService
         .get(id)
-        .pipe(
-          startWithTap(() => {
-            this.isLoading = true;
-          })
-        )
-        .pipe(
-          finalize(() => {
-            this.isLoading = false;
-          })
-        )
+        // .pipe(
+        //   startWithTap(() => {
+        //     this.isLoading = true;
+        //   })
+        // )
+        // .pipe(
+        //   finalize(() => {
+        //     this.isLoading = false;
+        //   })
+        // )
         .subscribe((rs) => {
           this.chartDetail = rs.result;
           this.setValueToUpdate();

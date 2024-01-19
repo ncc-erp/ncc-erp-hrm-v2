@@ -69,7 +69,7 @@ namespace NccCore.Uitls
             return period;
         }
 
-        public static DateTime GetFirstDayOfMonth(DateTime Date)
+        public static DateTime GetFirstDayOfMonth(DateTime Date) // T: loại bỏ 2 hàm Get này và viết thêm bên hàm FirstDayOfMonth bên trên
         {
             return new DateTime(Date.Year, Date.Month, 1).Date; 
         }
@@ -152,19 +152,7 @@ namespace NccCore.Uitls
             return date.ToString("yyyy");
         }
 
-        public static List<string> GetMonthYearLabelChartFromDate(DateTime startDate, DateTime endDate)
-        {
-            var result = new List<string>();
-            var date = startDate;
-            while (date <= endDate)
-            {
-                result.Add(GetMonthYearLabelChart(date));
-                date = date.AddMonths(1);
-            }
-            return result;
-        }
-
-        public static List<DateTime> GetMonthYearLabelDateTime(DateTime startDate, DateTime endDate)
+        public static List<DateTime> GetListDate(DateTime startDate, DateTime endDate) // T: rename
         {
             var result = new List<DateTime>();
             var date = GetFirstDayOfMonth(startDate);

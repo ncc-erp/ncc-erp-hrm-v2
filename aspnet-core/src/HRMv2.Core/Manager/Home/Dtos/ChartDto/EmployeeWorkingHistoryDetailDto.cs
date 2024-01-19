@@ -16,7 +16,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
     {
         public long EmployeeId { get; set; }
         public string FullName { get; set; }
-        public EmployeeStatus Status { get; set; }
+        public EmployeeMonthlyStatus Status { get; set; }
         public long JobPositionId { get; set; }
         public long LevelId { get; set; }
         public UserType UserType { get; set; }

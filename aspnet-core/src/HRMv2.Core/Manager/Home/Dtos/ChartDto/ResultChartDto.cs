@@ -10,6 +10,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
     public class ResultChartDto 
     {
+        public ChartDataType ChartDataType { get; set; }
         public List<ResultCircleChartDto> CircleCharts { get; set; } = new List<ResultCircleChartDto>();
         public List<ResultLineChartDto> LineCharts { get; set; } = new List<ResultLineChartDto>();
     }

@@ -51,7 +51,6 @@ namespace HRMv2.APIs.Home
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
-
         public async Task<ResultChartDto> GetAllDataPayslipCharts(
             InputListChartDto input)
         {
@@ -61,12 +60,21 @@ namespace HRMv2.APIs.Home
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
-
         public async Task<ResultChartDto> GetDataPayslipCharts(
             InputListChartDto input)
         {
             var result = await _homePageManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
             return result;
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
+        public async Task<ResultChartDto> GetDataCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetDataCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
+
         }
     }
 }

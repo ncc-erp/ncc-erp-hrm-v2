@@ -27,10 +27,11 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
 
     }
 
-    public class EmployeeDetailDto
+    public class PayslipChartDto
     {
         public long EmployeeId { get; set; }
         public string FullName { get; set; }
+        public EmployeeMonthlyStatus MonthlyStatus { get; set; } // T: thêm monthlyStatus để tránh confict với các data cũ
         public EmployeeStatus Status { get; set; }
         public DateTime Month { get; set; }
         public long JobPositionId { get; set; }

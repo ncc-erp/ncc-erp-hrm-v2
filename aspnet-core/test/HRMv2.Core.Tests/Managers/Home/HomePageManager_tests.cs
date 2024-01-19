@@ -129,7 +129,7 @@ namespace HRMv2.Core.Tests.Managers.Home
             {
                 // Arrange
                 var allEmployeeWorkingHistories = GetAllEmployeeWorkingHistories(); // Method to create list of EmployeeWorkingHistoryDetailDto
-                var employee = new EmployeeDetailDto { EmployeeId = employeeId, Month = month };
+                var employee = new PayslipChartDto { EmployeeId = employeeId, Month = month };
 
                 // Act
                 var actualStatus = _homePage.GetMontlyStatus(employee, allEmployeeWorkingHistories);
