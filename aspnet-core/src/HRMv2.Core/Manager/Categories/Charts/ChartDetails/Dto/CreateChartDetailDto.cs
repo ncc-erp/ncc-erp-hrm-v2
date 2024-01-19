@@ -33,6 +33,6 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails.Dto
 
         public List<Sex> Gender { get; set; }
 
-        public List<EmployeeStatus> WorkingStatuses { get; set; }
+        public List<EmployeeMonthlyStatus> WorkingStatuses { get; set; }
     }
 }
