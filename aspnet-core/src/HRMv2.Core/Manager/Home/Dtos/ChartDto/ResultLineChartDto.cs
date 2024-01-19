@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using HRMv2.Manager.Common.Dto;
 using NccCore.Helper;
+using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,9 +32,9 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
     {
         public long EmployeeId { get; set; }
         public string FullName { get; set; }
-        public EmployeeMonthlyStatus MonthlyStatus { get; set; } // T: thêm monthlyStatus để tránh confict với các data cũ
+        public EmployeeMonthlyStatus MonthlyStatus { get; set; }
         public EmployeeStatus Status { get; set; }
-        public DateTime Month { get; set; }
+        public DateTime Month => DateTimeUtils.FirstDayOfMonth(DateAt);
         public long JobPositionId { get; set; }
         public long LevelId { get; set; }
         public UserType UserType { get; set; }
@@ -41,6 +42,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public List<long> TeamIds { get; set; }
         public Sex Gender { get; set; }
         public string MonthYear => Month.ToString("MM-yyyy");
+        public DateTime DateAt { get; set; }
 
     }
 }

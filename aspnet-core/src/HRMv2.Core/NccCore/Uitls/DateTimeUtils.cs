@@ -28,6 +28,11 @@ namespace NccCore.Uitls
             return new DateTime(date.Year, date.Month, 1);
         }
 
+        public static DateTime LastDayOfMonth(DateTime date)
+        {
+            return FirstDayOfMonth(date).AddMonths(1).AddDays(-1);
+        }
+
         public static List<DateTime> GetListMonthForDebtPaymentPlan(DateTime startDate, DateTime endDate)
         {
             var date = FirstDayOfMonth(startDate);
@@ -67,16 +72,6 @@ namespace NccCore.Uitls
             LocalDate startDate = new LocalDate(fromDate.Year, fromDate.Month, fromDate.Day);
             Period period = Period.Between(startDate, endDate);
             return period;
-        }
-
-        public static DateTime GetFirstDayOfMonth(DateTime Date) // T: loại bỏ 2 hàm Get này và viết thêm bên hàm FirstDayOfMonth bên trên
-        {
-            return new DateTime(Date.Year, Date.Month, 1).Date; 
-        }
-
-        public static DateTime GetLastDayOfMonth(DateTime date)
-        {
-            return GetFirstDayOfMonth(date).AddMonths(1).AddDays(-1).Date;
         }
 
         public static int CountMonthBetweenTwoDate(DateTime fromDate, DateTime toDate)
@@ -155,7 +150,7 @@ namespace NccCore.Uitls
         public static List<DateTime> GetListDate(DateTime startDate, DateTime endDate) // T: rename
         {
             var result = new List<DateTime>();
-            var date = GetFirstDayOfMonth(startDate);
+            var date = FirstDayOfMonth(startDate);
 
             while (date <= endDate)
             {

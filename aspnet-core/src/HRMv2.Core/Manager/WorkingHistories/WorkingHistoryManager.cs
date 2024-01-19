@@ -1,4 +1,5 @@
 ﻿using HRMv2.Entities;
+using HRMv2.Manager.Histories.Dto;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories.Dtos;
 using HRMv2.NccCore;
@@ -99,10 +100,10 @@ namespace HRMv2.Manager.WorkingHistories
             return results;
 
         }
-        public IQueryable<EmployeeWorkingHistoryDetailDto> QueryAllWorkingHistoryForChart()
+        public IQueryable<PayslipChartDto> QueryAllWorkingHistoryForChart()
         {
             var result = WorkScope.GetAll<EmployeeWorkingHistory>()
-                .Select(x => new EmployeeWorkingHistoryDetailDto
+                .Select(x => new PayslipChartDto
                 {
                     EmployeeId = x.EmployeeId,
                     FullName = x.Employee.FullName,
@@ -112,6 +113,18 @@ namespace HRMv2.Manager.WorkingHistories
                     TeamIds = x.Employee.EmployeeTeams.Select(t => t.TeamId).ToList(),
                     UserType = x.Employee.UserType,
                     Gender = x.Employee.Sex,
+                    Status = x.Status,
+                    DateAt = x.DateAt,
+                });
+            return result;
+        }
+
+        public IQueryable<WorkingHistoryDto> QueryAllWorkingHistoryForChart1()
+        {
+            var result = WorkScope.GetAll<EmployeeWorkingHistory>()
+                .Select(x => new WorkingHistoryDto
+                {
+                    EmployeeId = x.EmployeeId,                   
                     Status = x.Status,
                     DateAt = x.DateAt,
                 });

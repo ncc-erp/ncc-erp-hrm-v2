@@ -48,7 +48,7 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails.Dto
         public List<UserType> ListUserType => CommonUtil.ConvertStringToList<UserType>(UserTypes);
         public List<PayslipDetailType> ListPayslipDetailType => CommonUtil.ConvertStringToList<PayslipDetailType>(PayslipDetailTypes);
         public List<Sex> ListGender => CommonUtil.ConvertStringToList<Sex>(Gender);
-        public List<EmployeeStatus> ListWorkingStatus => CommonUtil.ConvertStringToList<EmployeeStatus>(WorkingStatuses);
+        public List<EmployeeMonthlyStatus> ListWorkingStatus => CommonUtil.ConvertStringToList<EmployeeMonthlyStatus>(WorkingStatuses);
 
     }
 }
