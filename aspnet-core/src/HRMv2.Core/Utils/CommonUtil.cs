@@ -6,6 +6,7 @@ using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.UserTypes.Dto;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Notifications.Email.Dto;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -582,6 +583,19 @@ namespace HRMv2.Utils
             }
 
             return enumKeyValueList;
+        }
+        public static string ConvertListToJson<T>(List<T> list)
+        {
+            return list == null || !list.Any() ? null : JsonConvert.SerializeObject(list);
+        }
+
+        public static List<T> ConvertStringToList<T>(string jsonString)
+        {
+            var result = (string.IsNullOrWhiteSpace(jsonString))
+                ? new List<T>()
+                : JsonConvert.DeserializeObject<List<T>>(jsonString);
+
+            return result;
         }
     }
 }

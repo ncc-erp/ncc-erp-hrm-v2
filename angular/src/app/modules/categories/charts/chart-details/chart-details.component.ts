@@ -13,6 +13,7 @@ import { FILTER_VALUE } from "@app/modules/categories/punishment-types/punishmen
 import { ChartDetailFullDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-full.dto";
 import { startWithTap } from "@shared/helpers/observerHelper";
 import { finalize } from "rxjs/operators";
+import { PERMISSIONS_CONSTANT } from "@app/permission/permission";
 
 @Component({
   selector: "app-chart-details",
@@ -88,25 +89,34 @@ export class ChartDetailsComponent
         .subscribe((rs) => {
           this.chartFull = rs.result;
           this.chartFullDetailList = this.chartFull.chartDetails;
-          this.isShowWorkingStatus = this.chartFull.chartDataType == APP_ENUMS.ChartDataType.Employee 
+          this.isShowWorkingStatus =
+            this.chartFull.chartDataType == APP_ENUMS.ChartDataType.Employee;
         })
     );
   }
 
   isShowCreateBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_ChartDetail_Create
+    );
   }
 
   isShowEditBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_ChartDetail_Edit
+    );
   }
 
   isShowDeleteBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_ChartDetail_Delete
+    );
   }
 
   isShowActiveBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_ChartDetail_ActiveDeactive
+    );
   }
 
   goToChartPage() {

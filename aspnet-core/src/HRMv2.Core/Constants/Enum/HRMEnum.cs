@@ -21,9 +21,17 @@ namespace HRMv2.Constants.Enum
             Working = 1,
             Pausing = 2,
             Quit = 3,
+            MaternityLeave = 4
+        }
+
+        public enum EmployeeMonthlyStatus
+        {
+            Working = 1,
+            Pausing = 2,
+            Quit = 3,
             MaternityLeave = 4,
             Onboard = 5,
-            OnOffInMonth =6,
+            OnOffInMonth = 6,
             BackToWork = 7,
         }
 

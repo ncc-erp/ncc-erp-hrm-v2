@@ -1,6 +1,7 @@
 ﻿using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
+using HRMv2.Manager.Histories.Dto;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
@@ -8,6 +9,7 @@ using HRMv2.NccCore;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Xunit;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Core.Tests.Managers.Home
 {
@@ -19,9 +21,7 @@ namespace HRMv2.Core.Tests.Managers.Home
         public HomePageManager_tests()
         {
             var mockWorkingHistoryManager = new Mock<WorkingHistoryManager>(_workScope);
-            var mockchartManager = new Mock<ChartManager>(_workScope);
-            var mockchartDetailManager = new Mock<ChartDetailManager>(_workScope);
-            _homePage = new HomePageManager(_workScope, mockWorkingHistoryManager.Object, mockchartManager.Object, mockchartDetailManager.Object);
+            _homePage = new HomePageManager(_workScope, mockWorkingHistoryManager.Object);
             _homePage = Resolve<HomePageManager>();
         }
 
@@ -112,80 +112,78 @@ namespace HRMv2.Core.Tests.Managers.Home
             });
         }
 
-        //[Fact]
-        //public void GetMonthlyStatus_Test()
-        //{
-        //    var allEmloyeeWorkingHistories = new List<EmployeeWorkingHistoryDetailDto>
-        //    {
-        //        //case 1: Work then Pause => Pause
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 1, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 1) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 1, Status = EmployeeStatus.Pausing, DateAt = new DateTime(2023, 12, 1) },
-        //        //case 2: Work then Maternity Leave => Maternity Leave
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 2, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 1) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 2, Status = EmployeeStatus.MaternityLeave, DateAt = new DateTime(2023, 12, 1) },
-        //        //case 3: Maternity Leave then Working => BackToWork
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 3, Status = EmployeeStatus.MaternityLeave, DateAt = new DateTime(2023, 12, 1) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 3, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
-        //        //case 4: Pause then Working => BackToWork
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 4, Status = EmployeeStatus.Pausing, DateAt = new DateTime(2023, 12, 1) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 4, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
-        //        //case 5: Quit then Working => Onboard
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 5, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 1) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 5, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
-        //        //case 6: Only Working => Onboard
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 6, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
-        //        //case 7: Onboard then Quit in Month => OnOffInMonth
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 7, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 8) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 7, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 8, 16) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 7, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 7, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
-        //        //case 8: Onboard then Quit then Onboard then Quit in Month => OnOffInMonth
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 8, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 8) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 8, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 8, 16) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 8, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 8, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
-        //        //case 9: Maternity Leave then BackToWork then Quit in Month => Quit
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 9, Status = EmployeeStatus.MaternityLeave, DateAt = new DateTime(2023, 8, 1) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 9, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 9, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
-        //        //case 10: Pause then BackToWork then Quit in Month => Quit
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 10, Status = EmployeeStatus.Pausing, DateAt = new DateTime(2023, 8, 1) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 10, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 10, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
-        //        //case 11: Work then Quit (not in Month) => Quit
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 11, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 8, 11) },
-        //        new EmployeeWorkingHistoryDetailDto { EmployeeId = 11, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 12) },
-        //     };
-        //    var employees = new List<EmployeeDetailDto>
-        //    { 
-        //        new EmployeeDetailDto { EmployeeId = 1, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 2, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 3, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 4, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 5, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 6, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 7, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 8, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 9, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 10, Month = new DateTime(2023,12,10)},
-        //        new EmployeeDetailDto { EmployeeId = 11, Month = new DateTime(2023,12,10)},
-        //    };
-        //    //Act
-        //    foreach (var employee in employees)
-        //    {
-        //        employee.Status = _homePage.GetMontlyStatus(employee, allEmloyeeWorkingHistories);
-        //    }
-        //    Assert.Equal(EmployeeStatus.Pausing, employees[0].Status);
-        //    Assert.Equal(EmployeeStatus.MaternityLeave, employees[1].Status);
-        //    Assert.Equal(EmployeeStatus.BackToWork, employees[2].Status);
-        //    Assert.Equal(EmployeeStatus.BackToWork, employees[3].Status);
-        //    Assert.Equal(EmployeeStatus.Onboard, employees[4].Status);
-        //    Assert.Equal(EmployeeStatus.Onboard, employees[5].Status);
-        //    Assert.Equal(EmployeeStatus.OnOffInMonth, employees[6].Status);
-        //    Assert.Equal(EmployeeStatus.OnOffInMonth, employees[7].Status);
-        //    Assert.Equal(EmployeeStatus.Quit, employees[8].Status);
-        //    Assert.Equal(EmployeeStatus.Quit, employees[9].Status);
-        //    Assert.Equal(EmployeeStatus.Quit, employees[10].Status);
-        //}
+        [Theory]
+        [InlineData(1, "2023-12-10", EmployeeMonthlyStatus.Pausing)]
+        [InlineData(2, "2023-12-10", EmployeeMonthlyStatus.MaternityLeave)]
+        [InlineData(3, "2023-12-10", EmployeeMonthlyStatus.BackToWork)]
+        [InlineData(4, "2023-12-10", EmployeeMonthlyStatus.BackToWork)]
+        [InlineData(5, "2023-12-10", EmployeeMonthlyStatus.Onboard)]
+        [InlineData(6, "2023-12-10", EmployeeMonthlyStatus.Onboard)]
+        [InlineData(7, "2023-12-10", EmployeeMonthlyStatus.OnOffInMonth)]
+        [InlineData(8, "2023-12-10", EmployeeMonthlyStatus.OnOffInMonth)]
+        [InlineData(9, "2023-12-10", EmployeeMonthlyStatus.Quit)]
+        [InlineData(10, "2023-12-10", EmployeeMonthlyStatus.Quit)]
+        [InlineData(11, "2023-12-10", EmployeeMonthlyStatus.Quit)]
+        public void GetMonthlyStatus_Test(int employeeId, DateTime month, EmployeeMonthlyStatus expectedStatus)
+        {
+
+            {
+                // Arrange
+                var workingHistories = GetAllEmployeeWorkingHistories(); // Method to create list of WorkingHistoryDto
+                var employee = new PayslipChartDto { EmployeeId = employeeId, DateAt = month };
+
+                // Act
+                var actualStatus = _homePage.GetMontlyStatus(employee, workingHistories);
+
+                // Assert
+                Assert.Equal(expectedStatus, actualStatus);
+            }
+        }
+
+        private List<WorkingHistoryDto> GetAllEmployeeWorkingHistories()
+        {
+            return new List<WorkingHistoryDto>
+            {
+                //case 1: Work then Pause => Pause
+                new WorkingHistoryDto { EmployeeId = 1, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 1) },
+                new WorkingHistoryDto { EmployeeId = 1, Status = EmployeeStatus.Pausing, DateAt = new DateTime(2023, 12, 1) },
+                //case 2: Work then Maternity Leave => Maternity Leave
+
+                new WorkingHistoryDto { EmployeeId = 2, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 1) },
+                new WorkingHistoryDto { EmployeeId = 2, Status = EmployeeStatus.MaternityLeave, DateAt = new DateTime(2023, 12, 1) },
+                //case 3: Maternity Leave then Working => BackToWork
+                new WorkingHistoryDto { EmployeeId = 3, Status = EmployeeStatus.MaternityLeave, DateAt = new DateTime(2023, 8, 1) },
+                new WorkingHistoryDto { EmployeeId = 3, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
+                //case 4: Pause then Working => BackToWork
+                new WorkingHistoryDto { EmployeeId = 4, Status = EmployeeStatus.Pausing, DateAt = new DateTime(2023, 8, 1) },
+                new WorkingHistoryDto { EmployeeId = 4, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
+                //case 5: Quit then Working => Onboard
+                new WorkingHistoryDto { EmployeeId = 5, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 8, 1) },
+                new WorkingHistoryDto { EmployeeId = 5, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
+                //case 6: Only Working => Onboard
+                new WorkingHistoryDto { EmployeeId = 6, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 1) },
+                //case 7: Onboard then Quit in Month => OnOffInMonth
+                new WorkingHistoryDto { EmployeeId = 7, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 8) },
+                new WorkingHistoryDto { EmployeeId = 7, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 8, 16) },
+                new WorkingHistoryDto { EmployeeId = 7, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
+                new WorkingHistoryDto { EmployeeId = 7, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
+                //case 8: Onboard then Quit then Onboard then Quit in Month => OnOffInMonth
+                new WorkingHistoryDto { EmployeeId = 8, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 8, 8) },
+                new WorkingHistoryDto { EmployeeId = 8, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 8, 16) },
+                new WorkingHistoryDto { EmployeeId = 8, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
+                new WorkingHistoryDto { EmployeeId = 8, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
+                //case 9: Maternity Leave then BackToWork then Quit in Month => Quit
+                new WorkingHistoryDto { EmployeeId = 9, Status = EmployeeStatus.MaternityLeave, DateAt = new DateTime(2023, 8, 1) },
+                new WorkingHistoryDto { EmployeeId = 9, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
+                new WorkingHistoryDto { EmployeeId = 9, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
+                //case 10: Pause then BackToWork then Quit in Month => Quit
+                new WorkingHistoryDto { EmployeeId = 10, Status = EmployeeStatus.Pausing, DateAt = new DateTime(2023, 8, 1) },
+                new WorkingHistoryDto { EmployeeId = 10, Status = EmployeeStatus.Working, DateAt = new DateTime(2023, 12, 5) },
+                new WorkingHistoryDto { EmployeeId = 10, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 10) },
+                //case 11: Work then Quit (not in Month) => Quit
+                new WorkingHistoryDto { EmployeeId = 11, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 8, 11) },
+                new WorkingHistoryDto { EmployeeId = 11, Status = EmployeeStatus.Quit, DateAt = new DateTime(2023, 12, 12) },
+             };
+        }
     }
 }

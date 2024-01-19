@@ -21,6 +21,6 @@ namespace HRMv2.Entities
 
         public bool IsActive { get; set; } = true;
 
-        public ICollection<ChartDetail> ChartDetails { get; set; } // không sử dụng virtual => eager loading
+        public virtual ICollection<ChartDetail> ChartDetails { get; set; }
     }
 }

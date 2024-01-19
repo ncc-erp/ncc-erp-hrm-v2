@@ -1298,8 +1298,8 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             CheckValidGeneratePayslips(payroll);
 
-            var firstDayOfPayroll = DateTimeUtils.GetFirstDayOfMonth(payroll.ApplyMonth);
-            var lastDayOfPayroll = DateTimeUtils.GetLastDayOfMonth(firstDayOfPayroll);
+            var firstDayOfPayroll = DateTimeUtils.FirstDayOfMonth(payroll.ApplyMonth);
+            var lastDayOfPayroll = DateTimeUtils.LastDayOfMonth(firstDayOfPayroll);
 
             calculatingSalaryInfoDto.ProgressInfo = "Collecting employee info";
             _calculateSalaryHub.SendMessage(new { Message = calculatingSalaryInfoDto.ProgressInfo, Process = "", Status = "Collecting employee info" });

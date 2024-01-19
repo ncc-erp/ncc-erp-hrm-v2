@@ -1,5 +1,7 @@
-﻿using HRMv2.Manager.Common.Dto;
+﻿using Abp.Application.Services.Dto;
+using HRMv2.Manager.Common.Dto;
 using NccCore.Helper;
+using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,37 +11,30 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
-    public class ResultLineChartDto
+    public class ResultLineChartDto : EntityDto<long>
     {
         public string ChartName { get; set; }
-        public IEnumerable<string> Labels { get; set; }
-        public List<DataLineChartDto> ChartDetails { get; set; } = new List<DataLineChartDto>();
+        public List<LineChartData> Lines { get; set; } = new List<LineChartData>();
 
     }
     
-    public class DataLineChartDto
+    public class LineChartData
     {
-        public string Name { get; set; }
-        public ChartStyleDto ItemStyle { get; set; }
-        public ChartType Type { get; set; }
+        public string LineName { get; set; }
+        public string Color { get; set; }
         public List<double> Data { get; set; }
-        public string Total => Data.Sum().ToString();
         public int BarGap => 0;
         public string BarMaxWidth => "80";
 
     }
 
-    public class ChartStyleDto
-    {
-        public string Color { get; set; }
-    }
-
-    public class EmployeeDetailDto
+    public class PayslipChartDto
     {
         public long EmployeeId { get; set; }
         public string FullName { get; set; }
+        public EmployeeMonthlyStatus MonthlyStatus { get; set; }
         public EmployeeStatus Status { get; set; }
-        public DateTime Month { get; set; }
+        public DateTime Month => DateTimeUtils.FirstDayOfMonth(DateAt);
         public long JobPositionId { get; set; }
         public long LevelId { get; set; }
         public UserType UserType { get; set; }
@@ -47,6 +42,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public List<long> TeamIds { get; set; }
         public Sex Gender { get; set; }
         public string MonthYear => Month.ToString("MM-yyyy");
+        public DateTime DateAt { get; set; }
 
     }
 }

@@ -15,6 +15,7 @@ import { MatMenuTrigger } from "@angular/material/menu";
 import { APP_ENUMS } from "@shared/AppEnums";
 import { FILTER_VALUE } from "@app/modules/categories/punishment-types/punishment-types.component";
 import { startWithTap } from "@shared/helpers/observerHelper";
+import { PERMISSIONS_CONSTANT } from "@app/permission/permission";
 
 @Component({
   selector: 'app-charts',
@@ -85,19 +86,27 @@ export class ChartsComponent
   }
 
   isShowCreateBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_Create
+    );
   }
 
   isShowEditBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_Edit
+    );
   }
 
   isShowDeleteBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_Delete
+    );
   }
 
   isShowActiveBtn() {
-    return true;
+    return this.isGranted(
+      PERMISSIONS_CONSTANT.Category_Chart_ActiveDeactive
+    );
   }
 
   onCreate() {

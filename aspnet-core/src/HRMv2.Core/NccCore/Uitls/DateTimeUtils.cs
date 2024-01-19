@@ -28,6 +28,11 @@ namespace NccCore.Uitls
             return new DateTime(date.Year, date.Month, 1);
         }
 
+        public static DateTime LastDayOfMonth(DateTime date)
+        {
+            return FirstDayOfMonth(date).AddMonths(1).AddDays(-1);
+        }
+
         public static List<DateTime> GetListMonthForDebtPaymentPlan(DateTime startDate, DateTime endDate)
         {
             var date = FirstDayOfMonth(startDate);
@@ -67,16 +72,6 @@ namespace NccCore.Uitls
             LocalDate startDate = new LocalDate(fromDate.Year, fromDate.Month, fromDate.Day);
             Period period = Period.Between(startDate, endDate);
             return period;
-        }
-
-        public static DateTime GetFirstDayOfMonth(DateTime Date)
-        {
-            return new DateTime(Date.Year, Date.Month, 1).Date; 
-        }
-
-        public static DateTime GetLastDayOfMonth(DateTime date)
-        {
-            return GetFirstDayOfMonth(date).AddMonths(1).AddDays(-1).Date;
         }
 
         public static int CountMonthBetweenTwoDate(DateTime fromDate, DateTime toDate)
@@ -152,21 +147,10 @@ namespace NccCore.Uitls
             return date.ToString("yyyy");
         }
 
-        public static List<string> GetMonthYearLabelChartFromDate(DateTime startDate, DateTime endDate)
-        {
-            var result = new List<string>();
-            var date = startDate;
-            while (date <= endDate)
-            {
-                result.Add(GetMonthYearLabelChart(date));
-                date = date.AddMonths(1);
-            }
-            return result;
-        }
-        public static List<DateTime> GetMonthYearLabelDateTime(DateTime startDate, DateTime endDate)
+        public static List<DateTime> GetListDate(DateTime startDate, DateTime endDate) // T: rename
         {
             var result = new List<DateTime>();
-            var date = GetFirstDayOfMonth(startDate);
+            var date = FirstDayOfMonth(startDate);
 
             while (date <= endDate)
             {

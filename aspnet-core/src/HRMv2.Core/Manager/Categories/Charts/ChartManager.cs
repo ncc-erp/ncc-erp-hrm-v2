@@ -36,13 +36,6 @@ namespace HRMv2.Manager.Categories.Charts
             return query;
         }
 
-        public List<ChartDto> GetAll()
-        {
-            var charts = QueryAllChart().ToList();
-
-            return charts;
-        }
-
         public async Task<GridResult<ChartDto>> GetAllPaging(GridParam input)
         {
             var query = QueryAllChart();

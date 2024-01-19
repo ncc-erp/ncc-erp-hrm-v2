@@ -11,13 +11,13 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
-    public class PayslipDetailChartDto : EntityDto<long>
+    public class PayslipDetailDataChartDto : EntityDto<long>
     {
         public long PayslipId { get; set; }
         public double Money { get; set; }
         public PayslipDetailType Type { get; set; }
-        public DateTime CreationTime { get; set; }
-        public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(CreationTime);
-        public PayslipChartDto Payslip { get; set; }
+        public DateTime ApplyMonth { get; set; } // Payroll ApplyMonth 
+        public string MonthYear => DateTimeUtils.GetMonthYearLabelChart(ApplyMonth);
+        public PayslipDataChartDto Payslip { get; set; }
     }
 }

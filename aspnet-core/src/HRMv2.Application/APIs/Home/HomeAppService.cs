@@ -1,4 +1,6 @@
 ﻿using Abp.Authorization;
+using Abp.Collections.Extensions;
+using HRMv2.Authorization;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
 using HRMv2.Manager.Home.Dtos.ChartDto;
@@ -30,31 +32,49 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        public async Task<List<ResultLineChartDto>> GetDataLineChart(
+        [AbpAuthorize(PermissionNames.Home_ViewLineChart)]
+        public async Task<ResultChartDto> GetAllDataEmployeeCharts(
             InputListChartDto input)
         {
-            var result = _homePageManager.GetDataLineChart(input.ChartIds, input.StartDate, input.EndDate);
-            return await result;
-        }
-
-        [HttpPost]
-        public List<int> TestDataChart(DateTime startDate, DateTime endDate, List<EmployeeStatus> status)
-        {
-            var allMonths = DateTimeUtils.GetMonthYearLabelDateTime(DateTimeUtils.GetFirstDayOfMonth(startDate), endDate);
-            var labels = allMonths.Select(x => x.ToString("MM-yyyy")).ToList();
-            var employeeMonthlyDetailForChart = _homePageManager.GetEmployeeMonthlyDetail(allMonths)
-                        .Where(x => status.Contains(x.Status))
-                        .OrderBy(x => x.Month)
-                        .GroupBy(x => x.Month.ToString("MM-yyyy"))
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.ToList().Count
-                        );
-
-            List<int> result = labels.Select(label => employeeMonthlyDetailForChart.ContainsKey(label) ? employeeMonthlyDetailForChart[label] : 0).ToList();
-
+            var result = await _homePageManager.GetAllDataEmployeeCharts(input.StartDate, input.EndDate);
             return result;
         }
 
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Home_ViewLineChart)]
+        public async Task<ResultChartDto> GetDataEmployeeCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetDataEmployeeCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
+        public async Task<ResultChartDto> GetAllDataPayslipCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetAllDataPayslipCharts(input.StartDate, input.EndDate);
+            return result;
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
+        public async Task<ResultChartDto> GetDataPayslipCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
+        public async Task<ResultChartDto> GetDataCharts(
+            InputListChartDto input)
+        {
+            var result = await _homePageManager.GetDataCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
+
+        }
     }
 }

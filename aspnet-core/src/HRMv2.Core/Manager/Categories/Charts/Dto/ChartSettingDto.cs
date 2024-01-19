@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace HRMv2.Manager.Categories.Charts.Dto
 {
-    public class ChartInfoDto : ChartDto
+    public class ChartSettingDto : ChartDto
     {
-        public List<ChartDetailDto> Details { get; set; }
+        public List<ChartDetailDto> ChartDetails { get; set; }
 
     }
 }

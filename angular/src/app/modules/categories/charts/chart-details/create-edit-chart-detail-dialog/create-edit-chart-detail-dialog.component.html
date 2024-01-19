@@ -1,6 +1,6 @@
 <form [formGroup]="formGroup" class="form-horizontal" [busy]="isLoading">
   <app-dialog-header [dialogTitle]="title"></app-dialog-header>
-  <div class="p-3">
+  <div class="p-3" *ngIf="!isLoading">
     <div class="form-group d-flex required">
       <label class="col-3 mt-2 col-form-label">Name:</label>
       <div class="col-8">
@@ -31,7 +31,16 @@
         >
         </app-multi-select-box>
       </div>
-      <button class="btn-clear-all" (click)="onClearAllFilter('gender')" ><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.gender.value &&
+          formGroup.controls.gender.value.length > 0
+        "
+        class="btn-clear-all"
+        (click)="onClearAllFilter('gender')"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Branch: </label>
@@ -44,7 +53,16 @@
         >
         </app-multi-select-box>
       </div>
-      <button (click)="onClearAllFilter('branches')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.branches.value &&
+          formGroup.controls.branches.value.length > 0
+        "
+        (click)="onClearAllFilter('branches')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Job position: </label>
@@ -57,7 +75,16 @@
         >
         </app-multi-select-box>
       </div>
-      <button (click)="onClearAllFilter('jobPositions')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.jobPositions.value &&
+          formGroup.controls.jobPositions.value.length > 0
+        "
+        (click)="onClearAllFilter('jobPositions')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Level: </label>
@@ -70,7 +97,16 @@
         >
         </app-multi-select-box>
       </div>
-      <button (click)="onClearAllFilter('levels')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.levels.value &&
+          formGroup.controls.levels.value.length > 0
+        "
+        (click)="onClearAllFilter('levels')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label">Team: </label>
@@ -83,10 +119,19 @@
         >
         </app-multi-select-box>
       </div>
-      <button (click)="onClearAllFilter('teams')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.teams.value &&
+          formGroup.controls.teams.value.length > 0
+        "
+        (click)="onClearAllFilter('teams')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
     <div class="form-group d-flex">
-      <label class="col-3 mt-2 col-form-label">UserType: </label>
+      <label class="col-3 mt-2 col-form-label">User type: </label>
       <div class="col-8">
         <app-multi-select-box
           class="w-100"
@@ -96,12 +141,19 @@
         >
         </app-multi-select-box>
       </div>
-      <button (click)="onClearAllFilter('userTypes')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.userTypes.value &&
+          formGroup.controls.userTypes.value.length > 0
+        "
+        (click)="onClearAllFilter('userTypes')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
-    <div 
-    *ngIf="!isChartSalaryDataType"
-    class="form-group d-flex">
-      <label class="col-3 mt-2 col-form-label">WorkingStatus: </label>
+    <div *ngIf="!isChartSalaryDataType" class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Working status: </label>
       <div class="col-8">
         <app-multi-select-box
           class="w-100"
@@ -111,13 +163,19 @@
         >
         </app-multi-select-box>
       </div>
-      <button (click)="onClearAllFilter('workingStatuses')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.workingStatuses.value &&
+          formGroup.controls.workingStatuses.value.length > 0
+        "
+        (click)="onClearAllFilter('workingStatuses')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
-    <div
-      *ngIf="isChartSalaryDataType"
-      class="form-group d-flex"
-    >
-      <label class="col-3 mt-2 col-form-label">PayslipDetailType: </label>
+    <div *ngIf="isChartSalaryDataType" class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Payslip detail type: </label>
       <div class="col-8">
         <app-multi-select-box
           class="w-100"
@@ -127,7 +185,16 @@
         >
         </app-multi-select-box>
       </div>
-      <button (click)="onClearAllFilter('payslipDetailTypes')" class="btn-clear-all"><i class="fa-solid fa-xmark"></i></button>
+      <button
+        *ngIf="
+          formGroup.controls.payslipDetailTypes.value &&
+          formGroup.controls.payslipDetailTypes.value.length > 0
+        "
+        (click)="onClearAllFilter('payslipDetailTypes')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
     <div class="form-group d-flex">
       <label class="col-3 mt-2 col-form-label"> Color: </label>
