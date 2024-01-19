@@ -32,6 +32,7 @@ using static HRMv2.Constants.Enum.HRMEnum;
 using Chart = HRMv2.Entities.Chart;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using HRMv2.Manager.Benefits.Dto;
+using HRMv2.Manager.Histories.Dto;
 
 namespace HRMv2.Manager.Home
 {
@@ -144,31 +145,36 @@ namespace HRMv2.Manager.Home
             return query;
         }
 
-        public List<PayslipChartDto> GetDataForAllChartEmployee(List<DateTime> allMonths) // T: DateTime startDate, endDate
+        public List<PayslipChartDto> GetDataForAllChartEmployee(DateTime startDate, DateTime endDate)
         {
-            DateTime firstDayOfCurrentMonth = DateTimeUtils.GetFirstDayOfMonth(DateTime.Now); //lấy ngày đầu tiên của tháng hiện tại
-            var previousMonths = allMonths.Where(m => m < firstDayOfCurrentMonth).ToList(); //lấy các tháng trước tháng hiện tại
+            DateTime firstDayOfCurrentMonth = DateTimeUtils.FirstDayOfMonth(DateTime.Now); //lấy ngày đầu tiên của tháng hiện tại
 
-            var employeesDetail = GetPayslips(previousMonths).ToList();
+            var payslips = GetPayslips(startDate, endDate).ToList();
 
-            var listEmployeeIds = employeesDetail.Select(emd => emd.EmployeeId).Distinct().ToList();
 
-            var allEmloyeeWorkingHistories = _workingHistoryManager.QueryAllWorkingHistoryForChart().ToList(); // T: => dictionary employee Id, employee
+            var workingHistories = _workingHistoryManager.QueryAllWorkingHistoryForChart1()
+                                            .ToList();
+            var dicEmployeeIdToWorkingHistory = workingHistories
+                                            .GroupBy(s => s.EmployeeId)
+                                            .ToDictionary(s => s.Key, s => s.ToList());
 
-            if (allMonths.Contains(firstDayOfCurrentMonth)) //nếu tháng được chọn có chứa tháng hiện tại
+            if (firstDayOfCurrentMonth <= endDate) //nếu tháng được chọn có chứa tháng hiện tại
             {
-                var employeeInCurrentMonth = GetEmployeeDetailFromCurrentMonth(firstDayOfCurrentMonth, allEmloyeeWorkingHistories);
-                employeesDetail = employeeInCurrentMonth != null
-                                ? employeesDetail.Concat(employeeInCurrentMonth).ToList()
-                                : employeesDetail;
+                var employeeInCurrentMonth = GetEmployeeForCurrentMonth(firstDayOfCurrentMonth, workingHistories);
+
+                payslips.AddRange(employeeInCurrentMonth);
             }
 
-            foreach (var employee in employeesDetail) //set trạng thái employee cho từng tháng dựa trên EmployeeWorkingHistory
+            foreach (var employee in payslips) //set trạng thái employee cho từng tháng dựa trên EmployeeWorkingHistory
             {
-                employee.Status = GetMontlyStatus(employee, allEmloyeeWorkingHistories); // T: chỉ truyền vào status, không nên truyền vào cả cục to
+                if (!dicEmployeeIdToWorkingHistory.ContainsKey(employee.EmployeeId))
+                {
+                    continue;
+                }
+                employee.MonthlyStatus = GetMontlyStatus(employee, dicEmployeeIdToWorkingHistory[employee.EmployeeId]); // T: chỉ truyền vào status, không nên truyền vào cả cục to
             }
 
-            return employeesDetail;
+            return payslips;
         }
 
         #endregion
@@ -199,7 +205,7 @@ namespace HRMv2.Manager.Home
 
             var listDate = DateTimeUtils.GetListDate(startDate, endDate);
             var labels = listDate.Select(x => x.ToString("MM-yyyy")).ToList();
-            var allDataForChartEmployee = GetDataForAllChartEmployee(listDate); // T: rename
+            var allDataForChartEmployee = GetDataForAllChartEmployee(startDate, endDate);
 
             var resultChart = new ResultChartDto()
             {
@@ -210,7 +216,7 @@ namespace HRMv2.Manager.Home
             {
                 if (chartInfo.ChartType == ChartType.Line)
                 {
-                    var result = GetDataForOneLineChartEmployee(chartInfo, allDataForChartEmployee, labels); // T: rename
+                    var result = GetDataForOneLineChartEmployee(chartInfo, allDataForChartEmployee, labels);
                     resultChart.LineCharts.Add(result);
                 }
                 else if (chartInfo.ChartType == ChartType.Circle)
@@ -268,7 +274,7 @@ namespace HRMv2.Manager.Home
                         .WhereIf(detail.ListTeamId.Any(), x => detail.ListTeamId.Any(teamIds => x.TeamIds.Contains(teamIds)))
                         .WhereIf(detail.ListUserType.Any(), x => detail.ListUserType.Contains(x.UserType))
                         .WhereIf(detail.ListGender.Any(), x => detail.ListGender.Contains(x.Gender))
-                        .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.Status))
+                        .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.MonthlyStatus))
                         .OrderBy(x => x.Month)
                         .GroupBy(x => x.MonthYear)
                         .ToDictionary(
@@ -281,12 +287,12 @@ namespace HRMv2.Manager.Home
         #endregion
 
         #region Process data
-        public IEnumerable<PayslipChartDto> GetPayslips(DateTime startDate, DateTime endDate) // T: rename from getEmployee -> getPayslip
+        public IEnumerable<PayslipChartDto> GetPayslips(DateTime startDate, DateTime endDate)
         {
             var firstDateOfMonth = DateTimeUtils.FirstDayOfMonth(startDate);
-            var lastDateOfMonth = DateTimeUtils.GetLastDayOfMonth(endDate);
+            var lastDateOfMonth = DateTimeUtils.LastDayOfMonth(endDate);
             var employeesInPreviousMonth = WorkScope.GetAll<Payslip>()
-                .Select(p => new PayslipChartDto // T: rename from employeeDto -> PayslipChartDto
+                .Select(p => new PayslipChartDto
                 {
                     EmployeeId = p.EmployeeId,
                     FullName = p.Employee.FullName,
@@ -295,7 +301,7 @@ namespace HRMv2.Manager.Home
                     TeamIds = p.PayslipTeams.Select(team => team.TeamId).ToList(),
                     UserType = p.UserType,
                     BranchId = p.BranchId,
-                    Month = p.Payroll.ApplyMonth,
+                    DateAt = p.Payroll.ApplyMonth,
                     Gender = p.Employee.Sex
                 })
                 .Where(payslip => payslip.Month >= startDate
@@ -303,63 +309,46 @@ namespace HRMv2.Manager.Home
             return employeesInPreviousMonth;
         }
 
-        public List<PayslipChartDto> GetEmployeeDetailFromCurrentMonth(DateTime firstDayOfCurrentMonth, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
+        public List<PayslipChartDto> GetEmployeeForCurrentMonth(DateTime firstDayOfCurrentMonth, List<WorkingHistoryDto> workingHistories)
         {
-            //lấy các Employee đang working và MaternityLeave ở hiện tại
-            var lastDayOfCurrentMonth = DateTimeUtils.GetLastDayOfMonth(firstDayOfCurrentMonth);
+            var lastDayOfCurrentMonth = DateTimeUtils.LastDayOfMonth(firstDayOfCurrentMonth);
 
-            var workingEmployees = WorkScope.GetAll<Employee>()
-                    .Select(x => new PayslipChartDto
-                    {
-                        EmployeeId = x.Id,
-                        FullName = x.FullName,
-                        JobPositionId = x.JobPositionId,
-                        LevelId = x.LevelId,
-                        BranchId = x.BranchId,
-                        TeamIds = x.EmployeeTeams.Select(t => t.TeamId).ToList(),
-                        UserType = x.UserType,
-                        Gender = x.Sex,
-                        Status = x.Status,
-                        Month = firstDayOfCurrentMonth,
-                    })
-                    .Where(x => x.Status == EmployeeStatus.Working || x.Status == EmployeeStatus.MaternityLeave)
-                    .ToList();
-
-            //lấy các Employee có working history là quit, pause, working, MaternityLeave nằm trong tháng hiện tại
-
-            var otherEmployees = allEmloyeeWorkingHistories
+            var employeeIds = workingHistories
                 .Where(x => x.DateAt >= firstDayOfCurrentMonth && x.DateAt <= lastDayOfCurrentMonth)
-                .GroupBy(x => x.EmployeeId)
-                .Select(group => group.OrderBy(x => x.DateAt).Last())
-                .Select(x => new PayslipChartDto
-                {
-                    EmployeeId = x.EmployeeId,
-                    FullName = x.FullName,
-                    JobPositionId = x.JobPositionId,
-                    LevelId = x.LevelId,
-                    BranchId = x.BranchId,
-                    TeamIds = x.TeamIds,
-                    UserType = x.UserType,
-                    Gender = x.Gender,
-                    Month = DateTimeUtils.GetFirstDayOfMonth(x.DateAt)
-                }).ToList();
-
-            workingEmployees = workingEmployees ?? new List<PayslipChartDto>();
-            otherEmployees = otherEmployees ?? new List<PayslipChartDto>();
-
-            //ghép 2 list, chỉ lấy những nhân viên workingEmployees không nằm trong otherEmployees để ghép
-            var employeesInCurrentMonth = otherEmployees
-                .Where(x => !workingEmployees.Any(w => w.EmployeeId == x.EmployeeId))
-                .Union(workingEmployees)
+                .Select(s => s.EmployeeId)
+                .ToList()
+                .Distinct()
                 .ToList();
-            return employeesInCurrentMonth;
+
+            var resultList = WorkScope.GetAll<Employee>()
+                   .Select(x => new PayslipChartDto
+                   {
+                       EmployeeId = x.Id,
+                       FullName = x.FullName,
+                       JobPositionId = x.JobPositionId,
+                       LevelId = x.LevelId,
+                       BranchId = x.BranchId,
+                       TeamIds = x.EmployeeTeams.Select(t => t.TeamId).ToList(),
+                       UserType = x.UserType,
+                       Gender = x.Sex,
+                       Status = x.Status,
+                       DateAt = firstDayOfCurrentMonth,
+                   })
+                   .Where(x => x.Status == EmployeeStatus.Working 
+                   || x.Status == EmployeeStatus.MaternityLeave
+                   || employeeIds.Contains(x.EmployeeId))
+                   .ToList();
+
+         
+         
+            return resultList;
         }
 
-        public EmployeeMonthlyStatus GetMontlyStatus(PayslipChartDto employee, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
+        public EmployeeMonthlyStatus GetMontlyStatus(PayslipChartDto employee, List<WorkingHistoryDto> workingHistories)
         {
             // Tìm kiếm bản ghi lịch sử làm việc tương ứng với tháng
-            var matchingHistory = allEmloyeeWorkingHistories
-                .Where(wh => wh.EmployeeId == employee.EmployeeId && DateTimeUtils.GetFirstDayOfMonth(wh.DateAt) == DateTimeUtils.GetFirstDayOfMonth(employee.Month))
+            var matchingHistory = workingHistories
+                .Where(wh => wh.EmployeeId == employee.EmployeeId && DateTimeUtils.FirstDayOfMonth(wh.DateAt) == employee.Month)
                 .OrderByDescending(wh => wh.DateAt)
                 .FirstOrDefault();
 
@@ -368,11 +357,11 @@ namespace HRMv2.Manager.Home
                 // Cập nhật trạng thái dựa trên lịch sử làm việc 
                 employee.MonthlyStatus = matchingHistory.Status switch
                 {
-                    EmployeeMonthlyStatus.Pausing or EmployeeMonthlyStatus.MaternityLeave => matchingHistory.Status,
-                    EmployeeMonthlyStatus.Working => IsBackToWork(employee, matchingHistory, allEmloyeeWorkingHistories)
+                    EmployeeStatus.Pausing or EmployeeStatus.MaternityLeave => (EmployeeMonthlyStatus)matchingHistory.Status,
+                    EmployeeStatus.Working => IsBackToWork(employee, matchingHistory, workingHistories)
                                             ? EmployeeMonthlyStatus.BackToWork
                                             : EmployeeMonthlyStatus.Onboard,
-                    EmployeeMonthlyStatus.Quit => IsOnOffInMonth(employee, matchingHistory, allEmloyeeWorkingHistories)
+                    EmployeeStatus.Quit => IsOnOffInMonth(employee, matchingHistory, workingHistories)
                                             ? EmployeeMonthlyStatus.OnOffInMonth
                                             : EmployeeMonthlyStatus.Quit,
                     _ => employee.MonthlyStatus
@@ -381,32 +370,32 @@ namespace HRMv2.Manager.Home
             else
             {
                 // Nếu không có lịch sử làm việc phù hợp, kiểm tra trạng thái gần nhất trước ApplyMonth
-                var lastStatusBeforeApplyMonth = allEmloyeeWorkingHistories
+                var lastStatusBeforeApplyMonth = workingHistories
                     .Where(wh => wh.EmployeeId == employee.EmployeeId && wh.DateAt < employee.Month)
                     .OrderByDescending(wh => wh.DateAt)
                     .Select(wh => wh.Status)
                     .FirstOrDefault();
 
-                employee.MonthlyStatus = lastStatusBeforeApplyMonth == EmployeeMonthlyStatus.MaternityLeave ? EmployeeMonthlyStatus.MaternityLeave : EmployeeMonthlyStatus.Working;
+                employee.MonthlyStatus = lastStatusBeforeApplyMonth == EmployeeStatus.MaternityLeave ? EmployeeMonthlyStatus.MaternityLeave : EmployeeMonthlyStatus.Working;
             }
             return employee.MonthlyStatus;
         }
 
-        public bool IsBackToWork(PayslipChartDto employee, EmployeeWorkingHistoryDetailDto matchingHistory, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
+        public bool IsBackToWork(PayslipChartDto employee, WorkingHistoryDto matchingHistory, List<WorkingHistoryDto> workingHistories)
         {
-            var historiesBeforeWorking = allEmloyeeWorkingHistories
+            var historiesBeforeWorking = workingHistories
                         .Where(wh => wh.EmployeeId == employee.EmployeeId
                                         && wh.DateAt < matchingHistory.DateAt)
                         .OrderByDescending(wh => wh.DateAt)
                         .FirstOrDefault();
-            if (historiesBeforeWorking != null && (historiesBeforeWorking.Status == EmployeeMonthlyStatus.Pausing || historiesBeforeWorking.Status == EmployeeMonthlyStatus.MaternityLeave))
+            if (historiesBeforeWorking != null && (historiesBeforeWorking.Status == EmployeeStatus.Pausing || historiesBeforeWorking.Status == EmployeeStatus.MaternityLeave))
                 return true;
             return false;
         }
 
-        public bool IsOnOffInMonth(PayslipChartDto employee, EmployeeWorkingHistoryDetailDto matchingHistory, List<EmployeeWorkingHistoryDetailDto> allEmloyeeWorkingHistories)
+        public bool IsOnOffInMonth(PayslipChartDto employee, WorkingHistoryDto matchingHistory, List<WorkingHistoryDto> workingHistories)
         {
-            var historiesBeforeQuit = allEmloyeeWorkingHistories
+            var historiesBeforeQuit = workingHistories
                         .Where(wh => wh.EmployeeId == employee.EmployeeId
                                         && wh.DateAt < matchingHistory.DateAt)
                         .OrderByDescending(wh => wh.DateAt)
@@ -414,14 +403,14 @@ namespace HRMv2.Manager.Home
                         .ToList();
 
             if (historiesBeforeQuit.Count == 2
-                && historiesBeforeQuit[0].Status == EmployeeMonthlyStatus.Working
-                && (historiesBeforeQuit[1].Status == EmployeeMonthlyStatus.Pausing || historiesBeforeQuit[1].Status == EmployeeMonthlyStatus.MaternityLeave))
+                && historiesBeforeQuit[0].Status == EmployeeStatus.Working
+                && (historiesBeforeQuit[1].Status == EmployeeStatus.Pausing || historiesBeforeQuit[1].Status == EmployeeStatus.MaternityLeave))
             {
                 return false;
             }
             else if (historiesBeforeQuit.Any()
-                     && historiesBeforeQuit.First().Status == EmployeeMonthlyStatus.Working
-                     && historiesBeforeQuit.First().DateAt >= DateTimeUtils.GetFirstDayOfMonth(matchingHistory.DateAt))
+                     && historiesBeforeQuit.First().Status == EmployeeStatus.Working
+                     && historiesBeforeQuit.First().DateAt >= DateTimeUtils.FirstDayOfMonth(matchingHistory.DateAt))
             {
                 return true;
             }
