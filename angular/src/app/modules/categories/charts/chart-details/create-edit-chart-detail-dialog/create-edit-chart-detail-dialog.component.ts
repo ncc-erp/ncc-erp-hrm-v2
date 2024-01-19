@@ -74,22 +74,10 @@ export class CreateEditChartDetailDialogComponent
 
   getChartDetail(id: number) {
     this.subscription.push(
-      this.chartDetailService
-        .get(id)
-        // .pipe(
-        //   startWithTap(() => {
-        //     this.isLoading = true;
-        //   })
-        // )
-        // .pipe(
-        //   finalize(() => {
-        //     this.isLoading = false;
-        //   })
-        // )
-        .subscribe((rs) => {
-          this.chartDetail = rs.result;
-          this.setValueToUpdate();
-        })
+      this.chartDetailService.get(id).subscribe((rs) => {
+        this.chartDetail = rs.result;
+        this.setValueToUpdate();
+      })
     );
   }
 
@@ -194,54 +182,55 @@ export class CreateEditChartDetailDialogComponent
     };
 
     this.trimData(createChart);
+    if (createChart.name.length !== 0) {
+      if (this.dialogData?.id) {
+        // UPDATE
+        const updateChart: UpdateChartDetailDto = {
+          ...createChart,
+          id: this.dialogData.id,
+        };
 
-    if (this.dialogData?.id) {
-      // UPDATE
-      const updateChart: UpdateChartDetailDto = {
-        ...createChart,
-        id: this.dialogData.id,
-      };
-
-      this.subscription.push(
-        this.chartDetailService
-          .update(updateChart)
-          .pipe(
-            startWithTap(() => {
-              this.isLoading = true;
+        this.subscription.push(
+          this.chartDetailService
+            .update(updateChart)
+            .pipe(
+              startWithTap(() => {
+                this.isLoading = true;
+              })
+            )
+            .pipe(
+              finalize(() => {
+                this.isLoading = false;
+              })
+            )
+            .subscribe((rs) => {
+              abp.notify.success(`Update chart detail successfull`);
+              this.dialogRef.close(true);
             })
-          )
-          .pipe(
-            finalize(() => {
-              this.isLoading = false;
+        );
+      } // INSERT
+      else {
+        this.subscription.push(
+          this.chartDetailService
+            .create(createChart)
+            .pipe(
+              startWithTap(() => {
+                this.isLoading = true;
+              })
+            )
+            .pipe(
+              finalize(() => {
+                this.isLoading = false;
+              })
+            )
+            .subscribe((rs) => {
+              abp.notify.success(
+                `Created new chart detail ${this.chartDetail.name}`
+              );
+              this.dialogRef.close(true);
             })
-          )
-          .subscribe((rs) => {
-            abp.notify.success(`Update chart detail successfull`);
-            this.dialogRef.close(true);
-          })
-      );
-    } // INSERT
-    else {
-      this.subscription.push(
-        this.chartDetailService
-          .create(createChart)
-          .pipe(
-            startWithTap(() => {
-              this.isLoading = true;
-            })
-          )
-          .pipe(
-            finalize(() => {
-              this.isLoading = false;
-            })
-          )
-          .subscribe((rs) => {
-            abp.notify.success(
-              `Created new chart detail ${this.chartDetail.name}`
-            );
-            this.dialogRef.close(true);
-          })
-      );
+        );
+      }
     }
   }
 

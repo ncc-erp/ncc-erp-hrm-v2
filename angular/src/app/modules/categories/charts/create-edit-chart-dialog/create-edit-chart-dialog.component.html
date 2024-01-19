@@ -2,7 +2,7 @@
   class="form-horizontal"
   autocomplete="off"
   #branchForm="ngForm"
-  novalidate
+  validate
 >
   <app-dialog-header [dialogTitle]="title"></app-dialog-header>
   <div class="p-3">
@@ -63,5 +63,4 @@
     (onSave)="saveAndClose()"
     [isDisable]="isLoading"
   ></app-dialog-footer>
-  <!-- !chartForm.valid || -->
 </form>
