@@ -1,4 +1,4 @@
-<!-- <form [formGroup]="formPopup" (ngSubmit)="submit()">
+<form [formGroup]="formPopup" (ngSubmit)="submit()">
     <h4>Custom time</h4>
     <mat-form-field appearance="outline" class="mr-2">
       <input matInput placeholder="From Date" [matDatepicker]="picker" (dateChange)="handleChangeFromDate()"
@@ -10,23 +10,6 @@
       <input matInput [matDatepicker]="picker1" placeholder="To Date" formControlName="toDateCustomTime">
       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
       <mat-datepicker #picker1></mat-datepicker>
-    </mat-form-field>
-    <div mat-dialog-actions align="end">
-      <button type="button" class="btn btn-default mr-2" (click)="close(false)">Cancel</button>
-      <button mat-flat-button type="submit" flex="15" color="primary">Save</button>
-    </div>
-  </form> -->
-  <form [formGroup]="formPopup" (ngSubmit)="submit()">
-    <h4>Custom time</h4>
-    <mat-form-field appearance="outline" class="mr-2">
-      <input matInput [matDatepicker]="picker" placeholder="From Date" formControlName="fromDateCustomTime">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker startView="multi-year" [startAt]="startDate" [yearNavigator]="true" [yearRange]="pickerYearRange"></mat-datepicker>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <input matInput [matDatepicker]="picker1" placeholder="To Date" formControlName="toDateCustomTime">
-      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-      <mat-datepicker #picker1 startView="multi-year" [startAt]="startDate" [yearNavigator]="true" [yearRange]="pickerYearRange"></mat-datepicker>
     </mat-form-field>
     <div mat-dialog-actions align="end">
       <button type="button" class="btn btn-default mr-2" (click)="close(false)">Cancel</button>
