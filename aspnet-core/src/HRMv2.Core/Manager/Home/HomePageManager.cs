@@ -341,7 +341,11 @@ namespace HRMv2.Manager.Home
         }
         public void UpdateMonthlyStatus(PayslipChartDto payslip, List<WorkingHistoryDto> workingHistories)
         {
-            payslip.MonthlyStatus = dicEmployeeMonthlyStatus[getEmployeeMonthlyStatusKey(payslip.Month, workingHistories)];
+            var key = getEmployeeMonthlyStatusKey(payslip.Month, workingHistories);
+            if (dicEmployeeMonthlyStatus.TryGetValue(key, out var monthlyStatus))
+            {
+                payslip.MonthlyStatus = monthlyStatus;
+            }
         }
         private static Dictionary<string, EmployeeMonthlyStatus> dicEmployeeMonthlyStatus = new Dictionary<string, EmployeeMonthlyStatus>()
         {
@@ -358,6 +362,11 @@ namespace HRMv2.Manager.Home
             { "q|ml", EmployeeMonthlyStatus.Quit },
             //Tháng được chọn chỉ có MaternityLeave
             { "ml|w", EmployeeMonthlyStatus.MaternityLeave },
+            //Tháng được chọn Working -> Pause
+            { "pw| ", EmployeeMonthlyStatus.Pausing },
+            { "pw|p", EmployeeMonthlyStatus.Pausing },
+            { "pw|q", EmployeeMonthlyStatus.Pausing },
+            { "pw|ml", EmployeeMonthlyStatus.Pausing },
             //Tháng được chọn Working -> Quit
             { "qw| ", EmployeeMonthlyStatus.OnOffInMonth },
             { "qw|ml", EmployeeMonthlyStatus.Quit },
