@@ -32,15 +32,17 @@ namespace HRMv2.APIs.Employees
         [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_View, PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail)]
         public GetEmployeeInfoDto Get(long id)
         {
+            _employeeManager.CheckEmployeeInSessionBranch(id);
             return _employeeManager.Get(id);
         }
                
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Employee_View)]
+        [AbpAuthorize(PermissionNames.Employee_View, PermissionNames.Employee_ViewMyBranchEmployee)]
         public async Task<GridResult<GetEmployeeDto>> GetEmployeeExcept(GetEmployeeToAddDto input)
         {
-            return await _employeeManager.GetEmployeeExcept(input);
+            bool isViewAll = IsGranted(PermissionNames.Employee_View);
+            return await _employeeManager.GetEmployeeExcept(input, isViewAll);
         }
 
 
