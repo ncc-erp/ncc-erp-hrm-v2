@@ -156,7 +156,7 @@ namespace HRMv2.Manager.Home
                                             .ToList();
             var dicEmployeeIdToWorkingHistory = workingHistories
                                             .GroupBy(s => s.EmployeeId)
-                                            .ToDictionary(s => s.Key, s => s.ToList());
+                                            .ToDictionary(s => s.Key, s => s.OrderByDescending(x => x.DateAt).ToList());
 
             if (firstDayOfCurrentMonth <= endDate) //nếu tháng được chọn có chứa tháng hiện tại
             {
@@ -171,7 +171,7 @@ namespace HRMv2.Manager.Home
                 {
                     continue;
                 }
-                employee.MonthlyStatus = GetMontlyStatus(employee, dicEmployeeIdToWorkingHistory[employee.EmployeeId]); // T: chỉ truyền vào status, không nên truyền vào cả cục to
+                UpdateMonthlyStatus(employee, dicEmployeeIdToWorkingHistory[employee.EmployeeId]);
             }
 
             return payslips;
@@ -287,7 +287,7 @@ namespace HRMv2.Manager.Home
         #endregion
 
         #region Process data
-        public IEnumerable<PayslipChartDto> GetPayslips(DateTime startDate, DateTime endDate)
+        public IQueryable<PayslipChartDto> GetPayslips(DateTime startDate, DateTime endDate)
         {
             var firstDateOfMonth = DateTimeUtils.FirstDayOfMonth(startDate);
             var lastDateOfMonth = DateTimeUtils.LastDayOfMonth(endDate);
@@ -304,11 +304,10 @@ namespace HRMv2.Manager.Home
                     DateAt = p.Payroll.ApplyMonth,
                     Gender = p.Employee.Sex
                 })
-                .Where(payslip => payslip.Month >= startDate
-                                && payslip.Month <= endDate);
+                .Where(payslip => payslip.DateAt >= firstDateOfMonth
+                                && payslip.DateAt <= lastDateOfMonth);
             return employeesInPreviousMonth;
         }
-
         public List<PayslipChartDto> GetEmployeeForCurrentMonth(DateTime firstDayOfCurrentMonth, List<WorkingHistoryDto> workingHistories)
         {
             var lastDayOfCurrentMonth = DateTimeUtils.LastDayOfMonth(firstDayOfCurrentMonth);
@@ -338,85 +337,94 @@ namespace HRMv2.Manager.Home
                    || x.Status == EmployeeStatus.MaternityLeave
                    || employeeIds.Contains(x.EmployeeId))
                    .ToList();
-
-         
-         
             return resultList;
         }
-
-        public EmployeeMonthlyStatus GetMontlyStatus(PayslipChartDto employee, List<WorkingHistoryDto> workingHistories)
+        public void UpdateMonthlyStatus(PayslipChartDto payslip, List<WorkingHistoryDto> workingHistories)
         {
-            // Tìm kiếm bản ghi lịch sử làm việc tương ứng với tháng
-            var matchingHistory = workingHistories
-                .Where(wh => wh.EmployeeId == employee.EmployeeId && DateTimeUtils.FirstDayOfMonth(wh.DateAt) == employee.Month)
-                .OrderByDescending(wh => wh.DateAt)
-                .FirstOrDefault();
+            payslip.MonthlyStatus = dicEmployeeMonthlyStatus[getEmployeeMonthlyStatusKey(payslip.Month, workingHistories)];
+        }
+        private static Dictionary<string, EmployeeMonthlyStatus> dicEmployeeMonthlyStatus = new Dictionary<string, EmployeeMonthlyStatus>()
+        {
+            //Tháng được chọn chỉ có Working
+            { "w| ", EmployeeMonthlyStatus.Onboard }, 
+            { "w|q", EmployeeMonthlyStatus.Onboard },
+            { "w|p", EmployeeMonthlyStatus.BackToWork },
+            { "w|ml", EmployeeMonthlyStatus.BackToWork },
+            //Tháng được chọn chỉ có Pause
+            { "p|w", EmployeeMonthlyStatus.Pausing },
+            //Tháng được chọn chỉ có Quit
+            { "q|w", EmployeeMonthlyStatus.Quit },
+            { "q|p", EmployeeMonthlyStatus.Quit },
+            { "q|ml", EmployeeMonthlyStatus.Quit },
+            //Tháng được chọn chỉ có MaternityLeave
+            { "ml|w", EmployeeMonthlyStatus.MaternityLeave },
+            //Tháng được chọn Working -> Quit
+            { "qw| ", EmployeeMonthlyStatus.OnOffInMonth },
+            { "qw|ml", EmployeeMonthlyStatus.Quit },
+            { "qw|p", EmployeeMonthlyStatus.Quit },
+            { "qw|q", EmployeeMonthlyStatus.OnOffInMonth },
+            //Tháng được chọn Working -> MaternityLeave
+            { "mlw| ", EmployeeMonthlyStatus.MaternityLeave },
+            { "mlw|ml", EmployeeMonthlyStatus.MaternityLeave },
+            { "mlw|p", EmployeeMonthlyStatus.MaternityLeave },
+            { "mlw|q", EmployeeMonthlyStatus.MaternityLeave },
+            //Tháng được chọn Working -> Pause -> Quit
+            { "qpw| ", EmployeeMonthlyStatus.Quit },
+            { "qpw|q", EmployeeMonthlyStatus.Quit },
+            { "qpw|ml", EmployeeMonthlyStatus.Quit },
+            { "qpw|p", EmployeeMonthlyStatus.Quit },
+            //Tháng được chọn Working -> MaternityLeave -> Quit
+            { "qmlw| ", EmployeeMonthlyStatus.Quit },
+            { "qmlw|q", EmployeeMonthlyStatus.Quit },
+            { "qmlw|ml", EmployeeMonthlyStatus.Quit },
+            { "qmlw|p", EmployeeMonthlyStatus.Quit },
+            //Tháng được chọn Pause -> Quit
+            { "qp|w", EmployeeMonthlyStatus.Quit },
+            //Tháng được chọn MaternityLeave -> Quit
+            { "qml|w", EmployeeMonthlyStatus.Quit },
+            //Tháng được chọn không có trạng thái
+            { " |w", EmployeeMonthlyStatus.Working },
+            { " |ml", EmployeeMonthlyStatus.MaternityLeave },
+        };
+        public static string getEmployeeMonthlyStatusKey(DateTime date, List<WorkingHistoryDto> workingHistories)
+        {
+            var statusInDateMonth = new HashSet<string>();
+            string lastStatusBeforeDateMonth = null;
 
-            if (matchingHistory != null)
+            foreach (var history in workingHistories)
             {
-                // Cập nhật trạng thái dựa trên lịch sử làm việc 
-                employee.MonthlyStatus = matchingHistory.Status switch
+                if (history.DateAt.Year == date.Year && history.DateAt.Month == date.Month)
                 {
-                    EmployeeStatus.Pausing or EmployeeStatus.MaternityLeave => (EmployeeMonthlyStatus)matchingHistory.Status,
-                    EmployeeStatus.Working => IsBackToWork(employee, matchingHistory, workingHistories)
-                                            ? EmployeeMonthlyStatus.BackToWork
-                                            : EmployeeMonthlyStatus.Onboard,
-                    EmployeeStatus.Quit => IsOnOffInMonth(employee, matchingHistory, workingHistories)
-                                            ? EmployeeMonthlyStatus.OnOffInMonth
-                                            : EmployeeMonthlyStatus.Quit,
-                    _ => employee.MonthlyStatus
-                };
+                    // Thêm các trạng thái trong tháng hiện tại
+                    statusInDateMonth.Add(StatusToChar(history.Status));
+                }
+                else if (history.DateAt < date)
+                {
+                    //Lấy trạng thái gần nhất trước tháng hiện tại
+                    lastStatusBeforeDateMonth = StatusToChar(history.Status);
+                    break;
+                }
             }
-            else
-            {
-                // Nếu không có lịch sử làm việc phù hợp, kiểm tra trạng thái gần nhất trước ApplyMonth
-                var lastStatusBeforeApplyMonth = workingHistories
-                    .Where(wh => wh.EmployeeId == employee.EmployeeId && wh.DateAt < employee.Month)
-                    .OrderByDescending(wh => wh.DateAt)
-                    .Select(wh => wh.Status)
-                    .FirstOrDefault();
 
-                employee.MonthlyStatus = lastStatusBeforeApplyMonth == EmployeeStatus.MaternityLeave ? EmployeeMonthlyStatus.MaternityLeave : EmployeeMonthlyStatus.Working;
-            }
-            return employee.MonthlyStatus;
+            var dateMonthStr = statusInDateMonth.Count > 0 ? string.Join("", statusInDateMonth) : " ";
+            var previousMonthsStr = lastStatusBeforeDateMonth?.ToString() ?? " ";
+
+            return $"{dateMonthStr}|{previousMonthsStr}";
         }
-
-        public bool IsBackToWork(PayslipChartDto employee, WorkingHistoryDto matchingHistory, List<WorkingHistoryDto> workingHistories)
+        public static string StatusToChar(EmployeeStatus status)
         {
-            var historiesBeforeWorking = workingHistories
-                        .Where(wh => wh.EmployeeId == employee.EmployeeId
-                                        && wh.DateAt < matchingHistory.DateAt)
-                        .OrderByDescending(wh => wh.DateAt)
-                        .FirstOrDefault();
-            if (historiesBeforeWorking != null && (historiesBeforeWorking.Status == EmployeeStatus.Pausing || historiesBeforeWorking.Status == EmployeeStatus.MaternityLeave))
-                return true;
-            return false;
-        }
-
-        public bool IsOnOffInMonth(PayslipChartDto employee, WorkingHistoryDto matchingHistory, List<WorkingHistoryDto> workingHistories)
-        {
-            var historiesBeforeQuit = workingHistories
-                        .Where(wh => wh.EmployeeId == employee.EmployeeId
-                                        && wh.DateAt < matchingHistory.DateAt)
-                        .OrderByDescending(wh => wh.DateAt)
-                        .Take(2)
-                        .ToList();
-
-            if (historiesBeforeQuit.Count == 2
-                && historiesBeforeQuit[0].Status == EmployeeStatus.Working
-                && (historiesBeforeQuit[1].Status == EmployeeStatus.Pausing || historiesBeforeQuit[1].Status == EmployeeStatus.MaternityLeave))
+            switch (status)
             {
-                return false;
-            }
-            else if (historiesBeforeQuit.Any()
-                     && historiesBeforeQuit.First().Status == EmployeeStatus.Working
-                     && historiesBeforeQuit.First().DateAt >= DateTimeUtils.FirstDayOfMonth(matchingHistory.DateAt))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                case EmployeeStatus.Working:
+                    return "w";
+                case EmployeeStatus.Pausing:
+                    return "p";
+                case EmployeeStatus.Quit:
+                    return "q";
+                case EmployeeStatus.MaternityLeave:
+                    return "ml";
+                default:
+                    return " ";
             }
         }
 
