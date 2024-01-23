@@ -8,6 +8,7 @@ using HRMv2.Manager.WorkingHistories;
 using HRMv2.NccCore;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using NccCore.Uitls;
 using Xunit;
 using static HRMv2.Constants.Enum.HRMEnum;
 
@@ -111,6 +112,108 @@ namespace HRMv2.Core.Tests.Managers.Home
                 });
             });
         }
+        [Theory]
+        [InlineData(1, "2023-12-1", "p|w")]
+        [InlineData(2, "2023-12-1", "m|w")]
+        [InlineData(3, "2023-12-1", "w|m")]
+        [InlineData(4, "2023-12-1", "w|p")]
+        [InlineData(5, "2023-12-1", "w|q")]
+        [InlineData(6, "2023-12-1", "w|-")]
+        [InlineData(7, "2023-12-1", "qw|-")]
+        [InlineData(8, "2023-12-1", "qw|q")]
+        [InlineData(9, "2023-12-1", "qw|m")]
+        [InlineData(10, "2023-12-1", "qw|p")]
+        [InlineData(11, "2023-12-1", "q|w")]
+        [InlineData(12, "2023-12-1", "-|w")]
+        [InlineData(13, "2023-12-1", "-|m")]
+        [InlineData(14, "2023-12-1", "pw|-")]
+        [InlineData(15, "2023-12-1", "pw|p")]
+        public void GetEmployeeMonthlyStatusKey_Test(long employeeId, DateTime month, string expectedStatusStr)
+        {
+            {
+                // Arrange
+                var workingHistories = GetAllEmployeeWorkingHistories()
+                                    .GroupBy(s => s.EmployeeId)
+                                    .ToDictionary(
+                                        s => s.Key,
+                                        s => s.OrderByDescending(x => x.DateAt).ToList()
+                                    );// Method to create list of WorkingHistoryDto
+                // Act
+                var actualStatusStr = _homePage.GetEmployeeMonthlyStatusKey(month, workingHistories[employeeId]);
+
+                // Assert
+                Assert.Equal(expectedStatusStr, actualStatusStr);
+            }
+        }
+
+        [Theory]
+        [InlineData(16, "2024-04-01", "w|-")]
+        [InlineData(16, "2024-05-01", "-|w")]
+        [InlineData(16, "2024-06-01", "-|w")]
+        [InlineData(16, "2024-07-01", "-|w")]
+        [InlineData(16, "2024-08-01", "q|w")]
+        [InlineData(16, "2024-10-01", "w|q")]
+        [InlineData(16, "2024-11-01", "-|w")]
+        [InlineData(16, "2024-12-01", "m|w")]
+        [InlineData(16, "2025-01-01", "-|m")]
+        [InlineData(16, "2025-02-01", "-|m")]
+        [InlineData(16, "2025-03-01", "-|m")]
+        [InlineData(16, "2025-04-01", "-|m")]
+        [InlineData(16, "2025-05-01", "-|m")]
+        [InlineData(16, "2025-06-01", "qw|m")]
+        public void GetEmployeeMonthlyStatusKey_ComplicatedTestCase1(long employeeId, DateTime month, string expectedStatusStr)
+        {
+            {
+                // Arrange
+                var workingHistories = GetAllEmployeeWorkingHistories()
+                                    .GroupBy(s => s.EmployeeId)
+                                    .ToDictionary(
+                                        s => s.Key,
+                                        s => s.OrderByDescending(x => x.DateAt).ToList()
+                                    );// Method to create list of WorkingHistoryDto
+                // Act
+                var actualStatusStr = _homePage.GetEmployeeMonthlyStatusKey(month, workingHistories[employeeId]);
+
+                // Assert
+                Assert.Equal(expectedStatusStr, actualStatusStr);
+            }
+        }
+
+        [Theory]
+        [InlineData(17, "2022-08-01", "w|-")]
+        [InlineData(17, "2022-09-01", "-|w")]
+        [InlineData(17, "2022-10-01", "p|w")]
+        [InlineData(17, "2022-12-01", "w|p")]
+        [InlineData(17, "2023-01-01", "q|w")]
+        [InlineData(17, "2023-03-01", "w|q")]
+        [InlineData(17, "2023-04-01", "m|w")]
+        [InlineData(17, "2023-05-01", "-|m")]
+        [InlineData(17, "2023-06-01", "-|m")]
+        [InlineData(17, "2023-07-01", "qw|m")]
+        [InlineData(17, "2023-08-01", "mw|q")]
+        [InlineData(17, "2023-09-01", "qmw|m")]
+        [InlineData(17, "2023-10-01", "w|q")]
+        [InlineData(17, "2023-11-01", "qm|w")]
+        [InlineData(17, "2023-12-01", "w|q")]
+        [InlineData(17, "2024-01-01", "qp|w")]
+
+        public void GetEmployeeMonthlyStatusKey_ComplicatedTestCase2(long employeeId, DateTime month, string expectedStatusStr)
+        {
+            {
+                // Arrange
+                var workingHistories = GetAllEmployeeWorkingHistories()
+                                    .GroupBy(s => s.EmployeeId)
+                                    .ToDictionary(
+                                        s => s.Key,
+                                        s => s.OrderByDescending(x => x.DateAt).ToList()
+                                    );// Method to create list of WorkingHistoryDto
+                // Act
+                var actualStatusStr = _homePage.GetEmployeeMonthlyStatusKey(month, workingHistories[employeeId]);
+
+                // Assert
+                Assert.Equal(expectedStatusStr, actualStatusStr);
+            }
+        }
 
         [Theory]
         [InlineData(1, "2023-12-10", EmployeeMonthlyStatus.Pausing)]
@@ -128,9 +231,8 @@ namespace HRMv2.Core.Tests.Managers.Home
         [InlineData(13, "2023-12-10", EmployeeMonthlyStatus.MaternityLeave)]
         [InlineData(14, "2023-12-10", EmployeeMonthlyStatus.Pausing)]
         [InlineData(15, "2023-12-10", EmployeeMonthlyStatus.Pausing)]
-        public void GetMonthlyStatus_Test(int employeeId, DateTime month, EmployeeMonthlyStatus expectedStatus)
+        public void GetMonthlyStatus_Test(long employeeId, DateTime month, EmployeeMonthlyStatus expectedStatus)
         {
-
             {
                 // Arrange
                 var workingHistories = GetAllEmployeeWorkingHistories()
@@ -142,10 +244,10 @@ namespace HRMv2.Core.Tests.Managers.Home
                 var employee = new PayslipChartDto { EmployeeId = employeeId, DateAt = month };
 
                 // Act
-                _homePage.UpdateMonthlyStatus(employee, workingHistories[employeeId]);
+                var actualStatus = _homePage.GetMonthlyStatus(employee, workingHistories[employeeId]);
 
                 // Assert
-                Assert.Equal(expectedStatus, employee.MonthlyStatus);
+                Assert.Equal(expectedStatus, actualStatus);
             }
         }
 
@@ -164,9 +266,8 @@ namespace HRMv2.Core.Tests.Managers.Home
         [InlineData(16, "2025-04-01", EmployeeMonthlyStatus.MaternityLeave)]
         [InlineData(16, "2025-05-01", EmployeeMonthlyStatus.MaternityLeave)]
         [InlineData(16, "2025-06-01", EmployeeMonthlyStatus.Quit)]
-        public void GetMonthlyStatus_ComplicatedTestCase1(int employeeId, DateTime month, EmployeeMonthlyStatus expectedStatus)
+        public void GetMonthlyStatus_ComplicatedTestCase1(long employeeId, DateTime month, EmployeeMonthlyStatus expectedStatus)
         {
-
             {
                 // Arrange
                 var workingHistories = GetAllEmployeeWorkingHistories()
@@ -178,10 +279,10 @@ namespace HRMv2.Core.Tests.Managers.Home
                 var employee = new PayslipChartDto { EmployeeId = employeeId, DateAt = month };
 
                 // Act
-                _homePage.UpdateMonthlyStatus(employee, workingHistories[employeeId]);
+                var actualStatus = _homePage.GetMonthlyStatus(employee, workingHistories[employeeId]);
 
                 // Assert
-                Assert.Equal(expectedStatus, employee.MonthlyStatus);
+                Assert.Equal(expectedStatus, actualStatus);
             }
         }
 
@@ -203,9 +304,8 @@ namespace HRMv2.Core.Tests.Managers.Home
         [InlineData(17, "2023-12-01", EmployeeMonthlyStatus.Onboard)]
         [InlineData(17, "2024-01-01", EmployeeMonthlyStatus.Quit)]
 
-        public void GetMonthlyStatus_ComplicatedTestCase2(int employeeId, DateTime month, EmployeeMonthlyStatus expectedStatus)
+        public void GetMonthlyStatus_ComplicatedTestCase2(long employeeId, DateTime month, EmployeeMonthlyStatus expectedStatus)
         {
-
             {
                 // Arrange
                 var workingHistories = GetAllEmployeeWorkingHistories()
@@ -217,10 +317,10 @@ namespace HRMv2.Core.Tests.Managers.Home
                 var employee = new PayslipChartDto { EmployeeId = employeeId, DateAt = month };
 
                 // Act
-                _homePage.UpdateMonthlyStatus(employee, workingHistories[employeeId]);
+                var actualStatus = _homePage.GetMonthlyStatus(employee, workingHistories[employeeId]);
 
                 // Assert
-                Assert.Equal(expectedStatus, employee.MonthlyStatus);
+                Assert.Equal(expectedStatus, actualStatus);
             }
         }
 

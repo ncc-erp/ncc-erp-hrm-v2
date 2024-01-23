@@ -33,6 +33,8 @@ using Chart = HRMv2.Entities.Chart;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using HRMv2.Manager.Benefits.Dto;
 using HRMv2.Manager.Histories.Dto;
+using Newtonsoft.Json;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 
 namespace HRMv2.Manager.Home
 {
@@ -164,14 +166,18 @@ namespace HRMv2.Manager.Home
 
                 payslips.AddRange(employeeInCurrentMonth);
             }
-
             foreach (var employee in payslips) //set trạng thái employee cho từng tháng dựa trên EmployeeWorkingHistory
             {
                 if (!dicEmployeeIdToWorkingHistory.ContainsKey(employee.EmployeeId))
                 {
                     continue;
                 }
-                UpdateMonthlyStatus(employee, dicEmployeeIdToWorkingHistory[employee.EmployeeId]);
+                //UpdateMonthlyStatus(employee, dicEmployeeIdToWorkingHistory[employee.EmployeeId]);
+                var monthlyStatus = GetMonthlyStatus(employee, dicEmployeeIdToWorkingHistory[employee.EmployeeId]);
+                if (monthlyStatus.HasValue)
+                {
+                    employee.MonthlyStatus = monthlyStatus.Value;
+                }
             }
 
             return payslips;
@@ -339,66 +345,74 @@ namespace HRMv2.Manager.Home
                    .ToList();
             return resultList;
         }
-        public void UpdateMonthlyStatus(PayslipChartDto payslip, List<WorkingHistoryDto> workingHistories)
+        public EmployeeMonthlyStatus? GetMonthlyStatus(PayslipChartDto payslip, List<WorkingHistoryDto> workingHistories)
         {
-            var key = getEmployeeMonthlyStatusKey(payslip.Month, workingHistories);
-            if (dicEmployeeMonthlyStatus.TryGetValue(key, out var monthlyStatus))
+            var key = GetEmployeeMonthlyStatusKey(payslip.Month, workingHistories);
+            if (dicEmployeeMonthlyStatus.ContainsKey(key)) //contains => trả về, không contains => log error
             {
-                payslip.MonthlyStatus = monthlyStatus;
+                return dicEmployeeMonthlyStatus[key];
             }
+            Logger.Error($"GetMonthlyStatus: key: {key}, Fullname: {payslip.FullName}, Month: {payslip.Month}, workingHistories: {JsonConvert.SerializeObject(workingHistories)}");
+            return null;
         }
         private static Dictionary<string, EmployeeMonthlyStatus> dicEmployeeMonthlyStatus = new Dictionary<string, EmployeeMonthlyStatus>()
         {
             //Tháng được chọn chỉ có Working
-            { "w| ", EmployeeMonthlyStatus.Onboard }, 
+            { "w|-", EmployeeMonthlyStatus.Onboard }, 
             { "w|q", EmployeeMonthlyStatus.Onboard },
             { "w|p", EmployeeMonthlyStatus.BackToWork },
-            { "w|ml", EmployeeMonthlyStatus.BackToWork },
+            { "w|m", EmployeeMonthlyStatus.BackToWork },
             //Tháng được chọn chỉ có Pause
-            { "p|w", EmployeeMonthlyStatus.Pausing },
+            { "p|w", EmployeeMonthlyStatus.Pausing }, //tháng được check là pause, trước đó là working
             //Tháng được chọn chỉ có Quit
             { "q|w", EmployeeMonthlyStatus.Quit },
             { "q|p", EmployeeMonthlyStatus.Quit },
-            { "q|ml", EmployeeMonthlyStatus.Quit },
+            { "q|m", EmployeeMonthlyStatus.Quit },
             //Tháng được chọn chỉ có MaternityLeave
-            { "ml|w", EmployeeMonthlyStatus.MaternityLeave },
+            { "m|w", EmployeeMonthlyStatus.MaternityLeave },
             //Tháng được chọn Working -> Pause
-            { "pw| ", EmployeeMonthlyStatus.Pausing },
+            { "pw|-", EmployeeMonthlyStatus.Pausing },
             { "pw|p", EmployeeMonthlyStatus.Pausing },
             { "pw|q", EmployeeMonthlyStatus.Pausing },
-            { "pw|ml", EmployeeMonthlyStatus.Pausing },
+            { "pw|m", EmployeeMonthlyStatus.Pausing },
             //Tháng được chọn Working -> Quit
-            { "qw| ", EmployeeMonthlyStatus.OnOffInMonth },
-            { "qw|ml", EmployeeMonthlyStatus.Quit },
+            { "qw|-", EmployeeMonthlyStatus.OnOffInMonth },
+            { "qw|m", EmployeeMonthlyStatus.Quit },
             { "qw|p", EmployeeMonthlyStatus.Quit },
             { "qw|q", EmployeeMonthlyStatus.OnOffInMonth },
             //Tháng được chọn Working -> MaternityLeave
-            { "mlw| ", EmployeeMonthlyStatus.MaternityLeave },
-            { "mlw|ml", EmployeeMonthlyStatus.MaternityLeave },
-            { "mlw|p", EmployeeMonthlyStatus.MaternityLeave },
-            { "mlw|q", EmployeeMonthlyStatus.MaternityLeave },
+            { "mw|-", EmployeeMonthlyStatus.MaternityLeave },
+            { "mw|m", EmployeeMonthlyStatus.MaternityLeave },
+            { "mw|p", EmployeeMonthlyStatus.MaternityLeave },
+            { "mw|q", EmployeeMonthlyStatus.MaternityLeave },
             //Tháng được chọn Working -> Pause -> Quit
-            { "qpw| ", EmployeeMonthlyStatus.Quit },
+            { "qpw|-", EmployeeMonthlyStatus.Quit },
             { "qpw|q", EmployeeMonthlyStatus.Quit },
-            { "qpw|ml", EmployeeMonthlyStatus.Quit },
+            { "qpw|m", EmployeeMonthlyStatus.Quit },
             { "qpw|p", EmployeeMonthlyStatus.Quit },
             //Tháng được chọn Working -> MaternityLeave -> Quit
-            { "qmlw| ", EmployeeMonthlyStatus.Quit },
-            { "qmlw|q", EmployeeMonthlyStatus.Quit },
-            { "qmlw|ml", EmployeeMonthlyStatus.Quit },
-            { "qmlw|p", EmployeeMonthlyStatus.Quit },
+            { "qmw|-", EmployeeMonthlyStatus.Quit },
+            { "qmw|q", EmployeeMonthlyStatus.Quit },
+            { "qmw|m", EmployeeMonthlyStatus.Quit },
+            { "qmw|p", EmployeeMonthlyStatus.Quit },
             //Tháng được chọn Pause -> Quit
             { "qp|w", EmployeeMonthlyStatus.Quit },
             //Tháng được chọn MaternityLeave -> Quit
-            { "qml|w", EmployeeMonthlyStatus.Quit },
+            { "qm|w", EmployeeMonthlyStatus.Quit },
             //Tháng được chọn không có trạng thái
-            { " |w", EmployeeMonthlyStatus.Working },
-            { " |ml", EmployeeMonthlyStatus.MaternityLeave },
+            { "-|w", EmployeeMonthlyStatus.Working },
+            { "-|m", EmployeeMonthlyStatus.MaternityLeave },
         };
-        public static string getEmployeeMonthlyStatusKey(DateTime date, List<WorkingHistoryDto> workingHistories)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="workingHistories"> đã orderbydesc dateAt </param>
+        /// <returns></returns>
+        public string GetEmployeeMonthlyStatusKey(DateTime date, List<WorkingHistoryDto> workingHistories)
         {
-            var statusInDateMonth = new HashSet<string>();
-            string lastStatusBeforeDateMonth = null;
+            var statusInDateMonth = new HashSet<char>();
+            char? lastStatusBeforeDateMonth = null;
 
             foreach (var history in workingHistories)
             {
@@ -415,25 +429,25 @@ namespace HRMv2.Manager.Home
                 }
             }
 
-            var dateMonthStr = statusInDateMonth.Count > 0 ? string.Join("", statusInDateMonth) : " ";
-            var previousMonthsStr = lastStatusBeforeDateMonth?.ToString() ?? " ";
+            var dateMonthStr = statusInDateMonth.Count > 0 ? string.Join("", statusInDateMonth) : "-";
+            var previousMonthsStr = lastStatusBeforeDateMonth?.ToString() ?? "-";
 
             return $"{dateMonthStr}|{previousMonthsStr}";
         }
-        public static string StatusToChar(EmployeeStatus status)
+        public static char StatusToChar(EmployeeStatus status)
         {
             switch (status)
             {
                 case EmployeeStatus.Working:
-                    return "w";
+                    return 'w';
                 case EmployeeStatus.Pausing:
-                    return "p";
+                    return 'p';
                 case EmployeeStatus.Quit:
-                    return "q";
+                    return 'q';
                 case EmployeeStatus.MaternityLeave:
-                    return "ml";
+                    return 'm';
                 default:
-                    return " ";
+                    return '-';
             }
         }
 
