@@ -1,17 +1,14 @@
 ﻿using Abp.Authorization;
-using Abp.Collections.Extensions;
 using HRMv2.Authorization;
+using HRMv2.Manager.Categories.Charts;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using Microsoft.AspNetCore.Mvc;
-using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+
 using System.Threading.Tasks;
-using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.APIs.Home
 {
@@ -19,10 +16,12 @@ namespace HRMv2.APIs.Home
     public class HomeAppService : HRMv2AppServiceBase
     {
         private readonly HomePageManager _homePageManager;
+        private readonly ChartManager _chartManager;
 
-        public HomeAppService(HomePageManager homePageManager)
+        public HomeAppService(HomePageManager homePageManager, ChartManager chartManager)
         {
             _homePageManager = homePageManager;
+            _chartManager = chartManager;
         }
 
         [HttpGet]
@@ -36,7 +35,7 @@ namespace HRMv2.APIs.Home
         public async Task<ResultChartDto> GetAllDataEmployeeCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetAllDataEmployeeCharts(input.StartDate, input.EndDate);
+            var result = await _chartManager.GetAllDataEmployeeCharts(input.StartDate, input.EndDate);
             return result;
         }
 
@@ -45,7 +44,7 @@ namespace HRMv2.APIs.Home
         public async Task<ResultChartDto> GetDataEmployeeCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetDataEmployeeCharts(input.ChartIds, input.StartDate, input.EndDate);
+            var result = await _chartManager.GetDataEmployeeCharts(input.ChartIds, input.StartDate, input.EndDate);
             return result;
         }
 
@@ -54,7 +53,7 @@ namespace HRMv2.APIs.Home
         public async Task<ResultChartDto> GetAllDataPayslipCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetAllDataPayslipCharts(input.StartDate, input.EndDate);
+            var result = await _chartManager.GetAllDataPayslipCharts(input.StartDate, input.EndDate);
             return result;
         }
 
@@ -63,7 +62,7 @@ namespace HRMv2.APIs.Home
         public async Task<ResultChartDto> GetDataPayslipCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
+            var result = await _chartManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
             return result;
         }
 
@@ -72,7 +71,7 @@ namespace HRMv2.APIs.Home
         public async Task<ResultChartDto> GetDataCharts(
             InputListChartDto input)
         {
-            var result = await _homePageManager.GetDataCharts(input.ChartIds, input.StartDate, input.EndDate);
+            var result = await _chartManager.GetDataCharts(input.ChartIds, input.StartDate, input.EndDate);
             return result;
 
         }
