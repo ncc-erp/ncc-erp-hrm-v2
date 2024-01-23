@@ -227,8 +227,8 @@ namespace HRMv2.Manager.Home
                 }
                 else if (chartInfo.ChartType == ChartType.Circle)
                 {
-                    //var result = GetDataCircleEmployeeChart(chartInfo, employeeMonthlyDetail, labels);
-                    //resultChart.CircleCharts.Add(result);
+                    var result = GetDataForOneCircleEmployeeChart(chartInfo, allDataForChartEmployee, labels);
+                    resultChart.CircleCharts.Add(result);
                 }
             }
 
@@ -288,6 +288,53 @@ namespace HRMv2.Manager.Home
                             g => g.ToList()
                         );
             return employeeMonthlyDetailForChart;
+        }
+
+        #endregion
+
+        #region circle chart
+
+        public ResultCircleChartDto GetDataForOneCircleEmployeeChart(
+           ChartSettingDto chartInfo,
+           List<PayslipChartDto> employeeMonthlyDetail,
+           List<string> labels)
+        {
+            var result = new ResultCircleChartDto
+            {
+                Id = chartInfo.Id,
+                ChartName = chartInfo.Name,
+                Pies = new List<CircleChartData>()
+            };
+
+            foreach (var chartDetail in chartInfo.ChartDetails)
+            {
+                var chart = new CircleChartData
+                {
+                    Id = chartDetail.Id,
+                    PieName = chartDetail.Name,
+                    Color = chartDetail.Color,
+                    Data = GetDataCircleEmployeeChart(employeeMonthlyDetail, chartDetail)
+                };
+                result.Pies.Add(chart);
+            }
+            return result;
+        }
+
+        public double GetDataCircleEmployeeChart(List<PayslipChartDto> employeeMonthlyDetail, ChartDetailDto detail)
+        {
+            //lấy data theo chart setting 
+            var employeeMonthlyDetailForChart = employeeMonthlyDetail
+                        .WhereIf(detail.ListJobPositionId.Any(), x => detail.ListJobPositionId.Contains(x.JobPositionId))
+                        .WhereIf(detail.ListLevelId.Any(), x => detail.ListLevelId.Contains(x.LevelId))
+                        .WhereIf(detail.ListBranchId.Any(), x => detail.ListBranchId.Contains(x.BranchId))
+                        .WhereIf(detail.ListTeamId.Any(), x => detail.ListTeamId.Any(teamIds => x.TeamIds.Contains(teamIds)))
+                        .WhereIf(detail.ListUserType.Any(), x => detail.ListUserType.Contains(x.UserType))
+                        .WhereIf(detail.ListGender.Any(), x => detail.ListGender.Contains(x.Gender))
+                        .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.MonthlyStatus))
+                        .OrderBy(x => x.Month);
+
+            var result = employeeMonthlyDetailForChart.ToList().Count();
+            return result;
         }
 
         #endregion
