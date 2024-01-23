@@ -92,11 +92,6 @@ namespace HRMv2.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeBranchHistories_EmployeeId",
-                table: "EmployeeBranchHistories",
-                column: "EmployeeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ChartDetails_ChartId",
                 table: "ChartDetails",
                 column: "ChartId");
@@ -120,31 +115,15 @@ namespace HRMv2.Migrations
                 name: "IX_Charts_LastModifierUserId",
                 table: "Charts",
                 column: "LastModifierUserId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_EmployeeBranchHistories_Employees_EmployeeId",
-                table: "EmployeeBranchHistories",
-                column: "EmployeeId",
-                principalTable: "Employees",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_EmployeeBranchHistories_Employees_EmployeeId",
-                table: "EmployeeBranchHistories");
-
             migrationBuilder.DropTable(
                 name: "ChartDetails");
 
             migrationBuilder.DropTable(
                 name: "Charts");
-
-            migrationBuilder.DropIndex(
-                name: "IX_EmployeeBranchHistories_EmployeeId",
-                table: "EmployeeBranchHistories");
         }
     }
 }

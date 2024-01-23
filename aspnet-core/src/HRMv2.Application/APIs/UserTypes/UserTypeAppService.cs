@@ -21,7 +21,6 @@ namespace HRMv2.APIs.UserTypes
         }
 
         [HttpGet]
-        [AbpAuthorize(PermissionNames.Category_Usertype_View)]
         public List<UserTypeDto> GetAll()
         {
             return _userTypeManager.GetAll();
