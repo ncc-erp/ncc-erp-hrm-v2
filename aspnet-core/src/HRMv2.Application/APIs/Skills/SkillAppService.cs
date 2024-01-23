@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Skills
 {
-    [AbpAuthorize(PermissionNames.Category_Skill)]
+    [AbpAuthorize]
     public class SkillAppService : HRMv2AppServiceBase
     {
         private readonly SkillManager _skillManager;

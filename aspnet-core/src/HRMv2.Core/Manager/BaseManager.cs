@@ -1,5 +1,8 @@
 ﻿using Abp.Application.Services;
+using Abp.Authorization;
 using Abp.Dependency;
+using Abp.UI;
+using HRMv2.Authorization;
 using HRMv2.Authorization.Users;
 using HRMv2.Entities;
 using HRMv2.MultiTenancy;
@@ -115,6 +118,37 @@ namespace HRMv2.Manager
         public string GetSurNameByFullName(string fullName)
         {
             return fullName.Substring(0, fullName.LastIndexOf(" "));
+        }
+
+        public void CheckEmployeeInSessionBranch(long employeeId)
+        {
+            if (IsGranted(PermissionNames.Employee_View))
+            {
+                return;
+            }
+            if (IsGranted(PermissionNames.Employee_ViewMyBranchEmployee))
+            {
+                var sessionUserBranchId = GetSessionUserBranchId();
+                var employeeBranchId = WorkScope.GetAll<Employee>()
+                                        .Where(x => x.Id == employeeId)
+                                        .Select(x => x.BranchId)
+                                        .FirstOrDefault();
+                if (employeeBranchId == sessionUserBranchId) return;
+            }
+            throw new UserFriendlyException("You don't have permission to view the employee.");
+        }
+
+        public long? GetSessionUserBranchId()
+        {
+            var sessionUserEmail = WorkScope.GetAll<User>()
+                                    .Where(s => s.Id == AbpSession.UserId)
+                                    .Select(s => s.EmailAddress).FirstOrDefault();
+
+            var sessionUserBranchId = WorkScope.GetAll<Employee>()
+                                    .Where(s => s.Email == sessionUserEmail)
+                                    .Select(s => s.BranchId).FirstOrDefault();
+
+            return sessionUserBranchId;
         }
     }
 }
