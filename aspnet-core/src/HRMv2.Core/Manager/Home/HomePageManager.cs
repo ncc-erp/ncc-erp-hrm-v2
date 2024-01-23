@@ -287,7 +287,7 @@ namespace HRMv2.Manager.Home
         #endregion
 
         #region Process data
-        public IEnumerable<PayslipChartDto> GetPayslips(DateTime startDate, DateTime endDate)
+        public IQueryable<PayslipChartDto> GetPayslips(DateTime startDate, DateTime endDate)
         {
             var firstDateOfMonth = DateTimeUtils.FirstDayOfMonth(startDate);
             var lastDateOfMonth = DateTimeUtils.LastDayOfMonth(endDate);
@@ -304,8 +304,8 @@ namespace HRMv2.Manager.Home
                     DateAt = p.Payroll.ApplyMonth,
                     Gender = p.Employee.Sex
                 })
-                .Where(payslip => payslip.Month >= startDate
-                                && payslip.Month <= endDate);
+                .Where(payslip => payslip.DateAt >= firstDateOfMonth
+                                && payslip.DateAt <= lastDateOfMonth);
             return employeesInPreviousMonth;
         }
 
