@@ -41,6 +41,6 @@ namespace HRMv2.Entities
         public string BankAccountNumber { get; set; }
         public string BankName { get; set; }
         public virtual ICollection<PayslipTeam> PayslipTeams { get; set; }
-        public ICollection<PayslipDetail> PayslipDetail { get; set;}
+        public virtual ICollection<PayslipDetail> PayslipDetails { get; set; }
     }
 }
