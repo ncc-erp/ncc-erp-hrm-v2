@@ -18,6 +18,7 @@ import {
   ResultLineChartDetailDto,
   DisplayLineChartDto,
 } from "../../service/model/chart-settings/chart.dto";
+import { APP_ENUMS } from "@shared/AppEnums";
 
 @Component({
   selector: "app-line-chart",
@@ -43,10 +44,11 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
   ngOnInit() {}
   ngAfterViewInit() {
     if (this.chartContainer) {
-      var myChart = echarts.init(this.chartContainer.nativeElement);
+    var myChart = echarts.init(this.chartContainer.nativeElement);
     let dataLineChartDetail = [];
       this.lineChartData.chartDetails.forEach((item) => {
         let chartDetail = {
+          id: item.id,
           data: item.data,
           name: item.lineName,
           itemStyle: {color : item.itemStyle.color},
@@ -97,27 +99,53 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
             type: "value",
           },
         ],
-        series:dataLineChartDetail
+        series: dataLineChartDetail
       };
 
       option && myChart.setOption(option);
 
-      myChart.on("click", (params: any) => {});
+      myChart.on("click", (params: any) => {
+        this.viewDataEmployeeLineChartDetail(params.seriesId, params.name);
+      });
     }
   }
 
   onRefreshData() {
     this.refreshData.emit();
   }
+  
+  viewDataEmployeeLineChartDetail(chartDetailId: number, monthYear: string){
+    let { fromDate, toDate } = this.convertToDateRange(monthYear);
+    console.log(chartDetailId);
+    console.log(fromDate + " " + toDate);
+    if(this.lineChartData.chartDataType == APP_ENUMS.ChartDataType.Employee){
+      console.log("employee");
+    }else{
+      console.log("salary");
+    }
+  }
+  
   convertMonth(fromDate : Date, toDate : Date){
-    const result: string[] = [];
-    const currentMonth = new Date(fromDate);
-    const endDate = new Date(toDate);
+    let result: string[] = [];
+    let currentMonth = new Date(fromDate);
+    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    let endDate = new Date(toDate);
     while (currentMonth <= endDate) {
-      const month = currentMonth.getMonth() + 1;
-      result.push(`${month}`);
+      let month = currentMonth.getMonth() + 1;
+      let year = currentMonth.getFullYear();
+      result.push(`${month}-${year}`);
       currentMonth.setMonth(currentMonth.getMonth() + 1);
     }
     return result;
   }
+  
+  convertToDateRange(str) {
+    const parts = str.split("-");
+    const month = parseInt(parts[0], 10);
+    const year = parseInt(parts[1], 10);
+    const fromDate = new Date(year, month - 1, 1);
+    const toDate = new Date(year, month, 0);
+
+    return { fromDate, toDate };
+}
 }

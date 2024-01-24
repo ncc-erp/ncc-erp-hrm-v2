@@ -272,6 +272,7 @@ namespace HRMv2.Manager.Categories.Charts
             {
                 var chart = new LineChartData
                 {
+                    Id = chartDetail.Id,
                     LineName = chartDetail.Name,
                     Color = chartDetail.Color,
                     Data = GetDataLineEmployeeChart(employeeMonthlyDetail, chartDetail, labels) ?? new List<double>(),
@@ -649,6 +650,7 @@ namespace HRMv2.Manager.Categories.Charts
             {
                 var chart = new LineChartData
                 {
+                    Id = chartDetail.Id,
                     LineName = chartDetail.Name,
                     Color = chartDetail.Color,
                     Data = GetDataPayslipLineChart(chartDetail, payslipDetail, labels) ?? new List<double>(),

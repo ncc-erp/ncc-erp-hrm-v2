@@ -18,7 +18,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
 
     }
     
-    public class LineChartData
+    public class LineChartData : EntityDto<long>
     {
         public string LineName { get; set; }
         public string Color { get; set; }

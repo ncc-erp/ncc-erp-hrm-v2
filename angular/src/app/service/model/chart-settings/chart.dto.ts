@@ -41,6 +41,7 @@ export class ResultLineChartDto {
 }
 
 export class ResultLineChartDetailDto {
+  id: number;
   lineName: string;
   color: string;
   data: any;
@@ -48,17 +49,20 @@ export class ResultLineChartDetailDto {
 export class DisplayLineChartDto {
   id: number;
   name: string;
+  chartDataType: number;
   chartDetails: DisplayLineChartDetailDto[];
 }
 
 export class DisplayLineChartDetailDto {
+  id: number;
   data: number[];
   lineName: string;
   itemStyle: ItemStyleColor;
   type: string;
   smooth: boolean;
 
-  constructor(data: number[], name: string, itemStyle: ItemStyleColor) {
+  constructor(id: number, data: number[], name: string, itemStyle: ItemStyleColor) {
+    this.id = id;
     this.data = data;
     this.lineName = name;
     this.itemStyle = itemStyle;
@@ -74,14 +78,17 @@ export class ItemStyleColor {
 export class DisplayCircleChartDto {
   id: number;
   name: string;
+  chartDataType: number;
   chartDetails: DisplayCircleChartDetailDto[];
 }
 
 export class DisplayCircleChartDetailDto {
+  id: number;
   data: number;
   pieName: string;
   itemStyle: ItemStyleColor;
-  constructor(data: number, name: string, itemStyle: ItemStyleColor) {
+  constructor(id: number, data: number, name: string, itemStyle: ItemStyleColor) {
+    this.id = id;
     this.data = data;
     this.pieName = name;
     this.itemStyle = itemStyle;

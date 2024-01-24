@@ -76,6 +76,7 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
             data: this.circlechartData.chartDetails.map((item) => ({
               name: item.pieName,
               value: item.data,
+              detail: item,
               itemStyle: {
                 color: item.itemStyle.color,
               },

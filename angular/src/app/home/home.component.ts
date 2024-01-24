@@ -243,9 +243,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
           this.circleChartDataDisplay = rs.result.circleCharts.map((item) => ({
             id: item.id,
             name: item.chartName,
+            chartDataType: rs.result.chartDataType,
             chartDetails: item.pies.map(
               (pie) =>
-                new DisplayCircleChartDetailDto(pie.data, pie.pieName, {
+                new DisplayCircleChartDetailDto(pie.id, pie.data, pie.pieName, {
                   color: pie.color,
                 })
             ),
@@ -268,9 +269,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
           this.circleChartDataDisplay = rs.result.circleCharts.map((item) => ({
             id: item.id,
             name: item.chartName,
+            chartDataType: rs.result.chartDataType,
             chartDetails: item.pies.map(
               (pie) =>
-                new DisplayCircleChartDetailDto(pie.data, pie.pieName, {
+                new DisplayCircleChartDetailDto(pie.id, pie.data, pie.pieName, {
                   color: pie.color,
                 })
             ),
@@ -303,9 +305,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         this.lineChartDataDisplay = result.lineCharts.map((item) => ({
           id: item.id,
           name: item.chartName,
+          chartDataType: result.chartDataType,
           chartDetails: item.lines.map(
             (line) =>
-              new DisplayLineChartDetailDto(line.data, line.lineName, {
+              new DisplayLineChartDetailDto(line.id, line.data, line.lineName, {
                 color: line.color,
               })
           ),
@@ -313,7 +316,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         this.circleChartDataDisplay = result.circleCharts.map((item) => ({
           id: item.id,
           name: item.chartName,
+          chartDataType: result.chartDataType,
           chartDetails: item.pies.map((pie) => ({
+            id: pie.id,
             data: pie.data,
             pieName: pie.pieName,
             itemStyle: { color: pie.color },
@@ -349,9 +354,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         let listLineChartDataDisplay = result.lineCharts.map((item) => ({
           id: item.id,
           name: item.chartName,
+          chartDataType: result.chartDataType,
           chartDetails: item.lines.map(
             (line) =>
-              new DisplayLineChartDetailDto(line.data, line.lineName, {
+              new DisplayLineChartDetailDto(line.id, line.data, line.lineName, {
                 color: line.color,
               })
           ),
@@ -363,7 +369,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         let listDisplayLinePayslipChart = result.circleCharts.map((item) => ({
           id: item.id,
           name: item.chartName,
+          chartDataType: result.chartDataType,
           chartDetails: item.pies.map((pie) => ({
+            id: pie.id,
             data: pie.data,
             pieName: pie.pieName,
             itemStyle: { color: pie.color },
@@ -389,7 +397,6 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.allCircleChartIds;
       this.listEmployeeChartIds;
       this.listPayslipChartIds;
-      console.log(1);
     }, 2000);
   }
   onLineChartSelect(ids: number[]) {
@@ -476,9 +483,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
           this.lineChartDataDisplay = rs.result.lineCharts.map((item) => ({
             id: item.id,
             name: item.chartName,
+            chartDataType: rs.result.chartDataType,
             chartDetails: item.lines.map(
               (line) =>
-                new DisplayLineChartDetailDto(line.data, line.lineName, {
+                new DisplayLineChartDetailDto(line.id, line.data, line.lineName, {
                   color: line.color,
                 })
             ),
@@ -502,9 +510,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
           this.lineChartDataDisplay = rs.result.lineCharts.map((item) => ({
             id: item.id,
             name: item.chartName,
+            chartDataType: rs.result.chartDataType,
             chartDetails: item.lines.map(
               (line) =>
-                new DisplayLineChartDetailDto(line.data, line.lineName, {
+                new DisplayLineChartDetailDto(line.id, line.data, line.lineName, {
                   color: line.color,
                 })
             ),
