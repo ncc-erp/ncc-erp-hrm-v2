@@ -29,6 +29,7 @@ namespace HRMv2.Manager.Categories.Charts
             _workingHistoryManager = workingHistoryManager;
         }
 
+        #region Chart setting
         public IQueryable<ChartDto> QueryAllChart()
         {
             var query = WorkScope.GetAll<Chart>()
@@ -130,7 +131,8 @@ namespace HRMv2.Manager.Categories.Charts
             await WorkScope.DeleteAsync<Chart>(id);
 
             return id;
-        }
+        } 
+        #endregion
 
         #region Employee chart
 
@@ -783,17 +785,6 @@ namespace HRMv2.Manager.Categories.Charts
         }
 
         #endregion
-
-        #endregion
-
-        #region GetDataCharts
-        public async Task<ResultChartDto> GetDataCharts(List<long> ids, DateTime startDate, DateTime endDate)
-        {
-            var chart = (await GetAllSalaryChartSetting());
-
-            var result = new ResultChartDto();
-            return result;
-        }
 
         #endregion
     }
