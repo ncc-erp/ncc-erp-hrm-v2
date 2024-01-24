@@ -36,6 +36,9 @@ import { PunishmentsModule } from './modules/punishments/punishments.module';
 import { PayRollComponent } from './modules/salaries/pay-roll/pay-roll.component';
 import { ListInfoComponent } from './home/listinfo/list-info/list-info.component';
 import { HomeFilterComponent } from './home/home-filter/home-filter/home-filter.component';
+import { CircleChartComponent } from './home/circle-chart/circle-chart.component';
+import { LineChartComponent } from './home/line-chart/line-chart.component';
+import { DateSelectorHomepageComponent } from './home/date-selector-homepage/date-selector-homepage.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,6 +58,9 @@ import { HomeFilterComponent } from './home/home-filter/home-filter/home-filter.
     PayRollComponent,
     ListInfoComponent,
     HomeFilterComponent,
+    CircleChartComponent,
+    LineChartComponent,
+    DateSelectorHomepageComponent,
   ],
   imports: [
     CommonModule,

@@ -289,3 +289,9 @@ export enum TemplateType{
     Mail = 1,
     Print = 2
 }
+export enum DateSelectorHomeEnum {
+    QUARTER = "Quarter",
+    HALF_YEAR = "Half-year",
+    YEAR = "Year",
+    CUSTOM = "Custom",
+  }
