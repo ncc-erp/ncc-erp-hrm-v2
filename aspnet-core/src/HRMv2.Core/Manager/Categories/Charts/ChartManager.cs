@@ -168,14 +168,14 @@ namespace HRMv2.Manager.Categories.Charts
             return query;
         }
 
-        public List<PayslipChartDto> GetDataForAllChartEmployee(DateTime startDate, DateTime endDate)
+        public List<PayslipDataChartDto> GetDataForAllChartEmployee(DateTime startDate, DateTime endDate)
         {
             DateTime firstDayOfCurrentMonth = DateTimeUtils.FirstDayOfMonth(DateTime.Now); //lấy ngày đầu tiên của tháng hiện tại
 
             var payslips = GetPayslips(startDate, endDate).ToList();
 
 
-            var workingHistories = _workingHistoryManager.QueryAllWorkingHistoryForChart1()
+            var workingHistories = _workingHistoryManager.QueryAllWorkingHistoryForChart()
                                             .ToList();
             var dicEmployeeIdToWorkingHistory = workingHistories
                                             .GroupBy(s => s.EmployeeId)
@@ -248,7 +248,7 @@ namespace HRMv2.Manager.Categories.Charts
                 }
                 else if (chartInfo.ChartType == ChartType.Circle)
                 {
-                    var result = GetDataForOneCircleEmployeeChart(chartInfo, allDataForChartEmployee, labels);
+                    var result = GetDataForOneCircleEmployeeChart(chartInfo, allDataForChartEmployee);
                     resultChart.CircleCharts.Add(result);
                 }
             }
@@ -259,7 +259,7 @@ namespace HRMv2.Manager.Categories.Charts
         #region line chart
         public ResultLineChartDto GetDataForOneLineChartEmployee(
             ChartSettingDto chartInfo,
-            List<PayslipChartDto> employeeMonthlyDetail,
+            List<PayslipDataChartDto> employeeMonthlyDetail,
             List<string> labels)
         {
             var result = new ResultLineChartDto
@@ -283,7 +283,7 @@ namespace HRMv2.Manager.Categories.Charts
         }
 
 
-        public List<double> GetDataLineEmployeeChart(List<PayslipChartDto> employeeMonthlyDetail, ChartDetailDto detail, List<string> labels)
+        public List<double> GetDataLineEmployeeChart(List<PayslipDataChartDto> employeeMonthlyDetail, ChartDetailDto detail, List<string> labels)
         {
             //lấy data theo chart setting 
             var employeeMonthlyDetailForChart = FilterDataLineEmployeeChart(employeeMonthlyDetail, detail);
@@ -293,7 +293,7 @@ namespace HRMv2.Manager.Categories.Charts
             return result;
         }
 
-        public Dictionary<string, List<PayslipChartDto>> FilterDataLineEmployeeChart(List<PayslipChartDto> employeeMonthlyDetail, ChartDetailDto detail)
+        public Dictionary<string, List<PayslipDataChartDto>> FilterDataLineEmployeeChart(List<PayslipDataChartDto> employeeMonthlyDetail, ChartDetailDto detail)
         {
             var employeeMonthlyDetailForChart = employeeMonthlyDetail
                         .WhereIf(detail.ListJobPositionId.Any(), x => detail.ListJobPositionId.Contains(x.JobPositionId))
@@ -304,7 +304,7 @@ namespace HRMv2.Manager.Categories.Charts
                         .WhereIf(detail.ListGender.Any(), x => detail.ListGender.Contains(x.Gender))
                         .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.MonthlyStatus))
                         .OrderBy(x => x.Month)
-                        .GroupBy(x => x.MonthYear)
+                        .GroupBy(x => x.EmployeeMonthYear)
                         .ToDictionary(
                             g => g.Key,
                             g => g.ToList()
@@ -318,8 +318,7 @@ namespace HRMv2.Manager.Categories.Charts
 
         public ResultCircleChartDto GetDataForOneCircleEmployeeChart(
            ChartSettingDto chartInfo,
-           List<PayslipChartDto> employeeMonthlyDetail,
-           List<string> labels)
+           List<PayslipDataChartDto> employeeMonthlyDetail)
         {
             var result = new ResultCircleChartDto
             {
@@ -342,7 +341,7 @@ namespace HRMv2.Manager.Categories.Charts
             return result;
         }
 
-        public double GetDataCircleEmployeeChart(List<PayslipChartDto> employeeMonthlyDetail, ChartDetailDto detail)
+        public double GetDataCircleEmployeeChart(List<PayslipDataChartDto> employeeMonthlyDetail, ChartDetailDto detail)
         {
             //lấy data theo chart setting 
             var employeeMonthlyDetailForChart = employeeMonthlyDetail
@@ -353,6 +352,7 @@ namespace HRMv2.Manager.Categories.Charts
                         .WhereIf(detail.ListUserType.Any(), x => detail.ListUserType.Contains(x.UserType))
                         .WhereIf(detail.ListGender.Any(), x => detail.ListGender.Contains(x.Gender))
                         .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.MonthlyStatus))
+                        .DistinctBy(x => x.EmployeeId)
                         .OrderBy(x => x.Month);
 
             var result = employeeMonthlyDetailForChart.ToList().Count();
@@ -362,15 +362,16 @@ namespace HRMv2.Manager.Categories.Charts
         #endregion
 
         #region Process data
-        public IQueryable<PayslipChartDto> GetPayslips(DateTime startDate, DateTime endDate)
+        public IQueryable<PayslipDataChartDto> GetPayslips(DateTime startDate, DateTime endDate)
         {
             var firstDateOfMonth = DateTimeUtils.FirstDayOfMonth(startDate);
             var lastDateOfMonth = DateTimeUtils.LastDayOfMonth(endDate);
             var employeesInPreviousMonth = WorkScope.GetAll<Payslip>()
-                .Select(p => new PayslipChartDto
+                .Select(p => new PayslipDataChartDto
                 {
                     EmployeeId = p.EmployeeId,
                     FullName = p.Employee.FullName,
+                    Email = p.Employee.Email,
                     JobPositionId = p.JobPositionId,
                     LevelId = p.LevelId,
                     TeamIds = p.PayslipTeams.Select(team => team.TeamId).ToList(),
@@ -383,7 +384,7 @@ namespace HRMv2.Manager.Categories.Charts
                                 && payslip.DateAt <= lastDateOfMonth);
             return employeesInPreviousMonth;
         }
-        public List<PayslipChartDto> GetEmployeeForCurrentMonth(DateTime firstDayOfCurrentMonth, List<WorkingHistoryDto> workingHistories)
+        public List<PayslipDataChartDto> GetEmployeeForCurrentMonth(DateTime firstDayOfCurrentMonth, List<WorkingHistoryDto> workingHistories)
         {
             var lastDayOfCurrentMonth = DateTimeUtils.LastDayOfMonth(firstDayOfCurrentMonth);
 
@@ -395,10 +396,11 @@ namespace HRMv2.Manager.Categories.Charts
                 .ToList();
 
             var resultList = WorkScope.GetAll<Employee>()
-                   .Select(x => new PayslipChartDto
+                   .Select(x => new PayslipDataChartDto
                    {
                        EmployeeId = x.Id,
                        FullName = x.FullName,
+                       Email = x.Email,
                        JobPositionId = x.JobPositionId,
                        LevelId = x.LevelId,
                        BranchId = x.BranchId,
@@ -414,7 +416,7 @@ namespace HRMv2.Manager.Categories.Charts
                    .ToList();
             return resultList;
         }
-        public EmployeeMonthlyStatus? GetMonthlyStatus(PayslipChartDto payslip, List<WorkingHistoryDto> workingHistories)
+        public EmployeeMonthlyStatus? GetMonthlyStatus(PayslipDataChartDto payslip, List<WorkingHistoryDto> workingHistories)
         {
             var key = GetEmployeeMonthlyStatusKey(payslip.Month, workingHistories);
             if (dicEmployeeMonthlyStatus.ContainsKey(key)) //contains => trả về, không contains => log error
@@ -526,31 +528,34 @@ namespace HRMv2.Manager.Categories.Charts
 
         #region Payslip chart
 
-        public IQueryable<PayslipDetailDataChartDto> QueryAllPayslipDetail(DateTime startDate, DateTime endDate)
+        public IQueryable<PayslipDataChartDto> QueryAllPayslipDetail(DateTime startDate, DateTime endDate)
         {
-            var result = WorkScope.GetAll<PayslipDetail>()
-                .Where(pd => pd.Payslip.Payroll.Status >= PayrollStatus.ApprovedByCEO && // accept payroll status: 6 , 7
-                    pd.Payslip.Payroll.ApplyMonth >= startDate && pd.Payslip.Payroll.ApplyMonth <= endDate)
-                .Select(pd => new PayslipDetailDataChartDto
+
+            var result = WorkScope.GetAll<Payslip>()
+                .Include(p => p.PayslipDetails)
+                .Where(p => p.Payroll.Status >= PayrollStatus.ApprovedByCEO && // accept payroll status: 6 , 7
+                    p.Payroll.ApplyMonth >= startDate && p.Payroll.ApplyMonth <= endDate)
+                .Select(p => new PayslipDataChartDto
                 {
-                    Id = pd.Id,
-                    PayslipId = pd.PayslipId,
-                    Money = pd.Money, // Case: Punishment value is minus
-                    Type = pd.Type,
-                    ApplyMonth = pd.Payslip.Payroll.ApplyMonth,
-                    Payslip = new PayslipDataChartDto
-                    {
-                        FullName = pd.Payslip.Employee.FullName,
-                        Id = pd.PayslipId,
-                        Gender = pd.Payslip.Employee.Sex,
-                        Salary = pd.Payslip.Salary,
-                        BranchId = pd.Payslip.BranchId,
-                        EmployeeId = pd.Payslip.EmployeeId,
-                        JobPositionId = pd.Payslip.JobPositionId,
-                        LevelId = pd.Payslip.LevelId,
-                        TeamIds = pd.Payslip.PayslipTeams.Select(team => team.TeamId).ToList(),
-                        UserType = pd.Payslip.UserType
-                    }
+                    FullName = p.Employee.FullName,
+                    Id = p.Id,
+                    Gender = p.Employee.Sex,
+                    Salary = p.Salary,
+                    BranchId = p.BranchId,
+                    EmployeeId = p.EmployeeId,
+                    JobPositionId = p.JobPositionId,
+                    LevelId = p.LevelId,
+                    TeamIds = p.PayslipTeams.Select(team => team.TeamId).ToList(),
+                    UserType = p.UserType,
+                    ApplyMonth = p.Payroll.ApplyMonth,
+                    PayslipDetails = p.PayslipDetails
+                                    .Select(pd => new PayslipDetailDataChartDto1
+                                    {
+                                        Id = pd.Id,
+                                        Money = pd.Money,
+                                        Type = pd.Type,
+                                    }).ToList(),
+                    
                 })
                 .OrderBy(p => p.ApplyMonth);
 

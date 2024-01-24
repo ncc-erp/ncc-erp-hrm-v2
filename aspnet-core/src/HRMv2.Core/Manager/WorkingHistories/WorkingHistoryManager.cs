@@ -100,26 +100,7 @@ namespace HRMv2.Manager.WorkingHistories
             return results;
 
         }
-        public IQueryable<PayslipChartDto> QueryAllWorkingHistoryForChart()
-        {
-            var result = WorkScope.GetAll<EmployeeWorkingHistory>()
-                .Select(x => new PayslipChartDto
-                {
-                    EmployeeId = x.EmployeeId,
-                    FullName = x.Employee.FullName,
-                    JobPositionId = x.Employee.JobPositionId,
-                    LevelId = x.Employee.LevelId,
-                    BranchId = x.Employee.BranchId,
-                    TeamIds = x.Employee.EmployeeTeams.Select(t => t.TeamId).ToList(),
-                    UserType = x.Employee.UserType,
-                    Gender = x.Employee.Sex,
-                    Status = x.Status,
-                    DateAt = x.DateAt,
-                });
-            return result;
-        }
-
-        public IQueryable<WorkingHistoryDto> QueryAllWorkingHistoryForChart1()
+        public IQueryable<WorkingHistoryDto> QueryAllWorkingHistoryForChart()
         {
             var result = WorkScope.GetAll<EmployeeWorkingHistory>()
                 .Select(x => new WorkingHistoryDto

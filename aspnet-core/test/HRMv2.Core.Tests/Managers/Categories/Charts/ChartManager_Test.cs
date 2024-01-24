@@ -147,7 +147,7 @@ namespace HRMv2.Core.Tests.Managers.Categories.Charts
                                         s => s.Key,
                                         s => s.OrderByDescending(x => x.DateAt).ToList()
                                     );// Method to create list of WorkingHistoryDto
-                var employee = new PayslipChartDto { EmployeeId = employeeId, DateAt = month };
+                var employee = new PayslipDataChartDto { EmployeeId = employeeId, DateAt = month };
 
                 // Act
                 var actualStatus = _chart.GetMonthlyStatus(employee, workingHistories[employeeId]);
@@ -182,7 +182,7 @@ namespace HRMv2.Core.Tests.Managers.Categories.Charts
                                         s => s.Key,
                                         s => s.OrderByDescending(x => x.DateAt).ToList()
                                     );// Method to create list of WorkingHistoryDto
-                var employee = new PayslipChartDto { EmployeeId = employeeId, DateAt = month };
+                var employee = new PayslipDataChartDto { EmployeeId = employeeId, DateAt = month };
 
                 // Act
                 var actualStatus = _chart.GetMonthlyStatus(employee, workingHistories[employeeId]);
@@ -220,7 +220,7 @@ namespace HRMv2.Core.Tests.Managers.Categories.Charts
                                         s => s.Key,
                                         s => s.OrderByDescending(x => x.DateAt).ToList()
                                     );// Method to create list of WorkingHistoryDto
-                var employee = new PayslipChartDto { EmployeeId = employeeId, DateAt = month };
+                var employee = new PayslipDataChartDto { EmployeeId = employeeId, DateAt = month };
 
                 // Act
                 var actualStatus = _chart.GetMonthlyStatus(employee, workingHistories[employeeId]);

@@ -27,22 +27,4 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public string BarMaxWidth => "80";
 
     }
-
-    public class PayslipChartDto
-    {
-        public long EmployeeId { get; set; }
-        public string FullName { get; set; }
-        public EmployeeMonthlyStatus MonthlyStatus { get; set; }
-        public EmployeeStatus Status { get; set; }
-        public DateTime Month => DateTimeUtils.FirstDayOfMonth(DateAt);
-        public long JobPositionId { get; set; }
-        public long LevelId { get; set; }
-        public UserType UserType { get; set; }
-        public long BranchId { get; set; }
-        public List<long> TeamIds { get; set; }
-        public Sex Gender { get; set; }
-        public string MonthYear => Month.ToString("MM-yyyy");
-        public DateTime DateAt { get; set; }
-
-    }
 }
