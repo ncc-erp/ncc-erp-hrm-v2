@@ -1,21 +1,15 @@
-﻿using Abp.Collections.Extensions;
-using Abp.Domain.Entities;
+﻿
 using Abp.UI;
-using Amazon.S3.Model;
 using HRMv2.Entities;
-using HRMv2.Manager.Categories;
-using HRMv2.Manager.Categories.Charts;
+
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.Charts.Dto;
 using HRMv2.Manager.Categories.JobPositions;
-using HRMv2.Manager.Categories.JobPositions.Dto;
 using HRMv2.Manager.Categories.Levels;
 using HRMv2.Manager.Categories.Teams;
 using HRMv2.NccCore;
 using HRMv2.Utils;
 using NccCore.Extension;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,10 +65,26 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                 JobPositions = jobPositions,
                 Levels = levels,
                 Teams = teams,
-                PayslipDetailTypes = CommonUtil.GetEnumKeyValueList<PayslipDetailType>(),
-                UserTypes = CommonUtil.GetEnumKeyValueList<UserType>(),
+                PayslipDetailTypes = CommonUtil.GetEnumKeyValueList<PayslipDetailType>()
+                                    .Select(s => new KeyValueDto
+                                    {
+                                        Key = CommonUtil.FormatNameByAddingSpace(s.Key),
+                                        Value = s.Value
+                                    })
+                                    .ToList(),
+                UserTypes = CommonUtil.GetEnumKeyValueList<UserType>()
+                                    .Select(s => new KeyValueDto
+                                    {
+                                        Key = CommonUtil.FormatNameByAddingSpace(s.Key),
+                                        Value = s.Value
+                                    })
+                                    .ToList(),
                 WorkingStatuses = CommonUtil.GetEnumKeyValueList<EmployeeMonthlyStatus>()
-                                    .Where(x => x.Value != Convert.ToInt64(EmployeeMonthlyStatus.Pausing))
+                                    .Select(s => new KeyValueDto
+                                    {
+                                        Key = CommonUtil.FormatNameByAddingSpace(s.Key),
+                                        Value = s.Value
+                                    })
                                     .ToList(),
                 Gender = CommonUtil.GetEnumKeyValueList<Sex>(),
 
