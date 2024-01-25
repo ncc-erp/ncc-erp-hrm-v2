@@ -44,18 +44,15 @@ export class PayslipDataChartDto {
     email: string;
     gender: number;
 
-    branchInfo: BadgeInfoDto;
-    userTypeInfo: BadgeInfoDto;
-    jobPositionInfo: BadgeInfoDto;
-    levelInfo: BadgeInfoDto;
     teamInfos: KeyValueDto[];
+    levelInfo: BadgeInfoDto;
+    branchInfo: BadgeInfoDto;
+    jobPositionInfo: BadgeInfoDto;
+    userTypeInfo: BadgeInfoDto;
 
-    status: EmployeeStatus;
     monthlyStatus: EmployeeMonthlyStatus;
     statusMonth: Date;
 
     salary: number;
     payrollMonth: Date;
-
-
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Home.Dtos.ChartDto
 {
@@ -12,4 +10,12 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
+    public class InputChartDetailDto
+    {
+        public long ChartDetaiId { get; set; }
+        public ChartDataType ChartDataType { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+    }
+
 }

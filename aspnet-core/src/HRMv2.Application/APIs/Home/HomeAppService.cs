@@ -68,9 +68,9 @@ namespace HRMv2.APIs.Home
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
-        public async Task<ResultChartDto> GetDetailDataEmployeeChart(InputListChartDto input)
+        public async Task<List<PayslipDataChartDto>> GetDetailDataChart(InputChartDetailDto input)
         {
-            var result = await _chartManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
+            var result = await _chartManager.GetDetailDataChart(input.ChartDetaiId, input.ChartDataType, input.StartDate, input.EndDate);
             return result;
         }
     }
