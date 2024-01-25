@@ -259,7 +259,7 @@ namespace HRMv2.Manager.Categories.Charts
         #region line chart
         public ResultLineChartDto GetDataForOneLineChartEmployee(
             ChartSettingDto chartInfo,
-            List<PayslipDataChartDto> employeeMonthlyDetail,
+            List<PayslipDataChartDto> allDataForChartEmployee,
             List<string> labels)
         {
             var result = new ResultLineChartDto
@@ -275,7 +275,7 @@ namespace HRMv2.Manager.Categories.Charts
                     Id = chartDetail.Id,
                     LineName = chartDetail.Name,
                     Color = chartDetail.Color,
-                    Data = GetDataLineEmployeeChart(employeeMonthlyDetail, chartDetail, labels) ?? new List<double>(),
+                    Data = GetDataLineEmployeeChart(allDataForChartEmployee, chartDetail, labels) ?? new List<double>(),
                 };
                 result.Lines.Add(chart);
             }
@@ -283,33 +283,52 @@ namespace HRMv2.Manager.Categories.Charts
         }
 
 
-        public List<double> GetDataLineEmployeeChart(List<PayslipDataChartDto> employeeMonthlyDetail, ChartDetailDto detail, List<string> labels)
+        public List<double> GetDataLineEmployeeChart(List<PayslipDataChartDto> allDataForChartEmployee, ChartDetailDto detail, List<string> labels)
         {
             //lấy data theo chart setting 
-            var employeeMonthlyDetailForChart = FilterDataLineEmployeeChart(employeeMonthlyDetail, detail);
+            var employeeMonthlyDetailForChart = FilterDataLineEmployeeChart(allDataForChartEmployee, detail);
             // lấy data string dựa trên label
             List<double> result = labels.Select(label => employeeMonthlyDetailForChart.ContainsKey(label)
                                                         ? (double)employeeMonthlyDetailForChart[label].ToList().Count : 0).ToList();
             return result;
         }
 
-        public Dictionary<string, List<PayslipDataChartDto>> FilterDataLineEmployeeChart(List<PayslipDataChartDto> employeeMonthlyDetail, ChartDetailDto detail)
+        public IEnumerable<PayslipDataChartDto>FilterDataEmployeeChartByChartDetail(List<PayslipDataChartDto> allDataForChartEmployee, ChartDetailDto detail)
         {
-            var employeeMonthlyDetailForChart = employeeMonthlyDetail
+            var result = allDataForChartEmployee
                         .WhereIf(detail.ListJobPositionId.Any(), x => detail.ListJobPositionId.Contains(x.JobPositionId))
                         .WhereIf(detail.ListLevelId.Any(), x => detail.ListLevelId.Contains(x.LevelId))
                         .WhereIf(detail.ListBranchId.Any(), x => detail.ListBranchId.Contains(x.BranchId))
                         .WhereIf(detail.ListTeamId.Any(), x => detail.ListTeamId.Any(teamIds => x.TeamIds.Contains(teamIds)))
                         .WhereIf(detail.ListUserType.Any(), x => detail.ListUserType.Contains(x.UserType))
                         .WhereIf(detail.ListGender.Any(), x => detail.ListGender.Contains(x.Gender))
-                        .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.MonthlyStatus))
-                        .OrderBy(x => x.Month)
-                        .GroupBy(x => x.EmployeeMonthYear)
+                        .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.MonthlyStatus));
+            return result;
+        }
+
+        public Dictionary<string, List<PayslipDataChartDto>> FilterDataLineEmployeeChart(List<PayslipDataChartDto> allDataForChartEmployee, ChartDetailDto detail)
+        {
+            var result = FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
+                        .OrderBy(x => x.StatusMonth)
+                        .GroupBy(x => x.StatusMonthYear)
                         .ToDictionary(
                             g => g.Key,
                             g => g.ToList()
                         );
-            return employeeMonthlyDetailForChart;
+            return result;
+        }
+
+        public List<PayslipDataChartDto> FilterDataEmployeeChart(
+            List<PayslipDataChartDto> allDataForChartEmployee, 
+            ChartDetailDto detail, 
+            DateTime startDate, 
+            DateTime endDate)
+        {
+            var result = FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
+                        .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
+                        .OrderBy(x => x.StatusMonth)
+                        .ToList();
+            return result;
         }
 
         #endregion
@@ -318,7 +337,7 @@ namespace HRMv2.Manager.Categories.Charts
 
         public ResultCircleChartDto GetDataForOneCircleEmployeeChart(
            ChartSettingDto chartInfo,
-           List<PayslipDataChartDto> employeeMonthlyDetail)
+           List<PayslipDataChartDto> allDataForChartEmployee)
         {
             var result = new ResultCircleChartDto
             {
@@ -334,28 +353,21 @@ namespace HRMv2.Manager.Categories.Charts
                     Id = chartDetail.Id,
                     PieName = chartDetail.Name,
                     Color = chartDetail.Color,
-                    Data = GetDataCircleEmployeeChart(employeeMonthlyDetail, chartDetail)
+                    Data = GetDataCircleEmployeeChart(allDataForChartEmployee, chartDetail)
                 };
                 result.Pies.Add(chart);
             }
             return result;
         }
 
-        public double GetDataCircleEmployeeChart(List<PayslipDataChartDto> employeeMonthlyDetail, ChartDetailDto detail)
+        public double GetDataCircleEmployeeChart(List<PayslipDataChartDto> allDataForChartEmployee, ChartDetailDto detail)
         {
             //lấy data theo chart setting 
-            var employeeMonthlyDetailForChart = employeeMonthlyDetail
-                        .WhereIf(detail.ListJobPositionId.Any(), x => detail.ListJobPositionId.Contains(x.JobPositionId))
-                        .WhereIf(detail.ListLevelId.Any(), x => detail.ListLevelId.Contains(x.LevelId))
-                        .WhereIf(detail.ListBranchId.Any(), x => detail.ListBranchId.Contains(x.BranchId))
-                        .WhereIf(detail.ListTeamId.Any(), x => detail.ListTeamId.Any(teamIds => x.TeamIds.Contains(teamIds)))
-                        .WhereIf(detail.ListUserType.Any(), x => detail.ListUserType.Contains(x.UserType))
-                        .WhereIf(detail.ListGender.Any(), x => detail.ListGender.Contains(x.Gender))
-                        .WhereIf(detail.ListWorkingStatus.Any(), x => detail.ListWorkingStatus.Contains(x.MonthlyStatus))
-                        .DistinctBy(x => x.EmployeeId)
-                        .OrderBy(x => x.Month);
+            var monthlyDataForChartEmployee = FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
+                                            .DistinctBy(x => x.EmployeeId)
+                                            .OrderBy(x => x.StatusMonth);
 
-            var result = employeeMonthlyDetailForChart.ToList().Count();
+            var result = monthlyDataForChartEmployee.ToList().Count();
             return result;
         }
 
@@ -418,12 +430,12 @@ namespace HRMv2.Manager.Categories.Charts
         }
         public EmployeeMonthlyStatus? GetMonthlyStatus(PayslipDataChartDto payslip, List<WorkingHistoryDto> workingHistories)
         {
-            var key = GetEmployeeMonthlyStatusKey(payslip.Month, workingHistories);
+            var key = GetEmployeeMonthlyStatusKey(payslip.StatusMonth, workingHistories);
             if (dicEmployeeMonthlyStatus.ContainsKey(key)) //contains => trả về, không contains => log error
             {
                 return dicEmployeeMonthlyStatus[key];
             }
-            Logger.Error($"GetMonthlyStatus: key: {key}, Fullname: {payslip.FullName}, Month: {payslip.Month}, workingHistories: {JsonConvert.SerializeObject(workingHistories)}");
+            Logger.Error($"GetMonthlyStatus: key: {key}, Fullname: {payslip.FullName}, Month: {payslip.StatusMonth}, workingHistories: {JsonConvert.SerializeObject(workingHistories)}");
             return null;
         }
         private static Dictionary<string, EmployeeMonthlyStatus> dicEmployeeMonthlyStatus = new Dictionary<string, EmployeeMonthlyStatus>()
@@ -547,7 +559,7 @@ namespace HRMv2.Manager.Categories.Charts
                     LevelId = p.LevelId,
                     TeamIds = p.PayslipTeams.Select(team => team.TeamId).ToList(),
                     UserType = p.UserType,
-                    ApplyMonth = p.Payroll.ApplyMonth,
+                    PayrollMonth = p.Payroll.ApplyMonth,
                     PayslipDetails = p.PayslipDetails
                                     .Select(pd => new PayslipDetailDataChartDto
                                     {
@@ -557,7 +569,7 @@ namespace HRMv2.Manager.Categories.Charts
                                     }).ToList(),
                     
                 })
-                .OrderBy(p => p.ApplyMonth);
+                .OrderBy(p => p.PayrollMonth);
 
             return result;
         }

@@ -19,6 +19,7 @@ import {
   DisplayLineChartDto,
 } from "../../service/model/chart-settings/chart.dto";
 import { APP_ENUMS } from "@shared/AppEnums";
+import { ChartDetailDataComponent } from "../chart-detail-data/chart-detail-data.component";
 
 @Component({
   selector: "app-line-chart",
@@ -115,14 +116,20 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
   }
   
   viewDataEmployeeLineChartDetail(chartDetailId: number, monthYear: string){
-    let { fromDate, toDate } = this.convertToDateRange(monthYear);
-    console.log(chartDetailId);
-    console.log(fromDate + " " + toDate);
-    if(this.lineChartData.chartDataType == APP_ENUMS.ChartDataType.Employee){
-      console.log("employee");
-    }else{
-      console.log("salary");
-    }
+    let { startDate, endDate } = this.convertToDateRange(monthYear);
+    let ref = this.dialog.open(ChartDetailDataComponent, {
+      minWidth: "50%",
+      data: {
+        startDate: startDate,
+        endDate: endDate,
+        chartData : this.lineChartData,
+        chartDetailId : chartDetailId
+      },
+      disableClose: true
+    });
+    // ref.componentInstance.refreshDataEvent.subscribe((data) => {
+    //   this.onRefreshData();
+    // });
   }
   
   convertMonth(fromDate : Date, toDate : Date){
@@ -140,12 +147,12 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
   }
   
   convertToDateRange(str) {
-    const parts = str.split("-");
-    const month = parseInt(parts[0], 10);
-    const year = parseInt(parts[1], 10);
-    const fromDate = new Date(year, month - 1, 1);
-    const toDate = new Date(year, month, 0);
+    let parts = str.split("-");
+    let month = parseInt(parts[0], 10);
+    let year = parseInt(parts[1], 10);
+    let startDate = new Date(year, month - 1, 1);
+    let endDate = new Date(year, month, 0);
 
-    return { fromDate, toDate };
+    return { startDate, endDate };
 }
 }

@@ -55,6 +55,7 @@ export class CreateEditChartDetailDialogComponent
   public isChartSalaryDataType: boolean;
 
   ngOnInit(): void {
+    console.log("dialogData",this.dialogData)
     this.getAllFilterData();
     this.initForm();
     this.formGroup.enable();

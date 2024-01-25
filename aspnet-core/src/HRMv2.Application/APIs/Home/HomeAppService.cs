@@ -65,5 +65,13 @@ namespace HRMv2.APIs.Home
             var result = await _chartManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
             return result;
         }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
+        public async Task<ResultChartDto> GetDetailDataEmployeeChart(InputListChartDto input)
+        {
+            var result = await _chartManager.GetDataPayslipCharts(input.ChartIds, input.StartDate, input.EndDate);
+            return result;
+        }
     }
 }

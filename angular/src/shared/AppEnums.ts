@@ -294,4 +294,34 @@ export enum DateSelectorHomeEnum {
     HALF_YEAR = "Half-year",
     YEAR = "Year",
     CUSTOM = "Custom",
-  }
+}
+export enum Sex {
+    Male = 1,
+    Female = 2
+}
+export enum EmployeeStatus {
+    Working = 1,
+    Pausing = 2,
+    Quit = 3,
+    MaternityLeave = 4
+}
+export enum EmployeeMonthlyStatus {
+    Working = 1,
+    Pausing = 2,
+    Quit = 3,
+    MaternityLeave = 4,
+    Onboard = 5,
+    OnOffInMonth = 6,
+    BackToWork = 7
+}
+export enum PayslipDetailType
+{
+    SalaryNormal = 1,
+    SalaryOT = 2,
+    SalaryMaternityLeave = 3,
+    Benefit = 4,
+    Bonus =5,
+    Punishment = 6,
+    Debt = 7,
+    Refund = 8
+}

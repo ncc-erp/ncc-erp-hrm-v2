@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
+using HRMv2.Manager.Common.Dto;
 using HRMv2.Utils;
 using NccCore.Uitls;
 using System;
@@ -27,14 +28,32 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public EmployeeMonthlyStatus MonthlyStatus { get; set; }
         public EmployeeStatus Status { get; set; }
         public DateTime DateAt { get; set; }
-        public DateTime Month => DateTimeUtils.FirstDayOfMonth(DateAt);
-        public string EmployeeMonthYear => Month.ToString("MM-yyyy");
+        public DateTime StatusMonth => DateTimeUtils.FirstDayOfMonth(DateAt);
+        public string StatusMonthYear => DateTimeUtils.GetMonthYearLabelChart(StatusMonth);
         //salary
         public long PayrollId { get; set; }
         public double Salary { get; set; }
-        public DateTime ApplyMonth { get; set; }
-        public string PayrollMonthYear => DateTimeUtils.GetMonthYearLabelChart(ApplyMonth);
+        public DateTime PayrollMonth { get; set; }
+        public string PayrollMonthYear => DateTimeUtils.GetMonthYearLabelChart(PayrollMonth);
+
         public List<PayslipDetailDataChartDto> PayslipDetails {  get; set; }
+
+
+        public List<KeyValueDto> TeamInfos { get; set; }
+        public BadgeInfoDto LevelInfo { get; set; }
+        public BadgeInfoDto BranchInfo { get; set; }
+        public BadgeInfoDto JobPositionInfo { get; set; }
+        public BadgeInfoDto UserTypeInfo
+        {
+            get
+            {
+                return new BadgeInfoDto
+                {
+                    Name = CommonUtil.GetUserTypeNameVN(UserType),
+                    Color = CommonUtil.GetUserType(UserType).Color
+                };
+            }
+        }
     }
 
     public class PayslipDetailDataChartDto : EntityDto<long>

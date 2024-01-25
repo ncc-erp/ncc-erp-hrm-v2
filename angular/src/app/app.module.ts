@@ -39,6 +39,7 @@ import { HomeFilterComponent } from './home/home-filter/home-filter/home-filter.
 import { CircleChartComponent } from './home/circle-chart/circle-chart.component';
 import { LineChartComponent } from './home/line-chart/line-chart.component';
 import { DateSelectorHomepageComponent } from './home/date-selector-homepage/date-selector-homepage.component';
+import { ChartDetailDataComponent } from './home/chart-detail-data/chart-detail-data.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,6 +62,7 @@ import { DateSelectorHomepageComponent } from './home/date-selector-homepage/dat
     CircleChartComponent,
     LineChartComponent,
     DateSelectorHomepageComponent,
+    ChartDetailDataComponent,
   ],
   imports: [
     CommonModule,
