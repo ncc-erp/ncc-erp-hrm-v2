@@ -61,6 +61,16 @@ namespace HRMv2.APIs.Charts
             return chart;
         }
 
+        [HttpPost]
+
+        [AbpAuthorize(PermissionNames.Category_Chart_Edit)]
+        public async Task<Chart> Duplicate([FromBody] long id)
+        {
+            var chart = await _chartManager.Duplicate(id);
+
+            return chart;
+        }
+
         [HttpPut]
         [AbpAuthorize(PermissionNames.Category_Chart_ActiveDeactive)]
         public async Task<ChartDto> Active([FromBody] long id)

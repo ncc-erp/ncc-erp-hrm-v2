@@ -1,5 +1,6 @@
 ﻿using Abp.Collections.Extensions;
 using Abp.UI;
+using Amazon.S3.Model;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
@@ -8,6 +9,7 @@ using HRMv2.Manager.Histories.Dto;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
 using HRMv2.NccCore;
+using HRMv2.Utils;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
 using NccCore.Paging;
@@ -17,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
@@ -101,6 +104,74 @@ namespace HRMv2.Manager.Categories.Charts
             return chart;
         }
 
+        public async Task<Chart> Duplicate(long id)
+        {
+
+            var oldChart = WorkScope.GetAll<Chart>()
+                .Where(c => c.Id == id)
+                .Include(c => c.ChartDetails)
+                .ToList()
+                .First();
+
+            // duplicate
+            var newChart = new Chart
+            {
+                Name = GetNextName(oldChart.Name),
+                ChartDataType = oldChart.ChartDataType,
+                ChartType = oldChart.ChartType,
+            };
+
+            // reset data
+            newChart.ChartDetails = new List<ChartDetail>();
+            newChart.Id = await WorkScope.InsertAndGetIdAsync(newChart);
+
+            var newChartDetails = oldChart.ChartDetails.Select(c => new ChartDetail
+            {
+                Name = c.Name,
+                Color = c.Color,
+                BranchIds = c.BranchIds,
+                Gender = c.Gender,
+                JobPositionIds = c.JobPositionIds,
+                LevelIds = c.LevelIds,
+                TeamIds = c.TeamIds,
+                UserTypes = c.UserTypes,
+                PayslipDetailTypes = c.PayslipDetailTypes,
+                WorkingStatuses = c.WorkingStatuses,
+            }).ToList();
+
+            await WorkScope.InsertRangeAsync(newChartDetails);
+
+
+
+            return newChart;
+        }
+
+        private string GetNextName(string name)
+        {
+            int existingPostfix = ExtractPostfix(name);
+            string baseName = name;
+
+            if (existingPostfix > 0)
+            {
+                baseName = name.Substring(0, name.LastIndexOf('('));
+            }
+
+            int newPostfix = existingPostfix + 1;
+            return $"{baseName}({newPostfix})";
+        }
+
+        private int ExtractPostfix(string name)
+        {
+            var match = Regex.Match(name, @"\((\d+)\)$");
+
+            if (match.Success)
+            {
+                return int.Parse(match.Groups[1].Value);
+            }
+
+            return 0;
+        }
+
         public async Task<ChartDto> Active(long id)
         {
             var chart = await WorkScope.GetAsync<Chart>(id);
@@ -132,7 +203,7 @@ namespace HRMv2.Manager.Categories.Charts
             await WorkScope.DeleteAsync<Chart>(id);
 
             return id;
-        } 
+        }
         #endregion
 
         #region Employee chart
@@ -307,7 +378,7 @@ namespace HRMv2.Manager.Categories.Charts
             return result;
         }
 
-        public IEnumerable<PayslipDataChartDto>FilterDataEmployeeChartByChartDetail(List<PayslipDataChartDto> allDataForChartEmployee, ChartDetailDto detail)
+        public IEnumerable<PayslipDataChartDto> FilterDataEmployeeChartByChartDetail(List<PayslipDataChartDto> allDataForChartEmployee, ChartDetailDto detail)
         {
             var result = allDataForChartEmployee
                         .WhereIf(detail.ListJobPositionId.Any(), x => detail.ListJobPositionId.Contains(x.JobPositionId))
@@ -541,7 +612,7 @@ namespace HRMv2.Manager.Categories.Charts
                 {
                     FullName = p.Employee.FullName,
                     Id = p.Id,
-                    Email= p.Employee.Email,
+                    Email = p.Employee.Email,
                     Avatar = p.Employee.Avatar,
                     Gender = p.Employee.Sex,
                     Salary = p.Salary,
@@ -559,7 +630,7 @@ namespace HRMv2.Manager.Categories.Charts
                                         Money = pd.Money,
                                         Type = pd.Type,
                                     }).ToList(),
-                    
+
                 })
                 .OrderBy(p => p.PayrollMonth);
 
@@ -686,6 +757,19 @@ namespace HRMv2.Manager.Categories.Charts
             return result;
         }
 
+        public IEnumerable<PayslipDataChartDto> FitlerDataPayslipChartByChartDetail(ChartDetailDto detail, List<PayslipDataChartDto> payslip)
+        {
+            var result = payslip
+                .WhereIf(detail.ListGender.Any(), p => detail.ListGender.Contains(p.Gender))
+                .WhereIf(detail.ListBranchId.Any(), p => detail.ListBranchId.Contains(p.BranchId))
+                .WhereIf(detail.ListJobPositionId.Any(), p => detail.ListJobPositionId.Contains(p.JobPositionId))
+                .WhereIf(detail.ListLevelId.Any(), p => detail.ListLevelId.Contains(p.LevelId))
+                .WhereIf(detail.ListUserType.Any(), p => detail.ListUserType.Contains(p.UserType))
+                .WhereIf(detail.ListTeamId.Any(), p => detail.ListTeamId.Any(teamId => p.TeamIds.Contains(teamId)));
+
+            return result;
+        }
+
         /// <summary>
         /// Filter data by filters selection and return a dictionary of time and money.
         /// </summary>
@@ -696,14 +780,8 @@ namespace HRMv2.Manager.Categories.Charts
         {
             if (detail.ListPayslipDetailType.Any())
             {
-                var result = payslipDetails
+                var result = FitlerDataPayslipChartByChartDetail(detail, payslipDetails)
                    .Where(p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
-                   .WhereIf(detail.ListGender.Any(), p => detail.ListGender.Contains(p.Gender))
-                   .WhereIf(detail.ListBranchId.Any(), p => detail.ListBranchId.Contains(p.BranchId))
-                   .WhereIf(detail.ListJobPositionId.Any(), p => detail.ListJobPositionId.Contains(p.JobPositionId))
-                   .WhereIf(detail.ListLevelId.Any(), p => detail.ListLevelId.Contains(p.LevelId))
-                   .WhereIf(detail.ListUserType.Any(), p => detail.ListUserType.Contains(p.UserType))
-                   .WhereIf(detail.ListTeamId.Any(), p => detail.ListTeamId.Any(teamId => p.TeamIds.Contains(teamId)))
                    .GroupBy(pd => pd.PayrollMonthYear)
                    .ToDictionary(
                        g => g.Key,
@@ -718,13 +796,7 @@ namespace HRMv2.Manager.Categories.Charts
             }
             else
             {
-                var result = payslipDetails
-                    .WhereIf(detail.ListGender.Any(), p => detail.ListGender.Contains(p.Gender))
-                    .WhereIf(detail.ListBranchId.Any(), p => detail.ListBranchId.Contains(p.BranchId))
-                    .WhereIf(detail.ListJobPositionId.Any(), p => detail.ListJobPositionId.Contains(p.JobPositionId))
-                    .WhereIf(detail.ListLevelId.Any(), p => detail.ListLevelId.Contains(p.LevelId))
-                    .WhereIf(detail.ListUserType.Any(), p => detail.ListUserType.Contains(p.UserType))
-                    .WhereIf(detail.ListTeamId.Any(), p => detail.ListTeamId.Any(teamId => p.TeamIds.Contains(teamId)))
+                var result = FitlerDataPayslipChartByChartDetail(detail, payslipDetails)
                     .GroupBy(p => p.PayrollMonthYear)
                     .ToDictionary(
                             g => g.Key,

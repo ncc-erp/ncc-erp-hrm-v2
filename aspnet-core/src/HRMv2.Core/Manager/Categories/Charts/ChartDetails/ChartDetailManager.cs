@@ -358,7 +358,7 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             }
             else if (chartDataType == ChartDataType.Salary)
             {
-                listPayslipDataChart = FilterDataEmployeeChart(allDataForChartEmployee, chartDetailInfo, startDate, endDate);
+                listPayslipDataChart = FilterDataPayslipChart(chartDetailInfo, startDate, endDate);
             }
 
             var allBadgeInfoChartDetail = GetBadgeInfoChartDetail();
@@ -387,6 +387,42 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                         .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
                         .OrderBy(x => x.StatusMonth)
                         .ToList();
+
+            return result;
+        }
+
+
+        public List<PayslipDataChartDto> FilterDataPayslipChart(
+            ChartDetailDto detail,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            var payslip = _chartManager.QueryAllPayslipDetail(startDate, endDate).ToList();
+
+            var employeePayslips = _chartManager.FitlerDataPayslipChartByChartDetail(detail, payslip)
+                .Where(p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
+                .GroupBy(p => p.EmployeeId)
+                .ToList();
+
+            var result = new List<PayslipDataChartDto>();
+
+            foreach (var empPayslip in employeePayslips)
+            {
+                var employee = empPayslip.Last();
+                var payslipDetail = new List<PayslipDetailDataChartDto>();
+                double salary = 0;
+
+                foreach (var emp in empPayslip)
+                {
+                    salary += emp.Salary;
+                    payslipDetail.AddRange(emp.PayslipDetails);
+                }
+
+                employee.Salary = salary;
+                employee.PayslipDetails = payslipDetail;
+
+                result.Add(employee);
+            }
 
             return result;
         }
