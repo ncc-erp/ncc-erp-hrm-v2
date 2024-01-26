@@ -80,6 +80,7 @@ export class DateSelectorHomepageComponent
   }
   getDateOptions() {
     this.listDateOptions = [
+      DATE_TIME_OPTIONS_HOME.MONTH,
       DATE_TIME_OPTIONS_HOME.QUARTER,
       DATE_TIME_OPTIONS_HOME.HALF_YEAR,
       DATE_TIME_OPTIONS_HOME.YEAR,
@@ -208,6 +209,13 @@ export class DateSelectorHomepageComponent
 
   private getUnitOfTime(type: DateSelectorHomeEnum): any {
     switch (type) {
+      case DateSelectorHomeEnum.MONTH: {
+        return {
+          unitOfTime: DateSelectorHomeEnum.MONTH.toLowerCase(),
+          keyOfTime: DateSelectorHomeEnum.MONTH.toLowerCase(),
+          typeDate: DateSelectorHomeEnum.MONTH,
+        };
+      }
       case DateSelectorHomeEnum.QUARTER: {
         return {
           unitOfTime: DateSelectorHomeEnum.QUARTER.toLowerCase(),

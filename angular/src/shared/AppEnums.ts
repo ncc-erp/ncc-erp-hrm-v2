@@ -290,6 +290,7 @@ export enum TemplateType{
     Print = 2
 }
 export enum DateSelectorHomeEnum {
+    MONTH = "Month",
     QUARTER = "Quarter",
     HALF_YEAR = "Half-year",
     YEAR = "Year",
