@@ -104,6 +104,74 @@ namespace HRMv2.Manager.Categories.Charts
             return chart;
         }
 
+        public async Task<Chart> Duplicate(long id)
+        {
+
+            var oldChart = WorkScope.GetAll<Chart>()
+                .Where(c => c.Id == id)
+                .Include(c => c.ChartDetails)
+                .ToList()
+                .First();
+
+            // duplicate
+            var newChart = new Chart
+            {
+                Name = GetNextName(oldChart.Name),
+                ChartDataType = oldChart.ChartDataType,
+                ChartType = oldChart.ChartType,
+            };
+
+            // reset data
+            newChart.ChartDetails = new List<ChartDetail>();
+            newChart.Id = await WorkScope.InsertAndGetIdAsync(newChart);
+
+            var newChartDetails = oldChart.ChartDetails.Select(c => new ChartDetail
+            {
+                Name = c.Name,
+                Color = c.Color,
+                BranchIds = c.BranchIds,
+                Gender = c.Gender,
+                JobPositionIds = c.JobPositionIds,
+                LevelIds = c.LevelIds,
+                TeamIds = c.TeamIds,
+                UserTypes = c.UserTypes,
+                PayslipDetailTypes = c.PayslipDetailTypes,
+                WorkingStatuses = c.WorkingStatuses,
+            }).ToList();
+
+            await WorkScope.InsertRangeAsync(newChartDetails);
+
+
+
+            return newChart;
+        }
+
+        private string GetNextName(string name)
+        {
+            int existingPostfix = ExtractPostfix(name);
+            string baseName = name;
+
+            if (existingPostfix > 0)
+            {
+                baseName = name.Substring(0, name.LastIndexOf('('));
+            }
+
+            int newPostfix = existingPostfix + 1;
+            return $"{baseName}({newPostfix})";
+        }
+
+        private int ExtractPostfix(string name)
+        {
+            var match = Regex.Match(name, @"\((\d+)\)$");
+
+            if (match.Success)
+            {
+                return int.Parse(match.Groups[1].Value);
+            }
+
+            return 0;
+        }
+
         public async Task<ChartDto> Active(long id)
         {
             var chart = await WorkScope.GetAsync<Chart>(id);
@@ -376,6 +444,7 @@ namespace HRMv2.Manager.Categories.Charts
                     EmployeeId = p.EmployeeId,
                     FullName = p.Employee.FullName,
                     Email = p.Employee.Email,
+                    Avatar = p.Employee.Avatar,
                     JobPositionId = p.JobPositionId,
                     LevelId = p.LevelId,
                     TeamIds = p.PayslipTeams.Select(team => team.TeamId).ToList(),
@@ -405,6 +474,7 @@ namespace HRMv2.Manager.Categories.Charts
                        EmployeeId = x.Id,
                        FullName = x.FullName,
                        Email = x.Email,
+                       Avatar = x.Avatar,
                        JobPositionId = x.JobPositionId,
                        LevelId = x.LevelId,
                        BranchId = x.BranchId,
@@ -543,6 +613,7 @@ namespace HRMv2.Manager.Categories.Charts
                     FullName = p.Employee.FullName,
                     Id = p.Id,
                     Email = p.Employee.Email,
+                    Avatar = p.Employee.Avatar,
                     Gender = p.Employee.Sex,
                     Salary = p.Salary,
                     BranchId = p.BranchId,
@@ -686,7 +757,7 @@ namespace HRMv2.Manager.Categories.Charts
             return result;
         }
 
-        public IEnumerable<PayslipDataChartDto> FitlerDataPayslipByChartDetailCommon(ChartDetailDto detail, List<PayslipDataChartDto> payslip)
+        public IEnumerable<PayslipDataChartDto> FitlerDataPayslipChartByChartDetail(ChartDetailDto detail, List<PayslipDataChartDto> payslip)
         {
             var result = payslip
                 .WhereIf(detail.ListGender.Any(), p => detail.ListGender.Contains(p.Gender))
@@ -709,7 +780,7 @@ namespace HRMv2.Manager.Categories.Charts
         {
             if (detail.ListPayslipDetailType.Any())
             {
-                var result = FitlerDataPayslipByChartDetailCommon(detail,payslipDetails)
+                var result = FitlerDataPayslipChartByChartDetail(detail, payslipDetails)
                    .Where(p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
                    .GroupBy(pd => pd.PayrollMonthYear)
                    .ToDictionary(
@@ -725,7 +796,7 @@ namespace HRMv2.Manager.Categories.Charts
             }
             else
             {
-                var result = FitlerDataPayslipByChartDetailCommon(detail, payslipDetails)
+                var result = FitlerDataPayslipChartByChartDetail(detail, payslipDetails)
                     .GroupBy(p => p.PayrollMonthYear)
                     .ToDictionary(
                             g => g.Key,
@@ -805,74 +876,6 @@ namespace HRMv2.Manager.Categories.Charts
         #endregion
 
         #endregion
-
-
-        public async Task<List<PayslipDataChartDto>> GetDetailDataChart(long chartDetailId, ChartDataType chartDataType, DateTime startDate, DateTime endDate)
-        {
-            startDate = DateTimeUtils.FirstDayOfMonth(startDate);
-            endDate = DateTimeUtils.LastDayOfMonth(endDate);
-            var chartDetailInfo = await WorkScope.GetAll<ChartDetail>()
-                                .Where(s => s.Id == chartDetailId)
-                                .Select(s => new ChartDetailDto
-                                {
-                                    Id = s.Id,
-                                    ChartId = s.ChartId,
-                                    Name = s.Name,
-                                    Color = s.Color,
-                                    JobPositionIds = s.JobPositionIds,
-                                    LevelIds = s.LevelIds,
-                                    BranchIds = s.BranchIds,
-                                    TeamIds = s.TeamIds,
-                                    PayslipDetailTypes = s.PayslipDetailTypes,
-                                    UserTypes = s.UserTypes,
-                                    WorkingStatuses = s.WorkingStatuses,
-                                    Gender = s.Gender,
-                                }).FirstOrDefaultAsync();
-            var result = new List<PayslipDataChartDto>();
-            var allDataForChartEmployee = GetDataForAllChartEmployee(startDate, endDate);
-
-            if (chartDataType == ChartDataType.Employee)
-            {
-                result = FilterDataEmployeeChart(allDataForChartEmployee, chartDetailInfo, startDate, endDate);
-            }
-            else if (chartDataType == ChartDataType.Salary)
-            {
-                result = FilterDataPayslipChart(chartDetailInfo, startDate, endDate);
-            }
-
-            // map
-
-            return result;
-        }
-
-
-        public List<PayslipDataChartDto> FilterDataEmployeeChart(
-            List<PayslipDataChartDto> allDataForChartEmployee,
-            ChartDetailDto detail,
-            DateTime startDate,
-            DateTime endDate)
-        {
-            var result = FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
-                        .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
-                        .OrderBy(x => x.StatusMonth)
-                        .ToList();
-            return result;
-        }
-
-        public List<PayslipDataChartDto> FilterDataPayslipChart(
-            ChartDetailDto detail,
-            DateTime startDate,
-            DateTime endDate)
-        {
-            var payslip = QueryAllPayslipDetail(startDate, endDate).ToList();
-
-            var result = FitlerDataPayslipByChartDetailCommon(detail, payslip)
-                .Where(p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
-                .Where(p => p.PayrollMonth >= startDate && p.PayrollMonth <= endDate)
-                .ToList();
-
-            return result;
-        }
 
     }
 
