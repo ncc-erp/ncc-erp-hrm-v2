@@ -1,12 +1,15 @@
 ﻿using Abp.Collections.Extensions;
 using Abp.UI;
+using Amazon.S3.Model;
 using HRMv2.Entities;
+using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.Charts.Dto;
 using HRMv2.Manager.Histories.Dto;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
 using HRMv2.NccCore;
+using HRMv2.Utils;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
 using NccCore.Paging;
@@ -16,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 

@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using HRMv2.Utils;
 using NccCore.Anotations;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using static HRMv2.Constants.Enum.HRMEnum;
@@ -43,7 +44,19 @@ namespace HRMv2.Manager.Common.Dto
 
     public class BadgeInfoDto
     {
+        [JsonIgnore]
+        public long Id { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
+
+        public BadgeInfoDto()
+        {
+        }
+        public BadgeInfoDto(long id, string name, string color)
+        {
+            Id = id;
+            Name = name;
+            Color = color;
+        }
     }
 }

@@ -1,15 +1,19 @@
 ﻿
 using Abp.UI;
 using HRMv2.Entities;
-
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.Charts.Dto;
 using HRMv2.Manager.Categories.JobPositions;
 using HRMv2.Manager.Categories.Levels;
 using HRMv2.Manager.Categories.Teams;
+using HRMv2.Manager.Common.Dto;
+using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
+using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
+using NccCore.Uitls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -91,6 +95,33 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             };
 
             return selectionData;
+        }
+
+        public BadgeInfoChartDetail GetBadgeInfoChartDetail()
+        {
+            var branches = _branchManager
+                .QueryAllBranch()
+                .Select(x => new BadgeInfoDto(x.Id, x.Name, x.Color)).ToList();
+
+            var levels = _levelManager
+                .QueryAllLevel()
+                .Select(x => new BadgeInfoDto(x.Id, x.Name, x.Color)).ToList();
+
+            var jobPositions = _jobPositionManager
+                .QueryAllJobPosition()
+                .Select(x => new BadgeInfoDto(x.Id, x.Name, x.Color)).ToList();
+
+            var teams = _teamManager
+                .QueryAllTeam()
+                .Select(x => new KeyValueDto(x.Name, x.Id)).ToList();
+            var result = new BadgeInfoChartDetail
+            {
+                BranchInfo = branches,
+                JobPositionInfo = jobPositions,
+                LevelInfo = levels,
+                TeamInfos = teams
+            };
+            return result;
         }
 
         public IQueryable<ChartDetailDto> QueryAllChartDetail()
@@ -295,6 +326,105 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             await WorkScope.DeleteAsync<ChartDetail>(id);
 
             return id;
+        }
+
+        public async Task<List<PayslipDataChartDto>> GetDetailDataChart(long chartDetailId, ChartDataType chartDataType, DateTime startDate, DateTime endDate)
+        {
+            startDate = DateTimeUtils.FirstDayOfMonth(startDate);
+            endDate = DateTimeUtils.LastDayOfMonth(endDate);
+            var chartDetailInfo = await WorkScope.GetAll<ChartDetail>()
+                                .Where(s => s.Id == chartDetailId)
+                                .Select(s => new ChartDetailDto
+                                {
+                                    Id = s.Id,
+                                    ChartId = s.ChartId,
+                                    Name = s.Name,
+                                    Color = s.Color,
+                                    JobPositionIds = s.JobPositionIds,
+                                    LevelIds = s.LevelIds,
+                                    BranchIds = s.BranchIds,
+                                    TeamIds = s.TeamIds,
+                                    PayslipDetailTypes = s.PayslipDetailTypes,
+                                    UserTypes = s.UserTypes,
+                                    WorkingStatuses = s.WorkingStatuses,
+                                    Gender = s.Gender,
+                                }).FirstOrDefaultAsync();
+            var listPayslipDataChart = new List<PayslipDataChartDto>();
+            var allDataForChartEmployee = _chartManager.GetDataForAllChartEmployee(startDate, endDate);
+
+            if (chartDataType == ChartDataType.Employee)
+            {
+                listPayslipDataChart = FilterDataEmployeeChart(allDataForChartEmployee, chartDetailInfo, startDate, endDate);
+            }
+            else if (chartDataType == ChartDataType.Salary)
+            {
+                listPayslipDataChart = FilterDataPayslipChart(chartDetailInfo, startDate, endDate);
+            }
+
+            var allBadgeInfoChartDetail = GetBadgeInfoChartDetail();
+
+            foreach (var payslip in listPayslipDataChart)
+            {
+                payslip.BranchInfo = allBadgeInfoChartDetail.BranchInfo.FirstOrDefault(x => x.Id == payslip.BranchId);
+                payslip.JobPositionInfo = allBadgeInfoChartDetail.JobPositionInfo.FirstOrDefault(x => x.Id == payslip.JobPositionId);
+                payslip.LevelInfo = allBadgeInfoChartDetail.LevelInfo.FirstOrDefault(x => x.Id == payslip.LevelId);
+                payslip.TeamInfos = payslip.TeamIds
+                    .Select(teamId => allBadgeInfoChartDetail.TeamInfos.FirstOrDefault(x => x.Value == teamId))
+                    .ToList();
+            }
+
+            return listPayslipDataChart;
+        }
+
+
+        public List<PayslipDataChartDto> FilterDataEmployeeChart(
+            List<PayslipDataChartDto> allDataForChartEmployee,
+            ChartDetailDto detail,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            var result = _chartManager.FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
+                        .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
+                        .OrderBy(x => x.StatusMonth)
+                        .ToList();
+
+            return result;
+        }
+
+
+        public List<PayslipDataChartDto> FilterDataPayslipChart(
+            ChartDetailDto detail,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            var payslip = _chartManager.QueryAllPayslipDetail(startDate, endDate).ToList();
+
+            var employeePayslips = _chartManager.FitlerDataPayslipChartByChartDetail(detail, payslip)
+                .Where(p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
+                .GroupBy(p => p.EmployeeId)
+                .ToList();
+
+            var result = new List<PayslipDataChartDto>();
+
+            foreach (var empPayslip in employeePayslips)
+            {
+                var employee = empPayslip.Last();
+                var payslipDetail = new List<PayslipDetailDataChartDto>();
+                double salary = 0;
+
+                foreach (var emp in empPayslip)
+                {
+                    salary += emp.Salary;
+                    payslipDetail.AddRange(emp.PayslipDetails);
+                }
+
+                employee.Salary = salary;
+                employee.PayslipDetails = payslipDetail;
+
+                result.Add(employee);
+            }
+
+            return result;
         }
     }
 }

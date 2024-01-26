@@ -117,6 +117,27 @@ export class ChartsComponent
     this.openDialog(CreateEditChartDialogComponent, { ...chart });
   }
 
+  onDuplicate(chart: ChartDto) {
+    this.subscription.push(
+      this.chartSettingService
+        .duplicate(chart)
+        .pipe(
+          startWithTap(() => {
+            this.isLoading = true;
+          })
+        )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
+        .subscribe((rs) => {
+          abp.notify.success(`Duplicate chart ${chart.name} successfull`);
+          this.refresh();
+        })
+    );
+  }
+
   onActive(id: number) {
     this.subscription.push(
       this.chartSettingService

@@ -12,7 +12,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
     }
     public class InputChartDetailDto
     {
-        public long ChartDetaiId { get; set; }
+        public long ChartDetailId { get; set; }
         public ChartDataType ChartDataType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

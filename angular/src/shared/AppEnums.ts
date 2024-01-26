@@ -325,3 +325,9 @@ export enum PayslipDetailType
     Debt = 7,
     Refund = 8
 }
+
+export enum ChartDataType
+{
+    Employee = 0,
+    Salary = 1,
+}

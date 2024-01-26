@@ -24,4 +24,8 @@ export class ChartSettingService extends BaseApiService {
    public deActive(id: number): Observable<ApiResponseDto<ChartDto>> {
     return this.processPut('DeActive', id);
    }
+
+   public duplicate(chart: ChartDto): Observable<ApiResponseDto<ChartDto>> {
+    return this.processPost('Duplicate', chart)
+   }
 }

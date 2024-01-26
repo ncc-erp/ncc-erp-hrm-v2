@@ -18,6 +18,9 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public long EmployeeId { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
+        public string Avatar { get; set; }
+        public string AvatarFullPath => FileUtil.FullFilePath(Avatar);
+
         public Sex Gender { get; set; }
         public long BranchId { get; set; }
         public long JobPositionId { get; set; }
@@ -60,5 +63,13 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
     {
         public double Money { get; set; }
         public PayslipDetailType Type { get; set; }
+    }
+
+    public class BadgeInfoChartDetail
+    {
+        public List<KeyValueDto> TeamInfos { get; set; }
+        public List<BadgeInfoDto> LevelInfo { get; set; }
+        public List<BadgeInfoDto> BranchInfo { get; set; }
+        public List<BadgeInfoDto> JobPositionInfo { get; set; }
     }
 }
