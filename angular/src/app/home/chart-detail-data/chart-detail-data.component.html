@@ -24,7 +24,7 @@
         
     </div>
 </div>
-<!-- <div class="card-body" id="employeeWorkingStatus">
+<div class="card-body" id="employeeWorkingStatus">
     <div class="table-responsive mt-3">
         <div class="fixTableHead">
             <table class="table table-striped table-hover" [busy]="isLoading">
@@ -42,17 +42,22 @@
                             <app-user-info [userData]="{
                                 id: item.employeeId,
                                 fullName: item.fullName,
+                                avatarFullPath: item.avatarFullPath,
                                 sex: item.gender,
                                 email: item.email,
                                 levelInfo: item.levelInfo,
                                 branchInfo: item.branchInfo,
                                 jobPositionInfo: item.jobPositionInfo,
                                 userTypeInfo: item.userTypeInfo
-                            }" (click)="onClose()" [isAllowRouting]="isAllowRoutingDetail()" [isAllowAvatarRouting]="isAllowRoutingDetail()">
+                            }" 
+                            >
+                            <!-- [isAllowRouting]="isAllowRoutingDetail()" [isAllowAvatarRouting]="isAllowRoutingDetail()" -->
                             </app-user-info>
                         </td>
                         <td>
-                            {{item.monthYear |DMYDateFormat}}
+                            <div>
+                                {{item.fullName}}
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -82,4 +87,4 @@
             <p class="mb-0 ">Total: {{ sortedDetail.length }}</p>
         </div>
     </div>
-</div> -->
+</div>

@@ -1,6 +1,7 @@
 ﻿using Abp.Collections.Extensions;
 using Abp.UI;
 using HRMv2.Entities;
+using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.Charts.Dto;
 using HRMv2.Manager.Histories.Dto;
@@ -372,6 +373,7 @@ namespace HRMv2.Manager.Categories.Charts
                     EmployeeId = p.EmployeeId,
                     FullName = p.Employee.FullName,
                     Email = p.Employee.Email,
+                    Avatar = p.Employee.Avatar,
                     JobPositionId = p.JobPositionId,
                     LevelId = p.LevelId,
                     TeamIds = p.PayslipTeams.Select(team => team.TeamId).ToList(),
@@ -401,6 +403,7 @@ namespace HRMv2.Manager.Categories.Charts
                        EmployeeId = x.Id,
                        FullName = x.FullName,
                        Email = x.Email,
+                       Avatar = x.Avatar,
                        JobPositionId = x.JobPositionId,
                        LevelId = x.LevelId,
                        BranchId = x.BranchId,
@@ -539,6 +542,7 @@ namespace HRMv2.Manager.Categories.Charts
                     FullName = p.Employee.FullName,
                     Id = p.Id,
                     Email= p.Employee.Email,
+                    Avatar = p.Employee.Avatar,
                     Gender = p.Employee.Sex,
                     Salary = p.Salary,
                     BranchId = p.BranchId,
@@ -801,55 +805,6 @@ namespace HRMv2.Manager.Categories.Charts
 
         #endregion
 
-
-        public async Task<List<PayslipDataChartDto>> GetDetailDataChart(long chartDetailId, ChartDataType chartDataType, DateTime startDate, DateTime endDate)
-        {
-            startDate = DateTimeUtils.FirstDayOfMonth(startDate);
-            endDate = DateTimeUtils.LastDayOfMonth(endDate);
-            var chartDetailInfo = await WorkScope.GetAll<ChartDetail>()
-                                .Where(s => s.Id == chartDetailId)
-                                .Select(s => new ChartDetailDto
-                                {
-                                    Id = s.Id,
-                                    ChartId = s.ChartId,
-                                    Name = s.Name,
-                                    Color = s.Color,
-                                    JobPositionIds = s.JobPositionIds,
-                                    LevelIds = s.LevelIds,
-                                    BranchIds = s.BranchIds,
-                                    TeamIds = s.TeamIds,
-                                    PayslipDetailTypes = s.PayslipDetailTypes,
-                                    UserTypes = s.UserTypes,
-                                    WorkingStatuses = s.WorkingStatuses,
-                                    Gender = s.Gender,
-                                }).FirstOrDefaultAsync();
-            var result = new List<PayslipDataChartDto>();
-            var allDataForChartEmployee = GetDataForAllChartEmployee(startDate, endDate);
-
-            if (chartDataType == ChartDataType.Employee)
-            {
-                result = FilterDataEmployeeChart(allDataForChartEmployee, chartDetailInfo, startDate, endDate);
-            }
-            else if (chartDataType == ChartDataType.Salary)
-            {
-                result = FilterDataEmployeeChart(allDataForChartEmployee, chartDetailInfo, startDate, endDate);
-            }
-            return result;
-        }
-
-
-        public List<PayslipDataChartDto> FilterDataEmployeeChart(
-            List<PayslipDataChartDto> allDataForChartEmployee,
-            ChartDetailDto detail,
-            DateTime startDate,
-            DateTime endDate)
-        {
-            var result = FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
-                        .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
-                        .OrderBy(x => x.StatusMonth)
-                        .ToList();
-            return result;
-        }
     }
 
 }

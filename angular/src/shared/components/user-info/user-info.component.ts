@@ -39,6 +39,7 @@ export interface UserData{
   id: number,
   fullName: string,
   sex: number,
+  avatarFullPath: string;
   branchInfo: BadgeInfoDto,
   userTypeInfo: BadgeInfoDto,
   jobPositionInfo: BadgeInfoDto,

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
 import { ApiResponseDto } from '../../model/common.dto';
 import { BaseApiService } from '../base-api.service';
-import { HomepageEmployeeStatisticDto } from '../../model/homepage/HomepageEmployeeStatistic.dto'
+import { HomepageEmployeeStatisticDto, PayslipDataChartDto } from '../../model/homepage/HomepageEmployeeStatistic.dto'
 import { DisplayCircleChartDto,ResultCircleChartDto,ResultChartDto,DisplayLineChartDto } from '@app/service/model/chart-settings/chart.dto';
 
 @Injectable({
@@ -27,6 +27,10 @@ export class HomePageService extends BaseApiService {
   GetAllDataPayslipCharts(startDate:string, endDate:string,):Observable<ApiResponseDto<ResultChartDto>>{
     return this.processPost(`GetAllDataPayslipCharts`, { startDate ,endDate})
   }
+  GetDetailDataChart(payload: any):Observable<ApiResponseDto<PayslipDataChartDto[]>>{
+    return this.processPost(`GetDetailDataChart`, payload)
+  }
+
   // getAllActive(startDate:string, endDate:string):Observable<ApiResponseDto<ResultChartDto[]>>{
   //   return this.processPost(`GetAllActiveCharts`, { startDate ,endDate})
   // }

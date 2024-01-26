@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using HRMv2.Authorization;
 using HRMv2.Manager.Categories.Charts;
+using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
 using HRMv2.Manager.Home.Dtos.ChartDto;
@@ -17,11 +18,13 @@ namespace HRMv2.APIs.Home
     {
         private readonly HomePageManager _homePageManager;
         private readonly ChartManager _chartManager;
+        private readonly ChartDetailManager _chartDetailManager;
 
-        public HomeAppService(HomePageManager homePageManager, ChartManager chartManager)
+        public HomeAppService(HomePageManager homePageManager, ChartManager chartManager, ChartDetailManager chartDetailManager)
         {
             _homePageManager = homePageManager;
             _chartManager = chartManager;
+            _chartDetailManager = chartDetailManager;
         }
 
         [HttpGet]
@@ -70,7 +73,7 @@ namespace HRMv2.APIs.Home
         [AbpAuthorize(PermissionNames.Home_ViewCircleChart)]
         public async Task<List<PayslipDataChartDto>> GetDetailDataChart(InputChartDetailDto input)
         {
-            var result = await _chartManager.GetDetailDataChart(input.ChartDetaiId, input.ChartDataType, input.StartDate, input.EndDate);
+            var result = await _chartDetailManager.GetDetailDataChart(input.ChartDetailId, input.ChartDataType, input.StartDate, input.EndDate);
             return result;
         }
     }
