@@ -223,7 +223,7 @@
             <chart-select
               (onSelect)="onLineChartSelect($event)"
               className="col-12"
-              [dropdownData]="listLineChart"
+              [dropdownData]="listAllLineChartSelectBox"
               [label]="'Biểu đồ'"
               [defaultValue]="listLineChartId"
               [placeholder]="'Biểu đồ'"
@@ -232,7 +232,7 @@
         </div>
       </div>
       <div class="row">
-        <div *ngIf="lineChartDataDisplay == null" class="col-12">
+        <div *ngIf="listAllLineChartDataDisplay == null" class="col-12">
           <div
             class="card"
             style="font-family: 'Source Sans Pro'; font-size: 20px"
@@ -240,7 +240,7 @@
             <span>Không có biểu đồ nào đang active</span>
           </div>
         </div>
-        <div class="col-6" *ngFor="let chart of lineChartDataDisplay; let i = index">
+        <div class="col-6" *ngFor="let chart of listAllLineChartDataDisplay; let i = index">
           <div class="card">
             <app-line-chart
               [lineChartData]="chart"
@@ -266,7 +266,7 @@
             <chart-select
               (onSelect)="onCircleChartSelect($event)"
               className="col-12"
-              [dropdownData]="listCircleChart"
+              [dropdownData]="listAllCircleChartSelectBox"
               [label]="'Biểu đồ'"
               [defaultValue]="listCircleChartId"
               [placeholder]="'Biểu đồ'"
@@ -275,7 +275,7 @@
         </div>
       </div>
       <div class="row">
-        <div *ngIf="circleChartDataDisplay == null" class="col-12">
+        <div *ngIf="listAllCircleChartDataDisplay == null" class="col-12">
           <div
             class="card"
             style="font-family: 'Source Sans Pro'; font-size: 20px"
@@ -283,7 +283,7 @@
             <span>Không có biểu đồ nào đang active</span>
           </div>
         </div>
-        <div class="col-6" *ngFor="let chart of circleChartDataDisplay; let i = index">
+        <div class="col-6" *ngFor="let chart of listAllCircleChartDataDisplay; let i = index">
           <div class="card">
             <app-circle-chart
               [circlechartData]="chart"

@@ -243,6 +243,7 @@ export const DATE_TIME_OPTIONS = {
     "Custom Time": 6
 }
 export enum DATE_TIME_OPTIONS_HOME {
+    MONTH = "Month",
     QUARTER = "Quarter",
     HALF_YEAR = "Half-year",
     YEAR = "Year",

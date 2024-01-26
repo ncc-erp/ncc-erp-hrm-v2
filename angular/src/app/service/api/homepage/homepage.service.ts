@@ -21,7 +21,7 @@ export class HomePageService extends BaseApiService {
   GetDataPayslipCharts(startDate:string, endDate:string, chartIds :number[]):Observable<ApiResponseDto<ResultChartDto>>{
     return this.processPost(`GetDataPayslipCharts`, { startDate ,endDate,chartIds})
   }
-   GetAllDataEmployeeCharts(startDate:string, endDate:string,):Observable<ApiResponseDto<ResultChartDto>>{
+  GetAllDataEmployeeCharts(startDate:string, endDate:string,):Observable<ApiResponseDto<ResultChartDto>>{
     return this.processPost(`GetAllDataEmployeeCharts`, { startDate ,endDate})
   }
   GetAllDataPayslipCharts(startDate:string, endDate:string,):Observable<ApiResponseDto<ResultChartDto>>{
