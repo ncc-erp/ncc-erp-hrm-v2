@@ -80,8 +80,14 @@ export class HomeComponent extends AppComponentBase implements OnInit {
 
   tableData = {} as any;
   typeDate: any;
-  fromDate: any;
-  toDate: any;
+  // dateTime
+  fromDateDefault : any;
+  toDateDefault : any;
+  fromDateLineChart: any;
+  toDateLineChart: any;
+  fromDateCircleChart: any;
+  toDateCircleChart: any;
+
   chartIds: any;
   distanceFromAndToDate = "";
   defaultDateFilterTypeCircleChart: DateSelectorHomeEnum =
@@ -103,13 +109,17 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       date.getMonth() + 1,
       0
     ).toDateString();
-    this.fromDate = moment(new Date(date.getFullYear(), 0, 1)).format(
+    this.fromDateDefault = moment(new Date(date.getFullYear(), 0, 1)).format(
       "YYYY-MM-DD"
     );
-    this.toDate = moment(new Date(date.getFullYear(), 11, 31)).format(
+    this.toDateDefault = moment(new Date(date.getFullYear(), 11, 31)).format(
       "YYYY-MM-DD"
     );
-    this.getAllChartActive(this.fromDate, this.toDate);
+    this.fromDateLineChart = this.fromDateDefault
+    this.toDateLineChart = this.toDateDefault
+    this.fromDateCircleChart = this.fromDateDefault
+    this.toDateCircleChart = this.toDateDefault
+    this.getAllChartActive(this.fromDateDefault, this.toDateDefault);
   }
 
   getData(startDate: string, endDate: string) {
@@ -179,8 +189,8 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
     if (employeeIds.length != 0) {
       this.getDataForCircleEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.listCircleChartId
       );
     } else {
@@ -189,8 +199,8 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     }
     if (payslipIds.length != 0) {
       this.getDataForCirclePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.listCircleChartId
       );
     } else {
@@ -199,13 +209,13 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     }
     if (payslipIds.length == 0 && employeeIds.length == 0) {
       this.getDataForCirclePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.allCircleChartIds
       );
       this.getDataForCircleEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.allCircleChartIds
       );
     }
@@ -216,33 +226,33 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.searchWithDateTimeCircleChart = data;
     this.defaultDateFilterTypeCircleChart = data.dateType;
     this.searchWithDateTimeCircleChart.dateType = data.dateType;
-    this.fromDate = moment(this.searchWithDateTimeCircleChart.fromDate).format(
+    this.fromDateCircleChart = moment(this.searchWithDateTimeCircleChart.fromDate).format(
       "YYYY-MM-DD"
     );
-    this.toDate = moment(this.searchWithDateTimeCircleChart.toDate).format(
+    this.toDateCircleChart = moment(this.searchWithDateTimeCircleChart.toDate).format(
       "YYYY-MM-DD"
     );
 
     if (this.listCircleChartId.length == 0) {
       this.getDataForCircleEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.allCircleChartIds
       );
       this.getDataForCirclePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.allCircleChartIds
       );
     } else {
       this.getDataForCircleEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.listCircleChartId
       );
       this.getDataForCirclePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateCircleChart,
+        this.toDateCircleChart,
         this.listCircleChartId
       );
     }
@@ -441,8 +451,8 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
     if (employeeIds.length != 0) {
       this.getDataForLineEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.listLineChartId
       );
     } else {
@@ -451,8 +461,8 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     }
     if (payslipIds.length != 0) {
       this.getDataForLinePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.listLineChartId
       );
     } else {
@@ -461,13 +471,13 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     }
     if (payslipIds.length == 0 && employeeIds.length == 0) {
       this.getDataForLinePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.allLineChartIds
       );
       this.getDataForLineEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.allLineChartIds
       );
     }
@@ -477,32 +487,32 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.searchWithDateTimeLineChart = data;
     this.defaultDateFilterTypeLineChart = data.dateType;
     this.searchWithDateTimeLineChart.dateType = data.dateType;
-    this.fromDate = moment(this.searchWithDateTimeLineChart.fromDate).format(
+    this.fromDateLineChart = moment(this.searchWithDateTimeLineChart.fromDate).format(
       "YYYY-MM"
     );
-    this.toDate = moment(this.searchWithDateTimeLineChart.toDate).format(
+    this.toDateLineChart = moment(this.searchWithDateTimeLineChart.toDate).format(
       "YYYY-MM"
     );
     if (this.listLineChartId.length == 0) {
       this.getDataForLineEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.allLineChartIds
       );
       this.getDataForLinePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.allLineChartIds
       );
     } else {
       this.getDataForLineEmployeeChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.listLineChartId
       );
       this.getDataForLinePayslipChart(
-        this.fromDate,
-        this.toDate,
+        this.fromDateLineChart,
+        this.toDateLineChart,
         this.listLineChartId
       );
     }
@@ -658,7 +668,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     }
   }
   setFromAndToDate(fromDate, toDate) {
-    this.fromDate = fromDate;
-    this.toDate = toDate;
+    this.fromDateDefault = fromDate;
+    this.toDateDefault = toDate;
   }
 }
