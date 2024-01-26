@@ -226,12 +226,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.searchWithDateTimeCircleChart = data;
     this.defaultDateFilterTypeCircleChart = data.dateType;
     this.searchWithDateTimeCircleChart.dateType = data.dateType;
-    this.fromDateCircleChart = moment(this.searchWithDateTimeCircleChart.fromDate).format(
-      "YYYY-MM-DD"
-    );
-    this.toDateCircleChart = moment(this.searchWithDateTimeCircleChart.toDate).format(
-      "YYYY-MM-DD"
-    );
+    // Get the first day of the month for fromDate
+    this.fromDateCircleChart = moment(this.searchWithDateTimeCircleChart.fromDate).startOf('month').format("YYYY-MM-DD");
+    // Get the last day of the month for toDate
+    this.toDateCircleChart = moment(this.searchWithDateTimeCircleChart.toDate).endOf('month').format("YYYY-MM-DD");
 
     if (this.listCircleChartId.length == 0) {
       this.getDataForCircleEmployeeChart(
@@ -607,68 +605,5 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.filterFromDate = data?.fromDate;
     this.filterToDate = data?.toDate;
     this.getData(this.filterFromDate, this.filterToDate);
-  }
-  changeView(reset?: boolean, fDate?: any, tDate?: any) {
-    if (reset) {
-      this.activeView = 0;
-    }
-    let fromDate, toDate;
-    if (this.viewChange.value === this.APP_CONSTANT.TypeViewHomePage.Month) {
-      fromDate = moment().startOf("M").add(this.activeView, "M");
-      toDate = moment(fromDate).endOf("M");
-      this.typeDate = "Month";
-    }
-
-    if (this.viewChange.value === this.APP_CONSTANT.TypeViewHomePage.Year) {
-      fromDate = moment().startOf("y").add(this.activeView, "y");
-      toDate = moment(fromDate).endOf("y");
-      this.typeDate = "Years";
-    }
-
-    if (
-      this.viewChange.value == this.APP_CONSTANT.TypeViewHomePage.CustomTime
-    ) {
-      fromDate = "";
-      toDate = "";
-      if (!reset && fDate && tDate) {
-        if (fDate && tDate) {
-          fromDate = fDate.format("DD MMM YYYY");
-          toDate = tDate.format("DD MMM YYYY");
-        }
-        this.setFromAndToDate(fromDate, toDate);
-        this.distanceFromAndToDate = fromDate + "  -  " + toDate;
-      } else {
-        this.distanceFromAndToDate = "Custom Time";
-      }
-    }
-
-    if (fromDate != "" && toDate != "") {
-      let fDate = "",
-        tDate = "";
-      let list = [];
-      list[0] = { value: fromDate.isSame(toDate, "year"), type: "YYYY" };
-      list[1] = { value: fromDate.isSame(toDate, "month"), type: "MM" };
-      list[2] = { value: fromDate.isSame(toDate, "day"), type: "DD" };
-      list.map((value) => {
-        if (value.value) {
-          tDate = toDate.format(value.type) + " " + tDate;
-        } else {
-          fDate = fromDate.format(value.type) + " " + fDate;
-          tDate = toDate.format(value.type) + " " + tDate;
-        }
-      });
-      this.distanceFromAndToDate = fDate + " - " + tDate;
-    }
-    if (
-      this.viewChange.value != this.APP_CONSTANT.TypeViewHomePage.CustomTime
-    ) {
-      fromDate = fromDate == "" ? "" : fromDate.format("YYYY-MM-DD");
-      toDate = toDate == "" ? "" : toDate.format("YYYY-MM-DD");
-      this.setFromAndToDate(fromDate, toDate);
-    }
-  }
-  setFromAndToDate(fromDate, toDate) {
-    this.fromDateDefault = fromDate;
-    this.toDateDefault = toDate;
   }
 }

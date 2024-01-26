@@ -107,7 +107,12 @@
             </mat-form-field>
         </div>
         <div class="col-sm-6 col-6 d-flex justify-content-center align-items-center">
-            <pagination-controls [(maxSize)]="itemPerPage" (pageChange)="currentPage = $event"></pagination-controls>
+            <pagination-controls 
+                [(maxSize)]="itemPerPage" 
+                (pageChange)="currentPage = $event"
+                previousLabel=""
+                nextLabel="">
+            </pagination-controls>
         </div>
         <div class="col-sm-3 col-3 d-flex justify-content-end align-items-center">
             <p class="mb-0 ">Total: {{ sortedDetail.length }}</p>

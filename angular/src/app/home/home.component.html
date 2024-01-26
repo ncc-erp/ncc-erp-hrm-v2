@@ -244,8 +244,8 @@
           <div class="card">
             <app-line-chart
               [lineChartData]="chart"
-              [fromDate]="fromDate"
-              [toDate]="toDate"
+              [fromDate]="fromDateLineChart"
+              [toDate]="toDateLineChart"
               (refreshData)="onRefreshLineChart()"
             ></app-line-chart>
           </div>
@@ -287,8 +287,8 @@
           <div class="card">
             <app-circle-chart
               [circlechartData]="chart"
-              [fromDate]="fromDate"
-              [toDate]="toDate"
+              [fromDate]="fromDateCircleChart"
+              [toDate]="toDateCircleChart"
               (refreshData)="onRefreshCircleChart()"
             ></app-circle-chart>
           </div>
