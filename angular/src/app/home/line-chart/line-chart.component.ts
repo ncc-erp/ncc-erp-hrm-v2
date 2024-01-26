@@ -117,8 +117,6 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
   
   viewDataEmployeeLineChartDetail(chartDetailId: number, monthYear: string){
     let { startDate, endDate } = this.convertToDateRange(monthYear);
-    console.log(startDate)
-    console.log(endDate)
     let ref = this.dialog.open(ChartDetailDataComponent, {
       minWidth: "50%",
       data: {

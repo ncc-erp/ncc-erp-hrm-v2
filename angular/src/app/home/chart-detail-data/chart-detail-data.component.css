@@ -4,9 +4,12 @@
 .move-cursor{
     cursor: move;
 }
-::ng-deep #employeeWorkingStatus .ngx-pagination{
+::ng-deep #chartDetailData .ngx-pagination{
     padding: 0;
     margin: 0;
+}
+::ng-deep #chartDetailData .ngx-pagination li{
+    border: none;
 }
 
 .hyperlink:hover {
@@ -55,4 +58,7 @@
 ::ng-deep .mat-dialog-container {
     padding-top: 10px;
     padding-bottom: 10px;
+}
+.info table th, td{
+    vertical-align: middle;
 }

@@ -15,6 +15,7 @@ import { AppComponentBase } from "@shared/app-component-base";
 import * as echarts from "echarts";
 import * as moment from "moment";
 import { DisplayCircleChartDto } from "../../service/model/chart-settings/chart.dto";
+import { ChartDetailDataComponent } from "../chart-detail-data/chart-detail-data.component";
 
 @Component({
   selector: "app-circle-chart",
@@ -100,10 +101,29 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
       };
 
       option && myChart.setOption(option);
+      myChart.on('click', (params: any) => {
+        this.viewDataEmployeeCircleChartDetail(params.data.detail.id);
+      });
     }
   }
 
   onRefreshData() {
     this.refreshData.emit();
+  }
+
+  viewDataEmployeeCircleChartDetail(chartDetailId: number){
+    let ref = this.dialog.open(ChartDetailDataComponent, {
+      minWidth: "50%",
+      data: {
+        startDate: this.fromDate,
+        endDate: this.toDate,
+        chartData : this.circlechartData,
+        chartDetailId : chartDetailId
+      },
+      disableClose: true
+    });
+    // ref.componentInstance.refreshDataEvent.subscribe((data) => {
+    //   this.onRefreshData();
+    // });
   }
 }
