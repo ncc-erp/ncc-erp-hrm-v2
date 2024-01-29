@@ -10,6 +10,7 @@ import {
   Injector,
   ChangeDetectionStrategy,
   OnInit,
+  ViewChild,
 } from "@angular/core";
 import { AppComponentBase } from "@shared/app-component-base";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
@@ -20,7 +21,10 @@ import {
 } from "../../app/service/model/homepage/HomepageEmployeeStatistic.dto";
 import { MatDialog } from "@angular/material/dialog";
 import { APP_CONSTANT } from "../permission/api.constant";
-import { IChartDataType } from "@shared/components/chart-select/chart-select.component";
+import {
+  ChartSelectComponent,
+  IChartDataType,
+} from "@shared/components/chart-select/chart-select.component";
 import * as moment from "moment";
 import { FormControl } from "@angular/forms";
 import { DateSelectorHomeEnum } from "../../shared/AppConsts";
@@ -30,7 +34,6 @@ import {
   DisplayLineChartDto,
 } from "../service/model/chart-settings/chart.dto";
 import { ListInfoComponent } from "./listinfo/list-info/list-info.component";
-import { ChartSettingService } from "../service/api/categories/charts/chart.service";
 
 @Component({
   templateUrl: "./home.component.html",
@@ -38,6 +41,7 @@ import { ChartSettingService } from "../service/api/categories/charts/chart.serv
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent extends AppComponentBase implements OnInit {
+  @ViewChild(ChartSelectComponent) chartSelectComponent: ChartSelectComponent;
   constructor(
     injector: Injector,
     private homePageService: HomePageService,
@@ -70,7 +74,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   circlePayslipChartDataDisplay: DisplayCircleChartDto[] = []; // Circle Payslip Chart for Display
 
   listAllLineChartDataDisplay: DisplayLineChartDto[] = []; // All line chart for Display
-  listAllCircleChartDataDisplay: DisplayCircleChartDto[] = [];  // All Circle chart for Display
+  listAllCircleChartDataDisplay: DisplayCircleChartDto[] = []; // All Circle chart for Display
 
   allLineChartIds: number[]; // list line chart when There are no options selected
   allCircleChartIds: number[]; //list line chart when There are no options selected
@@ -81,12 +85,14 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   tableData = {} as any;
   typeDate: any;
   // dateTime
-  fromDateDefault : any;
-  toDateDefault : any;
+  fromDateDefault: any;
+  toDateDefault: any;
   fromDateLineChart: any;
   toDateLineChart: any;
   fromDateCircleChart: any;
   toDateCircleChart: any;
+
+  isDefault: boolean = true;
 
   chartIds: any;
   distanceFromAndToDate = "";
@@ -115,11 +121,16 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.toDateDefault = moment(new Date(date.getFullYear(), 11, 31)).format(
       "YYYY-MM-DD"
     );
-    this.fromDateLineChart = this.fromDateDefault
-    this.toDateLineChart = this.toDateDefault
-    this.fromDateCircleChart = this.fromDateDefault
-    this.toDateCircleChart = this.toDateDefault
+    this.fromDateLineChart = this.fromDateDefault;
+    this.toDateLineChart = this.toDateDefault;
+    this.fromDateCircleChart = this.fromDateDefault;
+    this.toDateCircleChart = this.toDateDefault;
     this.getAllChartActive(this.fromDateDefault, this.toDateDefault);
+  }
+
+  b() {
+    console.log("sdfsdf");
+    this.chartSelectComponent.handleClear();
   }
 
   getData(startDate: string, endDate: string) {
@@ -187,6 +198,12 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.listEmployeeChartIds.includes(id)
     );
     let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
+    if (ids.length == 0) {
+      this.listAllCircleChartDataDisplay = null;
+    } else {
+      this.circleEmployeeChartDataDisplay = [];
+      this.mapListAllCharts();
+    }
     if (employeeIds.length != 0) {
       this.getDataForCircleEmployeeChart(
         this.fromDateCircleChart,
@@ -207,54 +224,44 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.circlePayslipChartDataDisplay = [];
       this.mapListAllCharts();
     }
-    if (payslipIds.length == 0 && employeeIds.length == 0) {
-      this.getDataForCirclePayslipChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.allCircleChartIds
-      );
-      this.getDataForCircleEmployeeChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.allCircleChartIds
-      );
-    }
   }
 
   onDateChangeCircleChart(event: DateTimeSelectorHome) {
-    let data = event;
-    this.searchWithDateTimeCircleChart = data;
-    this.defaultDateFilterTypeCircleChart = data.dateType;
-    this.searchWithDateTimeCircleChart.dateType = data.dateType;
-    this.fromDateCircleChart = moment(this.searchWithDateTimeCircleChart.fromDate).format(
-      "YYYY-MM-DD"
-    );
-    this.toDateCircleChart = moment(this.searchWithDateTimeCircleChart.toDate).format(
-      "YYYY-MM-DD"
-    );
+    if (!this.isDefault) {
+      let data = event;
+      this.searchWithDateTimeCircleChart = data;
+      this.defaultDateFilterTypeCircleChart = data.dateType;
+      this.searchWithDateTimeCircleChart.dateType = data.dateType;
+      this.fromDateCircleChart = moment(
+        this.searchWithDateTimeCircleChart.fromDate
+      ).format("YYYY-MM-DD");
+      this.toDateCircleChart = moment(
+        this.searchWithDateTimeCircleChart.toDate
+      ).format("YYYY-MM-DD");
 
-    if (this.listCircleChartId.length == 0) {
-      this.getDataForCircleEmployeeChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.allCircleChartIds
-      );
-      this.getDataForCirclePayslipChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.allCircleChartIds
-      );
-    } else {
-      this.getDataForCircleEmployeeChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.listCircleChartId
-      );
-      this.getDataForCirclePayslipChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.listCircleChartId
-      );
+      if (this.listCircleChartId.length == 0) {
+        this.getDataForCircleEmployeeChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.allCircleChartIds
+        );
+        this.getDataForCirclePayslipChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.allCircleChartIds
+        );
+      } else {
+        this.getDataForCircleEmployeeChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.listCircleChartId
+        );
+        this.getDataForCirclePayslipChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.listCircleChartId
+        );
+      }
     }
   }
   getDataForCircleEmployeeChart(fromDate, toDate, chartIds) {
@@ -347,6 +354,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
             hidden: false,
           })
         );
+
         // Display line Employee
         this.lineEmployeeChartDataDisplay = result.lineCharts.map((item) => ({
           id: item.id,
@@ -401,7 +409,6 @@ export class HomeComponent extends AppComponentBase implements OnInit {
             hidden: false,
           })
         );
-
         // Display line Payslip
         this.linePayslipChartDataDisplay = result.lineCharts.map((item) => ({
           id: item.id,
@@ -449,72 +456,70 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.listEmployeeChartIds.includes(id)
     );
     let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
-    if (employeeIds.length != 0) {
-      this.getDataForLineEmployeeChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.listLineChartId
-      );
+    if (ids.length == 0) {
+      this.listAllLineChartDataDisplay = null;
     } else {
       this.lineEmployeeChartDataDisplay = [];
       this.mapListAllCharts();
-    }
-    if (payslipIds.length != 0) {
-      this.getDataForLinePayslipChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.listLineChartId
-      );
-    } else {
-      this.linePayslipChartDataDisplay = [];
-      this.mapListAllCharts();
-    }
-    if (payslipIds.length == 0 && employeeIds.length == 0) {
-      this.getDataForLinePayslipChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.allLineChartIds
-      );
-      this.getDataForLineEmployeeChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.allLineChartIds
-      );
+
+      if (employeeIds.length != 0) {
+        this.getDataForLineEmployeeChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+      } else {
+        this.lineEmployeeChartDataDisplay = [];
+        this.mapListAllCharts();
+      }
+      if (payslipIds.length != 0) {
+        this.getDataForLinePayslipChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+      } else {
+        this.linePayslipChartDataDisplay = [];
+        this.mapListAllCharts();
+      }
     }
   }
+
   onDateChangeLineChart(event: DateTimeSelectorHome) {
-    let data = event;
-    this.searchWithDateTimeLineChart = data;
-    this.defaultDateFilterTypeLineChart = data.dateType;
-    this.searchWithDateTimeLineChart.dateType = data.dateType;
-    this.fromDateLineChart = moment(this.searchWithDateTimeLineChart.fromDate).format(
-      "YYYY-MM"
-    );
-    this.toDateLineChart = moment(this.searchWithDateTimeLineChart.toDate).format(
-      "YYYY-MM"
-    );
-    if (this.listLineChartId.length == 0) {
-      this.getDataForLineEmployeeChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.allLineChartIds
-      );
-      this.getDataForLinePayslipChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.allLineChartIds
-      );
-    } else {
-      this.getDataForLineEmployeeChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.listLineChartId
-      );
-      this.getDataForLinePayslipChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.listLineChartId
-      );
+    if (!this.isDefault) {
+      let data = event;
+      this.searchWithDateTimeLineChart = data;
+      this.defaultDateFilterTypeLineChart = data.dateType;
+      this.searchWithDateTimeLineChart.dateType = data.dateType;
+      this.fromDateLineChart = moment(
+        this.searchWithDateTimeLineChart.fromDate
+      ).format("YYYY-MM");
+      this.toDateLineChart = moment(
+        this.searchWithDateTimeLineChart.toDate
+      ).format("YYYY-MM");
+      if (this.listLineChartId.length == 0) {
+        this.getDataForLineEmployeeChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.allLineChartIds
+        );
+        this.getDataForLinePayslipChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.allLineChartIds
+        );
+      } else {
+        this.getDataForLineEmployeeChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+        this.getDataForLinePayslipChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+      }
     }
   }
   mapListAllCharts() {
@@ -607,68 +612,5 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.filterFromDate = data?.fromDate;
     this.filterToDate = data?.toDate;
     this.getData(this.filterFromDate, this.filterToDate);
-  }
-  changeView(reset?: boolean, fDate?: any, tDate?: any) {
-    if (reset) {
-      this.activeView = 0;
-    }
-    let fromDate, toDate;
-    if (this.viewChange.value === this.APP_CONSTANT.TypeViewHomePage.Month) {
-      fromDate = moment().startOf("M").add(this.activeView, "M");
-      toDate = moment(fromDate).endOf("M");
-      this.typeDate = "Month";
-    }
-
-    if (this.viewChange.value === this.APP_CONSTANT.TypeViewHomePage.Year) {
-      fromDate = moment().startOf("y").add(this.activeView, "y");
-      toDate = moment(fromDate).endOf("y");
-      this.typeDate = "Years";
-    }
-
-    if (
-      this.viewChange.value == this.APP_CONSTANT.TypeViewHomePage.CustomTime
-    ) {
-      fromDate = "";
-      toDate = "";
-      if (!reset && fDate && tDate) {
-        if (fDate && tDate) {
-          fromDate = fDate.format("DD MMM YYYY");
-          toDate = tDate.format("DD MMM YYYY");
-        }
-        this.setFromAndToDate(fromDate, toDate);
-        this.distanceFromAndToDate = fromDate + "  -  " + toDate;
-      } else {
-        this.distanceFromAndToDate = "Custom Time";
-      }
-    }
-
-    if (fromDate != "" && toDate != "") {
-      let fDate = "",
-        tDate = "";
-      let list = [];
-      list[0] = { value: fromDate.isSame(toDate, "year"), type: "YYYY" };
-      list[1] = { value: fromDate.isSame(toDate, "month"), type: "MM" };
-      list[2] = { value: fromDate.isSame(toDate, "day"), type: "DD" };
-      list.map((value) => {
-        if (value.value) {
-          tDate = toDate.format(value.type) + " " + tDate;
-        } else {
-          fDate = fromDate.format(value.type) + " " + fDate;
-          tDate = toDate.format(value.type) + " " + tDate;
-        }
-      });
-      this.distanceFromAndToDate = fDate + " - " + tDate;
-    }
-    if (
-      this.viewChange.value != this.APP_CONSTANT.TypeViewHomePage.CustomTime
-    ) {
-      fromDate = fromDate == "" ? "" : fromDate.format("YYYY-MM-DD");
-      toDate = toDate == "" ? "" : toDate.format("YYYY-MM-DD");
-      this.setFromAndToDate(fromDate, toDate);
-    }
-  }
-  setFromAndToDate(fromDate, toDate) {
-    this.fromDateDefault = fromDate;
-    this.toDateDefault = toDate;
   }
 }

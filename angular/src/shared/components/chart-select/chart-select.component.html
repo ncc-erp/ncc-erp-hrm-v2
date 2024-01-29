@@ -23,7 +23,7 @@
       </mat-option>
   
       <div class="option-wrapper">
-        <mat-option *ngFor="let data of dropdownData ; let i = index" [value]="data.value" data-toggle="tooltip"
+        <mat-option  *ngFor="let data of dropdownData ; let i = index" [value]="data.value" data-toggle="tooltip"
           title="{{data.name}}" [hidden]="data.hidden" (click)="handleOptionClick(i)">
           {{data.name}}
         </mat-option>
