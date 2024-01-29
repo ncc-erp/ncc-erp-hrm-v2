@@ -16,3 +16,23 @@
     scale: 0.99;
     transition: all 0.3s;
 }
+.dialogTitle{
+    font-size: 25px;
+}
+.dialog-header{
+    cursor: move;
+}
+.out-line{
+    border-bottom: 0.2px solid rgba(204, 204, 204, 0.35);
+    ;
+}
+.close-btn{
+    background: none;
+    border: none;
+}
+
+.editModeBtn {
+    margin-bottom: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

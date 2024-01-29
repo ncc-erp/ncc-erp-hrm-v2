@@ -7,4 +7,5 @@ export class ChartDetailFullDto extends ChartDetailSelectionDto {
   color: string;
   isActive: number;
   chartDataType?: number;
+  isViewOnly: boolean = false;
 }

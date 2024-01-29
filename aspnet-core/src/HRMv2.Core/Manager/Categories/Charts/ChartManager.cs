@@ -104,7 +104,7 @@ namespace HRMv2.Manager.Categories.Charts
             return chart;
         }
 
-        public async Task<Chart> Duplicate(long id)
+        public async Task<long> Clone(long id)
         {
 
             var oldChart = WorkScope.GetAll<Chart>()
@@ -119,31 +119,35 @@ namespace HRMv2.Manager.Categories.Charts
                 Name = GetNextName(oldChart.Name),
                 ChartDataType = oldChart.ChartDataType,
                 ChartType = oldChart.ChartType,
+                TimePeriodType = oldChart.TimePeriodType,
+                IsActive = oldChart.IsActive,
             };
 
             // reset data
             newChart.ChartDetails = new List<ChartDetail>();
-            newChart.Id = await WorkScope.InsertAndGetIdAsync(newChart);
-
-            var newChartDetails = oldChart.ChartDetails.Select(c => new ChartDetail
+            foreach (var oldDetail in oldChart.ChartDetails)
             {
-                Name = c.Name,
-                Color = c.Color,
-                BranchIds = c.BranchIds,
-                Gender = c.Gender,
-                JobPositionIds = c.JobPositionIds,
-                LevelIds = c.LevelIds,
-                TeamIds = c.TeamIds,
-                UserTypes = c.UserTypes,
-                PayslipDetailTypes = c.PayslipDetailTypes,
-                WorkingStatuses = c.WorkingStatuses,
-            }).ToList();
+                var newDetail = new ChartDetail
+                {
+                    // Assuming ChartId is set when adding to newChart.ChartDetails
+                    Name = oldDetail.Name,
+                    Color = oldDetail.Color,
+                    IsActive = oldDetail.IsActive,
+                    JobPositionIds = oldDetail.JobPositionIds,
+                    LevelIds = oldDetail.LevelIds,
+                    BranchIds = oldDetail.BranchIds,
+                    TeamIds = oldDetail.TeamIds,
+                    UserTypes = oldDetail.UserTypes,
+                    PayslipDetailTypes = oldDetail.PayslipDetailTypes,
+                    WorkingStatuses = oldDetail.WorkingStatuses,
+                    Gender = oldDetail.Gender
+                };
 
-            await WorkScope.InsertRangeAsync(newChartDetails);
+                newChart.ChartDetails.Add(newDetail);
+            }
 
-
-
-            return newChart;
+            var result = await WorkScope.InsertAndGetIdAsync(newChart);
+            return result;
         }
 
         private string GetNextName(string name)
@@ -293,6 +297,10 @@ namespace HRMv2.Manager.Categories.Charts
 
         public async Task<ResultChartDto> GetDataEmployeeCharts(List<long> chartIds, [Required] DateTime startDate, [Required] DateTime endDate)
         {
+            if (chartIds.IsNullOrEmpty())
+            {
+                return null;
+            }
             var listChartInfo = QueryAllEmployeeChartSetting()
                 .Where(c => chartIds.Contains(c.Id))
                 .ToList();
@@ -683,6 +691,10 @@ namespace HRMv2.Manager.Categories.Charts
 
         public async Task<ResultChartDto> GetDataPayslipCharts(List<long> chartIds, [Required] DateTime startDate, [Required] DateTime endDate)
         {
+            if (chartIds.IsNullOrEmpty())
+            {
+                return null;
+            }
             var listChartInfo = (await GetAllSalaryChartSetting())
                 .Where(c => chartIds.Contains(c.Id))
                 .ToList();
@@ -785,11 +797,11 @@ namespace HRMv2.Manager.Categories.Charts
                    .GroupBy(pd => pd.PayrollMonthYear)
                    .ToDictionary(
                        g => g.Key,
-                       g => g.Sum(p =>
+                       g => Math.Round(g.Sum(p =>
                            Math.Abs(p.PayslipDetails
                                .Where(pd => detail.ListPayslipDetailType.Contains(pd.Type)) // Filter PayslipDetails
                                .Sum(pd => pd.Money)
-                           )) // CASE: payslip detail type == Punishment
+                           ))) // CASE: payslip detail type == Punishment
                    );
 
                 return result;
@@ -800,7 +812,7 @@ namespace HRMv2.Manager.Categories.Charts
                     .GroupBy(p => p.PayrollMonthYear)
                     .ToDictionary(
                             g => g.Key,
-                            g => g.Sum(p => p.Salary > 0 ? p.Salary : 0)
+                            g => Math.Round(g.Sum(p => p.Salary > 0 ? p.Salary : 0))
                     );
 
                 return result;
@@ -851,9 +863,9 @@ namespace HRMv2.Manager.Categories.Charts
                 .WhereIf(chartDetail.ListUserType.Any(), p => chartDetail.ListUserType.Contains(p.UserType))
                 .WhereIf(chartDetail.ListTeamId.Any(), p => chartDetail.ListTeamId.Any(teamId => p.TeamIds.Contains(teamId)));
 
-                var result = payslipDetailFilteredData.Sum(p => Math.Abs(p.PayslipDetails
+                var result = Math.Round(payslipDetailFilteredData.Sum(p => Math.Abs(p.PayslipDetails
                     .Where(pd => chartDetail.ListPayslipDetailType.Contains(pd.Type)) // Filter PayslipDetails
-                    .Sum(pd => pd.Money)));
+                    .Sum(pd => pd.Money))));
 
                 return result != 0 ? result : 0;
             }

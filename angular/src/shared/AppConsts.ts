@@ -74,6 +74,37 @@ export class AppConsts {
         },
     }
 
+    static readonly userMonthlyStatus = {
+        1: {
+            name: "Working",
+            class: "badge badge-pill bg-success"
+        },
+        2: {
+            name: "Pausing",
+            class: "badge badge-pill bg-warning"
+        },
+        3: {
+            name: "Quited",
+            class: "badge badge-pill bg-secondary"
+        },
+        4: {
+            name: "Maternity Leave",
+            class: "badge badge-pill bg-primary"
+        },
+        5: {
+            name: "Onboard",
+            class: "badge badge-pill bg-info"
+        },
+        6: {
+            name: "On Off In Month",
+            class: "badge badge-pill bg-danger"
+        },
+        7: {
+            name: "Back To Work",
+            class: "badge badge-pill bg-info"
+        },
+    }
+
     static readonly userLevel =
         {
             0: {

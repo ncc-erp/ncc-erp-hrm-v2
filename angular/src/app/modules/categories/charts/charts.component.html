@@ -113,11 +113,11 @@
                       </button>
                       <button
                         *ngIf="isShowEditBtn()"
-                        (click)="onDuplicate(chart.id)"
+                        (click)="onClone(chart)"
                         class="mat-menu-item w-100"
                       >
                         <i class="fas fa-pencil-alt mr-1"></i>
-                        <span>Duplicate</span>
+                        <span>Clone</span>
                       </button>
                       <button
                         *ngIf="isShowDeleteBtn()"

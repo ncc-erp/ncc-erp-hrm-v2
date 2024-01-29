@@ -55,7 +55,7 @@ export class PayslipDataChartDto {
     monthlyStatus: EmployeeMonthlyStatus;
     statusMonth: Date;
 
-    salary: number;
+    money: number;
     payrollMonth: Date;
 }
 

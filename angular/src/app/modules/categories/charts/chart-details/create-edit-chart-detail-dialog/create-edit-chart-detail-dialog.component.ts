@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
+import { PERMISSIONS_CONSTANT } from "@app/permission/permission";
 import { ChartDetailService } from "@app/service/api/categories/charts/chart-details/chart-detail.service";
 import { ChartDetailFullDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-full.dto";
 import { ChartDetailSelectionDto } from "@app/service/model/chart-settings/chart-detail-settings/chart-detail-selection.dto";
@@ -53,16 +54,25 @@ export class CreateEditChartDetailDialogComponent
   public filterMultipleTypeParamEnum = APP_ENUMS.FilterMultipleTypeParamEnum;
   public filterTypeEnum = APP_ENUMS.FilterTypeEnum;
   public isChartSalaryDataType: boolean;
+  public isEdit: boolean = false
+  public isViewOnly: boolean = false
 
   ngOnInit(): void {
-    console.log("dialogData",this.dialogData)
     this.getAllFilterData();
     this.initForm();
-    this.formGroup.enable();
+    if (this.dialogData.isViewOnly){
+      this.formGroup.disable()
+    } else {
+      this.formGroup.enable()
+    }
     if (this.dialogData?.id) {
+      this.isEdit = true
       this.getChartDetail(this.dialogData.id);
-
-      this.title = `Edit chart detail <strong>${this.dialogData.name}</strong>`;
+      if(this.dialogData.isViewOnly){
+        this.title = `${this.dialogData.name}`;
+      }else{
+        this.title = `Edit chart detail <strong>${this.dialogData.name}</strong>`;
+      }
     } else {
       this.title = "Create new chart detail";
     }
@@ -71,6 +81,7 @@ export class CreateEditChartDetailDialogComponent
 
     const id: number = this.activatedRoute.snapshot.queryParams["id"];
     this.chartDetail.chartId = id;
+    this.isViewOnly = this.dialogData.isViewOnly;
   }
 
   getChartDetail(id: number) {
@@ -245,5 +256,18 @@ export class CreateEditChartDetailDialogComponent
         control.setValue(""); // Set value to an empty string (for non-array controls)
       }
     }
+  }
+
+  onChangeEditMode() {
+    this.isViewOnly = !this.isViewOnly;
+    if (this.isViewOnly){
+      this.formGroup.disable()
+    } else {
+      this.formGroup.enable()
+    }
+  }
+
+  isShowEditBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Category_Chart_ChartDetail_Edit);
   }
 }

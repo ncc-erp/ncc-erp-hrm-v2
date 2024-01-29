@@ -25,7 +25,7 @@ export class ChartSettingService extends BaseApiService {
     return this.processPut('DeActive', id);
    }
 
-   public duplicate(chart: ChartDto): Observable<ApiResponseDto<ChartDto>> {
-    return this.processPost('Duplicate', chart)
+   public clone(chartId: number): Observable<ApiResponseDto<ChartDto>> {
+    return this.processPost('Clone', chartId)
    }
 }

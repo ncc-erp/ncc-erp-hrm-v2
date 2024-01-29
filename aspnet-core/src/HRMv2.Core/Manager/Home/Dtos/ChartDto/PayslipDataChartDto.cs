@@ -38,6 +38,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public double Salary { get; set; }
         public DateTime PayrollMonth { get; set; }
         public string PayrollMonthYear => DateTimeUtils.GetMonthYearLabelChart(PayrollMonth);
+        public double Money { get; set; }
 
         public List<PayslipDetailDataChartDto> PayslipDetails {  get; set; }
 

@@ -1,5 +1,18 @@
 <form [formGroup]="formGroup" class="form-horizontal" [busy]="isLoading">
-  <app-dialog-header [dialogTitle]="title"></app-dialog-header>
+  <div class="dialog-header" cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
+    <div class="out-line w-100 d-flex justify-content-between">
+        <div class="dialogTitle" [innerHTML]="title">
+        </div>
+        <div class="pt-2">
+            <button *ngIf="isShowEditBtn() && isEdit"
+                    [ngClass]="isViewOnly ? 'btn btn-primary mr-3 editModeBtn' : 'btn btn-success mr-3 editModeBtn'" 
+                    (click)="onChangeEditMode()">{{ isViewOnly ? 'Edit' : 'View' }}</button>
+            <button class="close-btn p-0">
+                <i class="fas fa-times" mat-dialog-close=></i>
+            </button>
+        </div>
+    </div>
+  </div>
   <div class="p-3" *ngIf="!isLoading">
     <div class="form-group d-flex required">
       <label class="col-3 mt-2 col-form-label">Name:</label>
@@ -34,7 +47,8 @@
       <button
         *ngIf="
           formGroup.controls.gender.value &&
-          formGroup.controls.gender.value.length > 0
+          formGroup.controls.gender.value.length > 0 &&
+          !isViewOnly
         "
         class="btn-clear-all"
         (click)="onClearAllFilter('gender')"
@@ -56,7 +70,8 @@
       <button
         *ngIf="
           formGroup.controls.branches.value &&
-          formGroup.controls.branches.value.length > 0
+          formGroup.controls.branches.value.length > 0 &&
+          !isViewOnly
         "
         (click)="onClearAllFilter('branches')"
         class="btn-clear-all"
@@ -78,7 +93,8 @@
       <button
         *ngIf="
           formGroup.controls.jobPositions.value &&
-          formGroup.controls.jobPositions.value.length > 0
+          formGroup.controls.jobPositions.value.length > 0 &&
+          !isViewOnly
         "
         (click)="onClearAllFilter('jobPositions')"
         class="btn-clear-all"
@@ -100,7 +116,8 @@
       <button
         *ngIf="
           formGroup.controls.levels.value &&
-          formGroup.controls.levels.value.length > 0
+          formGroup.controls.levels.value.length > 0 &&
+          !isViewOnly
         "
         (click)="onClearAllFilter('levels')"
         class="btn-clear-all"
@@ -122,7 +139,8 @@
       <button
         *ngIf="
           formGroup.controls.teams.value &&
-          formGroup.controls.teams.value.length > 0
+          formGroup.controls.teams.value.length > 0 &&
+          !isViewOnly
         "
         (click)="onClearAllFilter('teams')"
         class="btn-clear-all"
@@ -144,7 +162,8 @@
       <button
         *ngIf="
           formGroup.controls.userTypes.value &&
-          formGroup.controls.userTypes.value.length > 0
+          formGroup.controls.userTypes.value.length > 0 &&
+          !isViewOnly
         "
         (click)="onClearAllFilter('userTypes')"
         class="btn-clear-all"
@@ -166,7 +185,8 @@
       <button
         *ngIf="
           formGroup.controls.workingStatuses.value &&
-          formGroup.controls.workingStatuses.value.length > 0
+          formGroup.controls.workingStatuses.value.length > 0 &&
+          !isViewOnly
         "
         (click)="onClearAllFilter('workingStatuses')"
         class="btn-clear-all"
@@ -188,7 +208,8 @@
       <button
         *ngIf="
           formGroup.controls.payslipDetailTypes.value &&
-          formGroup.controls.payslipDetailTypes.value.length > 0
+          formGroup.controls.payslipDetailTypes.value.length > 0 &&
+          !isViewOnly
         "
         (click)="onClearAllFilter('payslipDetailTypes')"
         class="btn-clear-all"
@@ -219,8 +240,10 @@
       </div>
     </div>
   </div>
-  <app-dialog-footer
-    (onSave)="saveAndClose()"
-    [isDisable]="isLoading"
-  ></app-dialog-footer>
+  <div class="pr-3 pl-3">
+    <div class="d-flex justify-content-end btn-footer-action">
+        <button class="btn mr-2 btn-secondary" mat-dialog-close>Cancel</button>
+        <button [style.display]="isViewOnly ? 'none' : 'flex'" [disabled]="isLoading" class="btn btn-primary" (click)="saveAndClose()">Save</button>
+    </div>
+</div>
 </form>

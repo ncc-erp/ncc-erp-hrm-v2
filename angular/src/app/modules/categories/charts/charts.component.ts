@@ -117,10 +117,11 @@ export class ChartsComponent
     this.openDialog(CreateEditChartDialogComponent, { ...chart });
   }
 
-  onDuplicate(chart: ChartDto) {
+  onClone(chart: ChartDto) {
+    console.log(chart.name)
     this.subscription.push(
       this.chartSettingService
-        .duplicate(chart)
+        .clone(chart.id)
         .pipe(
           startWithTap(() => {
             this.isLoading = true;
@@ -132,7 +133,7 @@ export class ChartsComponent
           })
         )
         .subscribe((rs) => {
-          abp.notify.success(`Duplicate chart ${chart.name} successfull`);
+          abp.notify.success(`Clone chart ${chart.name} successfull`);
           this.refresh();
         })
     );

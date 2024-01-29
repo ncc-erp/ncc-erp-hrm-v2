@@ -1,6 +1,6 @@
 <div class="card-header move-cursor" cdkDrag cdkDragRootElement=".modal-content, .cdk-overlay-pane" cdkDragHandle>
     <div class="d-flex justify-content-between">
-        <div class="col-10 p-0 d-flex align-items-center">
+        <div class="col-9 p-0 d-flex align-items-center">
             <span style="font-size: 20px;">
                 <ng-container>
                     {{this.data.chartData.name}}
@@ -11,14 +11,14 @@
             <div class="d-inline" style="font-size: 20px;">
                 <span class="badge bg-primary ml-2">{{startDate | DMYDateFormat}}
                     - {{endDate | DMYDateFormat}}</span>
-                <button class="viewBtn btn btn-outline-primary btn-sm ml-2" (click)="onViewDetail(chartDetail.id)">
+                <button class="viewBtn btn btn-outline-primary btn-sm ml-2" (click)="onViewDetail()">
                     <mat-icon style="font-size: 20px; vertical-align: middle; height: fit-content;">settings</mat-icon>
                 </button> 
             </div>
         </div>
 
         <div class="d-flex align-items-center">
-            <!-- <span class="total mr-4"><strong>Tổng: {{total |formatMoney}}</strong></span> -->
+            <span *ngIf="!isEmployeeChart" class="total mr-4"><strong>Tổng: {{totalMoney | moneyFormat}}</strong></span>
             <i class="fas fa-times pointer" (click)="onClose()"></i>
         </div>
         
@@ -30,61 +30,66 @@
             <table class="table table-striped table-hover" [busy]="isLoading">
                 <thead>
                     <tr>
-                        <th class="align" (click)="sortData('employeeId')" style="cursor: pointer;">
-                            {{ "Id" }}
-                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'employeeId'"></i>
-                            <i *ngIf="sortColumn !== 'employeeId'" class="fas fa-sort"></i>
-                        </th>
-                        <th class="align" (click)="sortData('email')" style="cursor: pointer;">
-                            {{ "Employee" }}
-                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'email'"></i>
-                            <i *ngIf="sortColumn !== 'email'" class="fas fa-sort"></i>
-                        </th>
-                        <th *ngIf="isEmployeeChart" class="align" (click)="sortData('monthlyStatus')" style="cursor: pointer;">
-                            {{ "Working Status" }}
-                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'monthlyStatus'"></i>
-                            <i *ngIf="sortColumn !== 'monthlyStatus'" class="fas fa-sort"></i>
-                        </th>
-                        <th *ngIf="isEmployeeChart" class="align" (click)="sortData('statusMonth')" style="cursor: pointer;">
-                            {{ "Month" }}
-                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'statusMonth'"></i>
-                            <i *ngIf="sortColumn !== 'statusMonth'" class="fas fa-sort"></i>
-                        </th>
-                        <th *ngIf="!isEmployeeChart" class="align" (click)="sortData('salary')" style="cursor: pointer;">
-                            {{ "Money" }}
-                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'salary'"></i>
-                            <i *ngIf="sortColumn !== 'salary'" class="fas fa-sort"></i>
-                        </th>
-                        <th *ngIf="!isEmployeeChart" class="align" (click)="sortData('payrollMonth')" style="cursor: pointer;">
-                            {{ "Month" }}
-                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'payrollMonth'"></i>
-                            <i *ngIf="sortColumn !== 'payrollMonth'" class="fas fa-sort"></i>
-                        </th>
+                        <th class="text-center align-middle stt">Id</th>
+                        <th class="text-center align-middle">Employee</th>
+                        <th *ngIf="isEmployeeChart" class="text-center align-middle col-3">Working Status by Month</th>
+                        <th *ngIf="!isEmployeeChart" class="text-center align-middle col-3">Money by Month</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
-                    <tr *ngFor="let item of sortedDetail | paginate: { itemsPerPage: itemPerPage, currentPage: currentPage }; let i = index">
-                        <td class="text-center">{{ item.employeeId }}</td>
+                    <tr *ngFor="let group of groupedData | paginate: { itemsPerPage: itemPerPage, currentPage: currentPage }">
+                        <td class="text-center">{{ group[0].employeeId }}</td>
                         <td>
                             <app-user-info [userData]="{
-                                id: item.employeeId,
-                                fullName: item.fullName,
-                                avatarFullPath: item.avatarFullPath,
-                                sex: item.gender,
-                                email: item.email,
-                                levelInfo: item.levelInfo,
-                                branchInfo: item.branchInfo,
-                                jobPositionInfo: item.jobPositionInfo,
-                                userTypeInfo: item.userTypeInfo
+                                id: group[0].employeeId,
+                                fullName: group[0].fullName,
+                                avatarFullPath: group[0].avatarFullPath,
+                                sex: group[0].gender,
+                                email: group[0].email,
+                                levelInfo: group[0].levelInfo,
+                                branchInfo: group[0].branchInfo,
+                                jobPositionInfo: group[0].jobPositionInfo,
+                                userTypeInfo: group[0].userTypeInfo
                             }" 
-                            >
-                            <!-- [isAllowRouting]="isAllowRoutingDetail()" [isAllowAvatarRouting]="isAllowRoutingDetail()" -->
+                            [isAllowRouting]="isAllowRoutingDetail()" [isAllowAvatarRouting]="isAllowRoutingDetail()">
                             </app-user-info>
                         </td>
-                        <td *ngIf="isEmployeeChart" class="text-center">{{ getMonthlyStatus(item.monthlyStatus) }}</td>
-                        <td *ngIf="isEmployeeChart" class="text-center">{{ item.statusMonth | MyDateFormat }}</td>
-                        <td *ngIf="!isEmployeeChart" class="text-right">{{ item.salary }}</td>
-                        <td *ngIf="!isEmployeeChart" class="text-center">{{ item.payrollMonth | MyDateFormat }}</td>
+                        <td>
+                            <div *ngIf="isEmployeeChart" (click)="toggleMonthlyStatus(group)">
+                                <p [ngClass]="group.hideMonthlyStatus == false ? 'preReview' : 'review'"
+                                    title="Cuộn chuột hoặc Click để mở rộng nội dung"
+                                    name="monthlyStatus">
+                                    <ng-container class="p-2">
+                                        <div class="row" *ngFor="let item of group">
+                                            <div class="col-6 pl-2 text-left">
+                                                <span [ngClass]="getMonthlyStatusStyle(item.monthlyStatus, true)">
+                                                    {{getMonthlyStatus(item.monthlyStatus)}}
+                                                </span>
+                                            </div>
+                                            <div class="col-5 text-left">
+                                                {{item.statusMonth | MyDateFormat}} 
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </p>
+                            </div>
+                            <div *ngIf="!isEmployeeChart" (click)="toggleMonthlyMoney(group)">
+                                <p [ngClass]="group.hideMonthlyMoney == false ? 'preReview' : 'review'"
+                                    title="Cuộn chuột hoặc Click để mở rộng nội dung"
+                                    name="monthlyMoney">
+                                    <ng-container class="p-2">
+                                        <div class="row" *ngFor="let item of group">
+                                            <div class="col-6 text-right">
+                                                {{item.money | moneyFormat}}
+                                            </div>
+                                            <div class="col-5 text-left">
+                                                {{item.payrollMonth | MyDateFormat}} 
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </p>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -115,7 +120,7 @@
             </pagination-controls>
         </div>
         <div class="col-sm-3 col-3 d-flex justify-content-end align-items-center">
-            <p class="mb-0 ">Total: {{ sortedDetail.length }}</p>
+            <p class="mb-0 ">Total: {{ groupedData.length }}</p>
         </div>
     </div>
 </div>

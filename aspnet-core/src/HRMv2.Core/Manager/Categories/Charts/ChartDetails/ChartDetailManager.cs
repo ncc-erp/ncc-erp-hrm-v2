@@ -1,4 +1,5 @@
 ﻿
+using Abp.Collections.Extensions;
 using Abp.UI;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
@@ -350,11 +351,10 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                                     Gender = s.Gender,
                                 }).FirstOrDefaultAsync();
             var listPayslipDataChart = new List<PayslipDataChartDto>();
-            var allDataForChartEmployee = _chartManager.GetDataForAllChartEmployee(startDate, endDate);
-
+            
             if (chartDataType == ChartDataType.Employee)
             {
-                listPayslipDataChart = FilterDataEmployeeChart(allDataForChartEmployee, chartDetailInfo, startDate, endDate);
+                listPayslipDataChart = FilterDataEmployeeChart(chartDetailInfo, startDate, endDate);
             }
             else if (chartDataType == ChartDataType.Salary)
             {
@@ -378,11 +378,12 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
 
 
         public List<PayslipDataChartDto> FilterDataEmployeeChart(
-            List<PayslipDataChartDto> allDataForChartEmployee,
             ChartDetailDto detail,
             DateTime startDate,
             DateTime endDate)
         {
+            var allDataForChartEmployee = _chartManager.GetDataForAllChartEmployee(startDate, endDate);
+
             var result = _chartManager.FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
                         .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
                         .OrderBy(x => x.StatusMonth)
@@ -400,31 +401,37 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             var payslip = _chartManager.QueryAllPayslipDetail(startDate, endDate).ToList();
 
             var employeePayslips = _chartManager.FitlerDataPayslipChartByChartDetail(detail, payslip)
-                .Where(p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
-                .GroupBy(p => p.EmployeeId)
+                .WhereIf(detail.ListPayslipDetailType.Any(), p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
+                .Select(p => new PayslipDataChartDto
+                {
+                    FullName = p.FullName,
+                    Id = p.Id,
+                    Email = p.Email,
+                    Avatar = p.Avatar,
+                    Gender = p.Gender,
+                    Salary = p.Salary,
+                    BranchId = p.BranchId,
+                    EmployeeId = p.EmployeeId,
+                    JobPositionId = p.JobPositionId,
+                    LevelId = p.LevelId,
+                    TeamIds = p.TeamIds,
+                    UserType = p.UserType,
+                    PayrollMonth = p.PayrollMonth,
+                    PayslipDetails = p.PayslipDetails
+                                    .Select(pd => new PayslipDetailDataChartDto
+                                    {
+                                        Id = pd.Id,
+                                        Money = pd.Money,
+                                        Type = pd.Type,
+                                    }).ToList(),
+                    Money = detail.ListPayslipDetailType.Any()
+                    ? p.PayslipDetails.Where(d => detail.ListPayslipDetailType.Contains(d.Type)).Sum(d => Math.Abs(d.Money))
+                    : p.Salary
+                })
+                .Where(p => p.Money != 0)
                 .ToList();
 
-            var result = new List<PayslipDataChartDto>();
-
-            foreach (var empPayslip in employeePayslips)
-            {
-                var employee = empPayslip.Last();
-                var payslipDetail = new List<PayslipDetailDataChartDto>();
-                double salary = 0;
-
-                foreach (var emp in empPayslip)
-                {
-                    salary += emp.Salary;
-                    payslipDetail.AddRange(emp.PayslipDetails);
-                }
-
-                employee.Salary = salary;
-                employee.PayslipDetails = payslipDetail;
-
-                result.Add(employee);
-            }
-
-            return result;
+            return employeePayslips;
         }
     }
 }
