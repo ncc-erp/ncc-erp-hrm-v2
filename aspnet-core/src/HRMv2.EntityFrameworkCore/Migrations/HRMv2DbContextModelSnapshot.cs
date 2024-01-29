@@ -1957,14 +1957,14 @@ namespace HRMv2.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ShareToRoleIds")
+                        .HasColumnType("text");
+
                     b.Property<string>("ShareToUserIds")
                         .HasColumnType("text");
 
                     b.Property<int>("TimePeriodType")
                         .HasColumnType("integer");
-
-                    b.Property<string>("shareToRoleIds")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

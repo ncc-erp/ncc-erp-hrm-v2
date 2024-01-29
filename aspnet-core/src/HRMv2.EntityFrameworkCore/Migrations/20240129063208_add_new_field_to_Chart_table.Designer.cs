@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    [Migration("20240129062816_add_new_field_to_Chart_table")]
+    [Migration("20240129063208_add_new_field_to_Chart_table")]
     partial class add_new_field_to_Chart_table
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1959,14 +1959,14 @@ namespace HRMv2.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ShareToRoleIds")
+                        .HasColumnType("text");
+
                     b.Property<string>("ShareToUserIds")
                         .HasColumnType("text");
 
                     b.Property<int>("TimePeriodType")
                         .HasColumnType("integer");
-
-                    b.Property<string>("shareToRoleIds")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

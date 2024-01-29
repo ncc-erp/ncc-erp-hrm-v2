@@ -19,7 +19,7 @@ namespace HRMv2.Entities
 
         public TimePeriodType TimePeriodType { get; set; }
         public string ShareToUserIds { get; set; }
-        public string shareToRoleIds { get; set; }
+        public string ShareToRoleIds { get; set; }
 
         public bool IsActive { get; set; } = true;
 

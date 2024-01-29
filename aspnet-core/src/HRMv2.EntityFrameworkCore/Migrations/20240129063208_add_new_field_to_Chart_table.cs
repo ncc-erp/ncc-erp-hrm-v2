@@ -9,13 +9,13 @@ namespace HRMv2.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "ShareToUserIds",
+                name: "ShareToRoleIds",
                 table: "Charts",
                 type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "shareToRoleIds",
+                name: "ShareToUserIds",
                 table: "Charts",
                 type: "text",
                 nullable: true);
@@ -24,11 +24,11 @@ namespace HRMv2.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ShareToUserIds",
+                name: "ShareToRoleIds",
                 table: "Charts");
 
             migrationBuilder.DropColumn(
-                name: "shareToRoleIds",
+                name: "ShareToUserIds",
                 table: "Charts");
         }
     }
