@@ -18,6 +18,8 @@ namespace HRMv2.Entities
         public ChartDataType ChartDataType { get; set; }
 
         public TimePeriodType TimePeriodType { get; set; }
+        public string ShareToUserIds { get; set; }
+        public string ShareToRoleIds { get; set; }
 
         public bool IsActive { get; set; } = true;
 

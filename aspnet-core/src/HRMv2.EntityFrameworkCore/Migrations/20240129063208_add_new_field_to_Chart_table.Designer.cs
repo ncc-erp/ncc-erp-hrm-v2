@@ -3,6 +3,7 @@ using System;
 using HRMv2.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    partial class HRMv2DbContextModelSnapshot : ModelSnapshot
+    [Migration("20240129063208_add_new_field_to_Chart_table")]
+    partial class add_new_field_to_Chart_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2492,8 +2494,6 @@ namespace HRMv2.Migrations
 
                     b.HasIndex("CreatorUserId");
 
-                    b.HasIndex("EmployeeId");
-
                     b.HasIndex("LastModifierUserId");
 
                     b.ToTable("EmployeeBranchHistories");
@@ -4556,12 +4556,6 @@ namespace HRMv2.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorUserId");
 
-                    b.HasOne("HRMv2.Entities.Employee", null)
-                        .WithMany("BranchHistories")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HRMv2.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
@@ -4657,7 +4651,7 @@ namespace HRMv2.Migrations
                         .HasForeignKey("CreatorUserId");
 
                     b.HasOne("HRMv2.Entities.Employee", "Employee")
-                        .WithMany("WorkingHistories")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4827,7 +4821,7 @@ namespace HRMv2.Migrations
                         .HasForeignKey("LastModifierUserId");
 
                     b.HasOne("HRMv2.Entities.Payslip", "Payslip")
-                        .WithMany("PayslipTeams")
+                        .WithMany()
                         .HasForeignKey("PayslipId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -5202,18 +5196,9 @@ namespace HRMv2.Migrations
 
             modelBuilder.Entity("HRMv2.Entities.Employee", b =>
                 {
-                    b.Navigation("BranchHistories");
-
                     b.Navigation("EmployeeSkills");
 
                     b.Navigation("EmployeeTeams");
-
-                    b.Navigation("WorkingHistories");
-                });
-
-            modelBuilder.Entity("HRMv2.Entities.Payslip", b =>
-                {
-                    b.Navigation("PayslipTeams");
                 });
 #pragma warning restore 612, 618
         }
