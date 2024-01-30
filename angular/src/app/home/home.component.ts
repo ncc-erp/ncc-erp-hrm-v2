@@ -41,7 +41,6 @@ import { ListInfoComponent } from "./listinfo/list-info/list-info.component";
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent extends AppComponentBase implements OnInit {
-  @ViewChild(ChartSelectComponent) chartSelectComponent: ChartSelectComponent;
   constructor(
     injector: Injector,
     private homePageService: HomePageService,
@@ -93,6 +92,8 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   toDateCircleChart: any;
 
   isDefault: boolean = true;
+  isLineEmptyDisplay: boolean = false;
+  isCircleEmptyDisplay: boolean = false;
 
   chartIds: any;
   distanceFromAndToDate = "";
@@ -126,11 +127,6 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.fromDateCircleChart = this.fromDateDefault;
     this.toDateCircleChart = this.toDateDefault;
     this.getAllChartActive(this.fromDateDefault, this.toDateDefault);
-  }
-
-  b() {
-    console.log("sdfsdf");
-    this.chartSelectComponent.handleClear();
   }
 
   getData(startDate: string, endDate: string) {
@@ -199,10 +195,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     );
     let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
     if (ids.length == 0) {
-      this.listAllCircleChartDataDisplay = null;
-    } else {
-      this.circleEmployeeChartDataDisplay = [];
-      this.mapListAllCharts();
+      this.isCircleEmptyDisplay = true;
     }
     if (employeeIds.length != 0) {
       this.getDataForCircleEmployeeChart(
@@ -210,6 +203,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         this.toDateCircleChart,
         this.listCircleChartId
       );
+      this.isCircleEmptyDisplay = false;
     } else {
       this.circleEmployeeChartDataDisplay = [];
       this.mapListAllCharts();
@@ -220,6 +214,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         this.toDateCircleChart,
         this.listCircleChartId
       );
+      this.isCircleEmptyDisplay = false;
     } else {
       this.circlePayslipChartDataDisplay = [];
       this.mapListAllCharts();
@@ -227,43 +222,29 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   }
 
   onDateChangeCircleChart(event: DateTimeSelectorHome) {
-    if (!this.isDefault) {
-      let data = event;
-      this.searchWithDateTimeCircleChart = data;
-      this.defaultDateFilterTypeCircleChart = data.dateType;
-      this.searchWithDateTimeCircleChart.dateType = data.dateType;
-      this.fromDateCircleChart = moment(
-        this.searchWithDateTimeCircleChart.fromDate
-      ).format("YYYY-MM-DD");
-      this.toDateCircleChart = moment(
-        this.searchWithDateTimeCircleChart.toDate
-      ).format("YYYY-MM-DD");
+    let data = event;
+    this.searchWithDateTimeCircleChart = data;
+    this.defaultDateFilterTypeCircleChart = data.dateType;
+    this.searchWithDateTimeCircleChart.dateType = data.dateType;
+    this.fromDateCircleChart = moment(
+      this.searchWithDateTimeCircleChart.fromDate
+    ).format("YYYY-MM-DD");
+    this.toDateCircleChart = moment(
+      this.searchWithDateTimeCircleChart.toDate
+    ).format("YYYY-MM-DD");
 
-      if (this.listCircleChartId.length == 0) {
-        this.getDataForCircleEmployeeChart(
-          this.fromDateCircleChart,
-          this.toDateCircleChart,
-          this.allCircleChartIds
-        );
-        this.getDataForCirclePayslipChart(
-          this.fromDateCircleChart,
-          this.toDateCircleChart,
-          this.allCircleChartIds
-        );
-      } else {
-        this.getDataForCircleEmployeeChart(
-          this.fromDateCircleChart,
-          this.toDateCircleChart,
-          this.listCircleChartId
-        );
-        this.getDataForCirclePayslipChart(
-          this.fromDateCircleChart,
-          this.toDateCircleChart,
-          this.listCircleChartId
-        );
-      }
-    }
+    this.getDataForCircleEmployeeChart(
+      this.fromDateCircleChart,
+      this.toDateCircleChart,
+      this.listCircleChartId
+    );
+    this.getDataForCirclePayslipChart(
+      this.fromDateCircleChart,
+      this.toDateCircleChart,
+      this.listCircleChartId
+    );
   }
+
   getDataForCircleEmployeeChart(fromDate, toDate, chartIds) {
     this.isLoadingChart = true;
     if (chartIds == null) {
@@ -447,6 +428,14 @@ export class HomeComponent extends AppComponentBase implements OnInit {
           .map((e) => e.id)
           .concat(result.lineCharts.map((e) => e.id));
         this.mapListAllCharts();
+        this.listLineChartId = [
+          ...this.listLineEmployeeChartSelectBox.map((item1) => item1.value),
+          ...this.listLinePayslipChartSelectBox.map((item) => item.value),
+        ];
+        this.listCircleChartId = [
+          ...this.listCircleEmployeeChartSelectBox.map((item1) => item1.value),
+          ...this.listCirclePayslipChartSelectBox.map((item) => item.value),
+        ];
       });
   }
 
@@ -456,71 +445,54 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.listEmployeeChartIds.includes(id)
     );
     let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
-    if (ids.length == 0) {
-      this.listAllLineChartDataDisplay = null;
+    if (!ids.length) {
+      this.isLineEmptyDisplay = true;
+    }
+    if (employeeIds.length) {
+      this.getDataForLineEmployeeChart(
+        this.fromDateLineChart,
+        this.toDateLineChart,
+        this.listLineChartId
+      );
+      this.isLineEmptyDisplay = false;
     } else {
       this.lineEmployeeChartDataDisplay = [];
       this.mapListAllCharts();
-
-      if (employeeIds.length != 0) {
-        this.getDataForLineEmployeeChart(
-          this.fromDateLineChart,
-          this.toDateLineChart,
-          this.listLineChartId
-        );
-      } else {
-        this.lineEmployeeChartDataDisplay = [];
-        this.mapListAllCharts();
-      }
-      if (payslipIds.length != 0) {
-        this.getDataForLinePayslipChart(
-          this.fromDateLineChart,
-          this.toDateLineChart,
-          this.listLineChartId
-        );
-      } else {
-        this.linePayslipChartDataDisplay = [];
-        this.mapListAllCharts();
-      }
+    }
+    if (payslipIds.length) {
+      this.getDataForLinePayslipChart(
+        this.fromDateLineChart,
+        this.toDateLineChart,
+        this.listLineChartId
+      );
+      this.isLineEmptyDisplay = false;
+    } else {
+      this.linePayslipChartDataDisplay = [];
+      this.mapListAllCharts();
     }
   }
 
   onDateChangeLineChart(event: DateTimeSelectorHome) {
-    if (!this.isDefault) {
-      let data = event;
-      this.searchWithDateTimeLineChart = data;
-      this.defaultDateFilterTypeLineChart = data.dateType;
-      this.searchWithDateTimeLineChart.dateType = data.dateType;
-      this.fromDateLineChart = moment(
-        this.searchWithDateTimeLineChart.fromDate
-      ).format("YYYY-MM");
-      this.toDateLineChart = moment(
-        this.searchWithDateTimeLineChart.toDate
-      ).format("YYYY-MM");
-      if (this.listLineChartId.length == 0) {
-        this.getDataForLineEmployeeChart(
-          this.fromDateLineChart,
-          this.toDateLineChart,
-          this.allLineChartIds
-        );
-        this.getDataForLinePayslipChart(
-          this.fromDateLineChart,
-          this.toDateLineChart,
-          this.allLineChartIds
-        );
-      } else {
-        this.getDataForLineEmployeeChart(
-          this.fromDateLineChart,
-          this.toDateLineChart,
-          this.listLineChartId
-        );
-        this.getDataForLinePayslipChart(
-          this.fromDateLineChart,
-          this.toDateLineChart,
-          this.listLineChartId
-        );
-      }
-    }
+    let data = event;
+    this.searchWithDateTimeLineChart = data;
+    this.defaultDateFilterTypeLineChart = data.dateType;
+    this.searchWithDateTimeLineChart.dateType = data.dateType;
+    this.fromDateLineChart = moment(
+      this.searchWithDateTimeLineChart.fromDate
+    ).format("YYYY-MM");
+    this.toDateLineChart = moment(
+      this.searchWithDateTimeLineChart.toDate
+    ).format("YYYY-MM");
+    this.getDataForLineEmployeeChart(
+      this.fromDateLineChart,
+      this.toDateLineChart,
+      this.listLineChartId
+    );
+    this.getDataForLinePayslipChart(
+      this.fromDateLineChart,
+      this.toDateLineChart,
+      this.listLineChartId
+    );
   }
   mapListAllCharts() {
     this.listAllLineChartDataDisplay = [

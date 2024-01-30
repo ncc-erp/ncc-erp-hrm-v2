@@ -39,9 +39,6 @@ export class ChartSelectComponent {
     if (change["defaultValue"]) {
       this.listSelectedId = change["defaultValue"].currentValue;
     }
-    if (change["dropdownData"]) {
-      this.dropdownData = change["dropdownData"].currentValue;
-    }
   }
 
   constructor() {}
@@ -90,7 +87,6 @@ export class ChartSelectComponent {
     );
     this.onOptionSelect();
   }
-
   public onOptionSelect() {
     this.onSelect.emit(this.listSelectedId);
   }
@@ -102,7 +98,7 @@ export class ChartSelectComponent {
 
 export interface IChartDataType {
   name: string;
-  value: any;
+  value: number;
   dataType: number;
   hidden: boolean;
 }
