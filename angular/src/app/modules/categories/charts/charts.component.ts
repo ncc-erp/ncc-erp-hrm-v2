@@ -1,8 +1,4 @@
-import {
-  Component,
-  Injector,
-  OnInit,
-} from "@angular/core";
+import { Component, Injector, OnInit } from "@angular/core";
 import {
   PagedListingComponentBase,
   PagedRequestDto,
@@ -18,9 +14,9 @@ import { startWithTap } from "@shared/helpers/observerHelper";
 import { PERMISSIONS_CONSTANT } from "@app/permission/permission";
 
 @Component({
-  selector: 'app-charts',
-  templateUrl: './charts.component.html',
-  styleUrls: ['./charts.component.css']
+  selector: "app-charts",
+  templateUrl: "./charts.component.html",
+  styleUrls: ["./charts.component.css"],
 })
 export class ChartsComponent
   extends PagedListingComponentBase<ChartDto>
@@ -68,6 +64,9 @@ export class ChartsComponent
         )
         .subscribe((rs) => {
           this.chartList = rs.result.items;
+          this.chartList.forEach(e => {
+            e.showPreView = true
+          })
           this.showPaging(rs.result, pageNumber);
         })
     );
@@ -86,27 +85,19 @@ export class ChartsComponent
   }
 
   isShowCreateBtn() {
-    return this.isGranted(
-      PERMISSIONS_CONSTANT.Category_Chart_Create
-    );
+    return this.isGranted(PERMISSIONS_CONSTANT.Category_Chart_Create);
   }
 
   isShowEditBtn() {
-    return this.isGranted(
-      PERMISSIONS_CONSTANT.Category_Chart_Edit
-    );
+    return this.isGranted(PERMISSIONS_CONSTANT.Category_Chart_Edit);
   }
 
   isShowDeleteBtn() {
-    return this.isGranted(
-      PERMISSIONS_CONSTANT.Category_Chart_Delete
-    );
+    return this.isGranted(PERMISSIONS_CONSTANT.Category_Chart_Delete);
   }
 
   isShowActiveBtn() {
-    return this.isGranted(
-      PERMISSIONS_CONSTANT.Category_Chart_ActiveDeactive
-    );
+    return this.isGranted(PERMISSIONS_CONSTANT.Category_Chart_ActiveDeactive);
   }
 
   onCreate() {
@@ -189,5 +180,25 @@ export class ChartsComponent
           abp.notify.success(`Delete chart ${chart.name} completed`)
         )
     );
+  }
+
+  public colors = [
+    "#FFB6C1", // LightPink
+    "#87CEEB", // SkyBlue
+    "#98FB98", // PaleGreen
+    "#FFD700", // Gold
+    "#FFA07A", // LightSalmon
+    "#ADD8E6", // LightBlue
+    "#FF69B4", // HotPink
+    "#90EE90", // LightGreen
+    "#FF6347", // Tomato
+    "#D8BFD8", // Thistle
+  ];
+  public getColor(i: number): string {
+    return this.colors[i % this.colors.length];
+  }
+
+  public toggleViewMode(i: number) {
+    this.chartList[i].showPreView = !this.chartList[i].showPreView
   }
 }

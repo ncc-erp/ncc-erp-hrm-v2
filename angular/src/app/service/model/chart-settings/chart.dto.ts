@@ -13,6 +13,7 @@ export class ChartDto {
   isActive: number;
   shareToUsers: KeyValueDto[];
   shareToRoles: KeyValueDto[];
+  showPreView: boolean;
 }
 
 export class ResultChartDto {

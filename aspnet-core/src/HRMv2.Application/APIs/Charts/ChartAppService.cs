@@ -62,7 +62,6 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPut]
-
         [AbpAuthorize(PermissionNames.Category_Chart_Edit)]
         public async Task<Chart> Update(UpdateChartDto updateChartDto)
         {
@@ -72,7 +71,6 @@ namespace HRMv2.APIs.Charts
         }
 
         [HttpPost]
-
         [AbpAuthorize(PermissionNames.Category_Chart_Edit)]
         public async Task<long> Clone([FromBody] long id)
         {
