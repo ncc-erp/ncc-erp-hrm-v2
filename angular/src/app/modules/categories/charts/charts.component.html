@@ -72,10 +72,10 @@
                     >{{ chart.name }}</a
                   >
                 </td>
-                <td (click)="toggleViewMode(i)">
+                <td (click)="toggleViewMode(i)" class="cursor-pointer">
                   <div
                     *ngIf="chart.shareToUsers.length > 0"
-                    [ngClass]="chart.showPreView ? 'preView' : 'view'"
+                    [ngClass]="{'preView': chart.showPreView}"
                   >
                     <span
                       *ngFor="let item of chart.shareToUsers; index as i"
@@ -86,10 +86,10 @@
                     </span>
                   </div>
                 </td>
-                <td (click)="toggleViewMode(i)">
+                <td (click)="toggleViewMode(i)" class="cursor-pointer">
                   <div
                     *ngIf="chart.shareToRoles.length > 0"
-                    [ngClass]="chart.showPreView ? 'preView' : 'view'"
+                    [ngClass]="{'preView': chart.showPreView}"
                   >
                     <span
                       *ngFor="let item of chart.shareToRoles; index as i"
