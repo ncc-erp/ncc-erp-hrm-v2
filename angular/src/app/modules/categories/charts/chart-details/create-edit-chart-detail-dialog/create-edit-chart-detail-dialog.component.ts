@@ -61,9 +61,9 @@ export class CreateEditChartDetailDialogComponent
     this.getAllFilterData();
     this.initForm();
     if (this.dialogData.isViewOnly){
-      this.formGroup.disable()
+      this.formGroup.disable();
     } else {
-      this.formGroup.enable()
+      this.formGroup.enable();
     }
     if (this.dialogData?.id) {
       this.isEdit = true

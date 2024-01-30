@@ -34,7 +34,6 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Home_ViewLineChart, PermissionNames.Home_ViewCircleChart)]
         public async Task<ResultChartDto> GetAllDataEmployeeCharts(
             InputListChartDto input)
         {
@@ -43,7 +42,6 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Home_ViewLineChart, PermissionNames.Home_ViewCircleChart)]
         public async Task<ResultChartDto> GetDataEmployeeCharts(
             InputListChartDto input)
         {
@@ -52,7 +50,6 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Home_ViewLineChart, PermissionNames.Home_ViewCircleChart)]
         public async Task<ResultChartDto> GetAllDataPayslipCharts(
             InputListChartDto input)
         {
@@ -61,7 +58,6 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Home_ViewLineChart, PermissionNames.Home_ViewCircleChart)]
         public async Task<ResultChartDto> GetDataPayslipCharts(
             InputListChartDto input)
         {
@@ -70,7 +66,6 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Home_ViewLineChart, PermissionNames.Home_ViewCircleChart)]
         public async Task<List<PayslipDataChartDto>> GetDetailDataChart(InputChartDetailDto input)
         {
             var result = await _chartDetailManager.GetDetailDataChart(input.ChartDetailId, input.ChartDataType, input.StartDate, input.EndDate);

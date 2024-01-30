@@ -39,7 +39,9 @@
               <thead>
                 <tr>
                   <th class="col-stt">#</th>
-                  <th class="col-7">Name</th>
+                  <th>Name</th>
+                  <th class="col-1">Share to Users</th>
+                  <th class="col-1">Share to Roles</th>
                   <th class="col-1">Data type</th>
                   <th class="col-1">Type</th>
                   <th class="col-1">Active</th>
@@ -70,6 +72,50 @@
                       >{{ chart.name }}</a
                     >
                   </td>
+                  <td>
+                    <div
+                      *ngIf="
+                        chart.shareToUsers.length > 0
+                      "
+                      class="filter-box border-lime"
+                    >
+                      <span
+                        *ngFor="
+                          let item of chart.shareToUsers;
+                          index as i
+                        "
+                      >
+                        {{ item.key
+                        }}{{
+                          i < chart.shareToUsers.length - 1
+                            ? ","
+                            : ""
+                        }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      *ngIf="
+                        chart.shareToRoles.length > 0
+                      "
+                      class="filter-box border-lime"
+                    >
+                      <span
+                        *ngFor="
+                          let item of chart.shareToRoles;
+                          index as i
+                        "
+                      >
+                        {{ item.key
+                        }}{{
+                          i < chart.shareToRoles.length - 1
+                            ? ","
+                            : ""
+                        }}
+                      </span>
+                    </div>
+                  </td>
                   <td class="text-center">{{ chart.chartDataTypeName }}</td>
                   <td class="text-center">{{ chart.chartTypeName }}</td>
                   <td class="text-center">
@@ -91,6 +137,14 @@
                       #menu="matMenu"
                       class="p-2"
                     >
+                    <button
+                        *ngIf="isShowEditBtn()"
+                        (click)="onClone(chart)"
+                        class="mat-menu-item w-100"
+                      >
+                        <i class="fas fa-clone mr-1"></i>
+                        <span>Clone</span>
+                      </button>
                       <button
                         *ngIf="isShowEditBtn()"
                         (click)="onUpdate(chart)"
@@ -110,14 +164,6 @@
                       >
                         <i class="fas fa-edit fa-lg mr-1"></i>
                         <span>{{ chart.isActive ? "Deactive" : "Active" }}</span>
-                      </button>
-                      <button
-                        *ngIf="isShowEditBtn()"
-                        (click)="onClone(chart)"
-                        class="mat-menu-item w-100"
-                      >
-                        <i class="fas fa-pencil-alt mr-1"></i>
-                        <span>Clone</span>
                       </button>
                       <button
                         *ngIf="isShowDeleteBtn()"

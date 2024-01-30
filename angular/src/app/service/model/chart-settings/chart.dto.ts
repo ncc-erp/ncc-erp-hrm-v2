@@ -1,3 +1,4 @@
+import { KeyValueDto } from "../common.dto";
 import { ChartDetailFullDto } from "./chart-detail-settings/chart-detail-full.dto";
 
 export class ChartDto {
@@ -10,6 +11,8 @@ export class ChartDto {
   chartTypeName: string;
   timePeriodTypeName: string;
   isActive: number;
+  shareToUsers: KeyValueDto[];
+  shareToRoles: KeyValueDto[];
 }
 
 export class ResultChartDto {
@@ -93,4 +96,25 @@ export class DisplayCircleChartDetailDto {
     this.pieName = name;
     this.itemStyle = itemStyle;
   }
+}
+
+export class ChartSelectionDto {
+  shareToUsers: KeyValueDto[] 
+  shareToRoles: KeyValueDto[] 
+}
+
+export class CreateChartDto
+{
+  name: string;
+  chartType: number;
+  chartDataType: number;
+  timePeriodType: number;
+}
+
+export class UpdateChartDto extends CreateChartDto
+{
+  id: number;
+  shareToUserIds: number[];
+  shareToRoleIds: number[];
+  isActive: number;
 }

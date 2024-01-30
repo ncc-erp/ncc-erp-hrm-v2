@@ -1,10 +1,15 @@
 ﻿using Abp.Collections.Extensions;
 using Abp.UI;
 using Amazon.S3.Model;
+using HRMv2.Authorization.Roles;
+using HRMv2.Authorization.Users;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.Charts.Dto;
+using HRMv2.Manager.Categories.JobPositions;
+using HRMv2.Manager.Categories.Levels;
+using HRMv2.Manager.Categories.Teams;
 using HRMv2.Manager.Histories.Dto;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
@@ -28,9 +33,13 @@ namespace HRMv2.Manager.Categories.Charts
     public class ChartManager : BaseManager
     {
         private readonly WorkingHistoryManager _workingHistoryManager;
-        public ChartManager(IWorkScope workScope, WorkingHistoryManager workingHistoryManager) : base(workScope)
+        private readonly UserManager _userManager;
+        private readonly RoleManager _roleManager;
+        public ChartManager(IWorkScope workScope, WorkingHistoryManager workingHistoryManager, UserManager userManager, RoleManager roleManager) : base(workScope)
         {
             _workingHistoryManager = workingHistoryManager;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         #region Chart setting
@@ -45,16 +54,42 @@ namespace HRMv2.Manager.Categories.Charts
                     Id = c.Id,
                     IsActive = c.IsActive,
                     Name = c.Name,
-                    TimePeriodType = c.TimePeriodType
+                    TimePeriodType = c.TimePeriodType,
+                    ShareToUserIds = c.ShareToUserIds,
+                    ShareToRoleIds = c.ShareToRoleIds,
                 });
 
             return query;
         }
 
+        public ChartSelectionDto GetChartSelectionData()
+        {
+            var users = _userManager.Users
+                .Where(s => s.IsActive)
+                .Select(x => new KeyValueDto(x.FullName, x.Id)).ToList();
+
+            var roles = _roleManager.Roles
+                .Select(x => new KeyValueDto(x.DisplayName, x.Id)).ToList();
+
+            var selectionData = new ChartSelectionDto
+            {
+                ShareToUsers = users,
+                ShareToRoles = roles,
+            };
+
+            return selectionData;
+        }
+
         public async Task<GridResult<ChartDto>> GetAllPaging(GridParam input)
         {
             var query = QueryAllChart();
+
+            var selectionData = GetChartSelectionData();
             var charts = await query.GetGridResult(query, input);
+            foreach (var chart in charts.Items)
+            {
+                GetShareToUserAndRoleForChartDto(chart, selectionData);
+            }
             return charts;
         }
 
@@ -63,13 +98,27 @@ namespace HRMv2.Manager.Categories.Charts
             var chart = await WorkScope.GetAsync<Chart>(id);
 
             var chartDto = ObjectMapper.Map<ChartDto>(chart);
+            var selectionData = GetChartSelectionData();
+            GetShareToUserAndRoleForChartDto(chartDto, selectionData);
 
             return chartDto;
+        }
+
+        public void GetShareToUserAndRoleForChartDto(
+            ChartDto chart,
+            ChartSelectionDto selectionData
+            )
+        {
+            chart.ShareToUsers = selectionData.ShareToUsers.Where(s => chart.ListShareToUserIds.Contains(s.Value)).ToList();
+            chart.ShareToRoles = selectionData.ShareToRoles.Where(s => chart.ListShareToRoleIds.Contains(s.Value)).ToList();
         }
         public async Task<Chart> Create(CreateChartDto createChartDto)
         {
             // validate
             var isExistedName = WorkScope.GetAll<Chart>().Any(c => c.Name == createChartDto.Name);
+            var sessionUser = _userManager.Users.Where(s => s.Id == AbpSession.UserId)
+                            .Select(s => new { s.Id, RoleIds = s.Roles.Select(x => x.Id).ToList() })
+                            .FirstOrDefault();
 
             if (isExistedName)
             {
@@ -77,6 +126,8 @@ namespace HRMv2.Manager.Categories.Charts
             }
 
             var chart = ObjectMapper.Map<Chart>(createChartDto);
+            chart.ShareToUserIds = CommonUtil.ConvertListToJson(new List<long> { sessionUser.Id });
+            chart.ShareToRoleIds = CommonUtil.ConvertListToJson(sessionUser.RoleIds);
 
             chart.Id = await WorkScope.InsertAndGetIdAsync(chart);
 
@@ -98,6 +149,8 @@ namespace HRMv2.Manager.Categories.Charts
 
             // update
             ObjectMapper.Map(updateChartDto, chart);
+            chart.ShareToUserIds = CommonUtil.ConvertListToJson(updateChartDto.ShareToUserIds);
+            chart.ShareToRoleIds = CommonUtil.ConvertListToJson(updateChartDto.ShareToRoleIds);
 
             await WorkScope.UpdateAsync(chart);
 
@@ -113,13 +166,15 @@ namespace HRMv2.Manager.Categories.Charts
                 .ToList()
                 .First();
 
-            // duplicate
+            // clone
             var newChart = new Chart
             {
                 Name = GetNextName(oldChart.Name),
                 ChartDataType = oldChart.ChartDataType,
                 ChartType = oldChart.ChartType,
                 TimePeriodType = oldChart.TimePeriodType,
+                ShareToUserIds = oldChart.ShareToUserIds,
+                ShareToRoleIds = oldChart.ShareToRoleIds,
                 IsActive = oldChart.IsActive,
             };
 

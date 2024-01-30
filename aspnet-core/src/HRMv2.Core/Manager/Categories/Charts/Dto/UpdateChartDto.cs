@@ -20,6 +20,8 @@ namespace HRMv2.Manager.Categories.Charts.Dto
         public ChartDataType? ChartDataType { get; set; }
 
         public TimePeriodType? TimePeriodType { get; set; }
+        public List<long> ShareToUserIds { get; set; }
+        public List<long> ShareToRoleIds { get; set; }
 
         public bool? IsActive { get; set; }
     }

@@ -81,7 +81,7 @@ export class ChartsComponent
         comparision: 0,
       });
     }
-
+    this.chartSettingService.getChartSelectionData();
     this.refresh();
   }
 
@@ -118,7 +118,6 @@ export class ChartsComponent
   }
 
   onClone(chart: ChartDto) {
-    console.log(chart.name)
     this.subscription.push(
       this.chartSettingService
         .clone(chart.id)

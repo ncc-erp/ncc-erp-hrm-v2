@@ -86,10 +86,9 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
       }
       this.sortedDetail = this.listPayslipData.slice();
       this.groupedData = this.groupByEmployees(this.sortedDetail);
-      console.log(this.groupedData)
       this.groupedData.forEach(item => {
-        item.hideMonthlyStatus = false;
-        item.hideMonthlyMoney = false;
+        item.hideMonthlyStatus = true;
+        item.hideMonthlyMoney = true;
       })
     })
   }

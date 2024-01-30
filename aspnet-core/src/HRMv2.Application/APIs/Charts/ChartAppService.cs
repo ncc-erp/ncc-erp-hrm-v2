@@ -3,6 +3,8 @@ using Abp.Authorization;
 using HRMv2.Authorization;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts;
+using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
+using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.Dto;
 using Microsoft.AspNetCore.Mvc;
 using NccCore.Paging;
@@ -22,6 +24,14 @@ namespace HRMv2.APIs.Charts
         public ChartAppService(ChartManager chartManager)
         {
             _chartManager = chartManager;
+        }
+
+        [HttpGet]
+        public ChartSelectionDto GetChartSelectionData()
+        {
+            var selectionData = _chartManager.GetChartSelectionData();
+
+            return selectionData;
         }
 
         [HttpPost]
