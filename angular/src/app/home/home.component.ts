@@ -441,6 +441,32 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       });
   }
 
+  onRefreshLineChart(){
+    this.getDataForLineEmployeeChart(
+      this.fromDateLineChart,
+      this.toDateLineChart,
+      this.listLineChartId
+    );
+    this.getDataForLinePayslipChart(
+      this.fromDateLineChart,
+      this.toDateLineChart,
+      this.listLineChartId
+    );
+  }
+
+  onRefreshCircleChart(){
+    this.getDataForCircleEmployeeChart(
+      this.fromDateCircleChart,
+      this.toDateCircleChart,
+      this.listCircleChartId
+    );
+    this.getDataForCirclePayslipChart(
+      this.fromDateCircleChart,
+      this.toDateCircleChart,
+      this.listCircleChartId
+    );
+  }
+
   onLineChartSelect(ids: number[]) {
     this.listLineChartId = ids;
     let employeeIds = ids.filter((id) =>

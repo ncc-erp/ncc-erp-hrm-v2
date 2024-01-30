@@ -1,4 +1,4 @@
-import { Component, Inject, Injector, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Injector, OnInit, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreateEditChartDetailDialogComponent } from '@app/modules/categories/charts/chart-details/create-edit-chart-detail-dialog/create-edit-chart-detail-dialog.component';
@@ -7,7 +7,7 @@ import { ChartDetailService } from '@app/service/api/categories/charts/chart-det
 import { HomePageService } from '@app/service/api/homepage/homepage.service';
 import { ChartDetailFullDto } from '@app/service/model/chart-settings/chart-detail-settings/chart-detail-full.dto';
 import { DisplayLineChartDto } from '@app/service/model/chart-settings/chart.dto';
-import { InputChartDetailDto, PayslipDataChartDto } from '@app/service/model/homepage/HomepageEmployeeStatistic.dto';
+import { InputChartDetailDto, EmployeeDataFromChartDetailDto } from '@app/service/model/homepage/HomepageEmployeeStatistic.dto';
 import { AppConsts } from '@shared/AppConsts';
 import { APP_ENUMS, ChartDataType, EmployeeMonthlyStatus } from '@shared/AppEnums';
 import { AppComponentBase } from '@shared/app-component-base';
@@ -18,6 +18,7 @@ import { AppComponentBase } from '@shared/app-component-base';
   styleUrls: ['./chart-detail-data.component.css']
 })
 export class ChartDetailDataComponent extends AppComponentBase implements OnInit {
+  @Output() refreshDataEvent = new EventEmitter<any>();
   public chartDetailId: number
   public chartDataType: ChartDataType;
   public isEmployeeChart: boolean;
@@ -34,11 +35,13 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
   public sortColumn: string;
   public sortDirect: number;
   public iconSort: string;
-  public listPayslipData: PayslipDataChartDto[] = []
-  public sortedDetail: PayslipDataChartDto[] = []
+  public listPayslipData: EmployeeDataFromChartDetailDto[] = []
+  public sortedDetail: EmployeeDataFromChartDetailDto[] = []
   public groupedData: any[] = [];
 
   public totalMoney: number = 0;
+  public isPreview: boolean = true;
+  public searchText: string = "";
   
   constructor(
     private homePageService: HomePageService,
@@ -61,8 +64,9 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
   }
 
   refresh(){
-    this.getChartDetail(this.chartDetailId)
-    this.getDetailDataChart()
+    this.searchText = "";
+    this.getChartDetail(this.chartDetailId);
+    this.getDetailDataChart();
   }
 
   getChartDetail(id: number){
@@ -82,18 +86,13 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
     this.homePageService.GetDetailDataChart(payload).subscribe(rs =>{
       this.listPayslipData = rs.result;
       if (!this.isEmployeeChart){
-        this.totalMoney = this.listPayslipData.reduce((sum, val) => sum + val.money, 0);
+        this.totalMoney = this.listPayslipData.reduce((sum, val) => sum + val.totalMoney, 0);
       }
       this.sortedDetail = this.listPayslipData.slice();
-      this.groupedData = this.groupByEmployees(this.sortedDetail);
-      this.groupedData.forEach(item => {
-        item.hideMonthlyStatus = true;
-        item.hideMonthlyMoney = true;
-      })
     })
   }
 
-  public onViewDetail() {
+  public onViewChartSetting() {
     let ref = this.dialog.open(CreateEditChartDetailDialogComponent, {
       width: "700px",
       data: {
@@ -103,9 +102,28 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
       },
       disableClose: true,
     });
-    // ref.componentInstance.onSaveChange.subscribe((data) => {
-      //   this.refreshChart()
-      // });
+    ref.componentInstance.onSaveChange.subscribe((data) => {
+        this.refreshChart()
+      });
+  }
+
+  onSearchEnter(){
+    this.filterDataByEmail();
+  }
+
+  filterDataByEmail() {
+    if (this.searchText) {
+      this.sortedDetail = this.listPayslipData.filter(item => 
+        item.email.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    } else {
+      this.sortedDetail = [...this.listPayslipData];
+    }
+  }
+
+  refreshChart(){
+    this.refreshDataEvent.emit();
+    this.onClose();
   }
 
   getMonthlyStatusStyle(userMonthlyStatusEnum: number, isStyle: boolean) {
@@ -116,12 +134,37 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
     return EmployeeMonthlyStatus[value] || EmployeeMonthlyStatus.Working; // Default to Working if undefined
   }
 
-  toggleMonthlyStatus(item){
-    item.hideMonthlyStatus = !item.hideMonthlyStatus;
+  togglePreview(){
+    this.isPreview = !this.isPreview;
   }
 
-  toggleMonthlyMoney(item){
-    item.hideMonthlyMoney = !item.hideMonthlyMoney;
+  sortData(data) {
+    if (this.sortColumn !== data) {
+      this.sortDirect = -1;
+    }
+    this.sortColumn = data;
+    this.sortDirect++;
+    if (this.sortDirect > 1) {
+      this.iconSort = "";
+      this.sortDirect = -1;
+    }
+    if (this.sortDirect == 1) {
+      this.iconSort = "fas fa-sort-amount-down";  // Descending sort
+      this.sortDesc(this.sortColumn);
+    } else if (this.sortDirect == 0) {
+      this.iconSort = "fas fa-sort-amount-up";    // Ascending sort
+      this.sortAsc(this.sortColumn);
+    } else {
+      this.iconSort = "fas fa-sort";              // Default
+      this.sortedDetail = this.listPayslipData.slice();
+    }
+  }
+
+  sortAsc(sortColumn: string){
+    this.sortedDetail.sort((a,b) => (typeof a[sortColumn] === "number") ? a[sortColumn]-b[sortColumn] : (a[sortColumn] ?? "").localeCompare(b[sortColumn] ?? ""));
+  }
+  sortDesc(sortColumn: string){
+    this.sortedDetail.sort((a,b) => (typeof a[sortColumn] === "number") ? b[sortColumn]-a[sortColumn] : (b[sortColumn] ?? "").localeCompare(a[sortColumn] ?? ""));
   }
 
   changePageSize() {
@@ -138,14 +181,5 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail);
   }
 
-  groupByEmployees(sortedDetail) {
-    let grouped = sortedDetail.reduce((accumulator, current) => {
-        accumulator[current.employeeId] = accumulator[current.employeeId] || [];
-        accumulator[current.employeeId].push(current);
-        return accumulator;
-    }, {});
-
-    return Object.values(grouped);
-  }
 }
 

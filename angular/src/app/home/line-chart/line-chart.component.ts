@@ -127,9 +127,9 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
       },
       disableClose: true
     });
-    // ref.componentInstance.refreshDataEvent.subscribe((data) => {
-    //   this.onRefreshData();
-    // });
+    ref.componentInstance.refreshDataEvent.subscribe((data) => {
+      this.onRefreshData();
+    });
   }
   
   convertMonth(fromDate : Date, toDate : Date){

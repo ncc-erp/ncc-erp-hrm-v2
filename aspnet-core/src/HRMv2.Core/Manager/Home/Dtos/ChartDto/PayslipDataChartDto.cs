@@ -43,7 +43,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public List<PayslipDetailDataChartDto> PayslipDetails {  get; set; }
 
 
-        public List<KeyValueDto> TeamInfos { get; set; }
+        public List<EmployeeTeamDto> TeamInfos { get; set; }
         public BadgeInfoDto LevelInfo { get; set; }
         public BadgeInfoDto BranchInfo { get; set; }
         public BadgeInfoDto JobPositionInfo { get; set; }
@@ -68,9 +68,36 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
 
     public class BadgeInfoChartDetail
     {
-        public List<KeyValueDto> TeamInfos { get; set; }
+        public List<EmployeeTeamDto> TeamInfos { get; set; }
         public List<BadgeInfoDto> LevelInfo { get; set; }
         public List<BadgeInfoDto> BranchInfo { get; set; }
         public List<BadgeInfoDto> JobPositionInfo { get; set; }
+    }
+
+    public class EmployeeDataFromChartDetailDto
+    {
+        public long EmployeeId { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public string Avatar { get; set; }
+        public string AvatarFullPath => FileUtil.FullFilePath(Avatar);
+        public Sex Gender { get; set; }
+        public List<MonthlyEmployeeDetailDto> MonthlyEmployeeDetails { get; set; }
+        public double TotalMoney => MonthlyEmployeeDetails.Sum(x => x.Money);
+    }
+
+    public class MonthlyEmployeeDetailDto
+    {
+        public BadgeInfoDto BranchInfo { get; set; }
+        public BadgeInfoDto JobPositionInfo { get; set; }
+        public BadgeInfoDto LevelInfo { get; set; }
+        public List<EmployeeTeamDto> TeamInfos { get; set; }
+        public BadgeInfoDto UserTypeInfo { get; set; }
+
+        public EmployeeMonthlyStatus MonthlyStatus { get; set; }
+        public DateTime StatusMonth {  get; set; }
+
+        public double Money { get; set; }
+        public DateTime PayrollMonth { get; set; }
     }
 }

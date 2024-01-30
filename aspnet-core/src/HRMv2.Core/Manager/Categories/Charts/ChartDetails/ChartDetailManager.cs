@@ -1,5 +1,6 @@
 ﻿
 using Abp.Collections.Extensions;
+using Abp.Extensions;
 using Abp.UI;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
@@ -114,7 +115,7 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
 
             var teams = _teamManager
                 .QueryAllTeam()
-                .Select(x => new KeyValueDto(x.Name, x.Id)).ToList();
+                .Select(x => new EmployeeTeamDto { TeamId = x.Id, TeamName = x.Name }).ToList();
             var result = new BadgeInfoChartDetail
             {
                 BranchInfo = branches,
@@ -329,7 +330,11 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             return id;
         }
 
-        public async Task<List<PayslipDataChartDto>> GetDetailDataChart(long chartDetailId, ChartDataType chartDataType, DateTime startDate, DateTime endDate)
+        public async Task<List<EmployeeDataFromChartDetailDto>> GetDetailDataChart(
+            long chartDetailId, 
+            ChartDataType chartDataType,
+            DateTime startDate, 
+            DateTime endDate)
         {
             startDate = DateTimeUtils.FirstDayOfMonth(startDate);
             endDate = DateTimeUtils.LastDayOfMonth(endDate);
@@ -369,11 +374,34 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                 payslip.JobPositionInfo = allBadgeInfoChartDetail.JobPositionInfo.FirstOrDefault(x => x.Id == payslip.JobPositionId);
                 payslip.LevelInfo = allBadgeInfoChartDetail.LevelInfo.FirstOrDefault(x => x.Id == payslip.LevelId);
                 payslip.TeamInfos = payslip.TeamIds
-                    .Select(teamId => allBadgeInfoChartDetail.TeamInfos.FirstOrDefault(x => x.Value == teamId))
+                    .Select(teamId => allBadgeInfoChartDetail.TeamInfos.FirstOrDefault(x => x.TeamId == teamId))
                     .ToList();
             }
 
-            return listPayslipDataChart;
+            var result = listPayslipDataChart
+                .GroupBy(p => p.EmployeeId)
+                .Select(group => new EmployeeDataFromChartDetailDto
+                {
+                    EmployeeId = group.Key,
+                    FullName = group.First().FullName,
+                    Email = group.First().Email,
+                    Avatar = group.First().Avatar,
+                    Gender = group.First().Gender,
+                    MonthlyEmployeeDetails = group.Select(g => new MonthlyEmployeeDetailDto
+                    {
+                        BranchInfo = g.BranchInfo,
+                        JobPositionInfo = g.JobPositionInfo,
+                        LevelInfo = g.LevelInfo,
+                        TeamInfos = g.TeamInfos,
+                        UserTypeInfo = g.UserTypeInfo,
+                        MonthlyStatus = g.MonthlyStatus,
+                        StatusMonth = g.StatusMonth,
+                        Money = g.Money,
+                        PayrollMonth = g.PayrollMonth
+                    }).ToList()
+                }).ToList();
+
+            return result;
         }
 
 
@@ -385,6 +413,7 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             var allDataForChartEmployee = _chartManager.GetDataForAllChartEmployee(startDate, endDate);
 
             var result = _chartManager.FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
+                        .WhereIf(!string.IsNullOrEmpty(searchText), x => x.Email.Contains(searchText))
                         .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
                         .OrderBy(x => x.StatusMonth)
                         .ToList();
@@ -401,6 +430,7 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             var payslip = _chartManager.QueryAllPayslipDetail(startDate, endDate).ToList();
 
             var employeePayslips = _chartManager.FitlerDataPayslipChartByChartDetail(detail, payslip)
+                .WhereIf(!string.IsNullOrEmpty(searchText), x => x.Email.Contains(searchText))
                 .WhereIf(detail.ListPayslipDetailType.Any(), p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
                 .Select(p => new PayslipDataChartDto
                 {

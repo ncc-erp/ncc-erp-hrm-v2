@@ -3,20 +3,19 @@
         <div class="col-9 p-0 d-flex align-items-center">
             <span style="font-size: 20px;">
                 <ng-container>
-                    {{this.data.chartData.name}}
+                    <span class="truncate">{{this.data.chartData.name}}</span>
                     <i class="fas fa-chevron-right"></i>
-                    {{this.chartDetailName}}
+                    <span class="truncate">{{this.chartDetailName}}</span>
                 </ng-container>
             </span>
             <div class="d-inline" style="font-size: 20px;">
                 <span class="badge bg-primary ml-2">{{startDate | DMYDateFormat}}
                     - {{endDate | DMYDateFormat}}</span>
-                <button class="viewBtn btn btn-outline-primary btn-sm ml-2" (click)="onViewDetail()">
+                <button class="viewBtn btn btn-outline-primary btn-sm ml-2" (click)="onViewChartSetting()">
                     <mat-icon style="font-size: 20px; vertical-align: middle; height: fit-content;">settings</mat-icon>
-                </button> 
+                </button>
             </div>
         </div>
-
         <div class="d-flex align-items-center">
             <span *ngIf="!isEmployeeChart" class="total mr-4"><strong>Tổng: {{totalMoney | moneyFormat}}</strong></span>
             <i class="fas fa-times pointer" (click)="onClose()"></i>
@@ -30,60 +29,100 @@
             <table class="table table-striped table-hover" [busy]="isLoading">
                 <thead>
                     <tr>
-                        <th class="text-center align-middle stt">Id</th>
-                        <th class="text-center align-middle">Employee</th>
-                        <th *ngIf="isEmployeeChart" class="text-center align-middle col-3">Working Status by Month</th>
-                        <th *ngIf="!isEmployeeChart" class="text-center align-middle col-3">Money by Month</th>
+                        <th class="text-center align-middle stt" (click)="sortData('employeeId')" style="cursor: pointer;">
+                            {{ "Id" }}
+                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'employeeId'"></i>
+                            <i *ngIf="sortColumn !== 'employeeId'" class="fas fa-sort"></i>
+                        </th>
+                        <th class="text-center align-middle">
+                            <div class="row">
+                                <div class="col-3 text-center align-middle" (click)="sortData('email')" style="cursor: pointer; display: flex; flex-direction: column;">
+                                    {{ "Employee" }}
+                                    <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'email'"></i>
+                                    <i *ngIf="sortColumn !== 'email'" class="fas fa-sort"></i>
+                                </div>
+                                <div class="col-9 input-group">
+                                    <div class="input-group-prepend">
+                                        <button (click)="onSearchEnter()" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    </div>
+                                    <input placeholder="Search by Email Address" id="IdOrDes" type="text" class="form-control"[(ngModel)]="searchText"
+                                    (keyup.enter)="onSearchEnter()">
+                                </div>
+                            </div>
+                        </th>
+                        <th *ngIf="!isEmployeeChart" class="text-center align-middle col-1">Total Money</th>
+                        <th class="text-center align-middle col-6">Details By Month</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
-                    <tr *ngFor="let group of groupedData | paginate: { itemsPerPage: itemPerPage, currentPage: currentPage }">
-                        <td class="text-center">{{ group[0].employeeId }}</td>
+                    <tr *ngFor="let employee of sortedDetail | paginate: { itemsPerPage: itemPerPage, currentPage: currentPage }">
+                        <td class="text-center">{{ employee.employeeId }}</td>
                         <td>
-                            <app-user-info [userData]="{
-                                id: group[0].employeeId,
-                                fullName: group[0].fullName,
-                                avatarFullPath: group[0].avatarFullPath,
-                                sex: group[0].gender,
-                                email: group[0].email,
-                                levelInfo: group[0].levelInfo,
-                                branchInfo: group[0].branchInfo,
-                                jobPositionInfo: group[0].jobPositionInfo,
-                                userTypeInfo: group[0].userTypeInfo
+                            <app-user-data-for-chart-detail [userData]="{
+                                id: employee.employeeId,
+                                fullName: employee.fullName,
+                                avatarFullPath: employee.avatarFullPath,
+                                sex: employee.gender,
+                                email: employee.email
                             }" 
                             [isAllowRouting]="isAllowRoutingDetail()" [isAllowAvatarRouting]="isAllowRoutingDetail()">
-                            </app-user-info>
+                            </app-user-data-for-chart-detail>
+                        </td>
+                        <td *ngIf="!isEmployeeChart" class="text-right">
+                            <b>
+                                {{employee.totalMoney | moneyFormat}}
+                            </b>
                         </td>
                         <td>
-                            <div *ngIf="isEmployeeChart" (click)="toggleMonthlyStatus(group)">
-                                <p [ngClass]="group.hideMonthlyStatus == false ? 'preReview' : 'review'"
+                            <div *ngIf="isEmployeeChart" (click)="togglePreview()">
+                                <p [ngClass]="isPreview == true ? 'preReview' : 'review'"
                                     title="Cuộn chuột hoặc Click để mở rộng nội dung"
                                     name="monthlyStatus">
                                     <ng-container class="p-2">
-                                        <div class="row" *ngFor="let item of group">
-                                            <div class="col-6 ml-2 text-left">
-                                                <span [ngClass]="getMonthlyStatusStyle(item.monthlyStatus, true)">
-                                                    {{getMonthlyStatus(item.monthlyStatus)}}
+                                        <div *ngFor="let detail of employee.monthlyEmployeeDetails">
+                                            <div class="ml-2 text-left">
+                                                <span class="mr-1 badge text-white" [ngStyle]="{'background': detail.branchInfo?.color}">
+                                                    {{detail.branchInfo?.name}}</span>
+                                                <span class="badge text-white"  
+                                                    [ngStyle]="{'background': detail.userTypeInfo?.color}">{{detail.userTypeInfo?.name}}</span>
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.levelInfo?.color}">{{detail.levelInfo?.name}}
                                                 </span>
-                                            </div>
-                                            <div class="col-5 text-left">
-                                                {{item.statusMonth | MyDateFormat}} 
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.jobPositionInfo?.color}">{{detail.jobPositionInfo?.name}}
+                                                </span>
+                                                <span class="mr-1" innerHtml="{{detail.teamInfos | team}}"></span>
+                                                <span [ngClass]="getMonthlyStatusStyle(detail.monthlyStatus, true)">
+                                                    {{getMonthlyStatus(detail.monthlyStatus)}}
+                                                </span>
+                                                {{detail.statusMonth | MyDateFormat}} 
                                             </div>
                                         </div>
                                     </ng-container>
                                 </p>
                             </div>
-                            <div *ngIf="!isEmployeeChart" (click)="toggleMonthlyMoney(group)">
-                                <p [ngClass]="group.hideMonthlyMoney == false ? 'preReview' : 'review'"
+                            <div *ngIf="!isEmployeeChart" (click)="togglePreview()">
+                                <p [ngClass]="isPreview == true ? 'preReview' : 'review'"
                                     title="Cuộn chuột hoặc Click để mở rộng nội dung"
                                     name="monthlyMoney">
                                     <ng-container class="p-2">
-                                        <div class="row" *ngFor="let item of group">
-                                            <div class="col-6 text-right">
-                                                {{item.money | moneyFormat}}
-                                            </div>
-                                            <div class="col-5 text-left">
-                                                {{item.payrollMonth | MyDateFormat}} 
+                                        <div *ngFor="let detail of employee.monthlyEmployeeDetails">
+                                            <div class="ml-2 text-left">
+                                                <span class="mr-1 badge text-white" [ngStyle]="{'background': detail.branchInfo?.color}">
+                                                    {{detail.branchInfo?.name}}</span>
+                                                <span class="badge text-white"  
+                                                    [ngStyle]="{'background': detail.userTypeInfo?.color}">{{detail.userTypeInfo?.name}}</span>
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.levelInfo?.color}">{{detail.levelInfo?.name}}
+                                                </span>
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.jobPositionInfo?.color}">{{detail.jobPositionInfo?.name}}
+                                                </span>
+                                                <span class="mr-1" innerHtml="{{detail.teamInfos | team}}"></span>
+                                                <b>
+                                                    {{detail.money | moneyFormat}}
+                                                </b>
+                                                {{detail.payrollMonth | MyDateFormat}} 
                                             </div>
                                         </div>
                                     </ng-container>
@@ -95,7 +134,7 @@
             </table>
         </div>
     </div>
-    <div class="mt-2 d-flex justify-content-between">
+    <div class="d-flex justify-content-between">
         <div class="col-sm-3 col-3 text-sm-left text-center d-flex align-items-center">
             <button class="btn btn-primary" (click)="refresh()">
               <i class="fas fa-redo-alt"></i>
@@ -108,6 +147,9 @@
                 <mat-option [value]="20"> 20 </mat-option>
                 <mat-option [value]="50"> 50 </mat-option>
                 <mat-option [value]="100"> 100 </mat-option>
+                <mat-option [value]="200"> 200 </mat-option>
+                <mat-option [value]="500"> 500 </mat-option>
+                <mat-option [value]="1000"> 1000 </mat-option>
               </mat-select>
             </mat-form-field>
         </div>
@@ -120,7 +162,7 @@
             </pagination-controls>
         </div>
         <div class="col-sm-3 col-3 d-flex justify-content-end align-items-center">
-            <p class="mb-0 ">Total: {{ groupedData.length }}</p>
+            <p class="mb-0 ">Total: {{ sortedDetail.length }}</p>
         </div>
     </div>
 </div>

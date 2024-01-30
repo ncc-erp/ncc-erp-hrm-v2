@@ -1,6 +1,7 @@
 import { ChartDataType, EmployeeMonthlyStatus, EmployeeStatus, PayslipDetailType } from "@shared/AppEnums";
 import { BadgeInfoDto } from "../history/EmployeePayslipHistory.dto";
 import { KeyValueDto } from "../common.dto";
+import { EmployeeTeamDto } from "@shared/dto/user-infoDto";
 
 export class HomepageEmployeeStatisticDto {
     branchName: string;
@@ -38,23 +39,27 @@ export class LastEmployeeWorkingHistoryDto {
     userType: number;
 }
 
-export class PayslipDataChartDto {
-    id: number;
+export class EmployeeDataFromChartDetailDto {
+    employeeId: number;
     fullName: string;
     email: string;
     avatar: string;
     avatarFullPath: string;
-    
     gender: number;
-    teamInfos: KeyValueDto[];
+    monthlyEmployeeDetails: MonthlyEmployeeDetailDto[];
+    totalMoney: number;
+}
+
+export class MonthlyEmployeeDetailDto{
+    teamInfos: EmployeeTeamDto[];
     levelInfo: BadgeInfoDto;
     branchInfo: BadgeInfoDto;
     jobPositionInfo: BadgeInfoDto;
     userTypeInfo: BadgeInfoDto;
-
+    
     monthlyStatus: EmployeeMonthlyStatus;
     statusMonth: Date;
-
+    
     money: number;
     payrollMonth: Date;
 }

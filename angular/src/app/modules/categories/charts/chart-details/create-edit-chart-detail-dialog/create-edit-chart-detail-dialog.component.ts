@@ -30,6 +30,7 @@ export class CreateEditChartDetailDialogComponent
 {
   @Output() onMultiFilterWithCondition? = new EventEmitter();
   @Output() onMultiFilter? = new EventEmitter();
+  @Output() onSaveChange = new EventEmitter<any>();
 
   constructor(
     injector: Injector,
@@ -217,6 +218,7 @@ export class CreateEditChartDetailDialogComponent
             )
             .subscribe((rs) => {
               abp.notify.success(`Update chart detail successfull`);
+              this.onSaveChange.emit()
               this.dialogRef.close(true);
             })
         );

@@ -42,7 +42,6 @@
 
 .card-header {
     padding: 0;
-    padding-bottom: 10px;
 }
 .card-body {
     padding: 0
@@ -71,18 +70,30 @@
     resize: none;
     cursor: pointer;
     overflow-y: scroll;
+    overflow-x: hidden;
     background-color: transparent;
     text-overflow: ellipsis;
     line-height: 25px;
     word-wrap: break-word;
     -webkit-line-clamp: 3;
-    height: 70px;
+    height: 40px;
     margin-bottom: 0px;
     -webkit-box-orient: vertical;
 }
 
+.truncate {
+    display: inline-block;
+    max-width: 200px; /* Adjust this value based on your requirements */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
 .review{
-    width: 90%;
+    width: 100%;
     border: none;
     cursor: pointer;
     resize: none;
@@ -95,6 +106,7 @@
 
 .preReview::-webkit-scrollbar
 {
+    display: none;
 	width: 7px;
 	background-color: #F5F5F5;
 }
@@ -109,4 +121,12 @@
 {
 	width: 7px;
 	background-color: #F5F5F5;
+}
+.center-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+::ng-deep .mat-form-field-label-wrapper {
+    top: -0.84375em;
 }

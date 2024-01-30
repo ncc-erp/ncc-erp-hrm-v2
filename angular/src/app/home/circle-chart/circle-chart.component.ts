@@ -122,8 +122,8 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
       },
       disableClose: true
     });
-    // ref.componentInstance.refreshDataEvent.subscribe((data) => {
-    //   this.onRefreshData();
-    // });
+    ref.componentInstance.refreshDataEvent.subscribe((data) => {
+      this.onRefreshData();
+    });
   }
 }

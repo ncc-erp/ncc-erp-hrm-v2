@@ -66,7 +66,7 @@ namespace HRMv2.APIs.Home
         }
 
         [HttpPost]
-        public async Task<List<PayslipDataChartDto>> GetDetailDataChart(InputChartDetailDto input)
+        public async Task<List<EmployeeDataFromChartDetailDto>> GetDetailDataChart(InputChartDetailDto input)
         {
             var result = await _chartDetailManager.GetDetailDataChart(input.ChartDetailId, input.ChartDataType, input.StartDate, input.EndDate);
             return result;
