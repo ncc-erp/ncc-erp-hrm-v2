@@ -413,7 +413,6 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             var allDataForChartEmployee = _chartManager.GetDataForAllChartEmployee(startDate, endDate);
 
             var result = _chartManager.FilterDataEmployeeChartByChartDetail(allDataForChartEmployee, detail)
-                        .WhereIf(!string.IsNullOrEmpty(searchText), x => x.Email.Contains(searchText))
                         .Where(x => x.StatusMonth >= startDate && x.StatusMonth <= endDate)
                         .OrderBy(x => x.StatusMonth)
                         .ToList();
@@ -430,7 +429,6 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             var payslip = _chartManager.QueryAllPayslipDetail(startDate, endDate).ToList();
 
             var employeePayslips = _chartManager.FitlerDataPayslipChartByChartDetail(detail, payslip)
-                .WhereIf(!string.IsNullOrEmpty(searchText), x => x.Email.Contains(searchText))
                 .WhereIf(detail.ListPayslipDetailType.Any(), p => detail.ListPayslipDetailType.Any(payslipDetail => p.PayslipDetails.Any(s => s.Type == payslipDetail)))
                 .Select(p => new PayslipDataChartDto
                 {
