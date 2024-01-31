@@ -7,3 +7,24 @@
     max-height: 158px;
     overflow: auto;
 }
+
+.btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+  
+.btn-clear-all {
+    display: block;
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.btn-clear-all:hover {
+    border: 1px solid black;
+    scale: 0.99;
+    transition: all 0.3s;
+}

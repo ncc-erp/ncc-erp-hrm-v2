@@ -230,67 +230,73 @@
             ></chart-select>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div *ngIf="listAllLineChartDataDisplay == null" class="col-12">
+        <div class="row">
+          <div *ngIf="isLineEmptyDisplay" class="col-12">
+            <div
+              class="card"
+              style="font-family: 'Source Sans Pro'; font-size: 20px"
+            >
+              <span>Không có biểu đồ nào được chọn</span>
+            </div>
+          </div>
           <div
-            class="card"
-            style="font-family: 'Source Sans Pro'; font-size: 20px"
+            class="col-6"
+            *ngFor="let chart of listAllLineChartDataDisplay; let i = index"
           >
-            <span>Không có biểu đồ nào đang active</span>
-          </div>
-        </div>
-        <div class="col-6" *ngFor="let chart of listAllLineChartDataDisplay; let i = index">
-          <div class="card">
-            <app-line-chart
-              [lineChartData]="chart"
-              [fromDate]="fromDateLineChart"
-              [toDate]="toDateLineChart"
-              (refreshData)="onRefreshLineChart()"
-            ></app-line-chart>
+            <div class="card" *ngIf="listLineChartId.leght != 0">
+              <app-line-chart
+                [lineChartData]="chart"
+                [fromDate]="fromDateLineChart"
+                [toDate]="toDateLineChart"
+                (refreshData)="onRefreshLineChart()"
+              ></app-line-chart>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="text-center" style="margin-top: 6px">
-      <div class="card mb-2">
-        <div class="row mx-3" style="height: 50px; justify-content: center">
-          <app-date-selector-homepage
-            style="display: inline-flex"
-            (onDateSelectorChange)="onDateChangeCircleChart($event)"
-            [type]="defaultDateFilterTypeCircleChart"
-            [defaultDateFilter]="searchWithDateTimeCircleChart"
-          >
-          </app-date-selector-homepage>
-          <div class="col-2">
-            <chart-select
-              (onSelect)="onCircleChartSelect($event)"
-              className="col-12"
-              [dropdownData]="listAllCircleChartSelectBox"
-              [label]="'Biểu đồ'"
-              [defaultValue]="listCircleChartId"
-              [placeholder]="'Biểu đồ'"
-            ></chart-select>
+      <div class="text-center" style="margin-top: 6px">
+        <div class="card mb-2">
+          <div class="row mx-3" style="height: 50px; justify-content: center">
+            <app-date-selector-homepage
+              style="display: inline-flex"
+              (onDateSelectorChange)="onDateChangeCircleChart($event)"
+              [type]="defaultDateFilterTypeCircleChart"
+              [defaultDateFilter]="searchWithDateTimeCircleChart"
+            >
+            </app-date-selector-homepage>
+            <div class="col-2">
+              <chart-select
+                (onSelect)="onCircleChartSelect($event)"
+                className="col-12"
+                [dropdownData]="listAllCircleChartSelectBox"
+                [label]="'Biểu đồ'"
+                [defaultValue]="listCircleChartId"
+                [placeholder]="'Biểu đồ'"
+              ></chart-select>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div *ngIf="listAllCircleChartDataDisplay == null" class="col-12">
+        <div class="row">
+          <div *ngIf="isCircleEmptyDisplay" class="col-12">
+            <div
+              class="card"
+              style="font-family: 'Source Sans Pro'; font-size: 20px"
+            >
+              <span>Không có biểu đồ nào được chọn</span>
+            </div>
+          </div>
           <div
-            class="card"
-            style="font-family: 'Source Sans Pro'; font-size: 20px"
+            class="col-6"
+            *ngFor="let chart of listAllCircleChartDataDisplay; let i = index"
           >
-            <span>Không có biểu đồ nào đang active</span>
-          </div>
-        </div>
-        <div class="col-6" *ngFor="let chart of listAllCircleChartDataDisplay; let i = index">
-          <div class="card">
-            <app-circle-chart
-              [circlechartData]="chart"
-              [fromDate]="fromDateCircleChart"
-              [toDate]="toDateCircleChart"
-              (refreshData)="onRefreshCircleChart()"
-            ></app-circle-chart>
+            <div class="card">
+              <app-circle-chart
+                [circlechartData]="chart"
+                [fromDate]="fromDateCircleChart"
+                [toDate]="toDateCircleChart"
+                (refreshData)="onRefreshCircleChart()"
+              ></app-circle-chart>
+            </div>
           </div>
         </div>
       </div>

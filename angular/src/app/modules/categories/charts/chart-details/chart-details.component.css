@@ -94,3 +94,7 @@
 .col-action {
     width: 110px;
 }
+
+.table td {
+    vertical-align: middle;
+  }

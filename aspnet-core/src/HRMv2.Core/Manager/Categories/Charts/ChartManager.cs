@@ -1,15 +1,12 @@
-﻿using Abp.Collections.Extensions;
+﻿using Abp.Authorization.Users;
+using Abp.Collections.Extensions;
 using Abp.UI;
-using Amazon.S3.Model;
 using HRMv2.Authorization.Roles;
 using HRMv2.Authorization.Users;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.Charts.Dto;
-using HRMv2.Manager.Categories.JobPositions;
-using HRMv2.Manager.Categories.Levels;
-using HRMv2.Manager.Categories.Teams;
 using HRMv2.Manager.Histories.Dto;
 using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
@@ -60,6 +57,33 @@ namespace HRMv2.Manager.Categories.Charts
                 });
 
             return query;
+        }
+
+        public List<long> GetAuthorizedChartIdsByDataType(ChartDataType chartDataType)
+        {
+            var sessionRoleIds = WorkScope.GetAll<UserRole>()
+               .Where(s => s.UserId == AbpSession.UserId)
+               .Select(s => s.RoleId)
+               .ToList();
+
+            var allChartDtos = WorkScope.GetAll<Chart>()
+                .Where(c => c.IsActive == true && c.ChartDataType == chartDataType)
+                .Select(c => new ChartDto
+                {
+                    Id = c.Id,
+                    ShareToRoleIds = c.ShareToRoleIds,
+                    ShareToUserIds = c.ShareToUserIds
+                })
+                .ToList();
+
+            var allChartIds = allChartDtos
+                .Where(c =>
+                    (c.ListShareToRoleIds.Count() == 0 || c.ListShareToRoleIds.Any(s => sessionRoleIds.Contains((int)s))) ||
+                    (c.ListShareToUserIds.Count() == 0 || c.ListShareToUserIds.Contains((long)AbpSession.UserId)))
+                .Select(c => c.Id)
+                .ToList();
+
+            return allChartIds;
         }
 
         public ChartSelectionDto GetChartSelectionData()
@@ -207,16 +231,19 @@ namespace HRMv2.Manager.Categories.Charts
 
         private string GetNextName(string name)
         {
-            int existingPostfix = ExtractPostfix(name);
-            string baseName = name;
+            int lastIndex = name.LastIndexOf('(') == -1 ? name.Length : name.LastIndexOf('(');
 
-            if (existingPostfix > 0)
-            {
-                baseName = name.Substring(0, name.LastIndexOf('('));
-            }
+            string onlyName = name.Substring(0, lastIndex);
 
-            int newPostfix = existingPostfix + 1;
-            return $"{baseName}({newPostfix})";
+            var lastCopyName = WorkScope.GetAll<Chart>()
+                .Where(c => c.Name.Contains(onlyName))
+                .Select(c => c.Name)
+                .OrderByDescending(c => c)
+                .First();
+
+            int existingPostfix = ExtractPostfix(lastCopyName);
+
+            return $"{onlyName}({existingPostfix + 1})";
         }
 
         private int ExtractPostfix(string name)
@@ -339,10 +366,7 @@ namespace HRMv2.Manager.Categories.Charts
 
         public async Task<ResultChartDto> GetAllDataEmployeeCharts(DateTime startDate, DateTime endDate)
         {
-            var allChartIds = WorkScope.GetAll<Chart>()
-                .Where(c => c.IsActive == true && c.ChartDataType == ChartDataType.Employee)
-                .Select(c => c.Id)
-                .ToList();
+            var allChartIds = GetAuthorizedChartIdsByDataType(ChartDataType.Employee);
 
             var result = await GetDataEmployeeCharts(allChartIds, startDate, endDate);
 
@@ -733,10 +757,7 @@ namespace HRMv2.Manager.Categories.Charts
 
         public async Task<ResultChartDto> GetAllDataPayslipCharts(DateTime startDate, DateTime endDate)
         {
-            var allChartIds = WorkScope.GetAll<Chart>()
-                .Where(c => c.IsActive == true && c.ChartDataType == ChartDataType.Salary)
-                .Select(c => c.Id)
-                .ToList();
+            var allChartIds = GetAuthorizedChartIdsByDataType(ChartDataType.Salary);
 
             var result = await GetDataPayslipCharts(allChartIds, startDate, endDate);
 
