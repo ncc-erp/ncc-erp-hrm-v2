@@ -3,7 +3,7 @@
     <div class="out-line w-100 d-flex justify-content-between">
         <div class="dialogTitle" [innerHTML]="title">
         </div>
-        <div class="pt-2">
+        <div class="d-flex pt-2">
             <button *ngIf="isShowEditBtn() && isEdit"
                     [ngClass]="isViewOnly ? 'btn btn-primary mr-3 editModeBtn' : 'btn btn-success mr-3 editModeBtn'" 
                     (click)="onChangeEditMode()">{{ isViewOnly ? 'Edit' : 'View' }}</button>

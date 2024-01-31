@@ -39,3 +39,18 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.truncate {
+  display: inline-block;
+  max-width: 350px; /* Adjust this value based on your requirements */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.wordwrap {
+  word-break: break-all;
+}
