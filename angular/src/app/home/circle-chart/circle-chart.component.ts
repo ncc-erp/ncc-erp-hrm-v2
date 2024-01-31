@@ -44,7 +44,7 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
       var myChart = echarts.init(this.chartContainer.nativeElement);
       const option = {
         title: {
-          text: this.circlechartData.name,
+          text: this.truncateWithEllipsis(this.circlechartData.name, 70),
           left: "center",
           textStyle: {
             fontFamily: "Source Sans Pro",
@@ -125,5 +125,13 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
     ref.componentInstance.refreshDataEvent.subscribe((data) => {
       this.onRefreshData();
     });
+  }
+
+  truncateWithEllipsis(text, maxLength) {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength - 3) + '...';
+    } else {
+      return text;
+    }
   }
 }

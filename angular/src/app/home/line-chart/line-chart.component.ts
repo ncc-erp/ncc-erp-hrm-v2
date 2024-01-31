@@ -71,7 +71,7 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
         },
 
        title: {
-          text: this.lineChartData.name,
+          text: this.truncateWithEllipsis(this.lineChartData.name, 70),
           left: 'center',
           textStyle: {
             fontFamily: 'Source Sans Pro',
@@ -155,5 +155,13 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
     let endDate = new Date(Date.UTC(year, month + 1, 0));
 
     return { startDate, endDate };
+  }
+
+  truncateWithEllipsis(text, maxLength) {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength - 3) + '...';
+    } else {
+      return text;
+    }
   }
 }
