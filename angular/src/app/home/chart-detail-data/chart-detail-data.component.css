@@ -83,7 +83,7 @@
 
 .truncate {
     display: inline-block;
-    max-width: 200px; /* Adjust this value based on your requirements */
+    max-width: 350px; /* Adjust this value based on your requirements */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

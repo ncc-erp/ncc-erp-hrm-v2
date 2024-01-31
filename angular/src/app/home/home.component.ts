@@ -239,7 +239,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.toDateCircleChart = moment(
         this.searchWithDateTimeCircleChart.toDate
       ).format("YYYY-MM-DD");
-
+  
       this.getDataForCircleEmployeeChart(
         this.fromDateCircleChart,
         this.toDateCircleChart,
@@ -250,8 +250,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         this.toDateCircleChart,
         this.listCircleChartId
       );
-    } else {
-      this.isDefault = !this.isDefault;
+    }
+    else{
+      this.isDefault = !this.isDefault
     }
   }
 
@@ -259,7 +260,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.isLoadingChart = true;
     if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
-    } else {
+      this.circleEmployeeChartDataDisplay = [];
+    } 
+    else{
       this.homePageService
         .GetDataEmployeeCharts(fromDate, toDate, chartIds)
         .subscribe(
@@ -294,7 +297,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.isLoadingChart = true;
     if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
-    } else {
+      this.circlePayslipChartDataDisplay = [];
+    }
+    else {
       this.homePageService
         .GetDataPayslipCharts(fromDate, toDate, chartIds)
         .subscribe(
@@ -538,8 +543,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         this.toDateLineChart,
         this.listLineChartId
       );
-    } else {
-      this.isDefault = !this.isDefault;
+    }
+    else{
+      this.isDefault = !this.isDefault
     }
   }
   mapListAllCharts() {
@@ -564,7 +570,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.isLoadingChart = true;
     if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
-    } else {
+      this.lineEmployeeChartDataDisplay = [];
+    }
+    else {
       this.homePageService
         .GetDataEmployeeCharts(startDate, endDate, chartIds)
         .subscribe(
@@ -599,7 +607,9 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.isLoadingChart = true;
     if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
-    } else {
+      this.linePayslipChartDataDisplay = [];
+    }
+    else {
       this.homePageService
         .GetDataPayslipCharts(startDate, endDate, chartIds)
         .subscribe(
