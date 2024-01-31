@@ -45,6 +45,8 @@ using NSubstitute;
 using Abp.Application.Editions;
 using Shouldly;
 using SortDirection = NccCore.Paging.SortDirection;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace HRMv2.Core.Tests.Managers.Debts
 {
@@ -64,6 +66,7 @@ namespace HRMv2.Core.Tests.Managers.Debts
             var _httpClient = Resolve<HttpClient>();
             var _iAbpSession = Resolve<IAbpSession>();
             var _iocResovler = Resolve<IIocResolver>();
+            var _logger = Resolve<ILogger<EmployeeManager>>();
             _paidManager = Substitute.For<PaidManager>(_work);
             _paymentPlanManager = Substitute.For<PaymentPlanManager>(_work);
             var configOptions = new Dictionary<string, string>
@@ -130,7 +133,7 @@ namespace HRMv2.Core.Tests.Managers.Debts
             /* == 5. USER TYPE MANAGER */
             var moqUserTypeManager = Substitute.For<UserTypeManager>(_work);
             /* == 6. EMPLOYEE MANAGER */
-            _employeeManager = Substitute.For<EmployeeManager>(_uploadFileService, _contractManager, _historyManager, _projectService, _timesheetWebService, _IMSWebService, _talentWebService, _work, _salaryRequestManager, _benefitManager, moqUserTypeManager, _changeEmployeeWorkingStatusManager, _backgroundJobManager, _backgroundJobInfo);
+            _employeeManager = Substitute.For<EmployeeManager>(_uploadFileService, _contractManager, _historyManager, _projectService, _timesheetWebService, _IMSWebService, _talentWebService, _work, _salaryRequestManager, _benefitManager, moqUserTypeManager, _changeEmployeeWorkingStatusManager, _backgroundJobManager, _backgroundJobInfo, _logger);
             _debt = new DebtManager(_paidManager, _paymentPlanManager, _work, _employeeManager, _emailManager, _backgroundJobManager);
         }
 

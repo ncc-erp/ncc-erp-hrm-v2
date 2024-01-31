@@ -38,6 +38,7 @@ using HRMv2.WebServices.Talent;
 using HRMv2.WebServices.Timesheet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NccCore.Paging;
@@ -91,6 +92,7 @@ namespace HRMv2.Core.Tests.Managers.Bonuses
             var mockEmployeeWorkingHistoryRepository = new Mock<IRepository<EmployeeWorkingHistory, long>>();
             var mockEmployeeContractRepository = new Mock<IRepository<EmployeeContract, long>>();
             var mockBackgroundJobInfoRepository = new Mock<IRepository<BackgroundJobInfo, long>>();
+            var mockLogger = new Mock<ILogger<EmployeeManager>>();
             var mockISettingManager = new Mock<ISettingManager>();
             var mockIIocResolver = new Mock<IIocResolver>();
             var mockHttpClient = new Mock<HttpClient>();
@@ -145,8 +147,8 @@ namespace HRMv2.Core.Tests.Managers.Bonuses
                mockUserTypeManager.Object,
                mockChangeEmployeeWorkingStatusManager.Object,
                mockBackgroundJobManager.Object,
-               mockBackgroundJobInfoRepository.Object);
-
+               mockBackgroundJobInfoRepository.Object,
+               mockLogger.Object);
 
             _bonusManager = new BonusManager(
                 _workScope,
@@ -844,7 +846,7 @@ namespace HRMv2.Core.Tests.Managers.Bonuses
 
             WithUnitOfWork(() =>
             {
-                int expectSize = 5;
+                int expectSize = 35;
 
                 var results = _bonusManager.GetListDate();
                 Assert.NotNull(results);

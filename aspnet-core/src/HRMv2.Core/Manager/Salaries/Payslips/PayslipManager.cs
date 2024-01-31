@@ -45,6 +45,7 @@ using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Spreadsheet;
 using AutoMapper.Internal;
 using HRMv2.Manager.Bonuses.Dto;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace HRMv2.Manager.Salaries.Payslips
 {
@@ -734,7 +735,11 @@ namespace HRMv2.Manager.Salaries.Payslips
         public async Task<string> UpdatePayslipDetailBonus(UpdatePayslipDetailDto input)
         {
 
-            var entity = await WorkScope.GetAsync<PayslipDetail>(input.Id);
+            var entity = await WorkScope.GetAll<PayslipDetail>()
+                .Where(s => s.Id == input.Id)
+                .FirstOrDefaultAsync();
+            if (entity == default)
+                throw new UserFriendlyException("Not found PayslipDetail Id = " + input.Id);
             entity.Money = input.Money;
             entity.Note = input.Note;
             await WorkScope.UpdateAsync(entity);

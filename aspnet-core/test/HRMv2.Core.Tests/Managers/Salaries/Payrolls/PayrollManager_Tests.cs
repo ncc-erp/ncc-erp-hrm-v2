@@ -50,6 +50,7 @@ using Abp.Domain.Entities;
 using Abp.ObjectMapping;
 using NccCore.Paging;
 using Moq;
+using Microsoft.Extensions.Logging;
 
 namespace HRMv2.Core.Tests.Managers.Salaries.Payrolls
 {
@@ -77,6 +78,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payrolls
             var _httpClient = Resolve<HttpClient>();
             var _iAbpSession = Resolve<IAbpSession>();
             var _iocResovler = Resolve<IIocResolver>();
+            var _logger = Resolve<ILogger<EmployeeManager>>();
 
             //var timesheetServiceMock = new Mock<TimesheetWebService>(_httpClient, _iAbpSession, _iocResovler);
             //timesheetServiceMock
@@ -174,7 +176,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payrolls
             var moqUserTypeManager = Substitute.For<UserTypeManager>(_workScope);
 
             /* == 6. EMPLOYEE MANAGER */
-            _employeeManager = Substitute.For<EmployeeManager>(_uploadFileService, _contractManager, _historyManager, _projectService, _timesheetWebService, _IMSWebService, _talentWebService, _workScope, _salaryRequestManager, _benefitManager, moqUserTypeManager, _changeEmployeeWorkingStatusManager, _backgroundJobManager, _backgroundJobInfo);
+            _employeeManager = Substitute.For<EmployeeManager>(_uploadFileService, _contractManager, _historyManager, _projectService, _timesheetWebService, _IMSWebService, _talentWebService, _workScope, _salaryRequestManager, _benefitManager, moqUserTypeManager, _changeEmployeeWorkingStatusManager, _backgroundJobManager, _backgroundJobInfo, _logger);
 
             /* == 7. DEBT MANAGER */
             _debtManager = Substitute.For<DebtManager>(_paidManager, _paymentPlanManager, _workScope, _employeeManager, _emailManager, _backgroundJobManager);
