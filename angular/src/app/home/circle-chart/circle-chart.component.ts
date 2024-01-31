@@ -113,7 +113,7 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
 
   viewDataEmployeeCircleChartDetail(chartDetailId: number){
     let ref = this.dialog.open(ChartDetailDataComponent, {
-      minWidth: "50%",
+      minWidth: "70%",
       data: {
         startDate: this.fromDate,
         endDate: this.toDate,

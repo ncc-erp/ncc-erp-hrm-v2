@@ -127,6 +127,6 @@
     flex-direction: column;
     justify-content: center;
 }
-::ng-deep .mat-form-field-label-wrapper {
+::ng-deep .pageSize .mat-form-field-label-wrapper {
     top: -0.84375em;
 }
