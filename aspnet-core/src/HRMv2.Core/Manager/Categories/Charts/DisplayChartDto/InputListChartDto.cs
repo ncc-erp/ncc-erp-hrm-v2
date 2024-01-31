@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.Home.Dtos.ChartDto
+namespace HRMv2.Manager.Categories.Charts.DisplayChartDto
 {
     public class InputListChartDto
     {

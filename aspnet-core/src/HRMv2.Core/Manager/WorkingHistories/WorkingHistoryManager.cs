@@ -1,6 +1,5 @@
 ﻿using HRMv2.Entities;
 using HRMv2.Manager.Histories.Dto;
-using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories.Dtos;
 using HRMv2.NccCore;
 using System;

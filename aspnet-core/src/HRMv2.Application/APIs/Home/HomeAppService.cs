@@ -2,9 +2,9 @@
 using HRMv2.Authorization;
 using HRMv2.Manager.Categories.Charts;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
+using HRMv2.Manager.Categories.Charts.DisplayChartDto;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
-using HRMv2.Manager.Home.Dtos.ChartDto;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

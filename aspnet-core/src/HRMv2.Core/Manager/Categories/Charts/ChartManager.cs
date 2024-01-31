@@ -6,9 +6,9 @@ using HRMv2.Authorization.Users;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
+using HRMv2.Manager.Categories.Charts.DisplayChartDto;
 using HRMv2.Manager.Categories.Charts.Dto;
 using HRMv2.Manager.Histories.Dto;
-using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.Manager.WorkingHistories;
 using HRMv2.NccCore;
 using HRMv2.Utils;
@@ -236,12 +236,12 @@ namespace HRMv2.Manager.Categories.Charts
             string onlyName = name.Substring(0, lastIndex);
 
             var lastCopyName = WorkScope.GetAll<Chart>()
-                .Where(c => c.Name.Contains(onlyName))
+                .Where(c => Regex.IsMatch(c.Name, $@"^{Regex.Escape(onlyName)}(?:\(\d+\))?$"))
                 .Select(c => c.Name)
                 .OrderByDescending(c => c)
-                .First();
+                .ToList();
 
-            int existingPostfix = ExtractPostfix(lastCopyName);
+            int existingPostfix = ExtractPostfix(lastCopyName.First());
 
             return $"{onlyName}({existingPostfix + 1})";
         }
@@ -874,10 +874,10 @@ namespace HRMv2.Manager.Categories.Charts
                    .ToDictionary(
                        g => g.Key,
                        g => Math.Round(g.Sum(p =>
-                           Math.Abs(p.PayslipDetails
+                           p.PayslipDetails
                                .Where(pd => detail.ListPayslipDetailType.Contains(pd.Type)) // Filter PayslipDetails
-                               .Sum(pd => pd.Money)
-                           ))) // CASE: payslip detail type == Punishment
+                               .Sum(pd => Math.Abs(pd.Money))
+                           )) // CASE: payslip detail type == Punishment
                    );
 
                 return result;
@@ -939,9 +939,9 @@ namespace HRMv2.Manager.Categories.Charts
                 .WhereIf(chartDetail.ListUserType.Any(), p => chartDetail.ListUserType.Contains(p.UserType))
                 .WhereIf(chartDetail.ListTeamId.Any(), p => chartDetail.ListTeamId.Any(teamId => p.TeamIds.Contains(teamId)));
 
-                var result = Math.Round(payslipDetailFilteredData.Sum(p => Math.Abs(p.PayslipDetails
+                var result = Math.Round(payslipDetailFilteredData.Sum(p => p.PayslipDetails
                     .Where(pd => chartDetail.ListPayslipDetailType.Contains(pd.Type)) // Filter PayslipDetails
-                    .Sum(pd => pd.Money))));
+                    .Sum(pd => Math.Abs(pd.Money))));
 
                 return result != 0 ? result : 0;
             }
@@ -955,7 +955,7 @@ namespace HRMv2.Manager.Categories.Charts
                 .WhereIf(chartDetail.ListUserType.Any(), p => chartDetail.ListUserType.Contains(p.UserType))
                 .WhereIf(chartDetail.ListTeamId.Any(), p => chartDetail.ListTeamId.Any(teamId => p.TeamIds.Contains(teamId)));
 
-                var result = payslipFilteredData.Sum(p => p.Salary > 0 ? p.Salary : 0);
+                var result = Math.Round(payslipFilteredData.Sum(p => p.Salary > 0 ? p.Salary : 0));
 
                 return result != 0 ? result : 0;
             }

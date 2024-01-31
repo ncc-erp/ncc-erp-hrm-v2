@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.Home.Dtos.ChartDto
+namespace HRMv2.Manager.Categories.Charts.DisplayChartDto
 {
     public class PayslipDataChartDto : EntityDto<long>
     {
@@ -40,7 +40,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public string PayrollMonthYear => DateTimeUtils.GetMonthYearLabelChart(PayrollMonth);
         public double Money { get; set; }
 
-        public List<PayslipDetailDataChartDto> PayslipDetails {  get; set; }
+        public List<PayslipDetailDataChartDto> PayslipDetails { get; set; }
 
 
         public List<EmployeeTeamDto> TeamInfos { get; set; }
@@ -95,7 +95,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public BadgeInfoDto UserTypeInfo { get; set; }
 
         public EmployeeMonthlyStatus MonthlyStatus { get; set; }
-        public DateTime StatusMonth {  get; set; }
+        public DateTime StatusMonth { get; set; }
 
         public double Money { get; set; }
         public DateTime PayrollMonth { get; set; }

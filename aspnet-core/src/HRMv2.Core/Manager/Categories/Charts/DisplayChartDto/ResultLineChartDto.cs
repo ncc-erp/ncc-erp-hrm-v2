@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.Home.Dtos.ChartDto
+namespace HRMv2.Manager.Categories.Charts.DisplayChartDto
 {
     public class ResultLineChartDto : EntityDto<long>
     {
@@ -17,7 +17,7 @@ namespace HRMv2.Manager.Home.Dtos.ChartDto
         public List<LineChartData> Lines { get; set; } = new List<LineChartData>();
 
     }
-    
+
     public class LineChartData : EntityDto<long>
     {
         public string LineName { get; set; }

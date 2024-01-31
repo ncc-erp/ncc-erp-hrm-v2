@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.Home.Dtos.ChartDto
+namespace HRMv2.Manager.Categories.Charts.DisplayChartDto
 {
     public class ResultCircleChartDto : EntityDto<long>
     {
