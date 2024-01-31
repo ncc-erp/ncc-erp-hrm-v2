@@ -63,7 +63,7 @@ namespace NccCore.Uitls
             {
                 listDate.Add(now.AddMonths(m));
             }
-            return listDate;
+            return listDate.OrderByDescending(s => s.Date).ToList();
         }
         public static Period CalRangeBetweenDate(DateTime fromDate)
         {

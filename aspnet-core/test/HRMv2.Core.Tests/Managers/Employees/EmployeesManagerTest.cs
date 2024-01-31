@@ -139,7 +139,7 @@ namespace HRMv2.Core.Tests.Managers.Employees
 
                 Assert.False(result.IsAllowEdit);
                 Assert.True(result.IsAllowEditBranch);
-                Assert.False(result.IsAllowEditWorkingStatus);
+                Assert.True(result.IsAllowEditWorkingStatus);
             });
         }
 

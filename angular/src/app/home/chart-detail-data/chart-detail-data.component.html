@@ -51,7 +51,7 @@
                             </div>
                         </th>
                         <th *ngIf="!isEmployeeChart" class="text-center align-middle col-1">Total Money</th>
-                        <th class="text-center align-middle col-6">Details By Month</th>
+                        <th class="text-center align-middle col-7">Details By Month</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
@@ -140,7 +140,7 @@
               <i class="fas fa-redo-alt"></i>
             </button>
             <mat-form-field class="pageSize" style=" width: 40%; margin-left: 20px;">
-              <mat-label>Number items</mat-label>
+            <mat-label>Number items</mat-label>
               <mat-select [(ngModel)]="pageSizeType" (ngModelChange)="changePageSize()">
                 <mat-option [value]="5"> 5 </mat-option>
                 <mat-option [value]="10"> 10 </mat-option>
