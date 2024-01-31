@@ -189,128 +189,140 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     }
   }
   onCircleChartSelect(ids: number[]) {
-    this.listCircleChartId = ids;
-    let employeeIds = ids.filter((id) =>
-      this.listEmployeeChartIds.includes(id)
-    );
-    let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
-    if (ids.length == 0) {
-      this.isCircleEmptyDisplay = true;
+    if (!this.isDefault) {
+      this.listCircleChartId = ids;
+      let employeeIds = ids.filter((id) =>
+        this.listEmployeeChartIds.includes(id)
+      );
+      let payslipIds = ids.filter((id) =>
+        this.listPayslipChartIds.includes(id)
+      );
+      if (ids.length == 0) {
+        this.isCircleEmptyDisplay = true;
+      }
+      if (employeeIds.length != 0) {
+        this.getDataForCircleEmployeeChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.listCircleChartId
+        );
+        this.isCircleEmptyDisplay = false;
+      } else {
+        this.circleEmployeeChartDataDisplay = [];
+        this.mapListAllCharts();
+      }
+      if (payslipIds.length != 0) {
+        this.getDataForCirclePayslipChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.listCircleChartId
+        );
+        this.isCircleEmptyDisplay = false;
+      } else {
+        this.circlePayslipChartDataDisplay = [];
+        this.mapListAllCharts();
+      }
+    } else {
+      this.isDefault = !this.isDefault;
     }
-    if (employeeIds.length != 0) {
+  }
+
+  onDateChangeCircleChart(event: DateTimeSelectorHome) {
+    if (!this.isDefault) {
+      let data = event;
+      this.searchWithDateTimeCircleChart = data;
+      this.defaultDateFilterTypeCircleChart = data.dateType;
+      this.searchWithDateTimeCircleChart.dateType = data.dateType;
+      this.fromDateCircleChart = moment(
+        this.searchWithDateTimeCircleChart.fromDate
+      ).format("YYYY-MM-DD");
+      this.toDateCircleChart = moment(
+        this.searchWithDateTimeCircleChart.toDate
+      ).format("YYYY-MM-DD");
+
       this.getDataForCircleEmployeeChart(
         this.fromDateCircleChart,
         this.toDateCircleChart,
         this.listCircleChartId
       );
-      this.isCircleEmptyDisplay = false;
-    } else {
-      this.circleEmployeeChartDataDisplay = [];
-      this.mapListAllCharts();
-    }
-    if (payslipIds.length != 0) {
       this.getDataForCirclePayslipChart(
         this.fromDateCircleChart,
         this.toDateCircleChart,
         this.listCircleChartId
       );
-      this.isCircleEmptyDisplay = false;
     } else {
-      this.circlePayslipChartDataDisplay = [];
-      this.mapListAllCharts();
+      this.isDefault = !this.isDefault;
     }
-  }
-
-  onDateChangeCircleChart(event: DateTimeSelectorHome) {
-    let data = event;
-    this.searchWithDateTimeCircleChart = data;
-    this.defaultDateFilterTypeCircleChart = data.dateType;
-    this.searchWithDateTimeCircleChart.dateType = data.dateType;
-    this.fromDateCircleChart = moment(
-      this.searchWithDateTimeCircleChart.fromDate
-    ).format("YYYY-MM-DD");
-    this.toDateCircleChart = moment(
-      this.searchWithDateTimeCircleChart.toDate
-    ).format("YYYY-MM-DD");
-
-    this.getDataForCircleEmployeeChart(
-      this.fromDateCircleChart,
-      this.toDateCircleChart,
-      this.listCircleChartId
-    );
-    this.getDataForCirclePayslipChart(
-      this.fromDateCircleChart,
-      this.toDateCircleChart,
-      this.listCircleChartId
-    );
   }
 
   getDataForCircleEmployeeChart(fromDate, toDate, chartIds) {
     this.isLoadingChart = true;
-    if (chartIds == null) {
+    if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
+    } else {
+      this.homePageService
+        .GetDataEmployeeCharts(fromDate, toDate, chartIds)
+        .subscribe(
+          (rs) => {
+            this.circleEmployeeChartDataDisplay = rs.result.circleCharts.map(
+              (item) => ({
+                id: item.id,
+                name: item.chartName,
+                chartDataType: rs.result.chartDataType,
+                chartDetails: item.pies.map(
+                  (pie) =>
+                    new DisplayCircleChartDetailDto(
+                      pie.id,
+                      pie.data,
+                      pie.pieName,
+                      {
+                        color: pie.color,
+                      }
+                    )
+                ),
+              })
+            );
+            this.mapListAllCharts();
+            this.isLoadingChart = false;
+          },
+          () => (this.isLoadingChart = false)
+        );
     }
-    this.homePageService
-      .GetDataEmployeeCharts(fromDate, toDate, chartIds)
-      .subscribe(
-        (rs) => {
-          this.circleEmployeeChartDataDisplay = rs.result.circleCharts.map(
-            (item) => ({
-              id: item.id,
-              name: item.chartName,
-              chartDataType: rs.result.chartDataType,
-              chartDetails: item.pies.map(
-                (pie) =>
-                  new DisplayCircleChartDetailDto(
-                    pie.id,
-                    pie.data,
-                    pie.pieName,
-                    {
-                      color: pie.color,
-                    }
-                  )
-              ),
-            })
-          );
-          this.mapListAllCharts();
-          this.isLoadingChart = false;
-        },
-        () => (this.isLoadingChart = false)
-      );
   }
 
   getDataForCirclePayslipChart(fromDate, toDate, chartIds) {
     this.isLoadingChart = true;
-    if (chartIds == null) {
+    if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
+    } else {
+      this.homePageService
+        .GetDataPayslipCharts(fromDate, toDate, chartIds)
+        .subscribe(
+          (rs) => {
+            this.circlePayslipChartDataDisplay = rs.result.circleCharts.map(
+              (item) => ({
+                id: item.id,
+                name: item.chartName,
+                chartDataType: rs.result.chartDataType,
+                chartDetails: item.pies.map(
+                  (pie) =>
+                    new DisplayCircleChartDetailDto(
+                      pie.id,
+                      pie.data,
+                      pie.pieName,
+                      {
+                        color: pie.color,
+                      }
+                    )
+                ),
+              })
+            );
+            this.mapListAllCharts();
+            this.isLoadingChart = false;
+          },
+          () => (this.isLoadingChart = false)
+        );
     }
-    this.homePageService
-      .GetDataPayslipCharts(fromDate, toDate, chartIds)
-      .subscribe(
-        (rs) => {
-          this.circlePayslipChartDataDisplay = rs.result.circleCharts.map(
-            (item) => ({
-              id: item.id,
-              name: item.chartName,
-              chartDataType: rs.result.chartDataType,
-              chartDetails: item.pies.map(
-                (pie) =>
-                  new DisplayCircleChartDetailDto(
-                    pie.id,
-                    pie.data,
-                    pie.pieName,
-                    {
-                      color: pie.color,
-                    }
-                  )
-              ),
-            })
-          );
-          this.mapListAllCharts();
-          this.isLoadingChart = false;
-        },
-        () => (this.isLoadingChart = false)
-      );
   }
 
   async getAllChartActive(startDate: string, endDate: string) {
@@ -466,59 +478,69 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   }
 
   onLineChartSelect(ids: number[]) {
-    this.listLineChartId = ids;
-    let employeeIds = ids.filter((id) =>
-      this.listEmployeeChartIds.includes(id)
-    );
-    let payslipIds = ids.filter((id) => this.listPayslipChartIds.includes(id));
-    if (!ids.length) {
-      this.isLineEmptyDisplay = true;
+    if (!this.isDefault) {
+      this.listLineChartId = ids;
+      let employeeIds = ids.filter((id) =>
+        this.listEmployeeChartIds.includes(id)
+      );
+      let payslipIds = ids.filter((id) =>
+        this.listPayslipChartIds.includes(id)
+      );
+      if (!ids.length) {
+        this.isLineEmptyDisplay = true;
+      }
+      if (employeeIds.length) {
+        this.getDataForLineEmployeeChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+        this.isLineEmptyDisplay = false;
+      } else {
+        this.lineEmployeeChartDataDisplay = [];
+        this.mapListAllCharts();
+      }
+      if (payslipIds.length) {
+        this.getDataForLinePayslipChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+        this.isLineEmptyDisplay = false;
+      } else {
+        this.linePayslipChartDataDisplay = [];
+        this.mapListAllCharts();
+      }
+    } else {
+      this.isDefault = !this.isDefault;
     }
-    if (employeeIds.length) {
+  }
+
+  onDateChangeLineChart(event: DateTimeSelectorHome) {
+    if (!this.isDefault) {
+      let data = event;
+      this.searchWithDateTimeLineChart = data;
+      this.defaultDateFilterTypeLineChart = data.dateType;
+      this.searchWithDateTimeLineChart.dateType = data.dateType;
+      this.fromDateLineChart = moment(
+        this.searchWithDateTimeLineChart.fromDate
+      ).format("YYYY-MM");
+      this.toDateLineChart = moment(
+        this.searchWithDateTimeLineChart.toDate
+      ).format("YYYY-MM");
       this.getDataForLineEmployeeChart(
         this.fromDateLineChart,
         this.toDateLineChart,
         this.listLineChartId
       );
-      this.isLineEmptyDisplay = false;
-    } else {
-      this.lineEmployeeChartDataDisplay = [];
-      this.mapListAllCharts();
-    }
-    if (payslipIds.length) {
       this.getDataForLinePayslipChart(
         this.fromDateLineChart,
         this.toDateLineChart,
         this.listLineChartId
       );
-      this.isLineEmptyDisplay = false;
     } else {
-      this.linePayslipChartDataDisplay = [];
-      this.mapListAllCharts();
+      this.isDefault = !this.isDefault;
     }
-  }
-
-  onDateChangeLineChart(event: DateTimeSelectorHome) {
-    let data = event;
-    this.searchWithDateTimeLineChart = data;
-    this.defaultDateFilterTypeLineChart = data.dateType;
-    this.searchWithDateTimeLineChart.dateType = data.dateType;
-    this.fromDateLineChart = moment(
-      this.searchWithDateTimeLineChart.fromDate
-    ).format("YYYY-MM");
-    this.toDateLineChart = moment(
-      this.searchWithDateTimeLineChart.toDate
-    ).format("YYYY-MM");
-    this.getDataForLineEmployeeChart(
-      this.fromDateLineChart,
-      this.toDateLineChart,
-      this.listLineChartId
-    );
-    this.getDataForLinePayslipChart(
-      this.fromDateLineChart,
-      this.toDateLineChart,
-      this.listLineChartId
-    );
   }
   mapListAllCharts() {
     this.listAllLineChartDataDisplay = [
@@ -540,71 +562,72 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   }
   getDataForLineEmployeeChart(startDate, endDate, chartIds: number[]) {
     this.isLoadingChart = true;
-    if (chartIds == null) {
+    if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
+    } else {
+      this.homePageService
+        .GetDataEmployeeCharts(startDate, endDate, chartIds)
+        .subscribe(
+          (rs) => {
+            this.lineEmployeeChartDataDisplay = rs.result.lineCharts.map(
+              (item) => ({
+                id: item.id,
+                name: item.chartName,
+                chartDataType: rs.result.chartDataType,
+                chartDetails: item.lines.map(
+                  (line) =>
+                    new DisplayLineChartDetailDto(
+                      line.id,
+                      line.data,
+                      line.lineName,
+                      {
+                        color: line.color,
+                      }
+                    )
+                ),
+              })
+            );
+            this.mapListAllCharts();
+            this.isLoadingChart = false;
+          },
+          () => (this.isLoadingChart = false)
+        );
     }
-
-    this.homePageService
-      .GetDataEmployeeCharts(startDate, endDate, chartIds)
-      .subscribe(
-        (rs) => {
-          this.lineEmployeeChartDataDisplay = rs.result.lineCharts.map(
-            (item) => ({
-              id: item.id,
-              name: item.chartName,
-              chartDataType: rs.result.chartDataType,
-              chartDetails: item.lines.map(
-                (line) =>
-                  new DisplayLineChartDetailDto(
-                    line.id,
-                    line.data,
-                    line.lineName,
-                    {
-                      color: line.color,
-                    }
-                  )
-              ),
-            })
-          );
-          this.mapListAllCharts();
-          this.isLoadingChart = false;
-        },
-        () => (this.isLoadingChart = false)
-      );
   }
 
   getDataForLinePayslipChart(startDate, endDate, chartIds: number[]) {
     this.isLoadingChart = true;
-    if (chartIds == null) {
+    if (chartIds == null || chartIds.length == 0) {
       chartIds = [];
+    } else {
+      this.homePageService
+        .GetDataPayslipCharts(startDate, endDate, chartIds)
+        .subscribe(
+          (rs) => {
+            this.linePayslipChartDataDisplay = rs.result.lineCharts.map(
+              (item) => ({
+                id: item.id,
+                name: item.chartName,
+                chartDataType: rs.result.chartDataType,
+                chartDetails: item.lines.map(
+                  (line) =>
+                    new DisplayLineChartDetailDto(
+                      line.id,
+                      line.data,
+                      line.lineName,
+                      {
+                        color: line.color,
+                      }
+                    )
+                ),
+              })
+            );
+            this.mapListAllCharts();
+            this.isLoadingChart = false;
+          },
+          () => (this.isLoadingChart = false)
+        );
     }
-    this.homePageService
-      .GetDataPayslipCharts(startDate, endDate, chartIds)
-      .subscribe(
-        (rs) => {
-          this.linePayslipChartDataDisplay = rs.result.lineCharts.map(
-            (item) => ({
-              id: item.id,
-              name: item.chartName,
-              chartDataType: rs.result.chartDataType,
-              chartDetails: item.lines.map(
-                (line) =>
-                  new DisplayLineChartDetailDto(
-                    line.id,
-                    line.data,
-                    line.lineName,
-                    {
-                      color: line.color,
-                    }
-                  )
-              ),
-            })
-          );
-          this.mapListAllCharts();
-          this.isLoadingChart = false;
-        },
-        () => (this.isLoadingChart = false)
-      );
   }
   public onDateSelectorChange(data) {
     this.filterFromDate = data?.fromDate;
