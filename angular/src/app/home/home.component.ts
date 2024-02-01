@@ -75,11 +75,11 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   listAllLineChartDataDisplay: DisplayLineChartDto[] = []; // All line chart for Display
   listAllCircleChartDataDisplay: DisplayCircleChartDto[] = []; // All Circle chart for Display
 
-  allLineChartIds: number[]; // list line chart when There are no options selected
-  allCircleChartIds: number[]; //list line chart when There are no options selected
+  allLineChartIds: number[] = []; // list line chart when There are no options selected
+  allCircleChartIds: number[] = []; //list line chart when There are no options selected
 
-  listEmployeeChartIds: number[]; // list Employee chart use filter
-  listPayslipChartIds: number[]; // list Payslip chart use filter
+  listEmployeeChartIds: number[] = []; // list Employee chart use filter
+  listPayslipChartIds: number[] = []; // list Payslip chart use filter
 
   tableData = {} as any;
   typeDate: any;
@@ -94,6 +94,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
   isDefault: boolean = true;
   isLineEmptyDisplay: boolean = false;
   isCircleEmptyDisplay: boolean = false;
+  
 
   chartIds: any;
   distanceFromAndToDate = "";
@@ -192,10 +193,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     if (!this.isDefault) {
       this.listCircleChartId = ids;
       let employeeIds = ids.filter((id) =>
-        this.listEmployeeChartIds.includes(id)
+        this.listEmployeeChartIds?.includes(id)
       );
       let payslipIds = ids.filter((id) =>
-        this.listPayslipChartIds.includes(id)
+        this.listPayslipChartIds?.includes(id)
       );
       if (ids.length == 0) {
         this.isCircleEmptyDisplay = true;
@@ -239,20 +240,28 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.toDateCircleChart = moment(
         this.searchWithDateTimeCircleChart.toDate
       ).format("YYYY-MM-DD");
-  
-      this.getDataForCircleEmployeeChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.listCircleChartId
+
+      let circleEmployee = this.listCircleChartId.filter((id) =>
+        this.listEmployeeChartIds.includes(id)
       );
-      this.getDataForCirclePayslipChart(
-        this.fromDateCircleChart,
-        this.toDateCircleChart,
-        this.listCircleChartId
+      let circlePayslip = this.listCircleChartId.filter((id) =>
+        this.listPayslipChartIds.includes(id)
       );
-    }
-    else{
-      this.isDefault = !this.isDefault
+      if (circleEmployee.length != 0) {
+        this.getDataForCircleEmployeeChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.listCircleChartId
+        );
+      }
+      if (circlePayslip.length != 0)
+        this.getDataForCirclePayslipChart(
+          this.fromDateCircleChart,
+          this.toDateCircleChart,
+          this.listCircleChartId
+        );
+    } else {
+      this.isDefault = !this.isDefault;
     }
   }
 
@@ -335,124 +344,155 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       .GetAllDataEmployeeCharts(startDate, endDate)
       .subscribe((data) => {
         let result = data.result;
-        result.chartDataType = this.APP_ENUM.ChartDataType.Employee;
-        // Select Box - Line Employee
-        this.listLineEmployeeChartSelectBox = result.lineCharts.map((line) => ({
-          name: line.chartName,
-          value: line.id,
-          dataType: result.chartDataType,
-          hidden: false,
-        }));
-        // Select Box - Circle Employee
-        this.listCircleEmployeeChartSelectBox = result.circleCharts.map(
-          (circle) => ({
-            name: circle.chartName,
-            value: circle.id,
-            dataType: result.chartDataType,
-            hidden: false,
-          })
-        );
+        if (result != null) {
+          result.chartDataType = this.APP_ENUM.ChartDataType.Employee;
+          // Select Box - Line Employee
+          this.listLineEmployeeChartSelectBox = result.lineCharts.map(
+            (line) => ({
+              name: line.chartName,
+              value: line.id,
+              dataType: result.chartDataType,
+              hidden: false,
+            })
+          );
+          // Select Box - Circle Employee
+          this.listCircleEmployeeChartSelectBox = result.circleCharts.map(
+            (circle) => ({
+              name: circle.chartName,
+              value: circle.id,
+              dataType: result.chartDataType,
+              hidden: false,
+            })
+          );
 
-        // Display line Employee
-        this.lineEmployeeChartDataDisplay = result.lineCharts.map((item) => ({
-          id: item.id,
-          name: item.chartName,
-          chartDataType: result.chartDataType,
-          chartDetails: item.lines.map(
-            (line) =>
-              new DisplayLineChartDetailDto(line.id, line.data, line.lineName, {
-                color: line.color,
-              })
-          ),
-        }));
-        // Display Circle Employee
-        this.circleEmployeeChartDataDisplay = result.circleCharts.map(
-          (item) => ({
+          // Display line Employee
+          this.lineEmployeeChartDataDisplay = result.lineCharts.map((item) => ({
             id: item.id,
             name: item.chartName,
             chartDataType: result.chartDataType,
-            chartDetails: item.pies.map((pie) => ({
-              id: pie.id,
-              data: pie.data,
-              pieName: pie.pieName,
-              itemStyle: { color: pie.color },
-            })),
-          })
-        );
-        this.allLineChartIds = result.lineCharts.map((item) => item.id);
-        this.allCircleChartIds = result.circleCharts.map((item) => item.id);
-        this.listEmployeeChartIds = result.circleCharts
-          .map((e) => e.id)
-          .concat(result.lineCharts.map((e) => e.id));
+            chartDetails: item.lines.map(
+              (line) =>
+                new DisplayLineChartDetailDto(
+                  line.id,
+                  line.data,
+                  line.lineName,
+                  {
+                    color: line.color,
+                  }
+                )
+            ),
+          }));
+          // Display Circle Employee
+          this.circleEmployeeChartDataDisplay = result.circleCharts.map(
+            (item) => ({
+              id: item.id,
+              name: item.chartName,
+              chartDataType: result.chartDataType,
+              chartDetails: item.pies.map((pie) => ({
+                id: pie.id,
+                data: pie.data,
+                pieName: pie.pieName,
+                itemStyle: { color: pie.color },
+              })),
+            })
+          );
+          this.allLineChartIds = result.lineCharts.map((item) => item.id);
+          this.allCircleChartIds = result.circleCharts.map((item) => item.id);
+          this.listEmployeeChartIds = result.circleCharts
+            .map((e) => e.id)
+            .concat(result.lineCharts.map((e) => e.id));
+            this.mapListAllCharts();
+            this.listLineChartId = [
+              ...this.listLineEmployeeChartSelectBox?.map((item1) => item1.value),
+              ...this.listLinePayslipChartSelectBox?.map((item) => item.value),
+            ];
+            this.listCircleChartId = [
+              ...this.listCircleEmployeeChartSelectBox?.map(
+                (item1) => item1.value
+              ),
+              ...this.listCirclePayslipChartSelectBox?.map((item) => item.value),
+            ];
+        }
       });
     await this.homePageService
       .GetAllDataPayslipCharts(startDate, endDate)
       .subscribe((data) => {
         let result = data.result;
-        result.chartDataType = this.APP_ENUM.ChartDataType.Salary;
-        // Select Box - Line Payslip
-        this.listLinePayslipChartSelectBox = result.lineCharts.map((line) => ({
-          name: line.chartName,
-          value: line.id,
-          dataType: result.chartDataType,
-          hidden: false,
-        }));
+        if (result != null) {
+          result.chartDataType = this.APP_ENUM.ChartDataType.Salary;
+          // Select Box - Line Payslip
+          this.listLinePayslipChartSelectBox = result.lineCharts.map(
+            (line) => ({
+              name: line.chartName,
+              value: line.id,
+              dataType: result.chartDataType,
+              hidden: false,
+            })
+          );
 
-        // Select Box - Circle Payslip
-        this.listCirclePayslipChartSelectBox = result.circleCharts.map(
-          (line) => ({
-            name: line.chartName,
-            value: line.id,
-            dataType: result.chartDataType,
-            hidden: false,
-          })
-        );
-        // Display line Payslip
-        this.linePayslipChartDataDisplay = result.lineCharts.map((item) => ({
-          id: item.id,
-          name: item.chartName,
-          chartDataType: result.chartDataType,
-          chartDetails: item.lines.map(
-            (line) =>
-              new DisplayLineChartDetailDto(line.id, line.data, line.lineName, {
-                color: line.color,
-              })
-          ),
-        }));
-
-        // Display Circle Payslip
-        this.circlePayslipChartDataDisplay = result.circleCharts.map(
-          (item) => ({
+          // Select Box - Circle Payslip
+          this.listCirclePayslipChartSelectBox = result.circleCharts.map(
+            (line) => ({
+              name: line.chartName,
+              value: line.id,
+              dataType: result.chartDataType,
+              hidden: false,
+            })
+          );
+          // Display line Payslip
+          this.linePayslipChartDataDisplay = result.lineCharts.map((item) => ({
             id: item.id,
             name: item.chartName,
             chartDataType: result.chartDataType,
-            chartDetails: item.pies.map((pie) => ({
-              id: pie.id,
-              data: pie.data,
-              pieName: pie.pieName,
-              itemStyle: { color: pie.color },
-            })),
-          })
-        );
-        this.allLineChartIds = this.allLineChartIds.concat(
-          result.lineCharts.map((item) => item.id)
-        );
-        this.allCircleChartIds = this.allCircleChartIds.concat(
-          result.circleCharts.map((item) => item.id)
-        );
+            chartDetails: item.lines.map(
+              (line) =>
+                new DisplayLineChartDetailDto(
+                  line.id,
+                  line.data,
+                  line.lineName,
+                  {
+                    color: line.color,
+                  }
+                )
+            ),
+          }));
 
-        this.listPayslipChartIds = result.circleCharts
-          .map((e) => e.id)
-          .concat(result.lineCharts.map((e) => e.id));
-        this.mapListAllCharts();
-        this.listLineChartId = [
-          ...this.listLineEmployeeChartSelectBox.map((item1) => item1.value),
-          ...this.listLinePayslipChartSelectBox.map((item) => item.value),
-        ];
-        this.listCircleChartId = [
-          ...this.listCircleEmployeeChartSelectBox.map((item1) => item1.value),
-          ...this.listCirclePayslipChartSelectBox.map((item) => item.value),
-        ];
+          // Display Circle Payslip
+          this.circlePayslipChartDataDisplay = result.circleCharts.map(
+            (item) => ({
+              id: item.id,
+              name: item.chartName,
+              chartDataType: result.chartDataType,
+              chartDetails: item.pies.map((pie) => ({
+                id: pie.id,
+                data: pie.data,
+                pieName: pie.pieName,
+                itemStyle: { color: pie.color },
+              })),
+            })
+          );
+          this.allLineChartIds = this.allLineChartIds.concat(
+            result.lineCharts.map((item) => item.id)
+          );
+          this.allCircleChartIds = this.allCircleChartIds.concat(
+            result.circleCharts.map((item) => item.id)
+          );
+
+          this.listPayslipChartIds = result.circleCharts
+            .map((e) => e.id)
+            .concat(result.lineCharts.map((e) => e.id));
+          this.mapListAllCharts();
+          this.listLineChartId = [
+            ...this.listLineEmployeeChartSelectBox.map((item1) => item1.value),
+            ...this.listLinePayslipChartSelectBox.map((item) => item.value),
+          ];
+          this.listCircleChartId = [
+            ...this.listCircleEmployeeChartSelectBox.map(
+              (item1) => item1.value
+            ),
+            ...this.listCirclePayslipChartSelectBox.map((item) => item.value),
+          ];
+        }
       });
   }
 
@@ -486,15 +526,15 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     if (!this.isDefault) {
       this.listLineChartId = ids;
       let employeeIds = ids.filter((id) =>
-        this.listEmployeeChartIds.includes(id)
+        this.listEmployeeChartIds?.includes(id)
       );
       let payslipIds = ids.filter((id) =>
-        this.listPayslipChartIds.includes(id)
+        this.listPayslipChartIds?.includes(id)
       );
       if (!ids.length) {
         this.isLineEmptyDisplay = true;
       }
-      if (employeeIds.length) {
+      if (employeeIds.length != 0) {
         this.getDataForLineEmployeeChart(
           this.fromDateLineChart,
           this.toDateLineChart,
@@ -505,7 +545,7 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         this.lineEmployeeChartDataDisplay = [];
         this.mapListAllCharts();
       }
-      if (payslipIds.length) {
+      if (payslipIds.length != 0) {
         this.getDataForLinePayslipChart(
           this.fromDateLineChart,
           this.toDateLineChart,
@@ -533,19 +573,28 @@ export class HomeComponent extends AppComponentBase implements OnInit {
       this.toDateLineChart = moment(
         this.searchWithDateTimeLineChart.toDate
       ).format("YYYY-MM");
-      this.getDataForLineEmployeeChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.listLineChartId
+      let lineEmployee = this.listLineChartId.filter((id) =>
+        this.listEmployeeChartIds.includes(id)
       );
-      this.getDataForLinePayslipChart(
-        this.fromDateLineChart,
-        this.toDateLineChart,
-        this.listLineChartId
+      let linePayslip = this.listLineChartId.filter((id) =>
+        this.listPayslipChartIds.includes(id)
       );
-    }
-    else{
-      this.isDefault = !this.isDefault
+      if (lineEmployee.length != 0) {
+        this.getDataForLineEmployeeChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+      }
+      if (linePayslip.length != 0) {
+        this.getDataForLinePayslipChart(
+          this.fromDateLineChart,
+          this.toDateLineChart,
+          this.listLineChartId
+        );
+      }
+    } else {
+      this.isDefault = !this.isDefault;
     }
   }
   mapListAllCharts() {
