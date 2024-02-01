@@ -86,7 +86,8 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                     this.l('AuditLog'),
                     '/app/admin/audit-logs',
                     'fas fa-cogs',
-                    'Admin.AuditLog.View'),
+                    'Admin.AuditLog.View'
+                )
             ]),
             new MenuItem(
                 "Category",
@@ -147,6 +148,12 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                     'fa-solid fa-address-card',
                     'Category.IssuedBy.View'
                 ),
+                new MenuItem(
+                    this.l('Chart'),
+                    '/app/categories/charts',
+                    'fas fa-line-chart',
+                    'Category.Chart.View',
+                )
             ]
             ),
             new MenuItem(

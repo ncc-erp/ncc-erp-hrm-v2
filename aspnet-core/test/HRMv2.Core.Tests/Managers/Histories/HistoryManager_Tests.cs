@@ -360,7 +360,7 @@ namespace HRMv2.Core.Tests.Managers.Histories
                     Punishment = -360000.0,
                     RemainLeaveDayBefore = 0,
                     RemainLeaveDayAfter = 0,
-                    UpdatedTime = DateTime.Parse("2022-12-19  02:11:31 PM"),
+                    UpdatedTime = DateTime.Parse("2022-12-19 02:11:31 PM"),
                     UpdatedUser = "admin admin",
                     ApplyMonth = DateTime.Parse("2023-01-01 00:00:00"),
                     Note = null
@@ -374,7 +374,7 @@ namespace HRMv2.Core.Tests.Managers.Histories
                     Punishment = 0,
                     RemainLeaveDayBefore = 0,
                     RemainLeaveDayAfter = 0,
-                    UpdatedTime = DateTime.Parse("19/12/2022  10:36:23 AM"),
+                    UpdatedTime = DateTime.Parse("2022-12-19 10:36:23 AM"),
                     UpdatedUser = "admin admin",
                     ApplyMonth = DateTime.Parse("2022-12-01 00:00:00"),
                     Note = null,

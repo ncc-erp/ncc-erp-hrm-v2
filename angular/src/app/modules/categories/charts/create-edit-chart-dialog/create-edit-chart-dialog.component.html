@@ -1,0 +1,106 @@
+<form
+  [formGroup]="formGroupChart"
+  class="form-horizontal"
+  [busy]="isLoading"
+>
+  <app-dialog-header [dialogTitle]="title"></app-dialog-header>
+  <div class="p-3" *ngIf="!isLoading">
+    <div class="form-group d-flex required">
+      <label class="col-3 mt-2 col-form-label">Name:</label>
+      <div class="col-9">
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            formControlName="name"
+            cdkFocusInitial
+            #nameEl
+            required
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="formGroupChart.get('name')"
+          [controlEl]="nameEl"
+        >
+        </abp-validation-summary>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Chart data type: </label>
+      <div class="col-9">
+        <mat-form-field class="w-100 center-flex" appearance="outline">
+          <mat-select
+            formControlName="chartDataType"
+            placeholder="select chart data type"
+          >
+            <mat-option *ngFor="let type of chartDataType" [value]="type.value">{{
+              type.key
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Chart type: </label>
+      <div class="col-9">
+        <mat-form-field class="w-100 center-flex" appearance="outline">
+          <mat-select
+            formControlName="chartType"
+            placeholder="select chart type"
+          >
+            <mat-option *ngFor="let type of chartType" [value]="type.value">{{
+              type.key
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div *ngIf="isEdit" class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Share to Users: </label>
+      <div class="col-8">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listUsers"
+          [searchPlaceholder]="'Find User'"
+          [multiControl]="formGroupChart.controls.listUsers"
+        >
+        </app-multi-select-box>
+      </div>
+      <button
+        *ngIf="
+          formGroupChart.controls.listUsers.value &&
+          formGroupChart.controls.listUsers.value.length > 0
+        "
+        (click)="onClearAllFilter('listUsers')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div *ngIf="isEdit" class="form-group d-flex">
+      <label class="col-3 mt-2 col-form-label">Share to Roles: </label>
+      <div class="col-8">
+        <app-multi-select-box
+          class="w-100"
+          [list]="listRoles"
+          [searchPlaceholder]="'Find Role'"
+          [multiControl]="formGroupChart.controls.listRoles"
+        >
+        </app-multi-select-box>
+      </div>
+      <button
+        *ngIf="
+          formGroupChart.controls.listRoles.value &&
+          formGroupChart.controls.listRoles.value.length > 0
+        "
+        (click)="onClearAllFilter('listRoles')"
+        class="btn-clear-all"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+  <app-dialog-footer
+    (onSave)="saveAndClose()"
+    [isDisable]="isLoading"
+  ></app-dialog-footer>
+</form>

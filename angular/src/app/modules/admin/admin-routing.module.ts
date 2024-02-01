@@ -56,7 +56,7 @@ const routes: Routes = [
     path: "audit-logs",
     component: AuditLogsComponent,
     canActivate: [AppRouteGuard],
-  },
+  }
 ];
 
 @NgModule({

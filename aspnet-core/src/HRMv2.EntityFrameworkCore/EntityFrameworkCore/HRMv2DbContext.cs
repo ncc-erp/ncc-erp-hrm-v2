@@ -52,6 +52,8 @@ namespace HRMv2.EntityFrameworkCore
         public HRMv2DbContext(DbContextOptions<HRMv2DbContext> options)
             : base(options)
         {
+            
         }
+
     }
 }

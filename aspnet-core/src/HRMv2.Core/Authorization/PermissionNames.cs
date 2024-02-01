@@ -114,6 +114,20 @@ namespace HRMv2.Authorization
         public const string Category_IssuedBy_Edit = "Category.IssuedBy.Edit";
         public const string Category_IssuedBy_Delete = "Category.IssuedBy.Delete";
 
+        public const string Category_Chart = "Category.Chart";
+        public const string Category_Chart_View = "Category.Chart.View";
+        public const string Category_Chart_Create = "Category.Chart.Create";
+        public const string Category_Chart_Edit = "Category.Chart.Edit";
+        public const string Category_Chart_Delete = "Category.Chart.Delete";
+        public const string Category_Chart_ActiveDeactive = "Category.Chart.ActiveDeactive";
+
+        public const string Category_Chart_ChartDetail = "Category.Chart.ChartDetail";
+        public const string Category_Chart_ChartDetail_View = "Category.Chart.ChartDetail.View";
+        public const string Category_Chart_ChartDetail_Create = "Category.Chart.ChartDetail.Create";
+        public const string Category_Chart_ChartDetail_Edit = "Category.Chart.ChartDetail.Edit";
+        public const string Category_Chart_ChartDetail_Delete = "Category.Chart.ChartDetail.Delete";
+        public const string Category_Chart_ChartDetail_ActiveDeactive = "Category.Chart.ChartDetail.ActiveDeactive";
+
         //Punishment
         public const string Punishment = "Punishment";
         public const string Punishment_View = "Punishment.View";
@@ -560,6 +574,20 @@ namespace HRMv2.Authorization
                         PermissionNames.Category_IssuedBy_Create,
                         PermissionNames.Category_IssuedBy_Edit,
                         PermissionNames.Category_IssuedBy_Delete,
+
+                        PermissionNames.Category_Chart,
+                        PermissionNames.Category_Chart_View,
+                        PermissionNames.Category_Chart_Create,
+                        PermissionNames.Category_Chart_Edit,
+                        PermissionNames.Category_Chart_Delete,
+                        PermissionNames.Category_Chart_ActiveDeactive,
+
+                        PermissionNames.Category_Chart_ChartDetail,
+                        PermissionNames.Category_Chart_ChartDetail_View,
+                        PermissionNames.Category_Chart_ChartDetail_Create,
+                        PermissionNames.Category_Chart_ChartDetail_Edit,
+                        PermissionNames.Category_Chart_ChartDetail_Delete,
+                        PermissionNames.Category_Chart_ChartDetail_ActiveDeactive,
 
                         PermissionNames.Punishment,
                         PermissionNames.Punishment_View,
@@ -2174,6 +2202,19 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.Category_PunishmentType_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                   new SystemPermission{ Name =  PermissionNames.Category_PunishmentType_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
 
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Chart"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_ActiveDeactive ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Active/Deactive Chart"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Chart Detail"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
+                  new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_ActiveDeactive ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Active/Deactive Chart Detail"},
+
                   new SystemPermission{ Name =  PermissionNames.Category_IssuedBy ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "IssuedBy"},
                   new SystemPermission{ Name =  PermissionNames.Category_IssuedBy_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
                   new SystemPermission{ Name =  PermissionNames.Category_IssuedBy_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
@@ -2486,7 +2527,7 @@ namespace HRMv2.Authorization
 
             public static List<SystemPermission> TreePermissions = new List<SystemPermission>()
             {
-                new SystemPermission{ Name =  PermissionNames.Home, MultiTenancySides = MultiTenancySides.Host , DisplayName = "Home" },
+                new SystemPermission{ Name =  PermissionNames.Home, MultiTenancySides = MultiTenancySides.Host , DisplayName = "Home"},
                 new SystemPermission { Name =  PermissionNames.Admin, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Admin",
                         Childrens = new List<SystemPermission>()
                         {
@@ -2713,12 +2754,28 @@ namespace HRMv2.Authorization
                                     new SystemPermission{ Name =  PermissionNames.Category_IssuedBy_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
                                 }
                             },
+
+                            new SystemPermission{ Name =  PermissionNames.Category_Chart ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Chart",
+                                Childrens =new List<SystemPermission>()
+                                {
+                                    new SystemPermission{ Name =  PermissionNames.Category_Chart_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                                    new SystemPermission{ Name =  PermissionNames.Category_Chart_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
+                                    new SystemPermission{ Name =  PermissionNames.Category_Chart_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
+                                    new SystemPermission{ Name =  PermissionNames.Category_Chart_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
+                                    new SystemPermission{ Name =  PermissionNames.Category_Chart_ActiveDeactive ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Active/Deactive Chart"},
+                                    new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Chart Detail",
+                                        Childrens =new List<SystemPermission>()
+                                        {
+                                            new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                                            new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
+                                            new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
+                                            new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
+                                            new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_ActiveDeactive ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Active/Deactive Chart Detail"},
+                                        } 
+                                    }
+                                }
+                            },
                         }
-
-
-
-
-
 
                    },
                 new SystemPermission{ Name =  PermissionNames.Punishment ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Punishment",

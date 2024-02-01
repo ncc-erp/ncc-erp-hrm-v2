@@ -20,6 +20,11 @@ import { CreateEditPunishmentTypeDialogComponent } from './punishment-types/crea
 import { CreateEditBankDialogComponent } from './banks/create-edit-bank-dialog/create-edit-bank-dialog.component';
 import { IssuedByComponent } from './issued-by/issued-by.component';
 import { CreateEditIssuedByDialogComponent } from './issued-by/create-edit-issued-by-dialog/create-edit-issued-by-dialog.component';
+import { ChartsComponent } from './charts/charts.component';
+import { ChartDetailsComponent } from './charts/chart-details/chart-details.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CreateEditChartDialogComponent } from './charts/create-edit-chart-dialog/create-edit-chart-dialog.component';
+import { CreateEditChartDetailDialogComponent } from './charts/chart-details/create-edit-chart-detail-dialog/create-edit-chart-detail-dialog.component';
 
 
 
@@ -42,12 +47,17 @@ import { CreateEditIssuedByDialogComponent } from './issued-by/create-edit-issue
     CreateEditPunishmentTypeDialogComponent,
     CreateEditBankDialogComponent,
     IssuedByComponent,
-    CreateEditIssuedByDialogComponent
+    CreateEditIssuedByDialogComponent,
+    ChartsComponent,
+    ChartDetailsComponent,
+    CreateEditChartDialogComponent,
+    CreateEditChartDetailDialogComponent,
   ],
   imports: [
     CommonModule,
     CategoriesRoutingModule,
-    SharedModule
+    SharedModule,
+    ReactiveFormsModule
   ]
 })
 export class CategoriesModule { }
