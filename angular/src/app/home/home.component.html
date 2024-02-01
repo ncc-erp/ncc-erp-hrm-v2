@@ -209,7 +209,7 @@
       </tbody>
     </table>
 
-    <div class="text-center" style="margin-top: 6px">
+    <div class="text-center" style="margin-top: 6px" *ngIf="listAllLineChartSelectBox.length != 0" >
       <div class="card mb-2">
         <div class="row mx-3" style="height: 50px; justify-content: center">
           <app-date-selector-homepage
@@ -219,7 +219,7 @@
             [defaultDateFilter]="searchWithDateTimeLineChart"
           >
           </app-date-selector-homepage>
-          <div class="col-2">
+          <div class="col-2" *ngIf="listAllLineChartSelectBox.length != 0">
             <chart-select
               (onSelect)="onLineChartSelect($event)"
               className="col-12"
@@ -254,49 +254,49 @@
           </div>
         </div>
       </div>
-      <div class="text-center" style="margin-top: 6px">
-        <div class="card mb-2">
-          <div class="row mx-3" style="height: 50px; justify-content: center">
-            <app-date-selector-homepage
-              style="display: inline-flex"
-              (onDateSelectorChange)="onDateChangeCircleChart($event)"
-              [type]="defaultDateFilterTypeCircleChart"
-              [defaultDateFilter]="searchWithDateTimeCircleChart"
-            >
-            </app-date-selector-homepage>
-            <div class="col-2">
-              <chart-select
-                (onSelect)="onCircleChartSelect($event)"
-                className="col-12"
-                [dropdownData]="listAllCircleChartSelectBox"
-                [label]="'Biểu đồ'"
-                [defaultValue]="listCircleChartId"
-                [placeholder]="'Biểu đồ'"
-              ></chart-select>
-            </div>
+    </div>
+    <div class="text-center" style="margin-top: 6px" *ngIf="listAllCircleChartSelectBox.length != 0">
+      <div class="card mb-2">
+        <div class="row mx-3" style="height: 50px; justify-content: center">
+          <app-date-selector-homepage
+            style="display: inline-flex"
+            (onDateSelectorChange)="onDateChangeCircleChart($event)"
+            [type]="defaultDateFilterTypeCircleChart"
+            [defaultDateFilter]="searchWithDateTimeCircleChart"
+          >
+          </app-date-selector-homepage>
+          <div class="col-2">
+            <chart-select
+              (onSelect)="onCircleChartSelect($event)"
+              className="col-12"
+              [dropdownData]="listAllCircleChartSelectBox"
+              [label]="'Biểu đồ'"
+              [defaultValue]="listCircleChartId"
+              [placeholder]="'Biểu đồ'"
+            ></chart-select>
           </div>
         </div>
-        <div class="row">
-          <div *ngIf="isCircleEmptyDisplay" class="col-12">
-            <div
-              class="card"
-              style="font-family: 'Source Sans Pro'; font-size: 20px"
-            >
-              <span>Không có biểu đồ nào được chọn</span>
-            </div>
-          </div>
+      </div>
+      <div class="row">
+        <div *ngIf="isCircleEmptyDisplay" class="col-12">
           <div
-            class="col-6"
-            *ngFor="let chart of listAllCircleChartDataDisplay; let i = index"
+            class="card"
+            style="font-family: 'Source Sans Pro'; font-size: 20px"
           >
-            <div class="card">
-              <app-circle-chart
-                [circlechartData]="chart"
-                [fromDate]="fromDateCircleChart"
-                [toDate]="toDateCircleChart"
-                (refreshData)="onRefreshCircleChart()"
-              ></app-circle-chart>
-            </div>
+            <span>Không có biểu đồ nào được chọn</span>
+          </div>
+        </div>
+        <div
+          class="col-6"
+          *ngFor="let chart of listAllCircleChartDataDisplay; let i = index"
+        >
+          <div class="card">
+            <app-circle-chart
+              [circlechartData]="chart"
+              [fromDate]="fromDateCircleChart"
+              [toDate]="toDateCircleChart"
+              (refreshData)="onRefreshCircleChart()"
+            ></app-circle-chart>
           </div>
         </div>
       </div>
