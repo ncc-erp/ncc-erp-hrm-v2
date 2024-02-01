@@ -526,99 +526,97 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
         }
 
         // ---------------------------PayslipDetailPunishment------------------
-        //[Fact]
-        //public async Task CreatePayslipDetailPunishment_HappyTest()
-        //{
-        //    const PayslipDetailType DEFAULT_PAYSLIP_DETAIL_TYPE = PayslipDetailType.Punishment;
-        //    const bool DEFAULT_IS_PROJECT_COST = false;
-        //    const int DEFAULT_MONEY_FACTOR = -1;
-        //    long countRawPayslipDetail = 0;
+        [Fact]
+        public async Task CreatePayslipDetailPunishment_HappyTest()
+        {
+            const PayslipDetailType DEFAULT_PAYSLIP_DETAIL_TYPE = PayslipDetailType.Punishment;
+            const bool DEFAULT_IS_PROJECT_COST = false;
+            const int DEFAULT_MONEY_FACTOR = -1;
+            long countRawPayslipDetail = 0;
 
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        countRawPayslipDetail = _workScopeRoot.GetAll<PayslipDetail>().ToList().Count;
-        //        CreatePayslipDetailDto input = new CreatePayslipDetailDto()
-        //        {
-        //            Id = 4,
-        //            PayslipId = 2,
-        //            Money = 100,
-        //            Note = "New PayslipDetail",
-        //            Type = PayslipDetailType.SalaryOT,
-        //            IsProjectCost = true
-        //        };
-        //        var result = await _payslipManager.CreatePayslipDetailPunishment(input);
+            WithUnitOfWork(async () =>
+            {
+                countRawPayslipDetail = _workScopeRoot.GetAll<PayslipDetail>().ToList().Count;
+                CreatePayslipDetailPunishmentDto input = new CreatePayslipDetailPunishmentDto()
+                {
+                    Id = 4,
+                    PayslipId = 2,
+                    Money = 100,
+                    Note = "New PayslipDetail",
+                    Type = PayslipDetailType.SalaryOT,
+                    IsProjectCost = true
+                };
+                var result = await _payslipManager.CreatePayslipDetailPunishmentAndCreateEmployeePunishment(input);
 
-        //        var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
+                var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
 
 
-        //        Assert.NotNull(check);
-        //        Assert.Equal(DEFAULT_PAYSLIP_DETAIL_TYPE, check.Result.Type);
-        //        Assert.Equal(DEFAULT_IS_PROJECT_COST, check.Result.IsProjectCost);
-        //        Assert.Equal(DEFAULT_MONEY_FACTOR * input.Money, check.Result.Money);
-        //    });
+                Assert.NotNull(check);
+                Assert.Equal(DEFAULT_PAYSLIP_DETAIL_TYPE, check.Result.Type);
+                Assert.Equal(DEFAULT_IS_PROJECT_COST, check.Result.IsProjectCost);
+                Assert.Equal(DEFAULT_MONEY_FACTOR * input.Money, check.Result.Money);
+            });
 
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        long newListCount = _workScopeRoot.GetAll<PayslipDetail>().ToList().Count;
-        //        Assert.Equal(countRawPayslipDetail + 1, newListCount);
-        //    });
-        //}
+            WithUnitOfWork(async () =>
+            {
+                long newListCount = _workScopeRoot.GetAll<PayslipDetail>().ToList().Count;
+                Assert.Equal(countRawPayslipDetail + 1, newListCount);
+            });
+        }
 
         //TODO: test case [throw error create duplicate,fail]
-        
-        //[Fact]
-        //public async Task CreatePayslipDetailPunishment__Should_Throw_Exception_Duplicate()
-        //{
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        CreatePayslipDetailDto input = new CreatePayslipDetailDto()
-        //        {
-        //            Id = 247458,
-        //            PayslipId = 2,
-        //            Money = 0,
-        //            Note = "New PayslipDetail",
-        //            Type = PayslipDetailType.SalaryOT,
-        //            IsProjectCost = true
-        //        };
 
-        //        var result = await Assert.ThrowsAsync<ArgumentException>(
-        //            async () => await _payslipManager.CreatePayslipDetailPunishment(input));
+        [Fact]
+        public async Task CreatePayslipDetailPunishment__Should_Throw_Exception_Duplicate()
+        {
+            WithUnitOfWork(async () =>
+            {
+                CreatePayslipDetailPunishmentDto input = new CreatePayslipDetailPunishmentDto()
+                {
+                    Id = 472,
+                    PayslipId = 2,
+                    Money = 0,
+                    Note = "New PayslipDetail",
+                    Type = PayslipDetailType.SalaryOT,
+                    IsProjectCost = true,
+                };
 
-        //        Assert.Equal($"An item with the same key has already been added. Key: {input.Id}", result.Message);
-        //    });
-        //}
+                var result = await Assert.ThrowsAsync<ArgumentException>(
+                    async () => await _payslipManager.CreatePayslipDetailPunishmentAndCreateEmployeePunishment(input));
 
-        //[Fact]
-        //public void UpdatePayslipDetailPunishment_HappyTest()
-        //{
-        //    const int DEFAULT_MONEY_FACTOR = -1;
+                Assert.Equal($"An item with the same key has already been added. Key: {input.Id}", result.Message);
+            });
+        }
 
-        //    UpdatePayslipDetailDto input = new UpdatePayslipDetailDto()
-        //    {
-        //        Id = 247458,
-        //        Money = 100,
-        //        Note = "update PayslipDetail"
-        //    };
+        [Fact]
+        public void UpdatePayslipDetailPunishment_HappyTest()
+        {
+            const int DEFAULT_MONEY_FACTOR = -1;
 
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        var result = await _payslipManager.UpdatePayslipDetailPunishment(input);
+            UpdatePayslipDetailDto input = new UpdatePayslipDetailDto()
+            {
+                Id = 247458,
+                Money = 100,
+                Note = "update PayslipDetail"
+            };
 
-        //        Assert.NotNull(result);
-        //        Assert.True(result.Money != 0);
-        //        Assert.True(result.Note.Length > 0);
-        //    });
+            WithUnitOfWork(async () =>
+            {
+                var result = await _payslipManager.UpdatePayslipDetailPunishment(input);
 
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
+                Assert.NotNull(result);
+            });
 
-        //        Assert.NotNull(check);
-        //        Assert.Equal(input.Id, check.Result.Id);
-        //        Assert.Equal(input.Note, check.Result.Note);
-        //        Assert.Equal(input.Money * DEFAULT_MONEY_FACTOR, check.Result.Money);
-        //    });
-        //}
+            WithUnitOfWork(async () =>
+            {
+                var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
+
+                Assert.NotNull(check);
+                Assert.Equal(input.Id, check.Result.Id);
+                Assert.Equal(input.Note, check.Result.Note);
+                Assert.Equal(input.Money * DEFAULT_MONEY_FACTOR, check.Result.Money);
+            });
+        }
 
         [Fact]
         public void UpdatePayslipDetailPunishment_Sould_Throw_ExceptionUserNotExits()
@@ -635,88 +633,86 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
                 var result = await Assert.ThrowsAsync<UserFriendlyException>(
                     async () => await _payslipManager.UpdatePayslipDetailPunishment(input));
                 
-                Assert.Equal($"Payslip detail with Id = {input.Id} is not exist", result.Message);
+                Assert.Equal($"Not found PayslipDetail Id = {input.Id}", result.Message);
             });
         }
 
-        // ---------------------------PayslipDetailBonus------------------
-        //[Fact]
-        //public async Task CreatePayslipDetailBonus_HappyTest()
-        //{
-        //    const PayslipDetailType DEFAULT_PAYSLIP_DETAIL_TYPE_BONUS = PayslipDetailType.Bonus;
-        //    const bool DEFAULT_IS_PROJECT_COST_BONUS = true;
+         //---------------------------PayslipDetailBonus------------------
+        [Fact]
+        public async Task CreatePayslipDetailBonus_HappyTest()
+        {
+            const PayslipDetailType DEFAULT_PAYSLIP_DETAIL_TYPE_BONUS = PayslipDetailType.Bonus;
+            const bool DEFAULT_IS_PROJECT_COST_BONUS = true;
 
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        CreatePayslipDetailDto input = new CreatePayslipDetailDto()
-        //        {
-        //            Id = 100,
-        //            PayslipId = 2,
-        //            Money = 100,
-        //            Note = "New PayslipDetail",
-        //            Type = PayslipDetailType.SalaryOT,
-        //            IsProjectCost= true
-        //        };
+            WithUnitOfWork(async () =>
+            {
+                CreatePayslipBonusDto input = new CreatePayslipBonusDto()
+                {
+                    Id = 100,
+                    PayslipId = 2,
+                    Money = 100,
+                    Note = "New PayslipDetail",
+                    Type = PayslipDetailType.SalaryOT,
+                    IsProjectCost = true
+                };
 
-        //        var result = await _payslipManager.CreatePayslipDetailBonus(input);
+                var result = await _payslipManager.CreatePayslipDetailBonus(input);
 
-        //        var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
-        //        Assert.NotNull(check);
-        //        Assert.Equal(input.Id, check.Result.Id);
-        //        Assert.Equal(input.Note, check.Result.Note);
-        //        Assert.Equal(DEFAULT_PAYSLIP_DETAIL_TYPE_BONUS, check.Result.Type);
-        //        Assert.Equal(DEFAULT_IS_PROJECT_COST_BONUS, check.Result.IsProjectCost);
-        //    });
-        //}
+                var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
+                Assert.NotNull(check);
+                Assert.Equal(input.Id, check.Result.Id);
+                Assert.Equal(input.Note, check.Result.Note);
+                Assert.Equal(DEFAULT_PAYSLIP_DETAIL_TYPE_BONUS, check.Result.Type);
+                Assert.Equal(DEFAULT_IS_PROJECT_COST_BONUS, check.Result.IsProjectCost);
+            });
+        }
 
-        //[Fact]
-        //public async Task CreatePayslipDetailBonus_ExceptionDuplidate()
-        //{
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        CreatePayslipDetailDto input = new CreatePayslipDetailDto()
-        //        {
-        //            Id = 2,
-        //            PayslipId = 2,
-        //            Money = 100,
-        //            Note = "New PayslipDetail",
-        //            Type = PayslipDetailType.SalaryOT,
-        //            IsProjectCost = true
-        //        };
+        [Fact]
+        public async Task CreatePayslipDetailBonus_ExceptionDuplidate()
+        {
+            WithUnitOfWork(async () =>
+            {
+                CreatePayslipBonusDto input = new CreatePayslipBonusDto()
+                {
+                    Id = 2,
+                    PayslipId = 2,
+                    Money = 100,
+                    Note = "New PayslipDetail",
+                    Type = PayslipDetailType.SalaryOT,
+                    IsProjectCost = true,
+                };
 
-        //        var result = await Assert.ThrowsAsync<UserFriendlyException>(
-        //            async () => await _payslipManager.CreatePayslipDetailBonus(input));
+                var result = await Assert.ThrowsAsync<UserFriendlyException>(
+                    async () => await _payslipManager.CreatePayslipDetailBonus(input));
 
-        //        Assert.Equal($"An item with the same key has already been added. Key: {input.Id}", result.Message);
-        //    });
-        //}
+                Assert.Equal($"An item with the same key has already been added. Key: {input.Id}", result.Message);
+            });
+        }
 
-        //[Fact]
-        //public void UpdatePayslipDetailBonus_HappyTest()
-        //{
-        //    UpdatePayslipDetailDto input = new UpdatePayslipDetailDto()
-        //    {
-        //        Id = 247458,
-        //        Money = 100,
-        //        Note = "update PayslipDetail"
-        //    };
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        var result = await _payslipManager.UpdatePayslipDetailBonus(input);
+        [Fact]
+        public void UpdatePayslipDetailBonus_HappyTest()
+        {
+            UpdatePayslipDetailDto input = new UpdatePayslipDetailDto()
+            {
+                Id = 247458,
+                Money = 100,
+                Note = "update PayslipDetail"
+            };
+            WithUnitOfWork(async () =>
+            {
+                var result = await _payslipManager.UpdatePayslipDetailBonus(input);
 
-        //        Assert.NotNull(result);
-        //        Assert.True(result.Money != 0);
-        //        Assert.True(result.Note.Length > 0);
-        //    });
+                Assert.NotNull(result);
+            });
 
-        //    WithUnitOfWork(async () =>
-        //    {
-        //        var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
-        //        Assert.NotNull(check);
-        //        Assert.Equal(input.Id, check.Result.Id);
-        //        Assert.Equal(input.Note, check.Result.Note);
-        //    });
-        //}
+            WithUnitOfWork(async () =>
+            {
+                var check = _workScopeRoot.GetAsync<PayslipDetail>(input.Id);
+                Assert.NotNull(check);
+                Assert.Equal(input.Id, check.Result.Id);
+                Assert.Equal(input.Note, check.Result.Note);
+            });
+        }
 
         [Fact]
         public void UpdatePayslipDetailBonus_ExceptionNotExits()
@@ -732,7 +728,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
 
                 var result = await Assert.ThrowsAsync<UserFriendlyException>(
                     async () => await _payslipManager.UpdatePayslipDetailBonus(input));
-                Assert.Equal($"Payslip detail with Id = {input.Id} is not exist", result.Message);
+                Assert.Equal($"Not found PayslipDetail Id = {input.Id}", result.Message);
             });
         }
 
@@ -771,7 +767,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
                 var result = await Assert.ThrowsAsync<UserFriendlyException>(
                     async () => await _payslipManager.DeletePayslipDetail(inputId));
 
-                Assert.Equal($"Payslip detail with Id = {inputId} is not exist", result.Message);
+                Assert.Equal($"Not found PayslipDetail Id = {inputId}", result.Message);
             });
         }
 
@@ -886,7 +882,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
                 Assert.True(listSumaryInfoDto.Count > 2);
                 SumaryInfoDto firtSumaryInfoDto = listSumaryInfoDto.First();
                 SumaryInfoDto lastSumaryInfoDto = listSumaryInfoDto.Last();
-                Assert.Equal("Tổng chi (bắn sang Finfast)  = Tổng lương + Phạt không thu được", firtSumaryInfoDto.Name);
+                Assert.Equal("Tổng chi (bắn sang Finfast)  = Tổng lương - Phạt không thu được", firtSumaryInfoDto.Name);
                 Assert.Equal("Phạt không thu được", lastSumaryInfoDto.Name);
                 Assert.Equal(list1.Count + list2.Count + 4, listSumaryInfoDto.Count);
             });
@@ -2279,9 +2275,9 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[1].Money);
             Assert.Equal(30000, punishmentEmployees[2].Money);
 
-            Assert.Equal("Punishment 1 (voucher: 60k -> 40k)", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 40k -> 10k)", punishmentEmployees[1].Note);
-            Assert.Equal("Punishment 3 (voucher: 10k -> 0)", punishmentEmployees[2].Note);
+            Assert.Equal("Punishment 1 (20k voucher: 60k -> 40k)", punishmentEmployees[0].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 40k -> 10k)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 3 (10k voucher: 10k -> 0)", punishmentEmployees[2].Note);
         }
 
         /// <summary>
@@ -2309,9 +2305,9 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[1].Money);
             Assert.Equal(0, punishmentEmployees[2].Money);
 
-            Assert.Equal("Punishment 1 (voucher: 100k -> 80k)", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 80k -> 50k)", punishmentEmployees[1].Note);
-            Assert.Equal("Punishment 3 (voucher: 50k -> 10k)", punishmentEmployees[2].Note);
+            Assert.Equal("Punishment 1 (20k voucher: 100k -> 80k)", punishmentEmployees[0].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 80k -> 50k)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 3 (40k voucher: 50k -> 10k)", punishmentEmployees[2].Note);
         }
 
         /// <summary>
@@ -2339,8 +2335,8 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[1].Money);
             Assert.Equal(40000, punishmentEmployees[2].Money);
 
-            Assert.Equal("Punishment 1 (voucher: 50k -> 30k)", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 30k -> 0)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 1 (20k voucher: 50k -> 30k)", punishmentEmployees[0].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 30k -> 0)", punishmentEmployees[1].Note);
             Assert.Equal("Punishment 3", punishmentEmployees[2].Note);
         }
 
@@ -2370,8 +2366,8 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
             Assert.Equal(0, punishmentEmployees[2].Money);
 
             Assert.Equal("Punishment 1", punishmentEmployees[0].Note);
-            Assert.Equal("Punishment 2 (voucher: 100k -> 70k)", punishmentEmployees[1].Note);
-            Assert.Equal("Punishment 3 (voucher: 70k -> 30k)", punishmentEmployees[2].Note);
+            Assert.Equal("Punishment 2 (30k voucher: 100k -> 70k)", punishmentEmployees[1].Note);
+            Assert.Equal("Punishment 3 (40k voucher: 70k -> 30k)", punishmentEmployees[2].Note);
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
-﻿using HRMv2.Constants.Enum;
+﻿
 using HRMv2.Manager.Home.Dtos;
+
 using HRMv2.Manager.WorkingHistories;
 using HRMv2.Manager.WorkingHistories.Dtos;
 using HRMv2.NccCore;
@@ -7,14 +8,20 @@ using NccCore.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using static HRMv2.Constants.Enum.HRMEnum;
+
 
 namespace HRMv2.Manager.Home
 {
     public class HomePageManager : BaseManager
     {
         protected readonly WorkingHistoryManager _workingHistoryManager;
-        public HomePageManager(IWorkScope workScope, WorkingHistoryManager workingHistoryManager) : base(workScope)
+
+        public HomePageManager(
+            IWorkScope workScope,
+            WorkingHistoryManager workingHistoryManager
+            ) : base(workScope)
         {
             _workingHistoryManager = workingHistoryManager;
         }
@@ -24,15 +31,18 @@ namespace HRMv2.Manager.Home
             List<LastEmployeeWorkingHistoryDto> empWorkingHistories = _workingHistoryManager.GetLastEmployeeWorkingHistories(startDate, endDate);
 
             var resultList = new List<HomepageEmployeeStatisticDto>();
-            var cty = GetEmployeeStatisticDto(empWorkingHistories, null, "Toàn công ty", startDate);
-            resultList.Add(cty);
+            var wholeCompanyEmployees = GetEmployeeStatisticDto(empWorkingHistories, null, "Toàn công ty", startDate);
+            resultList.Add(wholeCompanyEmployees);
 
             var branchList = empWorkingHistories.Select(s => new { s.BranchInfo.Name, s.BranchId }).Distinct().ToList();
+
             branchList.ForEach(branch =>
             {
                 var statisticOfBranch = GetEmployeeStatisticDto(empWorkingHistories, branch.BranchId, branch.Name, startDate);
+
                 resultList.Add(statisticOfBranch);
             });
+
             return resultList.OrderBy(i => i.BranchName != "Toàn công ty").ThenBy(x => x.BranchName).ToList();
 
         }
@@ -56,7 +66,7 @@ namespace HRMv2.Manager.Home
             var item = new HomepageEmployeeStatisticDto()
             {
                 OnboardEmployees = histories.Where(s => s.WorkingHistories.Any(x => x.Status == EmployeeStatus.Working && x.DateAt >= startDate.Date)).ToList(),
-                
+
                 QuitEmployees = histories.Where(s => s.WorkingHistories.Any(x => x.Status == EmployeeStatus.Quit && x.DateAt >= startDate.Date)).ToList(),
 
                 PausingEmployees = histories.Where(s => s.WorkingHistories.Any(x => x.Status == EmployeeStatus.Pausing && x.DateAt >= startDate.Date)).ToList(),
@@ -78,6 +88,6 @@ namespace HRMv2.Manager.Home
 
             return item;
         }
-        
+
     }
 }

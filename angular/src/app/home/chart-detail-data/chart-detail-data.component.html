@@ -1,0 +1,170 @@
+<div class="card-header move-cursor" cdkDrag cdkDragRootElement=".modal-content, .cdk-overlay-pane" cdkDragHandle>
+    <div class="d-flex justify-content-between">
+        <div class="col-9 p-0 d-flex align-items-center">
+            <span style="font-size: 20px;">
+                <ng-container>
+                    <span class="truncate">{{this.data.chartData.name}}</span>
+                    <i class="fas fa-chevron-right"></i>
+                    <span class="truncate">{{this.chartDetailName}}</span>
+                </ng-container>
+            </span>
+            <div class="d-inline" style="font-size: 20px;">
+                <span class="badge bg-primary ml-2">{{startDate | DMYDateFormat}}
+                    - {{endDate | DMYDateFormat}}</span>
+                <button class="viewBtn btn btn-outline-primary btn-sm ml-2" (click)="onViewChartSetting()">
+                    <mat-icon style="font-size: 20px; vertical-align: middle; height: fit-content;">settings</mat-icon>
+                </button>
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+            <i class="fas fa-times pointer" (click)="onClose()"></i>
+        </div>
+        
+    </div>
+</div>
+<div class="card-body" id="chartDetailData">
+    <div class="table-responsive mt-3">
+        <div class="fixTableHead">
+            <table class="table table-striped table-hover" [busy]="isLoading">
+                <thead>
+                    <tr>
+                        <th class="text-center align-middle stt" (click)="sortData('employeeId')" style="cursor: pointer;">
+                            {{ "Id" }}
+                            <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'employeeId'"></i>
+                            <i *ngIf="sortColumn !== 'employeeId'" class="fas fa-sort"></i>
+                        </th>
+                        <th class="text-center align-middle">
+                            <div class="row">
+                                <div class="col-3 text-center align-middle" (click)="sortData('email')" style="cursor: pointer; display: flex; flex-direction: column;">
+                                    {{ "Employee" }}
+                                    <i class="icon" [ngClass]="iconSort" *ngIf="sortColumn === 'email'"></i>
+                                    <i *ngIf="sortColumn !== 'email'" class="fas fa-sort"></i>
+                                </div>
+                                <div class="col-9 input-group">
+                                    <div class="input-group-prepend">
+                                        <button (click)="onSearchEnter()" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    </div>
+                                    <input placeholder="Search by Email Address" id="IdOrDes" type="text" class="form-control"[(ngModel)]="searchText"
+                                    (keyup.enter)="onSearchEnter()">
+                                </div>
+                            </div>
+                        </th>
+                        <th *ngIf="!isEmployeeChart" class="text-center align-middle col-1 pad-5">
+                            <p class="m-0">Money</p>
+                            <p class="text-right m-0">{{totalMoney | moneyFormat}}</p>
+                        </th>
+                        <th class="text-center align-middle col-7">Details By Month</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    <tr *ngFor="let employee of sortedDetail | paginate: { itemsPerPage: itemPerPage, currentPage: currentPage }">
+                        <td class="text-center">{{ employee.employeeId }}</td>
+                        <td>
+                            <app-user-data-for-chart-detail [userData]="{
+                                id: employee.employeeId,
+                                fullName: employee.fullName,
+                                avatarFullPath: employee.avatarFullPath,
+                                sex: employee.gender,
+                                email: employee.email
+                            }" 
+                            [isAllowRouting]="isAllowRoutingDetail()" [isAllowAvatarRouting]="isAllowRoutingDetail()">
+                            </app-user-data-for-chart-detail>
+                        </td>
+                        <td *ngIf="!isEmployeeChart" class="text-right">
+                            <b>
+                                {{employee.totalMoney | moneyFormat}}
+                            </b>
+                        </td>
+                        <td>
+                            <div *ngIf="isEmployeeChart" (click)="togglePreview()">
+                                <p [ngClass]="isPreview == true ? 'preReview' : 'review'"
+                                    title="Cuộn chuột hoặc Click để mở rộng nội dung"
+                                    name="monthlyStatus">
+                                    <ng-container class="p-2">
+                                        <div *ngFor="let detail of employee.monthlyEmployeeDetails">
+                                            <div class="ml-2 text-left">
+                                                <span class="mr-1 badge text-white" [ngStyle]="{'background': detail.branchInfo?.color}">
+                                                    {{detail.branchInfo?.name}}</span>
+                                                <span class="badge text-white"  
+                                                    [ngStyle]="{'background': detail.userTypeInfo?.color}">{{detail.userTypeInfo?.name}}</span>
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.levelInfo?.color}">{{detail.levelInfo?.name}}
+                                                </span>
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.jobPositionInfo?.color}">{{detail.jobPositionInfo?.name}}
+                                                </span>
+                                                <span class="mr-1" innerHtml="{{detail.teamInfos | team}}"></span>
+                                                <span [ngClass]="getMonthlyStatusStyle(detail.monthlyStatus, true)">
+                                                    {{getMonthlyStatus(detail.monthlyStatus)}}
+                                                </span>
+                                                {{detail.statusMonth | MyDateFormat}} 
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </p>
+                            </div>
+                            <div *ngIf="!isEmployeeChart" (click)="togglePreview()">
+                                <p [ngClass]="isPreview == true ? 'preReview' : 'review'"
+                                    title="Cuộn chuột hoặc Click để mở rộng nội dung"
+                                    name="monthlyMoney">
+                                    <ng-container class="p-2">
+                                        <div *ngFor="let detail of employee.monthlyEmployeeDetails">
+                                            <div class="ml-2 text-left">
+                                                <span class="mr-1 badge text-white" [ngStyle]="{'background': detail.branchInfo?.color}">
+                                                    {{detail.branchInfo?.name}}</span>
+                                                <span class="badge text-white"  
+                                                    [ngStyle]="{'background': detail.userTypeInfo?.color}">{{detail.userTypeInfo?.name}}</span>
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.levelInfo?.color}">{{detail.levelInfo?.name}}
+                                                </span>
+                                                <span class="ml-1 badge text-white"
+                                                    [ngStyle]="{'background': detail.jobPositionInfo?.color}">{{detail.jobPositionInfo?.name}}
+                                                </span>
+                                                <span class="mr-1" innerHtml="{{detail.teamInfos | team}}"></span>
+                                                <b>
+                                                    {{detail.money | moneyFormat}}
+                                                </b>
+                                                {{detail.payrollMonth | MyDateFormat}} 
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between">
+        <div class="col-sm-3 col-3 text-sm-left text-center d-flex align-items-center">
+            <button class="btn btn-primary" (click)="refresh()">
+              <i class="fas fa-redo-alt"></i>
+            </button>
+            <mat-form-field class="pageSize" style=" width: 40%; margin-left: 20px;">
+            <mat-label>Number items</mat-label>
+              <mat-select [(ngModel)]="pageSizeType" (ngModelChange)="changePageSize()">
+                <mat-option [value]="5"> 5 </mat-option>
+                <mat-option [value]="10"> 10 </mat-option>
+                <mat-option [value]="20"> 20 </mat-option>
+                <mat-option [value]="50"> 50 </mat-option>
+                <mat-option [value]="100"> 100 </mat-option>
+                <mat-option [value]="200"> 200 </mat-option>
+                <mat-option [value]="500"> 500 </mat-option>
+                <mat-option [value]="1000"> 1000 </mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-sm-6 col-6 d-flex justify-content-center align-items-center">
+            <pagination-controls 
+                [(maxSize)]="itemPerPage" 
+                (pageChange)="currentPage = $event"
+                previousLabel=""
+                nextLabel="">
+            </pagination-controls>
+        </div>
+        <div class="col-sm-3 col-3 d-flex justify-content-end align-items-center">
+            <p class="mb-0 ">Total: {{ sortedDetail.length }}</p>
+        </div>
+    </div>
+</div>

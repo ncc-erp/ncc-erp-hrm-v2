@@ -5,7 +5,7 @@ import {EmployeeTeamDto} from '@shared/dto/user-infoDto'
 })
 export class TeamPipe implements PipeTransform{
     transform(value: EmployeeTeamDto[], args: []) {
-        return value.map(team => `<span class="badge badge-team mr-2 text-white">${team.teamName}</span>`).join("")
+        return value.map(team => `<span class="badge badge-team ml-1 text-white">${team.teamName}</span>`).join("")
     }
 }
 

@@ -42,4 +42,12 @@ namespace HRMv2.Manager.Histories.Dto
         public string Note { get; set; }
         public DateTime DateAt { get; set; }
     }
+
+    public class WorkingHistoryDto
+    {
+        public long EmployeeId { get; set; }
+        public EmployeeStatus Status { get; set; }       
+        public DateTime DateAt { get; set; }
+       
+    }
 }

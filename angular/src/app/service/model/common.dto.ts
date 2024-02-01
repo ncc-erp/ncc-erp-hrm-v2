@@ -28,3 +28,8 @@ export interface filterDataDto {
     key: string,
     value: any
 }
+
+export class KeyValueDto {
+    key: string;
+    value: number;
+}

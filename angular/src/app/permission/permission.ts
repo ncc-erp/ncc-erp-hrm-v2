@@ -118,6 +118,22 @@ export const PERMISSIONS_CONSTANT = {
     Category_IssuedBy_Edit: 'Category.IssuedBy.Edit',
     Category_IssuedBy_Delete: 'Category.IssuedBy.Delete',
 
+    //Chart
+    Category_Chart: 'Category.Chart',
+    Category_Chart_View: 'Category.Chart.View',
+    Category_Chart_Create: 'Category.Chart.Create',
+    Category_Chart_Edit: 'Category.Chart.Edit',
+    Category_Chart_Delete: 'Category.Chart.Delete',
+    Category_Chart_ActiveDeactive: 'Category.Chart.ActiveDeactive',
+
+    //Chart Detail
+    Category_Chart_ChartDetail: 'Category.Chart.ChartDetail',
+    Category_Chart_ChartDetail_View: 'Category.Chart.ChartDetail.View',
+    Category_Chart_ChartDetail_Create: 'Category.Chart.ChartDetail.Create',
+    Category_Chart_ChartDetail_Edit: 'Category.Chart.ChartDetail.Edit',
+    Category_Chart_ChartDetail_Delete: 'Category.Chart.ChartDetail.Delete',
+    Category_Chart_ChartDetail_ActiveDeactive: 'Category.Chart.ChartDetail.ActiveDeactive',
+
     //Punishment
     Punishment: 'Punishment',
     Punishment_View: 'Punishment.View',

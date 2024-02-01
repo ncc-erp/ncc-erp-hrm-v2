@@ -1,4 +1,5 @@
-﻿using HRMv2.Manager.Home;
+﻿
+using HRMv2.Manager.Home;
 using HRMv2.Manager.WorkingHistories;
 using HRMv2.NccCore;
 using Moq;
