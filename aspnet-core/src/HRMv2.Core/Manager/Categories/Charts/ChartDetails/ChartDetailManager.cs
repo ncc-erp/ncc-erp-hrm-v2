@@ -452,9 +452,9 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                                         Money = pd.Money,
                                         Type = pd.Type,
                                     }).ToList(),
-                    Money = detail.ListPayslipDetailType.Any()
+                    Money = Math.Round(detail.ListPayslipDetailType.Any()
                     ? p.PayslipDetails.Where(d => detail.ListPayslipDetailType.Contains(d.Type)).Sum(d => Math.Abs(d.Money))
-                    : p.Salary
+                    : p.Salary)
                 })
                 .Where(p => p.Money != 0)
                 .ToList();

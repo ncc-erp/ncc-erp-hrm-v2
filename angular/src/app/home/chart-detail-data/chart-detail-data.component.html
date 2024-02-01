@@ -17,7 +17,6 @@
             </div>
         </div>
         <div class="d-flex align-items-center">
-            <span *ngIf="!isEmployeeChart" class="total mr-4"><strong>Tổng: {{totalMoney | moneyFormat}}</strong></span>
             <i class="fas fa-times pointer" (click)="onClose()"></i>
         </div>
         
@@ -50,7 +49,10 @@
                                 </div>
                             </div>
                         </th>
-                        <th *ngIf="!isEmployeeChart" class="text-center align-middle col-1">Total Money</th>
+                        <th *ngIf="!isEmployeeChart" class="text-center align-middle col-1 pad-5">
+                            <p class="m-0">Money</p>
+                            <p class="text-right m-0">{{totalMoney | moneyFormat}}</p>
+                        </th>
                         <th class="text-center align-middle col-7">Details By Month</th>
                     </tr>
                 </thead>

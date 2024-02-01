@@ -130,3 +130,7 @@
 ::ng-deep .pageSize .mat-form-field-label-wrapper {
     top: -0.84375em;
 }
+
+.pad-5 {
+    padding: 5px;
+}
