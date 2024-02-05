@@ -1,5 +1,6 @@
 import { AdminRoutingModule } from './admin-routing.module';
 import { SharedModule } from './../../../shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ChangePasswordComponent } from './users/change-password/change-password.component';
 import { UsersComponent } from './users/users.component';
 import { EditRoleDialogComponent } from './roles/edit-role/edit-role-dialog.component';
@@ -47,12 +48,12 @@ import { RetryBackgroundJobComponent } from './background-jobs/retry-background-
     EditUserRoleComponent,
     BackgroundJobsComponent,
     AuditLogsComponent,
-    RetryBackgroundJobComponent
+    RetryBackgroundJobComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
-    AdminRoutingModule
+    AdminRoutingModule,
   ]
 })
 export class AdminModule { }

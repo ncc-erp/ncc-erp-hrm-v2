@@ -74,6 +74,37 @@ export class AppConsts {
         },
     }
 
+    static readonly userMonthlyStatus = {
+        1: {
+            name: "Working",
+            class: "badge badge-pill bg-success"
+        },
+        2: {
+            name: "Pausing",
+            class: "badge badge-pill bg-warning"
+        },
+        3: {
+            name: "Quited",
+            class: "badge badge-pill bg-secondary"
+        },
+        4: {
+            name: "Maternity Leave",
+            class: "badge badge-pill bg-primary"
+        },
+        5: {
+            name: "Onboard",
+            class: "badge badge-pill bg-info"
+        },
+        6: {
+            name: "On Off In Month",
+            class: "badge badge-pill bg-danger"
+        },
+        7: {
+            name: "Back To Work",
+            class: "badge badge-pill bg-info"
+        },
+    }
+
     static readonly userLevel =
         {
             0: {
@@ -183,6 +214,39 @@ export class AppConsts {
         "Plan pause": "badge badge-pill statusPendingCEO",
 
     }
+
+    static readonly ChartType = {
+        0: {
+            name: "Line",
+            class: "badge badge-success"
+        },
+        1: {
+            name: "Circle",
+            class: "badge badge-warning"
+        }
+    }
+
+    static readonly ChartDataType = {
+        0: {
+            name: "Employee",
+            class: "badge badge-success"
+        },
+        1: {
+            name: "Salary",
+            class: "badge badge-warning"
+        }
+    }
+
+    static readonly Status = {
+        1: {
+            name: "Active",
+            class: "badge badge-success"
+        },
+        0: {
+            name: "Inactive",
+            class: "badge badge-error"
+        }
+    }
 }
 
 export const BenefitType =
@@ -209,4 +273,17 @@ export const DATE_TIME_OPTIONS = {
     "Year": 5,
     "Custom Time": 6
 }
-
+export enum DATE_TIME_OPTIONS_HOME {
+    MONTH = "Month",
+    QUARTER = "Quarter",
+    HALF_YEAR = "Half-year",
+    YEAR = "Year",
+    CUSTOM = "Custom",
+}
+export enum DateSelectorHomeEnum {
+    MONTH = "Month",
+    QUARTER = "Quarter",
+    HALF_YEAR = "Half-year",
+    YEAR = "Year",
+    CUSTOM = "Custom",
+  }

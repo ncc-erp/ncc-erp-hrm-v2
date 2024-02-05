@@ -1915,6 +1915,143 @@ namespace HRMv2.Migrations
                     b.ToTable("Branches");
                 });
 
+            modelBuilder.Entity("HRMv2.Entities.Chart", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("ChartDataType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChartType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShareToRoleIds")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShareToUserIds")
+                        .HasColumnType("text");
+
+                    b.Property<int>("TimePeriodType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorUserId");
+
+                    b.HasIndex("LastModifierUserId");
+
+                    b.ToTable("Charts");
+                });
+
+            modelBuilder.Entity("HRMv2.Entities.ChartDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("BranchIds")
+                        .HasColumnType("text");
+
+                    b.Property<long>("ChartId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JobPositionIds")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("LevelIds")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PayslipDetailTypes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TeamIds")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserTypes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WorkingStatuses")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChartId");
+
+                    b.HasIndex("CreatorUserId");
+
+                    b.HasIndex("LastModifierUserId");
+
+                    b.ToTable("ChartDetails");
+                });
+
             modelBuilder.Entity("HRMv2.Entities.Debt", b =>
                 {
                     b.Property<long>("Id")
@@ -2354,6 +2491,8 @@ namespace HRMv2.Migrations
                     b.HasIndex("BranchId");
 
                     b.HasIndex("CreatorUserId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("LastModifierUserId");
 
@@ -4238,6 +4377,44 @@ namespace HRMv2.Migrations
                     b.Navigation("LastModifierUser");
                 });
 
+            modelBuilder.Entity("HRMv2.Entities.Chart", b =>
+                {
+                    b.HasOne("HRMv2.Authorization.Users.User", "CreatorUser")
+                        .WithMany()
+                        .HasForeignKey("CreatorUserId");
+
+                    b.HasOne("HRMv2.Authorization.Users.User", "LastModifierUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifierUserId");
+
+                    b.Navigation("CreatorUser");
+
+                    b.Navigation("LastModifierUser");
+                });
+
+            modelBuilder.Entity("HRMv2.Entities.ChartDetail", b =>
+                {
+                    b.HasOne("HRMv2.Entities.Chart", "Chart")
+                        .WithMany("ChartDetails")
+                        .HasForeignKey("ChartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HRMv2.Authorization.Users.User", "CreatorUser")
+                        .WithMany()
+                        .HasForeignKey("CreatorUserId");
+
+                    b.HasOne("HRMv2.Authorization.Users.User", "LastModifierUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifierUserId");
+
+                    b.Navigation("Chart");
+
+                    b.Navigation("CreatorUser");
+
+                    b.Navigation("LastModifierUser");
+                });
+
             modelBuilder.Entity("HRMv2.Entities.Debt", b =>
                 {
                     b.HasOne("HRMv2.Authorization.Users.User", "CreatorUser")
@@ -4379,6 +4556,12 @@ namespace HRMv2.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorUserId");
 
+                    b.HasOne("HRMv2.Entities.Employee", null)
+                        .WithMany("BranchHistories")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HRMv2.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
@@ -4474,7 +4657,7 @@ namespace HRMv2.Migrations
                         .HasForeignKey("CreatorUserId");
 
                     b.HasOne("HRMv2.Entities.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("WorkingHistories")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4644,7 +4827,7 @@ namespace HRMv2.Migrations
                         .HasForeignKey("LastModifierUserId");
 
                     b.HasOne("HRMv2.Entities.Payslip", "Payslip")
-                        .WithMany()
+                        .WithMany("PayslipTeams")
                         .HasForeignKey("PayslipId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -5012,11 +5195,25 @@ namespace HRMv2.Migrations
                     b.Navigation("Tokens");
                 });
 
+            modelBuilder.Entity("HRMv2.Entities.Chart", b =>
+                {
+                    b.Navigation("ChartDetails");
+                });
+
             modelBuilder.Entity("HRMv2.Entities.Employee", b =>
                 {
+                    b.Navigation("BranchHistories");
+
                     b.Navigation("EmployeeSkills");
 
                     b.Navigation("EmployeeTeams");
+
+                    b.Navigation("WorkingHistories");
+                });
+
+            modelBuilder.Entity("HRMv2.Entities.Payslip", b =>
+                {
+                    b.Navigation("PayslipTeams");
                 });
 #pragma warning restore 612, 618
         }

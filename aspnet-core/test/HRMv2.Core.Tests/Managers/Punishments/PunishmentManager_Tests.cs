@@ -44,6 +44,7 @@ using static HRMv2.Constants.Enum.HRMEnum;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using SortDirection = NccCore.Paging.SortDirection;
+using Microsoft.Extensions.Logging;
 
 namespace HRMv2.Core.Tests.Managers.Punishments
 {
@@ -59,6 +60,7 @@ namespace HRMv2.Core.Tests.Managers.Punishments
             var moqHttpClient = new Mock<HttpClient>();
             var moqAbpSession = new Mock<IAbpSession>();
             var moqIocResolver = new Mock<IIocResolver>();
+            var _logger = Resolve<ILogger<EmployeeManager>>();
 
             var configOptions = new Dictionary<string, string>
             {
@@ -142,7 +144,7 @@ namespace HRMv2.Core.Tests.Managers.Punishments
             var moqUserTypeManager = new Mock<UserTypeManager>(_workScope);
 
             /* == 6. EMPLOYEE MANAGER */
-            var moqEmployeeManager = new Mock<EmployeeManager>(moqUploadFileService.Object, moqContractManager.Object, moqHistoryManager.Object, moqProjectService.Object, moqTimesheetWebService.Object, moqIMSWebService.Object, moqTalentWebService.Object, _workScope, moqSalaryRequestManager.Object, moqBenefitManager.Object, moqUserTypeManager.Object, moqChangeEmployeeWorkingStatusManager.Object, moqIBackgroundJobManager.Object, moqBackgroundJobInfo.Object);
+            var moqEmployeeManager = new Mock<EmployeeManager>(moqUploadFileService.Object, moqContractManager.Object, moqHistoryManager.Object, moqProjectService.Object, moqTimesheetWebService.Object, moqIMSWebService.Object, moqTalentWebService.Object, _workScope, moqSalaryRequestManager.Object, moqBenefitManager.Object, moqUserTypeManager.Object, moqChangeEmployeeWorkingStatusManager.Object, moqIBackgroundJobManager.Object, moqBackgroundJobInfo.Object, _logger);
 
             /* == 7. PUNISHMENT MANAGER */
             _punishmentManager = new PunishmentManager(_workScope, moqEmployeeManager.Object);
@@ -854,7 +856,7 @@ namespace HRMv2.Core.Tests.Managers.Punishments
             {
                 List<DateTime> result = _punishmentManager.GetListDate();
 
-                Assert.Equal(5, result.Count);
+                Assert.Equal(35, result.Count);
             });
         }
 

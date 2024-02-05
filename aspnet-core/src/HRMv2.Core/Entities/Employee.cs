@@ -68,5 +68,8 @@ namespace HRMv2.Entities
 
         public virtual ICollection<EmployeeSkill> EmployeeSkills { get; set; }
         public virtual ICollection<EmployeeTeam> EmployeeTeams { get; set; }
+        public virtual ICollection<EmployeeBranchHistory> BranchHistories { get; set; }
+        public virtual ICollection<EmployeeWorkingHistory> WorkingHistories { get; set; }
+
     }
 }

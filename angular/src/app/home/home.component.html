@@ -1,21 +1,24 @@
 ﻿<div [@routerTransition] class="bg-white page-wrapper">
   <section class="content-header">
-    <div class="container-fluid ">
-      <div class="row ">
-        <div class="col-3 ">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-3">
           <h1 class="title">{{ "Số lượng nhân viên" | localize }}</h1>
         </div>
-        <div class="col-5 ">
-          <app-home-filter (onDateSelectorChange)="onDateSelectorChange($event)" [fromDate]="filterFromDate"
-            [toDate]="filterToDate">
+        <div class="col-5">
+          <app-home-filter
+            (onDateSelectorChange)="onDateSelectorChange($event)"
+            [fromDate]="filterFromDate"
+            [toDate]="filterToDate"
+          >
           </app-home-filter>
         </div>
       </div>
     </div>
   </section>
 
-  <div class=" m-2 p-2">
-    <table class="w-100 main-table" [style]="{minHeight: '80vh'}">
+  <div class="m-2 p-2">
+    <table class="w-100 main-table" [style]="{ minHeight: '80vh' }">
       <thead class>
         <tr>
           <th rowspan="2" class="dark-th">Branch</th>
@@ -24,16 +27,21 @@
           <th rowspan="2" class="yellow-th">Staff</th>
           <th rowspan="2" class="yellow-th">CTV</th>
           <th rowspan="2" class="yellow-th">T.Việc</th>
-          <th colspan="3" class="green-th" [style]="{height:'50px'}">Onboard/back to work</th>
+          <th colspan="3" class="green-th" [style]="{ height: '50px' }">
+            Onboard/back to work
+          </th>
           <th colspan="3" class="gray-th">Quit</th>
-          <th rowspan="2" class="purple-th">Onboard and quit
+          <th rowspan="2" class="purple-th">
+            Onboard and quit
             <div>in timespan</div>
           </th>
-          <th class="purple-th" rowspan="2" style="width: 90px;">Pausing</th>
-          <th class="purple-th" rowspan="2" style="width: 90px;">Maternity leave</th>
+          <th class="purple-th" rowspan="2" style="width: 90px">Pausing</th>
+          <th class="purple-th" rowspan="2" style="width: 90px">
+            Maternity leave
+          </th>
         </tr>
         <tr>
-          <th class="green-th small-th" [style]="{height:'50px'}">Total</th>
+          <th class="green-th small-th" [style]="{ height: '50px' }">Total</th>
           <th class="green-th small-th">Intern</th>
           <th class="green-th">Staff/CTV/T.việc</th>
           <th class="gray-th small-th">Total</th>
@@ -44,8 +52,13 @@
 
       <tbody class="text-center">
         <tr *ngFor="let item of listCty" class="branch-row">
-          <td class="text-left" [ngClass]="getTextBold(item.branchName)">{{ item.branchName }}</td>
-          <td [ngClass]="getTextBold(item.branchName)" class="text-bold blue-td">
+          <td class="text-left" [ngClass]="getTextBold(item.branchName)">
+            {{ item.branchName }}
+          </td>
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-bold blue-td"
+          >
             {{ getValueOrNone(item.employeeTotal) }}
           </td>
           <td [ngClass]="getTextBold(item.branchName)" class="yellow-td">
@@ -60,44 +73,233 @@
           <td class="yellow-td" [ngClass]="getTextBold(item.branchName)">
             {{ getValueOrNone(item.tViecCount) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="text-primary text-bold hyperlink green-td"
-            (click)="showList(item.onboardEmployees,'onboard',item.branchName,'Danh sách nhân viên')">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-primary text-bold hyperlink green-td"
+            (click)="
+              showList(
+                item.onboardEmployees,
+                'onboard',
+                item.branchName,
+                'Danh sách nhân viên'
+              )
+            "
+          >
             {{ getValueOrNone(item.onboardTotal) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="text-primary text-bold hyperlink green-td"
-            (click)="showList(item.onboardEmployees,'onboard',item.branchName, 'Danh sách Intern',APP_ENUM.UserType.Internship)">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-primary text-bold hyperlink green-td"
+            (click)="
+              showList(
+                item.onboardEmployees,
+                'onboard',
+                item.branchName,
+                'Danh sách Intern',
+                APP_ENUM.UserType.Internship
+              )
+            "
+          >
             {{ getValueOrNone(item.onboardInternCount) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="text-primary text-bold hyperlink green-td"
-            (click)="showList(item.onboardEmployees,'onboard',item.branchName,'Danh sách Staff/CTV/Thử việc',APP_ENUM.UserType.Staff)">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-primary text-bold hyperlink green-td"
+            (click)="
+              showList(
+                item.onboardEmployees,
+                'onboard',
+                item.branchName,
+                'Danh sách Staff/CTV/Thử việc',
+                APP_ENUM.UserType.Staff
+              )
+            "
+          >
             {{ getValueOrNone(item.onboardStaffCount) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class=" text-bold hyperlink gray-td"
-            (click)="showList(item.quitEmployees,'nghỉ việc',item.branchName,'Danh sách nhân viên')">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-bold hyperlink gray-td"
+            (click)="
+              showList(
+                item.quitEmployees,
+                'nghỉ việc',
+                item.branchName,
+                'Danh sách nhân viên'
+              )
+            "
+          >
             {{ getValueOrNone(item.quitJobTotal) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="text-bold hyperlink gray-td"
-            (click)="showList(item.quitEmployees,'nghỉ việc',item.branchName,'Danh sách Intern', APP_ENUM.UserType.Internship)">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-bold hyperlink gray-td"
+            (click)="
+              showList(
+                item.quitEmployees,
+                'nghỉ việc',
+                item.branchName,
+                'Danh sách Intern',
+                APP_ENUM.UserType.Internship
+              )
+            "
+          >
             {{ getValueOrNone(item.quitJobInternCount) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="text-bold hyperlink gray-td"
-            (click)="showList(item.quitEmployees,'nghỉ việc',item.branchName,'Danh sách Staff/CTV/Thử việc', APP_ENUM.UserType.Staff)">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-bold hyperlink gray-td"
+            (click)="
+              showList(
+                item.quitEmployees,
+                'nghỉ việc',
+                item.branchName,
+                'Danh sách Staff/CTV/Thử việc',
+                APP_ENUM.UserType.Staff
+              )
+            "
+          >
             {{ getValueOrNone(item.quitJobStaffCount) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="text-bold hyperlink  purple-td text-bold"
-            (click)="showList(item.onboardAndQuitEmployees,'',item.branchName,'Danh sách onboard/quit', null, true)">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="text-bold hyperlink purple-td text-bold"
+            (click)="
+              showList(
+                item.onboardAndQuitEmployees,
+                '',
+                item.branchName,
+                'Danh sách onboard/quit',
+                null,
+                true
+              )
+            "
+          >
             {{ getValueOrNone(item.onboardAndQuitInTimeSpanCount) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="hyperlink purple-td text-bold"
-            (click)="showList(item.pausingEmployees, 'tạm nghỉ', item.branchName, 'Danh sách')">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="hyperlink purple-td text-bold"
+            (click)="
+              showList(
+                item.pausingEmployees,
+                'tạm nghỉ',
+                item.branchName,
+                'Danh sách'
+              )
+            "
+          >
             {{ getValueOrNone(item.pausingCount) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="hyperlink purple-td text-bold" (click)="
-                  showList(item.matenityLeaveEmployees, 'nghỉ sinh', item.branchName,'Danh sách')">
+          <td
+            [ngClass]="getTextBold(item.branchName)"
+            class="hyperlink purple-td text-bold"
+            (click)="
+              showList(
+                item.matenityLeaveEmployees,
+                'nghỉ sinh',
+                item.branchName,
+                'Danh sách'
+              )
+            "
+          >
             {{ getValueOrNone(item.maternityLeaveCount) }}
           </td>
         </tr>
       </tbody>
     </table>
+
+    <div class="text-center" style="margin-top: 6px" *ngIf="listAllLineChartSelectBox.length != 0" >
+      <div class="card mb-2">
+        <div class="row mx-3" style="height: 50px; justify-content: center">
+          <app-date-selector-homepage
+            style="display: inline-flex"
+            (onDateSelectorChange)="onDateChangeLineChart($event)"
+            [type]="defaultDateFilterTypeLineChart"
+            [defaultDateFilter]="searchWithDateTimeLineChart"
+          >
+          </app-date-selector-homepage>
+          <div class="col-2" *ngIf="listAllLineChartSelectBox.length != 0">
+            <chart-select
+              (onSelect)="onLineChartSelect($event)"
+              className="col-12"
+              [dropdownData]="listAllLineChartSelectBox"
+              [label]="'Biểu đồ'"
+              [defaultValue]="listLineChartId"
+              [placeholder]="'Biểu đồ'"
+            ></chart-select>
+          </div>
+        </div>
+        <div class="row">
+          <div *ngIf="isLineEmptyDisplay" class="col-12">
+            <div
+              class="card"
+              style="font-family: 'Source Sans Pro'; font-size: 20px"
+            >
+              <span>Không có biểu đồ nào được chọn</span>
+            </div>
+          </div>
+          <div
+            class="col-6"
+            *ngFor="let chart of listAllLineChartDataDisplay; let i = index"
+          >
+            <div class="card" *ngIf="listLineChartId.leght != 0">
+              <app-line-chart
+                [lineChartData]="chart"
+                [fromDate]="fromDateLineChart"
+                [toDate]="toDateLineChart"
+                (refreshData)="onRefreshLineChart()"
+              ></app-line-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center" style="margin-top: 6px" *ngIf="listAllCircleChartSelectBox.length != 0">
+      <div class="card mb-2">
+        <div class="row mx-3" style="height: 50px; justify-content: center">
+          <app-date-selector-homepage
+            style="display: inline-flex"
+            (onDateSelectorChange)="onDateChangeCircleChart($event)"
+            [type]="defaultDateFilterTypeCircleChart"
+            [defaultDateFilter]="searchWithDateTimeCircleChart"
+          >
+          </app-date-selector-homepage>
+          <div class="col-2">
+            <chart-select
+              (onSelect)="onCircleChartSelect($event)"
+              className="col-12"
+              [dropdownData]="listAllCircleChartSelectBox"
+              [label]="'Biểu đồ'"
+              [defaultValue]="listCircleChartId"
+              [placeholder]="'Biểu đồ'"
+            ></chart-select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div *ngIf="isCircleEmptyDisplay" class="col-12">
+          <div
+            class="card"
+            style="font-family: 'Source Sans Pro'; font-size: 20px"
+          >
+            <span>Không có biểu đồ nào được chọn</span>
+          </div>
+        </div>
+        <div
+          class="col-6"
+          *ngFor="let chart of listAllCircleChartDataDisplay; let i = index"
+        >
+          <div class="card">
+            <app-circle-chart
+              [circlechartData]="chart"
+              [fromDate]="fromDateCircleChart"
+              [toDate]="toDateCircleChart"
+              (refreshData)="onRefreshCircleChart()"
+            ></app-circle-chart>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

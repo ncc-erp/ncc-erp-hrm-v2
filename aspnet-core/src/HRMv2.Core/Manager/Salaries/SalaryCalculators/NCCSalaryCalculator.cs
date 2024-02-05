@@ -51,8 +51,8 @@ namespace HRMv2.Manager.Salaries.SalaryCalculators
 
         public List<OffDateDto> InputOffDates { get; set; }
         public List<OffDateDto> InputOffDateLastMonth { get; set; }
-        private DateTime LastDateOfPayroll => DateTimeUtils.GetLastDayOfMonth(this.InputPayroll.ApplyMonth);
-        private DateTime FirstDateOfPayroll => DateTimeUtils.GetFirstDayOfMonth(this.InputPayroll.ApplyMonth);
+        private DateTime LastDateOfPayroll => DateTimeUtils.LastDayOfMonth(this.InputPayroll.ApplyMonth);
+        private DateTime FirstDateOfPayroll => DateTimeUtils.FirstDayOfMonth(this.InputPayroll.ApplyMonth);
         public HashSet<DateTime> InputWorkAtHomeOnlyDates { get; set; }
 
         private DateTime InputWorkingEndDate

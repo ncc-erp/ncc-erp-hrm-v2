@@ -51,6 +51,7 @@ using Abp.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using NccCore.Helper;
 using System.Threading;
+using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
 
 namespace HRMv2.Manager.Employees
 {
@@ -298,7 +299,7 @@ namespace HRMv2.Manager.Employees
 
 
             bool isAllowEdit = ValidUpdateEmployee(employeeId);
-            bool isAllowEditWorkingStatus = IsAllowEditToWorkingStatus(employeeId);
+            bool isAllowEditWorkingStatus = true || IsAllowEditToWorkingStatus(employeeId);
             bool isAllowEditBranch = IsAllowToEditBranch(employeeId);
 
             return new GetEmployeeInfoDto

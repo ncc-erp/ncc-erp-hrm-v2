@@ -115,6 +115,8 @@ import { MyDateFormatPipe } from './pipes/my-date-format.pipe';
 import { DateSelectorComponent } from './date-selector/date-selector/date-selector.component';
 import { CustomTimeComponent } from './date-selector/custom-time/custom-time.component';
 import { BirthdayDateFormatDirective } from './directives/birthday-date-format.directive';
+import { ChartSelectComponent } from './components/chart-select/chart-select.component';
+import { PopupComponent } from './date-selector/popup/popup.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -219,6 +221,8 @@ import { BirthdayDateFormatDirective } from './directives/birthday-date-format.d
         BirthdayDateFormatDirective,
         UserInfoComponent,
         InputOnCellComponent,
+        ChartSelectComponent,
+        PopupComponent,
 
     ],
     exports: [
@@ -318,6 +322,7 @@ import { BirthdayDateFormatDirective } from './directives/birthday-date-format.d
         DateSelectorComponent,
         CustomTimeComponent,
         InputOnCellComponent,
+        ChartSelectComponent
     ],
     providers:[
         { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
