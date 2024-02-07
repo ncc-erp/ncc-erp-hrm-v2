@@ -2,13 +2,14 @@
   <mat-form-field appearance="outline" [class]="className">
     <mat-label>{{ label }}</mat-label>
     <mat-select
-      (selectionChange)="onOptionSelect()"
+      panelClass="custom-panel"
       disableOptionCentering
       [(ngModel)]="listSelectedId"
       [placeholder]="placeholder"
       [multiple]="true"
       #multiSelect
       (openedChange)="handleOpenChange($event)"
+      class="mat-select-box1"
     >
       <div class="p-2 input-wrapper">
         <input
@@ -27,19 +28,25 @@
         class="list-action d-flex justify-content-between"
         style="padding: 0 14px 6px"
       >
-        <button
-          class="btn btn-primary btn-sm btn-hover"
-          (click)="handleSelectAll()"
-        >
-          Select all
-        </button>
-        <button
-          *ngIf="listSelectedId.length !== 0"
-          class="btn btn-default btn-sm"
-          (click)="handleClear()"
-        >
-          Clear
-        </button>
+        <div>
+          <button
+            class="btn btn-primary btn-sm btn-hover btn-select-box"
+            (click)="handleSelectAll()"
+          >
+            Select all
+          </button>
+          <button *ngIf="listSelectedId.length !== 0" class="btn btn-default btn-sm" (click)="handleClear()">
+            Clear
+          </button>
+        </div>
+        <div>
+          <button class="btn btn-default btn-sm btn-select-box" (click)="onCancelSelect()">
+            Cancel
+          </button>
+          <button class="btn btn-primary btn-sm btn-hover" (click)="handleOk()">
+            Ok
+          </button>
+        </div>
       </div>
 
       <mat-option
@@ -59,18 +66,25 @@
           [hidden]="data.hidden"
           (click)="handleOptionClick(i)"
         >
-          {{ data.name }}
+          <div class="mat-option-text">
+            <span class="data-name">{{
+              truncateNameOnMatOption(data.name, 75)
+            }}</span>
+            <span class="data-type-label">{{
+              getDataTypeLabel(data.dataType)
+            }}</span>
+          </div>
         </mat-option>
       </div>
     </mat-select>
   </mat-form-field>
   <div class="btn-container">
     <button
-    *ngIf="listSelectedId.length !== 0"
-    class="btn-clear-all"
-    (click)="handleClear()"
-  >
-    <i class="fa-solid fa-xmark"></i>
-  </button>
+      *ngIf="defaultValue.length !== 0"
+      class="btn-clear-all"
+      (click)="handleClearAll()"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
   </div>
 </div>
