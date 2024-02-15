@@ -82,7 +82,7 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
           return tooltipContent;
         },
         title: {
-          text: this.lineChartData.name,
+          text: this.truncateWithEllipsis(this.lineChartData.name, 75),
           subtext: this.getChartDataTypeString(
             this.lineChartData.chartDataType
           ),
@@ -97,6 +97,10 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
             type: "line",
             saveAsImage: { show: true },
           },
+        },
+        grid: {
+          top: "25%", 
+          bottom: "10%", 
         },
         xAxis: [
           {
@@ -174,7 +178,23 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
 
     return { startDate, endDate };
   }
-
+  truncateWithEllipsis(text, maxLength) {
+    if (text.length > maxLength) {
+      let truncatedText = text.substring(0, maxLength - 3);
+      let lastSpaceIndex = truncatedText.lastIndexOf(" ");
+      if (lastSpaceIndex !== -1) {
+        return (
+          truncatedText.substring(0, lastSpaceIndex) +
+          "\n" +
+          truncatedText.substring(lastSpaceIndex + 1)
+        );
+      } else {
+        return truncatedText + "\n" + text.substring(maxLength - 3);
+      }
+    } else {
+      return text;
+    }
+  }
   getChartDataTypeString(chartDataType: number): string {
     switch (chartDataType) {
       case 0:
