@@ -45,6 +45,9 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
       const option = {
         title: {
           text: this.truncateWithEllipsis(this.circlechartData.name, 70),
+          subtext: this.getChartDataTypeString(
+            this.circlechartData.chartDataType
+          ),
           left: "center",
           textStyle: {
             fontFamily: "Source Sans Pro",
@@ -68,12 +71,14 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
           },
         },
         grid: {
-          top: "20%", // Adjust the top padding (space for the title)
+          top: "60%", // Adjust the top padding (space for the title)
           bottom: "20%", // Adjust the bottom padding (space for the legend)
         },
         series: [
           {
             type: "pie",
+            radius: ["0","60%"], 
+            center: ["50%", "50%"], 
             data: this.circlechartData.chartDetails.map((item) => ({
               name: item.pieName,
               value: item.data,
@@ -101,7 +106,7 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
       };
 
       option && myChart.setOption(option);
-      myChart.on('click', (params: any) => {
+      myChart.on("click", (params: any) => {
         this.viewDataEmployeeCircleChartDetail(params.data.detail.id);
       });
     }
@@ -111,16 +116,16 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
     this.refreshData.emit();
   }
 
-  viewDataEmployeeCircleChartDetail(chartDetailId: number){
+  viewDataEmployeeCircleChartDetail(chartDetailId: number) {
     let ref = this.dialog.open(ChartDetailDataComponent, {
       minWidth: "70%",
       data: {
         startDate: this.fromDate,
         endDate: this.toDate,
-        chartData : this.circlechartData,
-        chartDetailId : chartDetailId
+        chartData: this.circlechartData,
+        chartDetailId: chartDetailId,
       },
-      disableClose: true
+      disableClose: true,
     });
     ref.componentInstance.refreshDataEvent.subscribe((data) => {
       this.onRefreshData();
@@ -129,9 +134,19 @@ export class CircleChartComponent extends AppComponentBase implements OnInit {
 
   truncateWithEllipsis(text, maxLength) {
     if (text.length > maxLength) {
-      return text.substring(0, maxLength - 3) + '...';
+      return text.substring(0, maxLength - 3) + "...";
     } else {
       return text;
+    }
+  }
+  getChartDataTypeString(chartDataType: number): string {
+    switch (chartDataType) {
+      case 0:
+        return "Employee";
+      case 1:
+        return "Salary";
+      default:
+        return "Unknown";
     }
   }
 }
