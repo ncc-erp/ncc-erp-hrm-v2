@@ -752,8 +752,11 @@
                             {{personalInfo.emergencyContactPhone}}
                         </span>
                         <mat-form-field  *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
-                            <input matInput name="emergencyContactPhone" formControlName="emergencyContactPhone">
+                            <input matInput name="emergencyContactPhone" formControlName="emergencyContactPhone" #phoneNumberEl>
                         </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.emergencyContactPhone"
+                                [controlEl]="phoneNumberEl">
+                        </abp-validation-summary>
                     </div>
                 </div>
                 <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeAddress}">
