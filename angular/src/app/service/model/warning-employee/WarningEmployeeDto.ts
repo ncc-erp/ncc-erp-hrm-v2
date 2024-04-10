@@ -45,6 +45,9 @@ export interface UpdateRequestDetailDto {
     issuedOn: string;
     issuedBy: string;
     placeOfPermanent: string;
+    currentAddress: string;
+    emergencyContactName: string;
+    emergencyContactPhone: string;
 }
 export interface GetRequestDetailDto {
     id: number;
@@ -60,6 +63,9 @@ export interface GetRequestDetailDto {
     issuedOn: string;
     issuedBy: string;
     placeOfPermanent: string;
+    currentAddress: string;
+    emergencyContactName: string;
+    emergencyContactPhone: string;
     isChangePhone: Boolean,
     isChangeBirthday: Boolean,
     isChangeBankId: Boolean,
@@ -69,7 +75,10 @@ export interface GetRequestDetailDto {
     isChangeIdCard: Boolean,
     isChangeIssuedOn: Boolean,
     isChangeIssuedBy: Boolean,
-    isChangePlaceOfPermanent: Boolean
+    isChangePlaceOfPermanent: Boolean,
+    isChangeCurrentAddress: Boolean;
+    isChangeEmergencyContactName: Boolean;
+    isChangeEmergencyContactPhone: Boolean;
 }
 
 export interface PlanQuitEmployeeDto extends BaseEmployeeDto {
