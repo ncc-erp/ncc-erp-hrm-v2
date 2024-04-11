@@ -2038,8 +2038,10 @@ namespace HRMv2.Manager.Employees
                     Type = x.UserType,
                     PositionCode = x.JobPosition.Code,
                     WorkingStartDate = x.StartWorkingDate,
-                }
-                )
+                    CurrentAddress = x.CurrentAddress,
+                    EmergencyContactName = x.EmergencyContactName,
+                    EmergencyContactPhone = x.EmergencyContactPhone
+                })
                 .ToList();
             if(employees == null || employees.Count() == 0)  return;
 
