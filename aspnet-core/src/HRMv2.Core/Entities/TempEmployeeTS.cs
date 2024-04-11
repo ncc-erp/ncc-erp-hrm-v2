@@ -33,5 +33,11 @@ namespace HRMv2.Entities
         public string Address { get; set; }
         [StringLength(100)]
         public string TaxCode { get; set; }
+        [StringLength(1000)]
+        public string CurrentAddress { get; set; }
+        [StringLength(256)]
+        public string EmergencyContactName { get; set; }
+        [StringLength(20)]
+        public string EmergencyContactPhone { get; set; }
     }
 }

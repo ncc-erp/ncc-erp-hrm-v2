@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    [Migration("20240410032203_add_more_info_Employee")]
-    partial class add_more_info_Employee
+    [Migration("20240411035156_add_more_info_table_Employee_and_TempEmployeeTS")]
+    partial class add_more_info_table_Employee_and_TempEmployeeTS
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -3930,11 +3930,23 @@ namespace HRMv2.Migrations
                     b.Property<long?>("CreatorUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("CurrentAddress")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<long?>("DeleterUserId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EmergencyContactName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("EmergencyContactPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<long>("EmployeeId")
                         .HasColumnType("bigint");
