@@ -81,13 +81,12 @@ namespace HRMv2.Manager.WarningEmployees.Dto
         public bool IsChangeTaxCode => TaxCode == EmployeeTaxCode;
         public string CurrentAddress { get; set; }
         public string EmployeeCurrentAddress { get; set; }
-        public bool IsChangeCurrentAddress => CurrentAddress == EmployeeCurrentAddress;
+        public bool IsChangeCurrentAddress => CommonUtil.IsTheSame(CurrentAddress, EmployeeCurrentAddress);
         public string EmergencyContactName { get; set; }
         public string EmployeeEmergencyContactName { get; set; }
-        public bool IsChangeEmergencyContactName => EmergencyContactName == EmployeeEmergencyContactName;
+        public bool IsChangeEmergencyContactName => CommonUtil.IsTheSame(EmergencyContactName, EmployeeEmergencyContactName);
         public string EmergencyContactPhone { get; set; }
         public string EmployeeEmergencyContactPhone { get; set; }
-        public bool IsChangeEmergencyContactPhone => EmergencyContactPhone == EmployeeEmergencyContactPhone;
-
+        public bool IsChangeEmergencyContactPhone => CommonUtil.IsTheSame(EmergencyContactPhone, EmployeeEmergencyContactPhone);
     }
 }

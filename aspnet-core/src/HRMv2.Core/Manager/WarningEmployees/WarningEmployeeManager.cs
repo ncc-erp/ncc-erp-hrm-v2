@@ -382,6 +382,9 @@ namespace HRMv2.Manager.WarningEmployees
             employee.PlaceOfPermanent = input.PlaceOfPermanent;
             employee.IssuedOn = input.IssuedOn;
             employee.IssuedBy = input.IssuedBy;
+            employee.CurrentAddress = input.CurrentAddress;
+            employee.EmergencyContactName = input.EmergencyContactName;
+            employee.EmergencyContactPhone = input.EmergencyContactPhone;
 
             await WorkScope.UpdateAsync(request);
             await WorkScope.UpdateAsync(employee);

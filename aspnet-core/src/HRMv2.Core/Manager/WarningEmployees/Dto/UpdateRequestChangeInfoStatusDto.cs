@@ -29,6 +29,9 @@ namespace HRMv2.Manager.WarningEmployees.Dto
         public string Address { get; set; }
         public InsuranceStatus InsuranceStatus { get; set; }
         public string TaxCode { get; set; }
+        public string CurrentAddress { get; set; }
+        public string EmergencyContactName { get; set; }
+        public string EmergencyContactPhone { get; set; }
     }
 
 
