@@ -569,6 +569,27 @@
                     </div>
                 </div>
                 <div class="form-group row"  [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Địa chỉ hiện tại'" class="col-form-label col-5">
+                        Current Address:
+                    </label>
+                    <div class="col-7">
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">
+                            {{personalInfo.currentAddress}}
+                        </span>
+                        <mat-form-field  *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <input matInput name="currentAddress" formControlName="currentAddress">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeCurrentAddress}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.currentAddress}}</span>
+                    </div>
+                </div>
+                <div class="form-group row"  [ngClass]="{'update-request-mode': isUpdateRequestMode}">
                     <label [tooltip]="'Ngân hàng'" class="col-form-label col-5">
                         Bank:
                     </label>
@@ -655,6 +676,27 @@
                             class="view-text">{{insuranceStatusString}}</span>
                     </div>
                 </div>
+                <div class="form-group row"  [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'Người liên hệ khẩn cấp'" class="col-form-label col-5">
+                        Emergency Contact:
+                    </label>
+                    <div class="col-7">
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">
+                            {{personalInfo.emergencyContactName}}
+                        </span>
+                        <mat-form-field  *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <input matInput name="emergencyContactName" formControlName="emergencyContactName">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeEmergencyContactName}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.emergencyContactName}}</span>
+                    </div>
+                </div>
                 <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
                     <label [tooltip]="'Số CCCD/CMND'" class="col-form-label col-5">
                         Identity:
@@ -723,6 +765,30 @@
                     </div>
                     <div class="col-7 old-value">
                         <span>{{personalInfo.address}}</span>
+                    </div>
+                </div>
+                <div class="form-group row"  [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                    <label [tooltip]="'SĐT của người liên hệ khẩn cấp'" class="col-form-label col-5">
+                        Emergency Contact Phone:
+                    </label>
+                    <div class="col-7">
+                        <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">
+                            {{personalInfo.emergencyContactPhone}}
+                        </span>
+                        <mat-form-field  *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                            <input matInput name="emergencyContactPhone" formControlName="emergencyContactPhone" #phoneNumberEl>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.emergencyContactPhone"
+                                [controlEl]="phoneNumberEl">
+                        </abp-validation-summary>
+                    </div>
+                </div>
+                <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeEmergencyContactPhone}">
+                    <div class="col-form-label col-5">
+                        <span>Old value</span>
+                    </div>
+                    <div class="col-7 old-value">
+                        <span>{{personalInfo.emergencyContactPhone}}</span>
                     </div>
                 </div>
                 <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">

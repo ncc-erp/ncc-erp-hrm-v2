@@ -56,5 +56,8 @@ namespace HRMv2.Manager.Employees.Dto
         public DateTime ContractStartDate { get; set; }
         public DateTime? ContractEndDate { get; set; }
         public string PersonalEmail { get; set; }
+        public string CurrentAddress { get; set; }
+        public string EmergencyContactName { get; set; }
+        public string EmergencyContactPhone { get; set; }
     }
 }

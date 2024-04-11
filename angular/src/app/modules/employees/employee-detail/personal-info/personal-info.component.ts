@@ -159,6 +159,9 @@ export class PersonalInfoComponent
         this.formGroup.controls['skills'].setValue(this.skillList.filter(x =>this.tempEmployeetalentInfo.skillStr.toLowerCase().includes(x.key.toLowerCase())));
         this.formGroup.controls['contractStartDate'].setValue(this.tempEmployeetalentInfo.onboardDate);
         this.formGroup.controls['personalEmail'].setValue(this.tempEmployeetalentInfo.email);
+        this.formGroup.controls['currentAddress'].setValue(this.tempEmployeetalentInfo.currentAddress);
+        this.formGroup.controls['emergencyContactName'].setValue(this.tempEmployeetalentInfo.emergencyContactName);
+        this.formGroup.controls['emergencyContactPhone'].setValue(this.tempEmployeetalentInfo.emergencyContactPhone);
       })
     )}
   }
@@ -376,6 +379,9 @@ export class PersonalInfoComponent
       contractCode: "",
       startWorkingDate: [this.formatDateYMD(new Date), [Validators.required]],
       personalEmail: ["", [Validators.email]],
+      currentAddress: "",
+      emergencyContactName: "",
+      emergencyContactPhone: ""
     });
     if(this.isAllowEdit){
       this.bindSalaryChangeEvent(this.formGroup);
@@ -483,7 +489,10 @@ export class PersonalInfoComponent
       remainLeaveDay: info.remainLeaveDay,
       contractCode: info.contractCode,
       startWorkingDate: info.startWorkingDate,
-      personalEmail: info.personalEmail
+      personalEmail: info.personalEmail,
+      currentAddress: info.currentAddress,
+      emergencyContactName: info.emergencyContactName,
+      emergencyContactPhone: info.emergencyContactPhone
     });
   }
 
@@ -499,7 +508,10 @@ export class PersonalInfoComponent
       issuedBy: newInfo.issuedBy,
       placeOfOrigin: newInfo.placeOfPermanent,
       placeOfResidence: newInfo.address,
-      taxCode : newInfo.taxCode
+      taxCode : newInfo.taxCode,
+      currentAddress: newInfo.currentAddress,
+      emergencyContactName: newInfo.emergencyContactName,
+      emergencyContactPhone: newInfo.emergencyContactPhone,
     });
   }
 
@@ -581,7 +593,10 @@ export class PersonalInfoComponent
       contractStartDate: this.formatDateYMD(this.formGroup.value.contractStartDate),
       contractEndDate: this.formGroup.controls.contractEndDate.value ? this.formatDateYMD(new Date(this.formGroup.controls.contractEndDate.value)) : "",
       contractCode: this.formGroup.controls.contractCode.value || this.personalInfo.contractCode,
-      personalEmail: this.formGroup.value.personalEmail
+      personalEmail: this.formGroup.value.personalEmail,
+      currentAddress: this.formGroup.value.currentAddress,
+      emergencyContactName: this.formGroup.value.emergencyContactName,
+      emergencyContactPhone: this.formGroup.value.emergencyContactPhone
     };
     this.trimData(employee)
     if (this.userId) {
@@ -828,6 +843,9 @@ export class PersonalInfoComponent
       placeOfPermanent: this.formGroup.value.placeOfOrigin,
       taxCode: this.formGroup.value.taxCode,
       bankId: this.formGroup.value.bankId,
+      currentAddress: this.formGroup.value.currentAddress,
+      emergencyContactName: this.formGroup.value.emergencyContactName,
+      emergencyContactPhone: this.formGroup.value.emergencyContactPhone
     };
     abp.message.confirm("Are you sure to approve request change employee?", "",
     (rs)=>{
@@ -896,6 +914,9 @@ interface PersonalInfo extends BaseEmployeeDto {
   contractCode: string;
   remainLeaveDay: number;
   personalEmail:string;
+  currentAddress: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
 }
 
 interface PersonalSkillDto {

@@ -382,6 +382,9 @@ namespace HRMv2.Manager.WarningEmployees
             employee.PlaceOfPermanent = input.PlaceOfPermanent;
             employee.IssuedOn = input.IssuedOn;
             employee.IssuedBy = input.IssuedBy;
+            employee.CurrentAddress = input.CurrentAddress;
+            employee.EmergencyContactName = input.EmergencyContactName;
+            employee.EmergencyContactPhone = input.EmergencyContactPhone;
 
             await WorkScope.UpdateAsync(request);
             await WorkScope.UpdateAsync(employee);
@@ -431,7 +434,13 @@ namespace HRMv2.Manager.WarningEmployees
                     EmployeePlaceOfPermanent = x.Employee.PlaceOfPermanent,
                     RequestStatus = x.RequestStatus,
                     BankId = x.BankId,
-                    EmployeeBankId = x.Employee.BankId
+                    EmployeeBankId = x.Employee.BankId,
+                    CurrentAddress = x.CurrentAddress,
+                    EmployeeCurrentAddress = x.Employee.CurrentAddress,
+                    EmergencyContactName = x.EmergencyContactName,
+                    EmployeeEmergencyContactName = x.Employee.EmergencyContactName,
+                    EmergencyContactPhone = x.EmergencyContactPhone,
+                    EmployeeEmergencyContactPhone = x.Employee.EmergencyContactPhone
                 }).FirstOrDefault();
         }
 

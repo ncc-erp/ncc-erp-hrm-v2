@@ -1,9 +1,9 @@
 ﻿using HRMv2.Manager.Categories.Charts;
 using HRMv2.Manager.Histories.Dto;
-using HRMv2.Manager.Home.Dtos.ChartDto;
 using HRMv2.NccCore;
 using static HRMv2.Constants.Enum.HRMEnum;
 using Xunit;
+using HRMv2.Manager.Categories.Charts.DisplayChartDto;
 
 namespace HRMv2.Core.Tests.Managers.Categories.Charts
 {
