@@ -253,7 +253,6 @@ export class PersonalInfoComponent
     this.subscription.push(
       this.warningEmployeeService.getRequestDetailById(id).subscribe((rs)=>{
         this.requestUpdateInfoDetail = rs.result;
-        console.log("requestUpdateInfoDetail",this.requestUpdateInfoDetail);
         this.setValueToUpdateProfile(this.requestUpdateInfoDetail);
       })
     )
