@@ -64,7 +64,13 @@ namespace HRMv2.Entities
         /// Dùng để tính thâm niên
         /// Khi UserType = Staff => Không update StartWorkingDate nữa
         /// </summary>
-        public DateTime StartWorkingDate { get; set; } 
+        public DateTime StartWorkingDate { get; set; }
+        [StringLength(1000)]
+        public string CurrentAddress { get; set; }
+        [StringLength(256)]
+        public string EmergencyContactName { get; set; }
+        [StringLength(20)]
+        public string EmergencyContactPhone { get; set; }
 
         public virtual ICollection<EmployeeSkill> EmployeeSkills { get; set; }
         public virtual ICollection<EmployeeTeam> EmployeeTeams { get; set; }

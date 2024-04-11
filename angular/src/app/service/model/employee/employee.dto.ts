@@ -67,7 +67,10 @@ export interface CreateUpdateEmployeeDto {
     contractStartDate: string,
     contractEndDate:string,
     contractCode: string,
-    personalEmail:string
+    personalEmail:string,
+    currentAddress: string;
+    emergencyContactName: string;
+    emergencyContactPhone: string;
 }
 export interface StartWorkingDto{
     years: number;

@@ -619,5 +619,11 @@ namespace HRMv2.Utils
 
             return newText.ToString();
         }
+
+        public static bool IsTheSame(string s1, string s2)
+        {
+            if (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2)) return true;
+            return s1 == s2;
+        }
     }
 }

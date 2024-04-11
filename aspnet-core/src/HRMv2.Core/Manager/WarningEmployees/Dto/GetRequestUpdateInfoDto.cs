@@ -79,6 +79,14 @@ namespace HRMv2.Manager.WarningEmployees.Dto
         public string TaxCode { get; set; }
         public string EmployeeTaxCode { get; set; }
         public bool IsChangeTaxCode => TaxCode == EmployeeTaxCode;
-        
+        public string CurrentAddress { get; set; }
+        public string EmployeeCurrentAddress { get; set; }
+        public bool IsChangeCurrentAddress => CommonUtil.IsTheSame(CurrentAddress, EmployeeCurrentAddress);
+        public string EmergencyContactName { get; set; }
+        public string EmployeeEmergencyContactName { get; set; }
+        public bool IsChangeEmergencyContactName => CommonUtil.IsTheSame(EmergencyContactName, EmployeeEmergencyContactName);
+        public string EmergencyContactPhone { get; set; }
+        public string EmployeeEmergencyContactPhone { get; set; }
+        public bool IsChangeEmergencyContactPhone => CommonUtil.IsTheSame(EmergencyContactPhone, EmployeeEmergencyContactPhone);
     }
 }

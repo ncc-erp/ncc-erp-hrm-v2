@@ -42,6 +42,9 @@ namespace HRMv2.Manager.Employees.Dto
         public string TaxCode { get; set; }
         public InsuranceStatus InsuranceStatus { get; set; }
         public string PersonalEmail { get; set; }
+        public string CurrentAddress { get; set; }
+        public string EmergencyContactName { get; set; }
+        public string EmergencyContactPhone { get; set; }
 
         public DateBetweenDto Seniority
         {

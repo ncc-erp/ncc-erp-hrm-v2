@@ -336,8 +336,10 @@ namespace HRMv2.Manager.Timesheet
                     PlaceOfPermanent = x.PlaceOfPermanent,
                     IssuedBy = x.IssuedBy,
                     IssuedOn = x.IssuedOn,
-                    RequestStatus = x.RequestStatus
-
+                    RequestStatus = x.RequestStatus,
+                    CurrentAddress = x.CurrentAddress,
+                    EmergencyContactName = x.EmergencyContactName,
+                    EmergencyContactPhone = x.EmergencyContactPhone     
                 }).FirstOrDefault();
         }
 
@@ -402,7 +404,9 @@ namespace HRMv2.Manager.Timesheet
                     PlaceOfPermanent = input.PlaceOfPermanent,
                     BankId = input.BankId,
                     RequestStatus = RequestStatus.Pending,
-
+                    CurrentAddress = input.CurrentAddress,
+                    EmergencyContactName = input.EmergencyContactName,
+                    EmergencyContactPhone = input.EmergencyContactPhone
                 };
                 await WorkScope.InsertAsync<TempEmployeeTS>(request);
             }
@@ -418,6 +422,9 @@ namespace HRMv2.Manager.Timesheet
                 requestEmp.IssuedBy = input.IssuedBy;
                 requestEmp.PlaceOfPermanent = input.PlaceOfPermanent;
                 requestEmp.BankId = input.BankId;
+                requestEmp.CurrentAddress = input.CurrentAddress;
+                requestEmp.EmergencyContactName = input.EmergencyContactName;
+                requestEmp.EmergencyContactPhone = input.EmergencyContactPhone;
 
                 await WorkScope.UpdateAsync(requestEmp);
             }
