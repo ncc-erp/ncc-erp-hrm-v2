@@ -38,6 +38,9 @@ namespace HRMv2.Manager.Timesheet.Dto
         public string StatusName => CommonUtil.GetWorkingStatusName(Status);
         public long? BankId { get; set; }
         public List<long> TeamIds { get; set; }
+        public string CurrentAddress { get; set; }
+        public string EmergencyContactName { get; set; }
+        public string EmergencyContactPhone { get; set; }
     }
 
     public class ItemInfoDto

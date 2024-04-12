@@ -284,7 +284,10 @@ namespace HRMv2.Manager.Timesheet
                     IssuedOn = x.IssuedOn,
                     RemainLeaveDay = x.RemainLeaveDay,
                     BankId = x.BankId,
-                    TeamIds = x.EmployeeTeams.Select(x => x.TeamId).ToList()
+                    TeamIds = x.EmployeeTeams.Select(x => x.TeamId).ToList(),
+                    CurrentAddress = x.CurrentAddress,
+                    EmergencyContactName = x.EmergencyContactName,
+                    EmergencyContactPhone = x.EmergencyContactPhone
                 }).FirstOrDefault();
 
             return employeeInfo;
