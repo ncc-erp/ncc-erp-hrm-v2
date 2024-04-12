@@ -320,6 +320,9 @@ namespace HRMv2.Manager.Timesheet
                 PlaceOfPermanent = x.PlaceOfPermanent,
                 IssuedBy = x.IssuedBy,
                 IssuedOn = x.IssuedOn,
+                CurrentAddress = x.CurrentAddress,
+                EmergencyContactName = x.EmergencyContactName,
+                EmergencyContactPhone = x.EmergencyContactPhone
             }).FirstOrDefault();
         }
 
