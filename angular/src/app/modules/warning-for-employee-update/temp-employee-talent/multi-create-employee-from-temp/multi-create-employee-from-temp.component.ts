@@ -115,6 +115,9 @@ export class MultiCreateEmployeeFromTempComponent
       contractEndDate: "",
       contractCode: "",
       personalEmail: employee.email,
+      currentAddress: "",
+      emergencyContactName: "",
+      emergencyContactPhone: ""
     };
 
     this.trimData(createEmployee);

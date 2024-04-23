@@ -45,14 +45,14 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
   ngOnInit() {}
   ngAfterViewInit() {
     if (this.chartContainer) {
-    var myChart = echarts.init(this.chartContainer.nativeElement);
-    let dataLineChartDetail = [];
+      var myChart = echarts.init(this.chartContainer.nativeElement);
+      let dataLineChartDetail = [];
       this.lineChartData.chartDetails.forEach((item) => {
         let chartDetail = {
           id: item.id,
           data: item.data,
           name: item.lineName,
-          itemStyle: {color : item.itemStyle.color},
+          itemStyle: { color: item.itemStyle.color },
           type: "line",
           smooth: true,
         };
@@ -69,12 +69,26 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
             },
           },
         },
-
-       title: {
-          text: this.truncateWithEllipsis(this.lineChartData.name, 70),
-          left: 'center',
+        formatter: function (params) {
+          let tooltipContent = `<div style="text-align: center; font-weight: bold">${params[0].name}</div>`;
+          params.forEach((param, index) => {
+            tooltipContent += `<div style="display: flex; justify-content: space-between; align-items: center;">`;
+            tooltipContent += `<span>${param.marker} ${param.seriesName}:</span>`;
+            tooltipContent += `<div style="${
+              index >= 0 ? "text-align: left;margin-left: 10px;" : ""
+            }"> ${param.value}</div>`;
+            tooltipContent += `</div>`;
+          });
+          return tooltipContent;
+        },
+        title: {
+          text: this.truncateWithEllipsis(this.lineChartData.name, 75),
+          subtext: this.getChartDataTypeString(
+            this.lineChartData.chartDataType
+          ),
+          left: "center",
           textStyle: {
-            fontFamily: 'Source Sans Pro',
+            fontFamily: "Source Sans Pro",
             fontSize: 20,
           },
         },
@@ -84,11 +98,15 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
             saveAsImage: { show: true },
           },
         },
+        grid: {
+          top: "25%", 
+          bottom: "10%", 
+        },
         xAxis: [
           {
             type: "category",
-            data: this.convertMonth(this.fromDate , this.toDate),
-            name : "Month",
+            data: this.convertMonth(this.fromDate, this.toDate),
+            name: "Month",
             axisPointer: {
               type: "shadow",
             },
@@ -96,11 +114,11 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
         ],
         yAxis: [
           {
-            name: 'Total',
+            name: "Total",
             type: "value",
           },
         ],
-        series: dataLineChartDetail
+        series: dataLineChartDetail,
       };
 
       option && myChart.setOption(option);
@@ -114,28 +132,32 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
   onRefreshData() {
     this.refreshData.emit();
   }
-  
-  viewDataEmployeeLineChartDetail(chartDetailId: number, monthYear: string){
+
+  viewDataEmployeeLineChartDetail(chartDetailId: number, monthYear: string) {
     let { startDate, endDate } = this.convertToDateRange(monthYear);
     let ref = this.dialog.open(ChartDetailDataComponent, {
       minWidth: "70%",
       data: {
         startDate: startDate,
         endDate: endDate,
-        chartData : this.lineChartData,
-        chartDetailId : chartDetailId
+        chartData: this.lineChartData,
+        chartDetailId: chartDetailId,
       },
-      disableClose: true
+      disableClose: true,
     });
     ref.componentInstance.refreshDataEvent.subscribe((data) => {
       this.onRefreshData();
     });
   }
-  
-  convertMonth(fromDate : Date, toDate : Date){
+
+  convertMonth(fromDate: Date, toDate: Date) {
     let result: string[] = [];
     let currentMonth = new Date(fromDate);
-    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    currentMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      1
+    );
     let endDate = new Date(toDate);
     while (currentMonth <= endDate) {
       let month = currentMonth.getMonth() + 1;
@@ -145,7 +167,7 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
     }
     return result;
   }
-  
+
   convertToDateRange(str) {
     let parts = str.split("-");
     let month = parseInt(parts[0], 10) - 1;
@@ -156,12 +178,31 @@ export class LineChartComponent extends AppComponentBase implements OnInit {
 
     return { startDate, endDate };
   }
-
   truncateWithEllipsis(text, maxLength) {
     if (text.length > maxLength) {
-      return text.substring(0, maxLength - 3) + '...';
+      let truncatedText = text.substring(0, maxLength - 3);
+      let lastSpaceIndex = truncatedText.lastIndexOf(" ");
+      if (lastSpaceIndex !== -1) {
+        return (
+          truncatedText.substring(0, lastSpaceIndex) +
+          "\n" +
+          truncatedText.substring(lastSpaceIndex + 1)
+        );
+      } else {
+        return truncatedText + "\n" + text.substring(maxLength - 3);
+      }
     } else {
       return text;
+    }
+  }
+  getChartDataTypeString(chartDataType: number): string {
+    switch (chartDataType) {
+      case 0:
+        return "Employee";
+      case 1:
+        return "Salary";
+      default:
+        return "Unknown";
     }
   }
 }

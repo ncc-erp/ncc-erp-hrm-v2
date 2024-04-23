@@ -211,7 +211,7 @@
 
     <div class="text-center" style="margin-top: 6px" *ngIf="listAllLineChartSelectBox.length != 0" >
       <div class="card mb-2">
-        <div class="row mx-3" style="height: 50px; justify-content: center">
+        <div class="row mx-3" style="height: 50px; justify-content: center;">
           <app-date-selector-homepage
             style="display: inline-flex"
             (onDateSelectorChange)="onDateChangeLineChart($event)"
@@ -219,14 +219,14 @@
             [defaultDateFilter]="searchWithDateTimeLineChart"
           >
           </app-date-selector-homepage>
-          <div class="col-2" *ngIf="listAllLineChartSelectBox.length != 0">
+          <div class="col-5" *ngIf="listAllLineChartSelectBox.length != 0">
             <chart-select
               (onSelect)="onLineChartSelect($event)"
               className="col-12"
               [dropdownData]="listAllLineChartSelectBox"
-              [label]="'Biểu đồ'"
+              [label]="'Select line chart'"
               [defaultValue]="listLineChartId"
-              [placeholder]="'Biểu đồ'"
+              [placeholder]="'Select line chart'"
             ></chart-select>
           </div>
         </div>
@@ -236,7 +236,7 @@
               class="card"
               style="font-family: 'Source Sans Pro'; font-size: 20px"
             >
-              <span>Không có biểu đồ nào được chọn</span>
+              <span>No chart selected</span>
             </div>
           </div>
           <div
@@ -265,14 +265,14 @@
             [defaultDateFilter]="searchWithDateTimeCircleChart"
           >
           </app-date-selector-homepage>
-          <div class="col-2">
+          <div class="col-5">
             <chart-select
               (onSelect)="onCircleChartSelect($event)"
               className="col-12"
               [dropdownData]="listAllCircleChartSelectBox"
-              [label]="'Biểu đồ'"
+              [label]="'Select circle chart'"
               [defaultValue]="listCircleChartId"
-              [placeholder]="'Biểu đồ'"
+              [placeholder]="'Select circle chart'"
             ></chart-select>
           </div>
         </div>
@@ -283,7 +283,7 @@
             class="card"
             style="font-family: 'Source Sans Pro'; font-size: 20px"
           >
-            <span>Không có biểu đồ nào được chọn</span>
+            <span>No chart selected </span>
           </div>
         </div>
         <div

@@ -293,8 +293,10 @@ namespace HRMv2.Manager.Employees
                     ContractStartDate = contract != null ? contract.StartDate : null,
                     ContractEndDate = contract != null ? contract.EndDate : null,
                     RemainLeaveDay = x.RemainLeaveDay,
-                    PersonalEmail = x.PersonalEmail
-
+                    PersonalEmail = x.PersonalEmail,
+                    CurrentAddress = x.CurrentAddress,
+                    EmergencyContactName = x.EmergencyContactName,
+                    EmergencyContactPhone = x.EmergencyContactPhone
                 }).FirstOrDefault();
 
 
@@ -1196,6 +1198,9 @@ namespace HRMv2.Manager.Employees
                 PositionCode = jobPosition,
                 SkillNames = listSkillName,
                 WorkingStartDate = input.StartWorkingDate,
+                CurrentAddress = input.CurrentAddress,
+                EmergencyContactName = input.EmergencyContactName,
+                EmergencyContactPhone = input.EmergencyContactPhone
             };
             if (mode == ActionMode.Create)
             {
@@ -2033,8 +2038,10 @@ namespace HRMv2.Manager.Employees
                     Type = x.UserType,
                     PositionCode = x.JobPosition.Code,
                     WorkingStartDate = x.StartWorkingDate,
-                }
-                )
+                    CurrentAddress = x.CurrentAddress,
+                    EmergencyContactName = x.EmergencyContactName,
+                    EmergencyContactPhone = x.EmergencyContactPhone
+                })
                 .ToList();
             if(employees == null || employees.Count() == 0)  return;
 
