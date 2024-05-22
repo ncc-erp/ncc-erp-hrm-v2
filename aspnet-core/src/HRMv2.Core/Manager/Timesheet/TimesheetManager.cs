@@ -438,7 +438,7 @@ namespace HRMv2.Manager.Timesheet
             return new ResultUpdateInfo
             {
                 IsSucess = true,
-                ResultMessage = "Reuqest change info successful"
+                ResultMessage = "Request change info successful"
             };
         }
 
