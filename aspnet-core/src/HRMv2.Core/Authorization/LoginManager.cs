@@ -19,38 +19,45 @@ using Newtonsoft.Json;
 using HRMv2.Configuration;
 using Google.Apis.Auth;
 using System.Linq;
+using HRMv2.Manager.Employees;
+using static HRMv2.Constants.Enum.HRMEnum;
+using System.Collections.Generic;
 
 namespace HRMv2.Authorization
 {
     public class LogInManager : AbpLogInManager<Tenant, Role, User>
     {
         private ILogger Logger { get; set; }
+        private readonly EmployeeManager _employeeManager;
         public LogInManager(
-            UserManager userManager, 
+            UserManager userManager,
             IMultiTenancyConfig multiTenancyConfig,
             IRepository<Tenant> tenantRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            ISettingManager settingManager, 
-            IRepository<UserLoginAttempt, long> userLoginAttemptRepository, 
+            ISettingManager settingManager,
+            IRepository<UserLoginAttempt, long> userLoginAttemptRepository,
             IUserManagementConfig userManagementConfig,
             IIocResolver iocResolver,
-            IPasswordHasher<User> passwordHasher, 
+            IPasswordHasher<User> passwordHasher,
             RoleManager roleManager,
-            UserClaimsPrincipalFactory claimsPrincipalFactory) 
+            UserClaimsPrincipalFactory claimsPrincipalFactory,
+            EmployeeManager employeeManager)
             : base(
-                  userManager, 
+                  userManager,
                   multiTenancyConfig,
-                  tenantRepository, 
-                  unitOfWorkManager, 
-                  settingManager, 
-                  userLoginAttemptRepository, 
-                  userManagementConfig, 
-                  iocResolver, 
-                  passwordHasher, 
-                  roleManager, 
+                  tenantRepository,
+                  unitOfWorkManager,
+                  settingManager,
+                  userLoginAttemptRepository,
+                  userManagementConfig,
+                  iocResolver,
+                  passwordHasher,
+                  roleManager,
                   claimsPrincipalFactory)
+
         {
             Logger = NullLogger.Instance;
+            _employeeManager = employeeManager;
         }
         [UnitOfWork]
         public async Task<AbpLoginResult<Tenant, User>> LoginAsyncNoPass(string token, string secretCode = "", string tenancyName = null, bool shouldLockout = true)
@@ -115,7 +122,17 @@ namespace HRMv2.Authorization
                         var user = await UserManager.FindByNameOrEmailAsync(tenantId, emailAddress);
                         if (user == null)
                         {
-                            throw new UserFriendlyException(string.Format("Login Fail - Account does not exist"));
+                            var employee = _employeeManager.GetEmployeeByEmail(emailAddress);
+                            if (employee.Status == EmployeeStatus.Working || employee.Status == EmployeeStatus.MaternityLeave)
+                            {
+
+                                user = await CreateUserAsync(emailAddress, tenantId, Utils.CommonUtil.GetNameByFullName(employee.FullName), Utils.CommonUtil.GetSurNameByFullName(employee.FullName));
+                            }
+                            else
+                            {
+
+                                throw new UserFriendlyException(string.Format("Login Fail - Account does not exist"));
+                            }
                         }
 
                         if (await UserManager.IsLockedOutAsync(user))
@@ -143,6 +160,34 @@ namespace HRMv2.Authorization
             {
                 return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidUserNameOrEmailAddress, null);
             }
+        }
+        private async Task<User> CreateUserAsync(string emailAddress, int? tenantId, string name, string surname)
+        {
+            var user = new User
+            {
+                TenantId = tenantId,
+                EmailAddress = emailAddress,
+                UserName = emailAddress,
+                Name = name,
+                Surname = surname,
+                Roles = new List<UserRole>(),
+                Password ="",
+            };
+            user.SetNormalizedNames();
+            var role = await RoleManager.GetRoleByNameAsync(StaticRoleNames.Tenants.Employee);
+            if (role == null)
+            {
+                throw new UserFriendlyException("Role not found");
+            }
+
+            user.Roles.Add(new UserRole
+            {
+                TenantId = tenantId,
+                RoleId = role.Id,
+                UserId = user.Id
+            });
+            await UserManager.CreateAsync(user);
+            return user;
         }
     }
 }

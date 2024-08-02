@@ -107,11 +107,9 @@ export const APP_ENUMS = {
         Pausing: 2,
         Quit: 3,
         MaternityLeave: 4,
-        Onboard: 5,
-        OnOffInMonth: 6,
-        BackToWork: 7
+        
     },
-
+  
     BenefitType:
     {
         CheDoChung: 1,

@@ -1,3 +1,4 @@
+import { UserService } from '@app/service/api/user/user.service';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { PagedListingComponentBase, PagedRequestDto } from './../../../../shared/paged-listing-component-base';
 import { Component, Injector } from '@angular/core';
@@ -36,7 +37,8 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
   constructor(
     injector: Injector,
     private _userService: UserServiceProxy,
-    private _modalService: BsModalService
+    private _modalService: BsModalService,
+    private userService: UserService
   ) {
     super(injector);
   }
@@ -176,4 +178,17 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
         }
       })
   }
+  updateUserActive(user: UserDto, isActive: boolean) {
+    this.userService.updateUserActive(user.id, isActive).subscribe(rs => {
+      console.log("object")
+      if (isActive) {
+        abp.notify.success(`Update user ${user.fullName} to Activate`)
+      }
+      else {
+        abp.notify.success(`Update user ${user.fullName} to Inactivate`)
+      }
+      this.refresh()
+    })
+  }
+
 }

@@ -77,7 +77,7 @@ export const PERMISSIONS_CONSTANT = {
     Category_JobPosition_Delete: 'Category.JobPosition.Delete',
 
     //Level
-    Category_Level: 'Category.JobPosition',
+    Category_Level: 'Category.Level',
     Category_Level_View: 'Category.Level.View',
     Category_Level_Create: 'Category.Level.Create',
     Category_Level_Edit: 'Category.Level.Edit',
@@ -422,9 +422,10 @@ export const PERMISSIONS_CONSTANT = {
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_View: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.View',
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_Edit: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.Edit',
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.UploadContractFile',
-    SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.DeleteContractFile'
+    SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.DeleteContractFile',
 
-
+    View_Mail_Payslip_Link:'View.Mail.Payslip.Link',
+    View_All_Mail_Payslip_Link:'View.All.Mail.Payslip.Link'
 
 
 

@@ -1,4 +1,5 @@
 ﻿using Abp.MultiTenancy;
+using HRMv2.MultiTenancy;
 using System.Collections.Generic;
 using static HRMv2.Authorization.Roles.StaticRoleNames;
 
@@ -158,7 +159,7 @@ namespace HRMv2.Authorization
         public const string Employee_View = "Employee.View";
         public const string Employee_ViewMyBranchEmployee = "Employee.ViewMyBranchEmployee";
         public const string Employee_Create = "Employee.Create";
-        public const string Employee_Edit= "Employee.Edit";
+        public const string Employee_Edit = "Employee.Edit";
         public const string Employee_Export = "Employee.Export";
         public const string Employee_UploadAvatar = "Employee.UploadAvatar";
         public const string Employee_Delete = "Employee.Delete";
@@ -450,6 +451,10 @@ namespace HRMv2.Authorization
         public const string SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_Edit = "SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.Edit";
         public const string SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile = "SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.UploadContractFile";
         public const string SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile = "SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.DeleteContractFile";
+
+        public const string View_Mail_Payslip_Link = "View.Mail.Payslip.Link";
+        public const string View_All_Mail_Payslip_Link = "View.All.Mail.Payslip.Link";
+
         public class GrantPermissionRoles
         {
             public static Dictionary<string, List<string>> PermissionRoles = new Dictionary<string, List<string>>()
@@ -530,7 +535,7 @@ namespace HRMv2.Authorization
 
                         PermissionNames.Category_Usertype,
                         PermissionNames.Category_Usertype_View,
-                    
+
 
                         PermissionNames.Category_JobPosition,
                         PermissionNames.Category_JobPosition_View,
@@ -886,7 +891,7 @@ namespace HRMv2.Authorization
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_Approve,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_Reject,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_Execute,
-                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SendAllMail,
+                        PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SendAllMail,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SendMail,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_DownloadTemplate,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_ImportCheckpoint,
@@ -895,6 +900,9 @@ namespace HRMv2.Authorization
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_Edit,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile,
+
+                        PermissionNames.View_Mail_Payslip_Link,
+                        PermissionNames.View_All_Mail_Payslip_Link
 
                     }
                 },
@@ -945,7 +953,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Admin_Configuration_TalentSetting_View,
                         PermissionNames.Admin_Configuration_LoginSetting_View,
                         PermissionNames.Admin_Configuration_LoginSetting_Edit,
-                       
+
 
 
                         PermissionNames.Admin_EmailTemplate,
@@ -1338,7 +1346,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Admin_Configuration_TalentSetting_View,
                         PermissionNames.Admin_Configuration_LoginSetting_View,
                         PermissionNames.Admin_Configuration_LoginSetting_Edit,
-                       
+
 
 
                         PermissionNames.Admin_EmailTemplate,
@@ -1741,7 +1749,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Admin_Configuration_TalentSetting_View,
                         PermissionNames.Admin_Configuration_LoginSetting_View,
                         PermissionNames.Admin_Configuration_LoginSetting_Edit,
-                        
+
 
 
                         PermissionNames.Admin_EmailTemplate,
@@ -2091,6 +2099,14 @@ namespace HRMv2.Authorization
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile,
                   }
+                },
+                {
+                    Tenants.Employee,
+                    new List<string>()
+                    {
+                       PermissionNames.View_Mail_Payslip_Link
+                       
+                    }
                 }
             };
         }
@@ -2164,7 +2180,7 @@ namespace HRMv2.Authorization
 
                   new SystemPermission{ Name =  PermissionNames.Category_Usertype ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Usertype"},
                   new SystemPermission{ Name =  PermissionNames.Category_Usertype_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
-                  
+
 
                   new SystemPermission{ Name =  PermissionNames.Category_JobPosition ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "JobPosition"},
                   new SystemPermission{ Name =  PermissionNames.Category_JobPosition_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
@@ -2523,6 +2539,9 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                   new SystemPermission{ Name =  PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Upload Contract File"},
                   new SystemPermission{ Name =  PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete Contract File"},
+
+                  new SystemPermission{ Name =  PermissionNames.View_All_Mail_Payslip_Link ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View Mail All Link"},
+                  new SystemPermission{ Name =  PermissionNames.View_Mail_Payslip_Link ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View Mail Link"},
             };
 
             public static List<SystemPermission> TreePermissions = new List<SystemPermission>()
@@ -2572,7 +2591,7 @@ namespace HRMv2.Authorization
                                              new SystemPermission{ Name =  PermissionNames.Admin_Configuration_HRMSetting_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
                                              new SystemPermission{ Name =  PermissionNames.Admin_Configuration_HRMSetting_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                                         }
-                                    
+
                                     },
                                     new SystemPermission{ Name =  PermissionNames.Admin_Configuration_ProjectSetting ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Project Setting",
                                         Childrens = new List<SystemPermission>()
@@ -2582,7 +2601,7 @@ namespace HRMv2.Authorization
 
                                     },
 
-                                    
+
                                     new SystemPermission{ Name =  PermissionNames.Admin_Configuration_IMSSetting ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "IMS Setting",
                                         Childrens = new List<SystemPermission>()
                                         {
@@ -2620,15 +2639,15 @@ namespace HRMv2.Authorization
 
                                     },
                                     new SystemPermission{ Name = PermissionNames.Admin_Configuration_WokerAutoUpdateAllEmployeeInfo ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Worker Update All Employee Info To Other Tool Setting",
-                                    
+
                                         Childrens = new List<SystemPermission>()
                                         {
                                             new SystemPermission{ Name = PermissionNames.Admin_Configuration_WokerAutoUpdateAllEmployeeInfo_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName ="View" },
                                             new SystemPermission{ Name = PermissionNames.Admin_Configuration_WokerAutoUpdateAllEmployeeInfo_Edit , MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName ="Edit"}
-                                            
+
                                         }
                                     },
-                           
+
                                 }
                            },
                            new SystemPermission{ Name =  PermissionNames.Admin_EmailTemplate ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Email Template",
@@ -2641,10 +2660,10 @@ namespace HRMv2.Authorization
                                         {
                                             new SystemPermission{ Name =  PermissionNames.Admin_EmailTemplate_PreviewTemplate_SendMail ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Send Mail"},
                                         }
-                                    
-                                    
+
+
                                     },
-                  
+
                                 }
                            },
                            new SystemPermission{ Name =  PermissionNames.Admin_BackgroundJob ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Background Job" ,
@@ -2771,7 +2790,7 @@ namespace HRMv2.Authorization
                                             new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                                             new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
                                             new SystemPermission{ Name =  PermissionNames.Category_Chart_ChartDetail_ActiveDeactive ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Active/Deactive Chart Detail"},
-                                        } 
+                                        }
                                     }
                                 }
                             },
@@ -2813,7 +2832,7 @@ namespace HRMv2.Authorization
 
                     }
                 },
-                  
+
                 new SystemPermission{ Name =  PermissionNames.Employee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Employee",
                         Childrens = new List<SystemPermission>()
                         {
@@ -2842,7 +2861,7 @@ namespace HRMv2.Authorization
                                             new SystemPermission{ Name =  PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_ReCreateUserToOtherTool ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "ReCreate"},
                                             new SystemPermission{ Name =  PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_EditUserToOtherTool ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                                             new SystemPermission{ Name =  PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_QuitJobUserToOtherTool ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Quit job"},
-                                          } 
+                                          }
                                       },
 
                                       new SystemPermission{ Name =  PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_UploadAvatar ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Upload Avatar"},
@@ -2987,7 +3006,7 @@ namespace HRMv2.Authorization
                         new SystemPermission{ Name =  PermissionNames.WarningEmployee_RequestChangeInfo ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Temp Employee TS",
                             Childrens = new List<SystemPermission>()
                             {
-                                
+
                                  new SystemPermission{ Name =  PermissionNames.WarningEmployee_RequestChangeInfo_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
                                  new SystemPermission{ Name =  PermissionNames.WarningEmployee_RequestChangeInfo_DetailRequest,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Detail request",
                                     Childrens = new List<SystemPermission>()
@@ -2996,11 +3015,11 @@ namespace HRMv2.Authorization
                                         new SystemPermission{ Name =  PermissionNames.WarningEmployee_RequestChangeInfo_DetailRequest_Approve ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Approve"},
                                         new SystemPermission{ Name =  PermissionNames.WarningEmployee_RequestChangeInfo_DetailRequest_Reject ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Reject"},
                                     }
-                                 
-                                 
-                                 
+
+
+
                                  },
-                                  
+
                             }
                         },
                         new SystemPermission{ Name =  PermissionNames.WarningEmployee_PlanQuitEmployee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Plan Quit Employee",
@@ -3077,7 +3096,7 @@ namespace HRMv2.Authorization
                         }
 
                       },
-                      
+
 
                     }
                 },
@@ -3209,7 +3228,7 @@ namespace HRMv2.Authorization
                                             {
                                                 new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"}
                                             }
-                                        
+
                                         },
                                         new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Tab Bonus",
                                             Childrens = new List<SystemPermission>()
@@ -3234,16 +3253,16 @@ namespace HRMv2.Authorization
                                             {
                                                 new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabPayslipPreview_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
                                             }
-                                        
+
                                         },
 
 
 
 
-                                    }   
-                                
-                                
-                                
+                                    }
+
+
+
                                 },
 
 
@@ -3297,10 +3316,12 @@ namespace HRMv2.Authorization
                     }
 
                 },
+                new SystemPermission{ Name =  PermissionNames.View_All_Mail_Payslip_Link, MultiTenancySides = MultiTenancySides.Host , DisplayName = "View Mail All Link"},
+                new SystemPermission{ Name =  PermissionNames.View_Mail_Payslip_Link, MultiTenancySides = MultiTenancySides.Host , DisplayName = "View Mail Link"}
 
 
 
-              
+
 
 
 

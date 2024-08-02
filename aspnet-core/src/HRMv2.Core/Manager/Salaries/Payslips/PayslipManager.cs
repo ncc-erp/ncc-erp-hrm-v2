@@ -6,7 +6,6 @@ using HRMv2.Entities;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.Email.Dto;
-using HRMv2.Manager.Employees;
 using HRMv2.Manager.Punishments.Dto;
 using HRMv2.Manager.Salaries.CalculateSalary.Dto;
 using HRMv2.Manager.Salaries.Payslips.Dto;
@@ -21,17 +20,12 @@ using NccCore.Extension;
 using NccCore.Paging;
 using NccCore.Uitls;
 using Newtonsoft.Json;
-using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
-using Abp.Webhooks;
 using HRMv2.BackgroundJob.CalculateSalary;
-using HRMv2.BackgroundJob.ChangeWorkingStatusToQuit;
-using Abp.Runtime.Session;
 using HRMv2.Hubs;
 using Microsoft.Extensions.Options;
 using HRMv2.Manager.Employees.Dto;
@@ -39,13 +33,14 @@ using System.IO;
 using OfficeOpenXml;
 using HRMv2.Net.MimeTypes;
 using Microsoft.AspNetCore.Mvc;
-using HRMv2.Authorization.Roles;
 using AutoMapper;
-using DocumentFormat.OpenXml.ExtendedProperties;
-using DocumentFormat.OpenXml.Spreadsheet;
 using AutoMapper.Internal;
 using HRMv2.Manager.Bonuses.Dto;
-using DocumentFormat.OpenXml.Office2010.Excel;
+using HRMv2.Manager.Employees;
+using HRMv2.Manager.Salaries.Dto;
+using HRMv2.Authorization.Users;
+using Abp.Runtime.Session;
+
 
 namespace HRMv2.Manager.Salaries.Payslips
 {
@@ -56,19 +51,26 @@ namespace HRMv2.Manager.Salaries.Payslips
         private readonly BackgroundJobManager _backgroundJobManager;
         private readonly CalculateSalaryHub _calculateSalaryHub;
         private readonly IOptions<TimesheetConfig> _timesheetConfig;
+        private readonly EmployeeManager _employeeManager;
+        private readonly IAbpSession _abpSession;
+
 
         public PayslipManager(TimesheetWebService timesheetService,
             EmailManager emailManager,
             BackgroundJobManager backgroundJobManager,
             CalculateSalaryHub calculateSalaryHub,
             IOptions<TimesheetConfig> timesheetConfig,
-        IWorkScope workScope) : base(workScope)
+            IWorkScope workScope,
+             EmployeeManager employeeManager,
+              IAbpSession abpSession) : base(workScope)
         {
             _emailManager = emailManager;
             _timesheetService = timesheetService;
             _backgroundJobManager = backgroundJobManager;
             _calculateSalaryHub = calculateSalaryHub;
             _timesheetConfig = timesheetConfig;
+            _employeeManager = employeeManager;
+            _abpSession = abpSession;
         }
 
         public IQueryable<GetPayslipDto> QueryAllPayslip()
@@ -628,14 +630,14 @@ namespace HRMv2.Manager.Salaries.Payslips
                 WorkScope.Insert(entity);
                 return "Inserted PayslipDetail and inserted PunishmentEmployee successfull";
             }
-            
+
             punishmentEmployee.Money = Math.Abs(entity.Money);
             punishmentEmployee.Note = entity.Note;
             entity.ReferenceId = punishmentEmployee.Id;
 
             await WorkScope.InsertAsync(entity);
             await WorkScope.UpdateAsync(punishmentEmployee);
-            return "Inserted PayslipDetail and updated PunishmentEmployee successfull";             
+            return "Inserted PayslipDetail and updated PunishmentEmployee successfull";
         }
 
         public async Task<string> UpdatePayslipDetailPunishment(UpdatePayslipDetailDto input)
@@ -781,7 +783,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             await WorkScope.DeleteAsync<PayslipDetail>(id);
 
             if (payslipDetail.Type == PayslipDetailType.Punishment)
-            {                
+            {
                 var punishmentEmployee = WorkScope.GetAll<PunishmentEmployee>()
                 .Where(s => s.Id == payslipDetail.ReferenceId)
                 .Where(s => s.EmployeeId == payslipDetailExt.EmployeeId)
@@ -807,7 +809,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 {
                     await WorkScope.DeleteAsync(bonusEmployee);
                 }
-            }    
+            }
             return id;
         }
 
@@ -846,8 +848,9 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .Where(x => x.Id == id)
                 .Select(x => new GetPayslipDetailDto
                 {
-                    ParollMonth = x.Payroll.ApplyMonth,
+                    PayrollMonth = x.Payroll.ApplyMonth,
                     EmployeeFullName = x.Employee.FullName,
+                    Email = x.Employee.Email,
                     TotalRealSalary = x.Salary,
                     LeaveDayAfter = x.RemainLeaveDayAfter,
                     StandardWorkingDay = x.Payroll.NormalWorkingDay,
@@ -912,14 +915,14 @@ namespace HRMv2.Manager.Salaries.Payslips
         {
             await ValidPayslip(input.Id);
             var entity = await WorkScope.GetAsync<Payslip>(input.Id);
-            if (entity.RemainLeaveDayBefore != input.RemainLeaveDayBefore 
-                || entity.AddedLeaveDay != input.AddedLeaveDay 
-                || entity.NormalDay != input.NormalDay 
-                || entity.OpentalkCount != input.OpentalkCount 
+            if (entity.RemainLeaveDayBefore != input.RemainLeaveDayBefore
+                || entity.AddedLeaveDay != input.AddedLeaveDay
+                || entity.NormalDay != input.NormalDay
+                || entity.OpentalkCount != input.OpentalkCount
                 || entity.OffDay != input.OffDay
                 || entity.OTHour != input.OTHour
                 || entity.RefundLeaveDay != input.RefundLeaveDay
-                ||entity.RemainLeaveDayAfter != input.RemainLeaveDayAfter)
+                || entity.RemainLeaveDayAfter != input.RemainLeaveDayAfter)
             {
                 entity.RemainLeaveDayBefore = input.RemainLeaveDayBefore;
                 entity.AddedLeaveDay = input.AddedLeaveDay;
@@ -931,7 +934,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 entity.RemainLeaveDayAfter = input.RemainLeaveDayAfter;
             }
 
-            var details = await WorkScope.GetAll<PayslipDetail>().Where(p=>p.PayslipId==input.Id).ToListAsync();
+            var details = await WorkScope.GetAll<PayslipDetail>().Where(p => p.PayslipId == input.Id).ToListAsync();
             //normal salary
             var detail_NormalSalary = details.Where(dt => dt.Type == PayslipDetailType.SalaryNormal).ToList();
             UpdateDetail(detail_NormalSalary, input.NormalSalary);
@@ -940,7 +943,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             var detail_OTSalary = details.Where(dt => dt.Type == PayslipDetailType.SalaryOT).ToList();
             UpdateDetail(detail_OTSalary, input.OTSalary);
 
-            entity.Salary = details.Sum(s=>s.Money);
+            entity.Salary = details.Sum(s => s.Money);
 
             await CurrentUnitOfWork.SaveChangesAsync();
             return input;
@@ -955,7 +958,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             if (details.Count >= 1)
             {
                 details[0].Money = value;
-                if (details.Count > 1)                   
+                if (details.Count > 1)
                     details.Skip(1).ForAll(s => s.Money = 0);
             }
 
@@ -964,7 +967,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         private string GetReportTypeName(UserType type)
         {
             if (type == UserType.Internship)
-            {                            
+            {
                 return "Intern";
             }
 
@@ -1156,7 +1159,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         private List<GenerateErrorDto> GetDebtPlanError(List<long> employeeIds)
         {
             var listError = new List<GenerateErrorDto>();
-            
+
             var debts = WorkScope.GetAll<Debt>()
                 .Where(x => x.Status == DebtStatus.Inprogress)
                 .Where(x => x.PaymentType == DebtPaymentType.Salary)
@@ -1200,7 +1203,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                         {
                             Message = $"<strong>{debt.Email}</strong> Debt #{debt.Id} Payment plan (total: <strong>{CommonUtil.FormatDisplayMoney(totalPlanMoney)})</strong>" +
                             $" is NOT EQUAL to debt Principal + Interest (<strong>{CommonUtil.FormatDisplayMoney(moneyHaveToPay)}</strong>)",
-                            ReferenceId = debt.Id 
+                            ReferenceId = debt.Id
                         };
 
                         listError.Add(error);
@@ -1208,7 +1211,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 }
                 else
                 {
-                    listError.Add( new GenerateErrorDto { Message = $"<strong>{debt.Email}</strong> debt #{debt.Id} dont have payment plan", ReferenceId = debt.Id });
+                    listError.Add(new GenerateErrorDto { Message = $"<strong>{debt.Email}</strong> debt #{debt.Id} dont have payment plan", ReferenceId = debt.Id });
                 }
             }
 
@@ -1325,8 +1328,8 @@ namespace HRMv2.Manager.Salaries.Payslips
             var employeeIds = employees.Select(s => s.EmployeeId).ToList();
 
             var debtError = GetDebtPlanError(employeeIds);
-            
-            if(debtError.Count > 0)
+
+            if (debtError.Count > 0)
             {
                 result.ErrorList.AddRange(debtError);
                 _calculateSalaryHub.SendMessage(new { Message = debtError, Process = "", Status = "Error" });
@@ -2105,7 +2108,8 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public GeneratePayslipResultDto AddEmployeesToPayroll(CollectPayslipDto input)
         {
-            var result = new GeneratePayslipResultDto{
+            var result = new GeneratePayslipResultDto
+            {
                 ErrorList = new List<GenerateErrorDto>()
             };
             if (input.EmployeeIds == null || input.EmployeeIds.IsEmpty())
@@ -2130,7 +2134,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             var generateResult = GeneratePayslips(input);
 
-            if(generateResult.ErrorList != null && generateResult.ErrorList.Count > 0)
+            if (generateResult.ErrorList != null && generateResult.ErrorList.Count > 0)
             {
                 result.ErrorList.AddRange(generateResult.ErrorList);
             }
@@ -2231,6 +2235,51 @@ namespace HRMv2.Manager.Salaries.Payslips
             return $"Started sending {emailPayslips.Count} email.";
         }
 
+
+        public string SendMailToAllEmploeeLink(SendMailAllEmployeeDto input)
+        {
+            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.PayslipLink);
+            if (emailTemplate == default)
+            {
+                throw new UserFriendlyException($"Not found email template for payslip");
+            }
+
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Include(s => s.Employee)
+                .Include(s => s.Payroll)
+                .Where(x => x.PayrollId == input.PayrollId)
+                .ToList();
+
+            if (listPayslip.IsEmpty())
+            {
+                throw new UserFriendlyException($"There is no payslip in the payroll {input.PayrollId}");
+            }
+            UpdatePayslipComplainDeadLine(listPayslip, input.Deadline);
+            var domain = HRMv2Consts.HRM_Uri;
+            List<ResultTemplateEmail<InputPayslipLinkMailTemplate>> emailPayslips = listPayslip.Select(payslip => new ResultTemplateEmail<InputPayslipLinkMailTemplate>
+            {
+                Result = new InputPayslipLinkMailTemplate
+                {
+                    EmployeeFullName = payslip.Employee.FullName,
+                    PayrollMonth = payslip.Payroll.ApplyMonth.Month.ToString(),
+                    PayrollYear = payslip.Payroll.ApplyMonth.Year.ToString(),
+                    SendToEmail = payslip.Employee.Email,
+                    SalaryLink = domain + $"app/payslip-confirm?id={payslip.Id}",
+                    ComplainDeadline = payslip.ComplainDeadline.HasValue
+              ? payslip.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ")
+              : "..."
+                }
+            }).ToList();
+            var delaySendMail = 0;
+            foreach (var payslip in emailPayslips)
+            {
+                MailPreviewInfoDto mailInput = _emailManager.GenerateEmailContent(payslip.Result, emailTemplate);
+                _backgroundJobManager.Enqueue<SendMail, MailPreviewInfoDto>(mailInput, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendMail));
+                delaySendMail += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
+            };
+
+            return $"Started sending {emailPayslips.Count} email.";
+        }
         private Dictionary<long, List<PayslipSalaryEmailDto>> GetDicInputPayslipSalaries(List<long> payslipIds)
         {
             var dicPayslipIdToInputSalaries = WorkScope.GetAll<PayslipSalary>()
@@ -2293,15 +2342,144 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .Where(x => x.Id == payslipId)
                 .Select(x => x.ComplainDeadline)
                 .FirstOrDefault();
-
             MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.Payslip, payslipId);
             return new GetPayslipMailContentDto
             {
                 MailInfo = mailTemplate,
-                Deadline = deadLine
+                Deadline = deadLine,
+
             };
         }
+        public GetPayslipLinkMailContentDto GetPayslipMailDetaiTemplate(long payslipId)
+        {
+            var employee = WorkScope.GetAll<Payslip>()
+                .Where(x => x.Id == payslipId)
+                .Select(x => x.Employee.Email)
+                .FirstOrDefault();
+            var deadline = WorkScope.GetAll<Payslip>()
+                .Where(x => x.Id == payslipId)
+                .Select(x => x.ComplainDeadline)
+                .FirstOrDefault();
+            var employeeByEmail = _employeeManager.GetEmployeeByEmail(employee);
+            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.Payslip, payslipId);
+            var currentLogin = mailTemplate.CurrentUserLoginId;
+            var currentUserLoginEmail = WorkScope.GetAll<User>()
+                .Where(x => x.Id == currentLogin)
+                .Select(x => x.EmailAddress)
+                .FirstOrDefault();
+            return new GetPayslipLinkMailContentDto
+            {
+                MailInfo = mailTemplate,
+                Deadline = deadline,
+                Status = employeeByEmail.Status,
+                FullName = employeeByEmail.FullName,
+                CurrentUserLoginEmail = currentUserLoginEmail,
+                Valid = true
+            };
+        }
+        public GetPayslipMailContentDto GetPayslipMailLinkTemplate(long payslipId)
+        {
+            
+                var deadLine = WorkScope.GetAll<Payslip>()
+                    .Where(x => x.Id == payslipId)
+                    .Select(x => x.ComplainDeadline)
+                    .FirstOrDefault();
+                MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.PayslipLink, payslipId);
+                return new GetPayslipMailContentDto
+                {
+                    MailInfo = mailTemplate,
+                    Deadline = deadLine,
 
+                };
+            
+        }
+
+        public GetPayslipLinkMailContentDto GetPayslipForEmployeeWithWithWorkingStatus(long payslipId)
+        {
+            var employeeEmail = WorkScope.GetAll<Payslip>()
+                .Where(x => x.Id == payslipId)
+                .Select(x => x.Employee.Email)
+                .FirstOrDefault();
+            var deadline = WorkScope.GetAll<Payslip>()
+                .Where(x => x.Id == payslipId)
+                .Select(x => x.ComplainDeadline)
+                .FirstOrDefault();
+
+            if (string.IsNullOrEmpty(employeeEmail))
+            {
+                throw new Exception($"Employee email is null or empty for payslip ID: {payslipId}");
+            }
+
+            var currentUserLoginId = _abpSession.UserId;
+            var currentUserEmail = WorkScope.GetAll<User>()
+                .Where(x => x.Id == currentUserLoginId)
+                .FirstOrDefault();
+            var employeeInforByEmail = _employeeManager.GetEmployeeByEmail(employeeEmail);
+
+            
+            if (currentUserEmail.EmailAddress == employeeEmail)
+            {
+                return GetPayslipMailLinkTemplatetest(payslipId);
+            }
+            else
+            {
+                return new GetPayslipLinkMailContentDto
+                {
+                    MailInfo = null,
+                    Deadline = deadline,
+                    Status = employeeInforByEmail.Status,
+                    FullName = employeeInforByEmail.FullName,
+                    CurrentUserLoginEmail = currentUserEmail.EmailAddress,
+                    CurrentUserLoginFullName = currentUserEmail.Name + " " + currentUserEmail.Surname,
+                    Valid =  false,
+                    
+                };
+            }
+        }
+        public GetPayslipLinkMailContentDto GetPayslipMailLinkTemplatetest(long payslipId)
+        {
+            var employee = WorkScope.GetAll<Payslip>()
+                .Where(x => x.Id == payslipId)
+                .Select(x => x.Employee.Email)
+                .FirstOrDefault();
+
+            if (employee == null)
+            {
+                throw new Exception($"employee null");
+            }
+            var currentLoginId = _abpSession.UserId;
+            var employeeInforByEmail = _employeeManager.GetEmployeeByEmail(employee);
+            var currentUserLoginEmail = WorkScope.GetAll<User>()
+                .Where(x => x.Id == currentLoginId)
+                .Select(x => x.EmailAddress)
+                .FirstOrDefault();
+
+            switch (employeeInforByEmail.Status)
+            {
+                case EmployeeStatus.Quit:
+                    return new GetPayslipLinkMailContentDto
+                    {
+                        MailInfo = null,
+                        Deadline = null,
+                        Status = employeeInforByEmail.Status,
+                        FullName = employeeInforByEmail.FullName,
+                        CurrentUserLoginEmail = currentUserLoginEmail,
+                        Valid = true
+                    };
+                case EmployeeStatus.Pausing:
+                    return new GetPayslipLinkMailContentDto
+                    {
+                        MailInfo = null,
+                        Deadline = null,
+                        Status = employeeInforByEmail.Status,
+                        FullName = employeeInforByEmail.FullName,
+                        CurrentUserLoginEmail = currentUserLoginEmail,
+                        Valid = true
+                    };
+                default:
+                    return GetPayslipMailDetaiTemplate(payslipId);
+            }
+        }
         public async Task<UpdateDeadlineDto> UpdatePayslipDeadline(UpdateDeadlineDto input)
         {
             var payslip = WorkScope.GetAll<Payslip>()
@@ -2351,7 +2529,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     {
                         FileName = "Payslips-for-tech",
                         FileType = MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet,
-                        Base64 = resultBase64   
+                        Base64 = resultBase64
                     };
                 }
             }
@@ -2360,7 +2538,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         public FileBase64Dto ExportOutsideTech(long payrollId)
         {
             var templateFilePath = Path.Combine(HRMv2Consts.templateFolder, "Payslip-outside-tech.xlsx");
-                
+
             if (templateFilePath == default)
             {
                 throw new UserFriendlyException("Can't find template");
@@ -2513,7 +2691,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 var bankInfoStr = $"{payslip.BankInfo.BankAccountNumber}\n{payslip.BankInfo.BankName}";
                 var benefitStr = "";
 
-                if(payslip.ListBenefit != null && payslip.ListBenefit.Count > 0)
+                if (payslip.ListBenefit != null && payslip.ListBenefit.Count > 0)
                 {
                     foreach (var benefit in payslip.ListBenefit)
                     {
@@ -2681,13 +2859,13 @@ namespace HRMv2.Manager.Salaries.Payslips
         }
 
 
-         public async Task<Object> UpdateEmployeeRemainLeaveDaysAfterCalculatingSalary([FromForm] InputToUpdateRemainLeaveDaysDto input)
-         {
+        public async Task<Object> UpdateEmployeeRemainLeaveDaysAfterCalculatingSalary([FromForm] InputToUpdateRemainLeaveDaysDto input)
+        {
             ValidUpdateRemainLeaveDaysAfter(input);
             var failedList = new List<ResponseFailedDto>();
             var successList = new List<string>();
 
-            var mapEmailToRemainLeaveDaysAfter =  WorkScope.GetAll<Payslip>()
+            var mapEmailToRemainLeaveDaysAfter = WorkScope.GetAll<Payslip>()
                .Where(x => x.PayrollId == input.PayrollId)
                .Select(info => new { Key = info.Employee.Email, info })
                .ToDictionary(x => x.Key, info => info);
@@ -2740,9 +2918,9 @@ namespace HRMv2.Manager.Salaries.Payslips
             }
 
             return new { successList, failedList };
-        } 
+        }
         public async Task<List<ResponseApplyVoucherDto>> ApplyVoucherToAllEmployee(List<InputApplyVoucherDto> input)
-        {            
+        {
             var payrolls = WorkScope.GetAll<Payroll>()
                                     .Where(x => (x.Status == PayrollStatus.New || x.Status == PayrollStatus.RejectedByKT))
                                     .ToList();
@@ -2750,12 +2928,12 @@ namespace HRMv2.Manager.Salaries.Payslips
             {
                 throw new UserFriendlyException($"Cannot apply voucher because there are more than 1 New or RejectedByKT Payroll.");
             }
-            
+
             if (payrolls.Count == 0)
             {
                 throw new UserFriendlyException($"Cannot apply voucher because there is no New or RejectedByKT Payroll.");
             }
-            
+
             var inputEmails = input.Select(s => s.Email).ToList();
             var month = payrolls.FirstOrDefault().ApplyMonth.Month;
             var year = payrolls.FirstOrDefault().ApplyMonth.Year;
@@ -2763,11 +2941,11 @@ namespace HRMv2.Manager.Salaries.Payslips
             var dicPunishmentEmployees = WorkScope.GetAll<PunishmentEmployee>()
                 .Select(s => new { s.Punishment.Date.Month, s.Punishment.Date.Year, s.Employee.Email, s.Id, PunishmentEmployee = s })
                 .Where(s => (s.Month == month && s.Year == year))
-                .Where(s => inputEmails.Contains(s.Email))  
+                .Where(s => inputEmails.Contains(s.Email))
                 .OrderBy(s => s.Id)
                 .ToList()
                 .GroupBy(s => s.Email)
-                .ToDictionary(s => s.Key, s => s.Select(x=> x.PunishmentEmployee).ToList());
+                .ToDictionary(s => s.Key, s => s.Select(x => x.PunishmentEmployee).ToList());
 
             var listResponseApplyVoucherDto = new List<ResponseApplyVoucherDto>();
 
@@ -2784,7 +2962,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             }
             await CurrentUnitOfWork.SaveChangesAsync();
             return listResponseApplyVoucherDto;
-            
+
         }
 
         /// <summary>
@@ -2801,13 +2979,13 @@ namespace HRMv2.Manager.Salaries.Payslips
             if (voucher <= 0) return 0d;
 
             var remainVoucher = voucher;
-            foreach(var pe in punishmentEmployees)
+            foreach (var pe in punishmentEmployees)
             {
                 if (remainVoucher <= 0) break;
                 if (pe.Money == 0) continue;
                 var applyVoucher = Math.Min(pe.Money, remainVoucher);
                 pe.Money -= applyVoucher;
-                remainVoucher-= applyVoucher;                
+                remainVoucher -= applyVoucher;
                 pe.Note += $" ({CommonUtil.FormatDisplayMoneyK(applyVoucher)} voucher: {CommonUtil.FormatDisplayMoneyK(remainVoucher + applyVoucher)} -> {CommonUtil.FormatDisplayMoneyK(remainVoucher)})";
             }
             return remainVoucher;

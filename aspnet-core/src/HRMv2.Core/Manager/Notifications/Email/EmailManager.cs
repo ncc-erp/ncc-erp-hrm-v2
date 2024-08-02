@@ -235,6 +235,8 @@ namespace HRMv2.Manager.Notifications.Email
                     return GetPayrollRejectedByCEOData(id);
                 case MailFuncEnum.PayrollExecuted:
                     return GetPayrollExecutedData(id);
+                case MailFuncEnum.PayslipLink:
+                    return GetDataPayslipLink(id);
                 default:
                     return null;
             }
@@ -687,6 +689,42 @@ namespace HRMv2.Manager.Notifications.Email
             };
 
             return new ResultTemplateEmail<InputPayslipMailTemplate>
+            {
+                Result = result
+            };
+        }
+
+        private ResultTemplateEmail<InputPayslipLinkMailTemplate> GetDataPayslipLink(long? payslipLinkId)
+        {
+
+            if (payslipLinkId == null)
+            {
+                return new ResultTemplateEmail<InputPayslipLinkMailTemplate>
+                {
+                    
+                };
+            }
+
+            var payslip = WorkScope.GetAll<Payslip>()
+                .Include(x => x.Employee)
+                .Include(x => x.Payroll)
+                .Where(x => x.Id == payslipLinkId)
+                .FirstOrDefault();
+            var domain = HRMv2Consts.HRM_Uri;
+            var result = new InputPayslipLinkMailTemplate
+            {
+                EmployeeFullName = payslip.Employee.FullName,
+                PayrollMonth = payslip.Payroll.ApplyMonth.Month.ToString(),
+                PayrollYear = payslip.Payroll.ApplyMonth.Year.ToString(),
+                SendToEmail = payslip.Employee.Email,
+                SalaryLink = domain + $"app/payslip-confirm?id={payslip.Id}",
+                ComplainDeadline = payslip.ComplainDeadline.HasValue
+              ? payslip.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ")
+              : "..."
+            };
+
+
+            return new ResultTemplateEmail<InputPayslipLinkMailTemplate>
             {
                 Result = result
             };

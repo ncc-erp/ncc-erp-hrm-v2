@@ -25,7 +25,7 @@
     </div>
   </div>
   <div class="dropdown-menu dropdown-menu-right" *dropdownMenu>
-    <a class="dropdown-item text-dark" [routerLink]="['admin/update-password']">
+    <a *ngIf="canUpdatePassword()" class="dropdown-item text-dark" [routerLink]="['admin/update-password']">
       <i class="fas fa-user-edit"></i> {{ "Update Password" | localize }}
     </a>
     <a class="dropdown-item text-dark" href="javascript:;" (click)="logout()">

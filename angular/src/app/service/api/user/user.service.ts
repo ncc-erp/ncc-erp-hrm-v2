@@ -15,6 +15,9 @@ export class UserService  extends BaseApiService{
   UpdateUserRole(user): Observable<any> {
     return this.processPut('UpdateUserRole', user);
   }
-  
+  updateUserActive(userId:number, isActive:boolean): Observable<any> {
+    return this.processPut(`UpdateUserActive?userId=${userId}&&isActive=${isActive}`,{});
+  }
+
 }
 

@@ -19,6 +19,7 @@ using HRMv2.NccCore;
 using HRMv2.Manager.Punishments.Dto;
 using HRMv2.Manager.Punishments;
 using HRMv2.Manager.Bonuses.Dto;
+using HRMv2.Sessions;
 
 namespace HRMv2.APIs.Payslips
 {
@@ -26,6 +27,7 @@ namespace HRMv2.APIs.Payslips
     public class PayslipAppService : HRMv2AppServiceBase
     {
         private readonly PayslipManager _payslipManager;
+        private readonly SessionAppService _sessionAppService;
         public PayslipAppService(PayslipManager payslipManager)
         {
             _payslipManager = payslipManager;
@@ -77,6 +79,17 @@ namespace HRMv2.APIs.Payslips
         public GetPayslipMailContentDto GetEmailTemplate(long payslippId)
         {
             return _payslipManager.GetPayslipMailTemplate(payslippId);
+        }
+        [HttpGet]
+        public GetPayslipMailContentDto GetEmailLinkTemplate(long payslippId)
+        {
+            return _payslipManager.GetPayslipMailLinkTemplate(payslippId);
+        }
+        [HttpGet]
+        [AbpAuthorize(PermissionNames.View_All_Mail_Payslip_Link, PermissionNames.View_Mail_Payslip_Link)]
+        public GetPayslipLinkMailContentDto GetDetaiPayslipTemplate(long payslippId)
+        {
+            return _payslipManager.GetPayslipForEmployeeWithWithWorkingStatus(payslippId);
         }
 
         [HttpPost]
@@ -152,6 +165,12 @@ namespace HRMv2.APIs.Payslips
         public string SendMailToAllEmployee(SendMailAllEmployeeDto input)
         {
             return _payslipManager.SendMailToAllEmployee(input);
+        }
+
+        [HttpPost]
+        public string SendMailToAllEmployeeLink(SendMailAllEmployeeDto input)
+        {
+            return _payslipManager.SendMailToAllEmploeeLink(input);
         }
 
         [HttpGet]
@@ -258,6 +277,12 @@ namespace HRMv2.APIs.Payslips
         {
             return _payslipManager.GetAvailablePunishmentsInMonth(payslipId);
         }
+       /* [HttpGet]
+        public async Task<GetPayslipMailContentDto> GetTextEmployeeByEmailStatus(long payslipId)
+        {
+            return await _payslipManager.GetPayslipMailLinkTemplatetest(payslipId);
+        }*/
+
 
     }
 }

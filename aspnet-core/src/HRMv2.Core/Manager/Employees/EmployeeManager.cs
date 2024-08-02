@@ -52,6 +52,8 @@ using Microsoft.Extensions.Logging;
 using NccCore.Helper;
 using System.Threading;
 using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
+using HRMv2.Authorization.Users;
+using HRMv2.Authorization.Roles;
 
 namespace HRMv2.Manager.Employees
 {
@@ -70,6 +72,9 @@ namespace HRMv2.Manager.Employees
         private readonly IBackgroundJobManager _backgroundJobManager;
         private readonly IRepository<BackgroundJobInfo, long> _storeJob;
         private readonly ILogger<EmployeeManager> Logger;
+        private readonly UserManager _userManager;
+        private readonly RoleManager _roleManager;
+
 
         public EmployeeManager(UploadFileService uploadFileService,
             ContractManager contractManager,
@@ -85,7 +90,9 @@ namespace HRMv2.Manager.Employees
             ChangeEmployeeWorkingStatusManager changeEmployeeWorkingStatusManager,
             IBackgroundJobManager backgroundJobManager,
             IRepository<BackgroundJobInfo, long> storeJob,
-            ILogger<EmployeeManager> log
+            ILogger<EmployeeManager> log,
+              UserManager userManager,
+              RoleManager roleManager
             ) : base(workScope)
         {
             _contractManager = contractManager;
@@ -100,6 +107,8 @@ namespace HRMv2.Manager.Employees
             _backgroundJobManager = backgroundJobManager;
             _storeJob = storeJob;
             Logger = log;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
         public IQueryable<GetEmployeeDto> QueryAllEmployee()
         {
@@ -394,7 +403,7 @@ namespace HRMv2.Manager.Employees
                 var sessionUserBranchId = GetSessionUserBranchId();
                 query = query.Where(x => x.BranchId == sessionUserBranchId);
             }
-             
+
             else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
 
@@ -463,7 +472,7 @@ namespace HRMv2.Manager.Employees
                 }
             }
 
-            if(input.BirthdayFromDate.HasValue  && input.BirthdayToDate.HasValue)
+            if(input.BirthdayFromDate.HasValue && input.BirthdayToDate.HasValue)
             {
                 var fromDate = input.BirthdayFromDate.Value;
                 var toDate = input.BirthdayToDate.Value;
@@ -637,10 +646,16 @@ namespace HRMv2.Manager.Employees
             }
 
             CreateOrUpdateToOtherTool(entity, ActionMode.Create);
+            var userEmail = _userManager.GetUserByEmail(input.Email);
+            if (userEmail != null)
+            {
+
+                await _userManager.CreateUserForEmployee(input, CommonUtil.GetNameByFullName(input.FullName), CommonUtil.GetSurNameByFullName(input.FullName));
+            }
+
 
             return input;
         }
-
 
         public void OnboardTempEmployee(long? id)
         {
@@ -689,7 +704,18 @@ namespace HRMv2.Manager.Employees
             //them validate, kiem tra nhung truong co thay doi
             var entity = await WorkScope.GetAsync<Employee>(input.Id);
             ObjectMapper.Map(input, entity);
-
+            var employeeIsActive = WorkScope.GetAll<User>()
+                .Where(x => x.EmailAddress == entity.Email)
+                .Select(x => x.Id)
+                .FirstOrDefault();
+            if (entity.Status == EmployeeStatus.Working || entity.Status == EmployeeStatus.MaternityLeave)
+            {
+                await _userManager.UpdateUserActive(employeeIsActive, true);
+            }
+            else
+            {
+                await _userManager.UpdateUserActive(employeeIsActive, false);
+            }
             var qSCRE = WorkScope.GetAll<SalaryChangeRequestEmployee>()
                          .Where(x => x.EmployeeId == entity.Id);
             var hasOnlyInitial = !qSCRE.Any(x => x.Type != SalaryRequestType.Initial);
@@ -911,7 +937,7 @@ namespace HRMv2.Manager.Employees
         }
 
 
-        public async Task<long> Delete(long id)
+        public async Task<long> Delete(long id, bool deteleUserWithEmail)
         {
             var employee = await WorkScope.GetAsync<Employee>(id);
 
@@ -930,6 +956,25 @@ namespace HRMv2.Manager.Employees
             if ((employee.Status == EmployeeStatus.Working || employee.Status == EmployeeStatus.MaternityLeave) && payslips.Count > 0)
             {
                 throw new UserFriendlyException($"Employee is {employee.Status} and has {payslipIds.Count} payslip => Can't delete");
+            }
+            var employeeForUser = WorkScope.GetAll<Employee>()
+                .Where(x => x.Id == id)
+                .Select(x => x.Email)
+                .FirstOrDefault();
+            var user = WorkScope.GetAll<User>()
+                .Where(x => x.EmailAddress == employeeForUser)
+                .Select(x => x.Id)
+                .FirstOrDefault();
+            if (user != 0)
+            {
+                if (deteleUserWithEmail)
+                {
+                    await _userManager.DeleteAsync(user);
+                }
+                else
+                {
+                    await _userManager.UpdateUserActive(user, false);
+                }
             }
 
             var employeeChangeRequest = WorkScope.GetAll<SalaryChangeRequestEmployee>()
@@ -1011,7 +1056,7 @@ namespace HRMv2.Manager.Employees
             {
                 throw new UserFriendlyException($"Email is Already Exist");
             }
-            if(input.FullName.Split(' ').Length == 1)
+            if (input.FullName.Split(' ').Length == 1)
             {
                 throw new UserFriendlyException($"Full name is invalid");
             }
@@ -1061,11 +1106,11 @@ namespace HRMv2.Manager.Employees
         {
             var employee = WorkScope.GetAll<Employee>()
                 .Where(x => x.Id == input.EmployeeId).FirstOrDefault();
-            if(employee == default)
+            if (employee == default)
             {
                 throw new UserFriendlyException($"Can not found employee with Id={input.EmployeeId}");
             }
-            if(employee.BranchId == input.BranchId)
+            if (employee.BranchId == input.BranchId)
             {
                 throw new UserFriendlyException($"Employee already has this branch");
             }
@@ -1659,6 +1704,13 @@ namespace HRMv2.Manager.Employees
 
                 await CreateEmployee(data, null, false);
                 successList.Add(data.Email);
+                var userEmail = _userManager.GetUserByEmail(data.Email);
+                if (userEmail != null)
+                {
+
+                    await _userManager.CreateUserForEmployee(data, data.Name, data.Surname);
+                }
+
             }
             return new { successList, failedList };
         }
@@ -2010,23 +2062,24 @@ namespace HRMv2.Manager.Employees
                 }).ToList();
             return employees;
         }
-        public async Task<GetEmployeeByEmailDto> GetEmployeeByEmail(string email)
+        public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
         {
-            return await WorkScope.GetAll<Employee>()
+            return WorkScope.GetAll<Employee>()
                  .Select(x => new GetEmployeeByEmailDto
                  {
                      Email = x.Email,
                      FullName = x.FullName,
                      BranchCode = x.Branch.Code,
-                     BranchName = x.Branch.Name
+                     BranchName = x.Branch.Name,
+                     Status = x.Status
                  })
                  .Where(s => s.Email.ToLower() == email.ToLower())
-                 .FirstOrDefaultAsync();
+                 .FirstOrDefault();
         }
 
         public async void UpdateAllWorkingEmployeeInfoToOtherTools()
         {
-            var employees =  WorkScope.GetAll<Employee>()
+            var employees = WorkScope.GetAll<Employee>()
                 .Where(x => x.Status == EmployeeStatus.Working)
                 .Select(x => new CreateOrUpdateUserOtherToolDto
                 {
@@ -2043,9 +2096,9 @@ namespace HRMv2.Manager.Employees
                     EmergencyContactPhone = x.EmergencyContactPhone
                 })
                 .ToList();
-            if(employees == null || employees.Count() == 0)  return;
+            if (employees == null || employees.Count() == 0) return;
 
-            foreach(var employee in employees)
+            foreach (var employee in employees)
             {
                 try
                 {
