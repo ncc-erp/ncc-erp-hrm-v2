@@ -180,12 +180,11 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
   }
   updateUserActive(user: UserDto, isActive: boolean) {
     this.userService.updateUserActive(user.id, isActive).subscribe(rs => {
-      console.log("object")
       if (isActive) {
-        abp.notify.success(`Update user ${user.fullName} to Activate`)
+        abp.notify.success(`Active user ${user.fullName} successful`)
       }
       else {
-        abp.notify.success(`Update user ${user.fullName} to Inactivate`)
+        abp.notify.success(`Deactive user ${user.fullName} successful`)
       }
       this.refresh()
     })
