@@ -9,7 +9,7 @@ const routes: Routes = [
       path: "payslip-detail/:id",
       component: PayslipDetailPreviewLinkComponent,
       data: {
-        permission: [PERMISSIONS_CONSTANT.View_All_Mail_Payslip_Link,PERMISSIONS_CONSTANT.View_Mail_Payslip_Link,PERMISSIONS_CONSTANT.Admin],
+        permission: [PERMISSIONS_CONSTANT.ViewMyPayslipLink,PERMISSIONS_CONSTANT.ViewAllPayslipLink],
         preload: true
       },
       canActivate: [AppRouteGuard],

@@ -77,7 +77,7 @@ export class ConfirmMailDialogComponent extends AppComponentBase {
     await this.payslipService.updatePayslipDeadline(input).toPromise().then();
 
     this.subscription.push(
-      this.payslipService.getEmailLinkTemplate(this.payslipId).subscribe((rs) => {
+      this.payslipService.getPayslipPreviewToSendEmail(this.payslipId).subscribe((rs) => {
         const dialogData = {
           showEditButton: true,
           mailInfo: rs.result.mailInfo,

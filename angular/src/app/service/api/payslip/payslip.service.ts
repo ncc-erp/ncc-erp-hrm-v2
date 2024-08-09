@@ -100,11 +100,11 @@ export class PayslipService extends BaseApiService {
   public getEmailTemplate(payslipId: number): Observable<ApiResponseDto<any>> {
     return this.processGet(`GetEmailTemplate?payslippId=${payslipId}`)
   }
-  public getEmailLinkTemplate(payslipId: number): Observable<ApiResponseDto<any>> {
-    return this.processGet(`GetEmailLinkTemplate?payslippId=${payslipId}`)
+  public getPayslipPreviewToSendEmail(payslipId: number): Observable<ApiResponseDto<any>> {
+    return this.processGet(`GetPayslipPreviewToSendEmail?payslippId=${payslipId}`)
   }
-  public getDetaiPayslipTemplate(payslipId: number): Observable<ApiResponseDto<any>> {
-    return this.processGet(`GetDetaiPayslipTemplate?payslippId=${payslipId}`)
+  public getPayslipPreviewToConfirm(payslipId: number): Observable<ApiResponseDto<any>> {
+    return this.processGet(`GetPayslipPreviewToConfirm?payslippId=${payslipId}`)
   }
   public sendMailToOneEmployee(input: SendMailOneemployeeDto): Observable<ApiResponseDto<any>> {
     return this.processPost(`SendMailToOneEmployee`, input)

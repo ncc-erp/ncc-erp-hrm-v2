@@ -7,6 +7,7 @@ import { PERMISSIONS_CONSTANT } from "@app/permission/permission";
 import { EmployeeService } from "@app/service/api/employee/employee.service";
 import { MailPreviewInfo } from "@app/service/model/mail/mail.dto";
 import { DomSanitizer } from "@angular/platform-browser";
+import { CheckValidType, EmailFunc } from "@shared/AppEnums";
 
 @Component({
   selector: "app-payslip-detail-preview-link",
@@ -18,17 +19,7 @@ export class PayslipDetailPreviewLinkComponent
   implements OnInit
 {
   public payslipId: number;
-  public mailInfo = new MailPreviewInfo();
-  public deadline: string;
-  public deadlineComfirmPayslip: string;
-  public valid: boolean;
-  public status: any;
-  public fullName: string;
-  public currentUserLoginFullName: string;
-  public isLoadingPage: boolean = false;
-  public isLoadingStatus: boolean = false;
-  public isLoadingStatusQuit: boolean = false;
-  public isValid: boolean = false;
+  public payslipDetail: PaysslipToConfirm;
   constructor(
     injector: Injector,
     private payslipService: PayslipService,
@@ -45,65 +36,36 @@ export class PayslipDetailPreviewLinkComponent
   }
 
   getMailContent() {
-    if (this.isGranted(PERMISSIONS_CONSTANT.Admin)) {
-      this.isLoadingPage = true;
-      this.payslipService.getEmailTemplate(this.payslipId).subscribe((rs) => {
-        this.mailInfo = rs.result.mailInfo;
-        this.deadline = rs.result.deadline;
+    this.payslipService
+      .getPayslipPreviewToConfirm(this.payslipId)
+      .subscribe((rs) => {
+        this.payslipDetail = rs.result
+        console.log("obje212121ct", this.payslipDetail.mailInfo.bodyMessage)
+        console.log("obje212121ct", this.payslipDetail.message)
       });
-    } else {
-      this.payslipService
-        .getDetaiPayslipTemplate(this.payslipId)
-        .subscribe((rs) => {
-          this.mailInfo = rs.result.mailInfo;
-          this.deadline = rs.result.deadline;
-          this.status = rs.result.status;
-          this.fullName = rs.result.fullName;
-          this.currentUserLoginFullName = rs.result.currentUserLoginFullName;
-          this.valid = rs.result.valid;
-          this.deadlineComfirmPayslip = this.convertDateTime(this.deadline);
-          if (
-            this.mailInfo &&
-            this.deadline &&
-            this.status !== 2 &&
-            this.status !== 3 &&
-            this.valid === true
-          ) {
-            return (this.isLoadingPage = true);
-          }
-          if (
-            !this.mailInfo &&
-            !this.deadline &&
-            this.status === 2 &&
-            this.valid === true
-          ) {
-            return (this.isLoadingStatus = true);
-          }
-          if (
-            !this.mailInfo &&
-            !this.deadline &&
-            this.status === 3 &&
-            this.valid === true
-          ) {
-            return (this.isLoadingStatusQuit = true);
-          }
-          
-          if (this.valid === false) {
-            return (this.isValid = true);
-          }
-        });
-      }
-    }
-    convertDateTime(dateTimeString: string): string {
-      const date = new Date(dateTimeString);
-      
-      const day = date.getDate().toString().padStart(2, "0");
-      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Tháng bắt đầu từ 0
-      const year = date.getFullYear();
-
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-
-    return `${hours}:${minutes} ${day}/${month}/${year}`;
   }
+  isShowAllPayslipDetail(){
+    return this.isGranted(PERMISSIONS_CONSTANT.ViewAllPayslipLink);
+  }
+  isShowMyPayslipDetail(){
+    return this.isGranted(PERMISSIONS_CONSTANT.ViewMyPayslipLink);
+  }
+}
+export interface PaysslipToConfirm {
+  deadline: number;
+  mailInfo: MailPreviewInfoDto;
+  checkValidType: CheckValidType;
+  message: string;
+}
+
+export interface MailPreviewInfoDto {
+  templateId: number;
+  name: string;
+  description: string;
+  mailFuncType: EmailFunc;
+  subject: string;
+  bodyMessage: string;
+  sendToEmail: string;
+  currentUserLoginId: number;
+  tenantId: number;
 }

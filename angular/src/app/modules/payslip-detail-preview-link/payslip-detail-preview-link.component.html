@@ -1,43 +1,16 @@
-<div class="header-card">
+<div class="header-card" [busy]="isLoading">
   <div
-    *ngIf="isLoadingPage"
+    *ngIf="payslipDetail.checkValidType == 1"
     class="email-content px-2"
-    [innerHtml]="sanitizer.bypassSecurityTrustHtml(mailInfo.bodyMessage)"
+    [innerHtml]="sanitizer.bypassSecurityTrustHtml(payslipDetail.mailInfo.bodyMessage)"
   ></div>
-  <div *ngIf="!isLoadingPage" class="center-text-payslip">
-    <div *ngIf="isLoadingStatus || isLoadingStatusQuit || isValid" class="image-payslip">
-      <img
-        alt=""
-        height="88"
-        src="https://do78x13wq0td.cloudfront.net/prod/avatars/host/logo-ncc.png"
-        width="204"
-      />
+  <div *ngIf="payslipDetail.checkValidType !== 1" class="center-text-payslip">
+    <div   class="image-payslip">
+      <img src="https://do78x13wq0td.cloudfront.net/prod/avatars/host/logo-ncc.png"/>
     </div>
-
-    <div *ngIf="isLoadingStatus" class="center-text-payslip">
-      <div class="title-pause payslip-content">
-        Xin chào <strong>{{ fullName }}</strong
-        >, bạn đang tạm dừng làm việc ở công ty nên không thể xem phiếu lương
-        này
-      </div>
-    </div>
-
-    <div *ngIf="isLoadingStatusQuit" class="center-text-payslip">
-      <div class="title-quit payslip-content">
-        Xin chào <strong>{{ fullName }}</strong
-        >, bạn đã nghỉ việc nên không thể xem phiếu lương này
-      </div>
-    </div>
-    <div *ngIf="isValid" class="center-text-payslip">
-      <div class="title">
-        Xin chào <strong>{{ currentUserLoginFullName }}</strong
-        >, bạn không thể xem được phiếu lương này vì đây là phiếu lương của
-
-        <strong>{{ fullName }}</strong> . Hệ thống đã lưu lại thông tin truy vết
-      </div>
-      <div class="footer">
-        Nếu có thắc mắc vui lòng liên hệ với hien.ngothu qua discord trước
-        <strong>{{ deadlineComfirmPayslip }}</strong> để được giải đáp
+    <div class="center-text-payslip">
+      <div class="title-pause payslip-content" [innerHTML]="payslipDetail.message">
+       
       </div>
     </div>
   </div>
