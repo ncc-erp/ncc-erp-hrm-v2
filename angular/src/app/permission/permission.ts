@@ -424,15 +424,7 @@ export const PERMISSIONS_CONSTANT = {
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.UploadContractFile',
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.DeleteContractFile',
 
-    View_Mail_Payslip_Link:'View.Mail.Payslip.Link',
-    View_All_Mail_Payslip_Link:'View.All.Mail.Payslip.Link'
-
-
-
-
-
-
-
-
+    ViewMyPayslipLink:'ViewMyPayslipLink',
+    ViewAllPayslipLink:'ViewAllPayslipLink'
 
 };

@@ -281,8 +281,13 @@ export enum EmailFunc  {
     PayrollApprovedByCEP = 11,
     PayrollRejectedByCEO= 12,
     PayrollExecuted = 13,
+    LinkToPreviewPayslip = 14,
 }
-
+export enum CheckValidType{
+    Valid = 1,
+    InvalidBecauseEmployeePauseOrQuit = -1,
+    InvalidBecauseEmployeeViewOther = -2,
+}
 export enum TemplateType{
     Mail = 1,
     Print = 2
