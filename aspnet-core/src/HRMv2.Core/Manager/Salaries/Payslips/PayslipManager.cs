@@ -40,6 +40,8 @@ using HRMv2.Manager.Employees;
 using HRMv2.Manager.Salaries.Dto;
 using HRMv2.Authorization.Users;
 using Abp.Runtime.Session;
+using HRMv2.Authorization.Roles;
+using HRMv2.Authorization;
 
 
 namespace HRMv2.Manager.Salaries.Payslips
@@ -53,6 +55,9 @@ namespace HRMv2.Manager.Salaries.Payslips
         private readonly IOptions<TimesheetConfig> _timesheetConfig;
         private readonly EmployeeManager _employeeManager;
         private readonly IAbpSession _abpSession;
+        private readonly RoleManager _roleManager;
+        private readonly UserManager _userManager;
+
 
 
         public PayslipManager(TimesheetWebService timesheetService,
@@ -62,7 +67,10 @@ namespace HRMv2.Manager.Salaries.Payslips
             IOptions<TimesheetConfig> timesheetConfig,
             IWorkScope workScope,
              EmployeeManager employeeManager,
-              IAbpSession abpSession) : base(workScope)
+              IAbpSession abpSession,
+              RoleManager roleManager,
+              UserManager userManager
+             ) : base(workScope)
         {
             _emailManager = emailManager;
             _timesheetService = timesheetService;
@@ -71,6 +79,9 @@ namespace HRMv2.Manager.Salaries.Payslips
             _timesheetConfig = timesheetConfig;
             _employeeManager = employeeManager;
             _abpSession = abpSession;
+            _roleManager = roleManager;
+            _userManager = userManager;
+
         }
 
         public IQueryable<GetPayslipDto> QueryAllPayslip()
@@ -797,7 +808,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 }
             }
 
-            if(payslipDetail.Type == PayslipDetailType.Bonus)
+            if (payslipDetail.Type == PayslipDetailType.Bonus)
             {
                 var bonusEmployee = await WorkScope.GetAll<BonusEmployee>()
                     .Where(be => be.Id == payslipDetail.ReferenceId.Value)
@@ -805,7 +816,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     .Where(be => be.Bonus.ApplyMonth.Year == payslipDetailExt.ApplyMonth.Year
                     && be.Bonus.ApplyMonth.Month == payslipDetailExt.ApplyMonth.Month)
                     .FirstOrDefaultAsync();
-                if(bonusEmployee != default)
+                if (bonusEmployee != default)
                 {
                     await WorkScope.DeleteAsync(bonusEmployee);
                 }
@@ -2238,7 +2249,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public string SendMailToAllEmploeeLink(SendMailAllEmployeeDto input)
         {
-            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.PayslipLink);
+            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.LinkToPreviewPayslip);
             if (emailTemplate == default)
             {
                 throw new UserFriendlyException($"Not found email template for payslip");
@@ -2350,135 +2361,76 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             };
         }
-        public GetPayslipLinkMailContentDto GetPayslipMailDetaiTemplate(long payslipId)
+
+
+        public GetPayslipToConfirmDto GetPayslipToConfirm(long payslipId, bool IsLinkToPreviewPayslip)
         {
-            var employee = WorkScope.GetAll<Payslip>()
+            var payslip = WorkScope.GetAll<Payslip>()
                 .Where(x => x.Id == payslipId)
-                .Select(x => x.Employee.Email)
+                .Select(x => new
+                {
+                    x.ComplainDeadline,
+                    x.Employee.Email,
+                    x.Employee.Status
+                })
                 .FirstOrDefault();
-            var deadline = WorkScope.GetAll<Payslip>()
-                .Where(x => x.Id == payslipId)
-                .Select(x => x.ComplainDeadline)
+
+            var sessionEmail = WorkScope.GetAll<User>()
+                .Where(s => s.Id == AbpSession.UserId)
+                .Select(s => s.EmailAddress)
                 .FirstOrDefault();
-            var employeeByEmail = _employeeManager.GetEmployeeByEmail(employee);
-            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.Payslip, payslipId);
-            var currentLogin = mailTemplate.CurrentUserLoginId;
-            var currentUserLoginEmail = WorkScope.GetAll<User>()
-                .Where(x => x.Id == currentLogin)
-                .Select(x => x.EmailAddress)
-                .FirstOrDefault();
-            return new GetPayslipLinkMailContentDto
+
+            var isViewAll = this.IsGranted(PermissionNames.ViewAllPayslipLink);
+            var isViewMy = this.IsGranted(PermissionNames.ViewMyPayslipLink);
+
+            if (!isViewAll && isViewMy && (payslip.Status == EmployeeStatus.Pausing || payslip.Status == EmployeeStatus.Quit))
             {
+
+                return new GetPayslipToConfirmDto
+                {
+                    CheckValidType = CheckValidType.InvalidBecauseEmployeePauseOrQuit,
+                    Message = $"Hi <strong>{sessionEmail}</strong>, bạn không thể xem phiếu này vì bạn đã nghỉ việc."
+                };
+
+            }
+            if (!isViewAll && payslip.Email.ToLower().Trim() != sessionEmail.ToLower().Trim())
+            {
+                return new GetPayslipToConfirmDto
+                {
+                    CheckValidType = CheckValidType.InvalidBecauseEmployeeViewOther,
+                    Message = $"Hi <strong>{sessionEmail}</strong>, bạn không thể xem phiếu lương của <strong>{payslip.Email}</strong> . <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR."
+                };
+            }
+
+
+
+            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(IsLinkToPreviewPayslip ? MailFuncEnum.LinkToPreviewPayslip : MailFuncEnum.Payslip, payslipId);
+            return new GetPayslipToConfirmDto
+            {
+                CheckValidType = CheckValidType.Valid,
                 MailInfo = mailTemplate,
-                Deadline = deadline,
-                Status = employeeByEmail.Status,
-                FullName = employeeByEmail.FullName,
-                CurrentUserLoginEmail = currentUserLoginEmail,
-                Valid = true
+                Deadline = payslip.ComplainDeadline,
+
             };
         }
+
+
+
         public GetPayslipMailContentDto GetPayslipMailLinkTemplate(long payslipId)
         {
-            
-                var deadLine = WorkScope.GetAll<Payslip>()
-                    .Where(x => x.Id == payslipId)
-                    .Select(x => x.ComplainDeadline)
-                    .FirstOrDefault();
-                MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.PayslipLink, payslipId);
-                return new GetPayslipMailContentDto
-                {
-                    MailInfo = mailTemplate,
-                    Deadline = deadLine,
 
-                };
-            
-        }
-
-        public GetPayslipLinkMailContentDto GetPayslipForEmployeeWithWithWorkingStatus(long payslipId)
-        {
-            var employeeEmail = WorkScope.GetAll<Payslip>()
-                .Where(x => x.Id == payslipId)
-                .Select(x => x.Employee.Email)
-                .FirstOrDefault();
-            var deadline = WorkScope.GetAll<Payslip>()
+            var deadLine = WorkScope.GetAll<Payslip>()
                 .Where(x => x.Id == payslipId)
                 .Select(x => x.ComplainDeadline)
                 .FirstOrDefault();
-
-            if (string.IsNullOrEmpty(employeeEmail))
+            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.LinkToPreviewPayslip, payslipId);
+            return new GetPayslipMailContentDto
             {
-                throw new Exception($"Employee email is null or empty for payslip ID: {payslipId}");
-            }
+                MailInfo = mailTemplate,
+                Deadline = deadLine,
 
-            var currentUserLoginId = _abpSession.UserId;
-            var currentUserEmail = WorkScope.GetAll<User>()
-                .Where(x => x.Id == currentUserLoginId)
-                .FirstOrDefault();
-            var employeeInforByEmail = _employeeManager.GetEmployeeByEmail(employeeEmail);
+            };
 
-            
-            if (currentUserEmail.EmailAddress == employeeEmail)
-            {
-                return GetPayslipMailLinkTemplatetest(payslipId);
-            }
-            else
-            {
-                return new GetPayslipLinkMailContentDto
-                {
-                    MailInfo = null,
-                    Deadline = deadline,
-                    Status = employeeInforByEmail.Status,
-                    FullName = employeeInforByEmail.FullName,
-                    CurrentUserLoginEmail = currentUserEmail.EmailAddress,
-                    CurrentUserLoginFullName = currentUserEmail.Name + " " + currentUserEmail.Surname,
-                    Valid =  false,
-                    
-                };
-            }
-        }
-        public GetPayslipLinkMailContentDto GetPayslipMailLinkTemplatetest(long payslipId)
-        {
-            var employee = WorkScope.GetAll<Payslip>()
-                .Where(x => x.Id == payslipId)
-                .Select(x => x.Employee.Email)
-                .FirstOrDefault();
-
-            if (employee == null)
-            {
-                throw new Exception($"employee null");
-            }
-            var currentLoginId = _abpSession.UserId;
-            var employeeInforByEmail = _employeeManager.GetEmployeeByEmail(employee);
-            var currentUserLoginEmail = WorkScope.GetAll<User>()
-                .Where(x => x.Id == currentLoginId)
-                .Select(x => x.EmailAddress)
-                .FirstOrDefault();
-
-            switch (employeeInforByEmail.Status)
-            {
-                case EmployeeStatus.Quit:
-                    return new GetPayslipLinkMailContentDto
-                    {
-                        MailInfo = null,
-                        Deadline = null,
-                        Status = employeeInforByEmail.Status,
-                        FullName = employeeInforByEmail.FullName,
-                        CurrentUserLoginEmail = currentUserLoginEmail,
-                        Valid = true
-                    };
-                case EmployeeStatus.Pausing:
-                    return new GetPayslipLinkMailContentDto
-                    {
-                        MailInfo = null,
-                        Deadline = null,
-                        Status = employeeInforByEmail.Status,
-                        FullName = employeeInforByEmail.FullName,
-                        CurrentUserLoginEmail = currentUserLoginEmail,
-                        Valid = true
-                    };
-                default:
-                    return GetPayslipMailDetaiTemplate(payslipId);
-            }
         }
         public async Task<UpdateDeadlineDto> UpdatePayslipDeadline(UpdateDeadlineDto input)
         {

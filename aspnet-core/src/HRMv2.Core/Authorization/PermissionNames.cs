@@ -452,8 +452,8 @@ namespace HRMv2.Authorization
         public const string SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile = "SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.UploadContractFile";
         public const string SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile = "SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.DeleteContractFile";
 
-        public const string View_Mail_Payslip_Link = "View.Mail.Payslip.Link";
-        public const string View_All_Mail_Payslip_Link = "View.All.Mail.Payslip.Link";
+        public const string ViewMyPayslipLink = "ViewMyPayslipLink";
+        public const string ViewAllPayslipLink = "ViewAllPayslipLink";
 
         public class GrantPermissionRoles
         {
@@ -901,8 +901,8 @@ namespace HRMv2.Authorization
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile,
                         PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile,
 
-                        PermissionNames.View_Mail_Payslip_Link,
-                        PermissionNames.View_All_Mail_Payslip_Link
+                        PermissionNames.ViewMyPayslipLink,
+                        PermissionNames.ViewAllPayslipLink
 
                     }
                 },
@@ -2104,7 +2104,7 @@ namespace HRMv2.Authorization
                     Tenants.Employee,
                     new List<string>()
                     {
-                       PermissionNames.View_Mail_Payslip_Link
+                       PermissionNames.ViewMyPayslipLink
                        
                     }
                 }
@@ -2540,8 +2540,8 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Upload Contract File"},
                   new SystemPermission{ Name =  PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete Contract File"},
 
-                  new SystemPermission{ Name =  PermissionNames.View_All_Mail_Payslip_Link ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View Mail All Link"},
-                  new SystemPermission{ Name =  PermissionNames.View_Mail_Payslip_Link ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View Mail Link"},
+                  new SystemPermission{ Name =  PermissionNames.ViewAllPayslipLink ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View All Payslip"},
+                  new SystemPermission{ Name =  PermissionNames.ViewMyPayslipLink ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View My Payslip"},
             };
 
             public static List<SystemPermission> TreePermissions = new List<SystemPermission>()
@@ -3316,8 +3316,8 @@ namespace HRMv2.Authorization
                     }
 
                 },
-                new SystemPermission{ Name =  PermissionNames.View_All_Mail_Payslip_Link, MultiTenancySides = MultiTenancySides.Host , DisplayName = "View Mail All Link"},
-                new SystemPermission{ Name =  PermissionNames.View_Mail_Payslip_Link, MultiTenancySides = MultiTenancySides.Host , DisplayName = "View Mail Link"}
+                new SystemPermission{ Name =  PermissionNames.ViewAllPayslipLink, MultiTenancySides = MultiTenancySides.Host , DisplayName = "View All Payslip Link"},
+                new SystemPermission{ Name =  PermissionNames.ViewMyPayslipLink, MultiTenancySides = MultiTenancySides.Host , DisplayName = "View My Payslip Link"}
 
 
 

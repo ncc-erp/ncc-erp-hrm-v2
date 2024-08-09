@@ -80,16 +80,18 @@ namespace HRMv2.APIs.Payslips
         {
             return _payslipManager.GetPayslipMailTemplate(payslippId);
         }
+
         [HttpGet]
-        public GetPayslipMailContentDto GetEmailLinkTemplate(long payslippId)
+        public GetPayslipToConfirmDto GetPayslipPreviewToSendEmail(long payslippId)
         {
-            return _payslipManager.GetPayslipMailLinkTemplate(payslippId);
+            return _payslipManager.GetPayslipToConfirm(payslippId, true);
         }
+
         [HttpGet]
-        [AbpAuthorize(PermissionNames.View_All_Mail_Payslip_Link, PermissionNames.View_Mail_Payslip_Link)]
-        public GetPayslipLinkMailContentDto GetDetaiPayslipTemplate(long payslippId)
+        [AbpAuthorize(PermissionNames.ViewAllPayslipLink, PermissionNames.ViewMyPayslipLink)]
+        public GetPayslipToConfirmDto GetPayslipPreviewToConfirm(long payslippId)
         {
-            return _payslipManager.GetPayslipForEmployeeWithWithWorkingStatus(payslippId);
+            return _payslipManager.GetPayslipToConfirm(payslippId, false );
         }
 
         [HttpPost]
