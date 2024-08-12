@@ -1,4 +1,3 @@
-import { PayslipDetailPreviewLinkModule } from './modules/payslip-detail-preview-link/payslip-detail-preview-link.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -42,7 +41,8 @@ import { LineChartComponent } from './home/line-chart/line-chart.component';
 import { DateSelectorHomepageComponent } from './home/date-selector-homepage/date-selector-homepage.component';
 import { ChartDetailDataComponent } from './home/chart-detail-data/chart-detail-data.component';
 import { UserDataForChartDetailComponent } from './home/chart-detail-data/user-data-for-chart-detail/user-data-for-chart-detail.component';
-import { NotHaveAccessModule } from './modules/not-have-access/not-have-access.module';
+import { PayslipDetailPreviewLinkComponent } from './modules/payslip-detail-preview-link/payslip-detail-preview-link.component';
+import { NotHaveAccessComponent } from './modules/not-have-access/not-have-access.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -67,6 +67,8 @@ import { NotHaveAccessModule } from './modules/not-have-access/not-have-access.m
     DateSelectorHomepageComponent,
     ChartDetailDataComponent,
     UserDataForChartDetailComponent,
+    PayslipDetailPreviewLinkComponent,
+    NotHaveAccessComponent,
   ],
   imports: [
     CommonModule,
@@ -86,8 +88,7 @@ import { NotHaveAccessModule } from './modules/not-have-access/not-have-access.m
     PunishmentsModule,
     DebtModule,
     RefundsModule,
-    NotHaveAccessModule,
-    PayslipDetailPreviewLinkModule
+    
   ],
   providers: [
     {

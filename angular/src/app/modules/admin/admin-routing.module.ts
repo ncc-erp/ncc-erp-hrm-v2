@@ -26,7 +26,7 @@ const routes: Routes = [
     path: "update-password",
     component: ChangePasswordComponent,
     data: {
-      permission: PERMISSIONS_CONSTANT.Admin_User_Edit,
+      permission: PERMISSIONS_CONSTANT.Admin_User_ResetPassword,
       preload: true
     },
     canActivate: [AppRouteGuard],
@@ -89,7 +89,7 @@ const routes: Routes = [
     path: "audit-logs",
     component: AuditLogsComponent,
     data: {
-      permission: PERMISSIONS_CONSTANT.Admin,
+      permission: PERMISSIONS_CONSTANT.Admin_AuditLog_View,
       preload: true
     },
     canActivate: [AppRouteGuard],

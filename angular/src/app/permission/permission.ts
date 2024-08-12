@@ -57,6 +57,10 @@ export const PERMISSIONS_CONSTANT = {
     Admin_BackgroundJob_View: "Admin.BackgroundJob.View",
     Admin_BackgroundJob_Delete: "Admin.BackgroundJob.Delete",
     Admin_BackgroundJob_Retry: "Admin.BackgroundJob.Retry",
+
+    //Audit Log
+    Admin_AuditLog:"Admin.AuditLong",
+    Admin_AuditLog_View:"Admin.AuditLog.View",
     //Category
     Category: 'Category',
     //Branch

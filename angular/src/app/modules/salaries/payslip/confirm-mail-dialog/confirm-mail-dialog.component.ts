@@ -1,18 +1,11 @@
 import { SendMailOneemployeeDto } from "@app/service/model/mail/sendMail.dto";
-import {
-  MailDialogComponent,
-  MailDialogData,
-} from "@app/modules/admin/email-templates/mail-dialog/mail-dialog.component";
+import { MailDialogComponent,MailDialogData,} from "@app/modules/admin/email-templates/mail-dialog/mail-dialog.component";
 import { SendMailAllEmployeeDto } from "./../../../../service/model/mail/sendMail.dto";
 import { AppComponentBase } from "@shared/app-component-base";
 import { MailService } from "./../../../../service/api/mail/mail.service";
 import { Component, OnInit, Injector, Inject } from "@angular/core";
 import { PayslipService } from "@app/service/api/payslip/payslip.service";
-import {
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialog,
-} from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog,} from "@angular/material/dialog";
 import { UpdatePayslipDeadLineDto } from "@app/service/model/payslip/payslip.dto";
 import * as moment from "moment";
 import { PayslipDetailPreviewLinkComponent } from "@app/modules/payslip-detail-preview-link/payslip-detail-preview-link.component";

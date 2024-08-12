@@ -40,15 +40,7 @@ export class PayslipDetailPreviewLinkComponent
       .getPayslipPreviewToConfirm(this.payslipId)
       .subscribe((rs) => {
         this.payslipDetail = rs.result
-        console.log("obje212121ct", this.payslipDetail.mailInfo.bodyMessage)
-        console.log("obje212121ct", this.payslipDetail.message)
       });
-  }
-  isShowAllPayslipDetail(){
-    return this.isGranted(PERMISSIONS_CONSTANT.ViewAllPayslipLink);
-  }
-  isShowMyPayslipDetail(){
-    return this.isGranted(PERMISSIONS_CONSTANT.ViewMyPayslipLink);
   }
 }
 export interface PaysslipToConfirm {

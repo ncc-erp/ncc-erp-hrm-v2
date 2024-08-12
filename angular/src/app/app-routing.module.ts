@@ -18,10 +18,16 @@ import { PERMISSIONS_CONSTANT } from './permission/permission';
                 children: [
                     { path: 'home', component: HomeComponent, 
                         data: {
-                        permission: PERMISSIONS_CONSTANT.Admin,
+                        permission: PERMISSIONS_CONSTANT.Home,
                         preload: true,
                     }, canActivate: [AppRouteGuard] },
-                    { path: 'payslip-confirm', component: PayslipDetailPreviewLinkComponent, canActivate: [AppRouteGuard] },
+                    { path: 'payslip-confirm', component: PayslipDetailPreviewLinkComponent,
+                        data: {
+                            permission: PERMISSIONS_CONSTANT.ViewMyPayslipLink,
+                            preload: true,
+                        
+                        },
+                         canActivate: [AppRouteGuard] },
                     { path: 'test', component: TestComponentComponent, canActivate: [AppRouteGuard] },
                     {
                         path: 'admin',
