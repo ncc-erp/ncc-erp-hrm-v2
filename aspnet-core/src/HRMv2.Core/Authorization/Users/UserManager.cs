@@ -73,37 +73,6 @@ namespace HRMv2.Authorization.Users
             user.IsActive = isActive;
             await UpdateAsync(user);
         }
-        public async Task<User> CreateUserForEmployee(CreateUpdateEmployeeDto input, string name, string surName)
-        {
-            var email = input.Email;
-            var userName = email.Split('@')[0];
-
-            var userCreateDto = new User
-            {
-                UserName = userName,
-                Name = name,
-                Surname = surName,
-                EmailAddress = email,
-                IsActive = true,
-                Roles = new List<UserRole>(),
-                Password = "",
-            };
-            userCreateDto.SetNormalizedNames();
-            var role = await _roleManager.GetRoleByNameAsync(StaticRoleNames.Tenants.Employee);
-            if (role == null)
-            {
-                throw new UserFriendlyException("Role not found");
-            }
-
-            userCreateDto.Roles.Add(new UserRole
-            {
-                TenantId = null,
-                RoleId = role.Id,
-                UserId = userCreateDto.Id
-            });
-            await CreateAsync(userCreateDto);
-            return userCreateDto;
-        }
         public async Task DeleteAsync(long input)
         {
             var user = await GetUserByIdAsync(input);

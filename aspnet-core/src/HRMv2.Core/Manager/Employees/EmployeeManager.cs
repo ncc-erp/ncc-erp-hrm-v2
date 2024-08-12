@@ -646,14 +646,6 @@ namespace HRMv2.Manager.Employees
             }
 
             CreateOrUpdateToOtherTool(entity, ActionMode.Create);
-            var userEmail = _userManager.GetUserByEmail(input.Email);
-            if (userEmail != null)
-            {
-
-                await _userManager.CreateUserForEmployee(input, CommonUtil.GetNameByFullName(input.FullName), CommonUtil.GetSurNameByFullName(input.FullName));
-            }
-
-
             return input;
         }
 
@@ -1704,13 +1696,6 @@ namespace HRMv2.Manager.Employees
 
                 await CreateEmployee(data, null, false);
                 successList.Add(data.Email);
-                var userEmail = _userManager.GetUserByEmail(data.Email);
-                if (userEmail != null)
-                {
-
-                    await _userManager.CreateUserForEmployee(data, data.Name, data.Surname);
-                }
-
             }
             return new { successList, failedList };
         }

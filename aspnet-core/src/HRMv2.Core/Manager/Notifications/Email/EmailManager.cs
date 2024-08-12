@@ -235,7 +235,7 @@ namespace HRMv2.Manager.Notifications.Email
                     return GetPayrollRejectedByCEOData(id);
                 case MailFuncEnum.PayrollExecuted:
                     return GetPayrollExecutedData(id);
-                case MailFuncEnum.PayslipLink:
+                case MailFuncEnum.LinkToPreviewPayslip:
                     return GetDataPayslipLink(id);
                 default:
                     return null;
