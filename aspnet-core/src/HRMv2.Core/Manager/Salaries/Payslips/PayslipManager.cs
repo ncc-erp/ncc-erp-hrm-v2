@@ -2381,9 +2381,16 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .FirstOrDefault();
 
             var isViewAll = this.IsGranted(PermissionNames.ViewAllPayslipLink);
-            var isViewMy = this.IsGranted(PermissionNames.ViewMyPayslipLink);
 
-            if (!isViewAll && isViewMy && (payslip.Status == EmployeeStatus.Pausing || payslip.Status == EmployeeStatus.Quit))
+            if (!isViewAll && payslip.Email.ToLower().Trim() != sessionEmail.ToLower().Trim())
+            {
+                return new GetPayslipToConfirmDto
+                {
+                    CheckValidType = CheckValidType.InvalidBecauseEmployeeViewOther,
+                    Message = $"Hi <strong>{sessionEmail}</strong>, bạn không thể xem phiếu lương của <strong>{payslip.Email}</strong> . <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR."
+                };
+            }
+            if (!isViewAll  && (payslip.Status == EmployeeStatus.Pausing || payslip.Status == EmployeeStatus.Quit))
             {
 
                 return new GetPayslipToConfirmDto
@@ -2392,14 +2399,6 @@ namespace HRMv2.Manager.Salaries.Payslips
                     Message = $"Hi <strong>{sessionEmail}</strong>, bạn không thể xem phiếu này vì bạn đã nghỉ việc."
                 };
 
-            }
-            if (!isViewAll && payslip.Email.ToLower().Trim() != sessionEmail.ToLower().Trim())
-            {
-                return new GetPayslipToConfirmDto
-                {
-                    CheckValidType = CheckValidType.InvalidBecauseEmployeeViewOther,
-                    Message = $"Hi <strong>{sessionEmail}</strong>, bạn không thể xem phiếu lương của <strong>{payslip.Email}</strong> . <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR."
-                };
             }
 
 
