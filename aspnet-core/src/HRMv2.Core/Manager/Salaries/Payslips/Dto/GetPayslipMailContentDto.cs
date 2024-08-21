@@ -26,6 +26,7 @@ namespace HRMv2.Manager.Salaries.Payslips.Dto
         Valid = 1,
         InvalidBecauseEmployeePauseOrQuit = -1,
         InvalidBecauseEmployeeViewOther = -2,
+        InvalidBecausePayslipNotFound = -3,
     }
 
 

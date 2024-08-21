@@ -236,7 +236,7 @@ namespace HRMv2.Manager.Notifications.Email
                 case MailFuncEnum.PayrollExecuted:
                     return GetPayrollExecutedData(id);
                 case MailFuncEnum.LinkToPreviewPayslip:
-                    return GetDataPayslipLink(id);
+                    return GetDataPayslipToConfirm(id);
                 default:
                     return null;
             }
@@ -660,7 +660,7 @@ namespace HRMv2.Manager.Notifications.Email
                 })
                 .ToList();
 
-            var timesheetUri = _timesheetConfig.Value.Uri;
+            var hrmv2Uri = HRMv2Consts.HRM_Uri;
 
             var result = new InputPayslipMailTemplate
             {
@@ -681,8 +681,8 @@ namespace HRMv2.Manager.Notifications.Email
                 SendToEmail = payslip.Employee.Email,
                 ListPayslipDetail = payslipdetails,
                 ListPayslipSalary = payslipSalaries,
-                ConfirmUrl = timesheetUri + $"public/confirm-mail?id={payslip.Id}",
-                ComplainUrl = timesheetUri + $"public/complain-mail?id={payslip.Id}",
+                ConfirmUrl = hrmv2Uri + $"app/confirm-mail?id={payslip.Id}",
+                ComplainUrl = hrmv2Uri + $"app/complain-mail?id={payslip.Id}",
                 ComplainDeadline = payslip.ComplainDeadline.HasValue 
                 ? payslip.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ") 
                 : "..."
@@ -694,7 +694,7 @@ namespace HRMv2.Manager.Notifications.Email
             };
         }
 
-        private ResultTemplateEmail<InputPayslipLinkMailTemplate> GetDataPayslipLink(long? payslipLinkId)
+        private ResultTemplateEmail<InputPayslipLinkMailTemplate> GetDataPayslipToConfirm(long? payslipLinkId)
         {
 
             if (payslipLinkId == null)
@@ -710,14 +710,14 @@ namespace HRMv2.Manager.Notifications.Email
                 .Include(x => x.Payroll)
                 .Where(x => x.Id == payslipLinkId)
                 .FirstOrDefault();
-            var domain = HRMv2Consts.HRM_Uri;
+            var hrmv2Uri = HRMv2Consts.HRM_Uri;
             var result = new InputPayslipLinkMailTemplate
             {
                 EmployeeFullName = payslip.Employee.FullName,
                 PayrollMonth = payslip.Payroll.ApplyMonth.Month.ToString(),
                 PayrollYear = payslip.Payroll.ApplyMonth.Year.ToString(),
                 SendToEmail = payslip.Employee.Email,
-                SalaryLink = domain + $"app/payslip-confirm?id={payslip.Id}",
+                SalaryLink = hrmv2Uri + $"app/payslip-confirm?id={payslip.Id}",
                 ComplainDeadline = payslip.ComplainDeadline.HasValue
               ? payslip.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ")
               : "..."

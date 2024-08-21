@@ -311,9 +311,9 @@ namespace HRMv2.Users
         }
 
         [HttpPut]
-        public async Task UpdateUserActive(long userId, bool isActive)
+        public async Task UpdateUserActive(string email, bool isActive)
         {
-            await _userManager.UpdateUserActive(userId, isActive);
+            await _userManager.UpdateUserActive(email, isActive);
         }
     }
 }
