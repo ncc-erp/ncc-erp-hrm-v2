@@ -20,6 +20,8 @@ using HRMv2.Manager.Punishments.Dto;
 using HRMv2.Manager.Punishments;
 using HRMv2.Manager.Bonuses.Dto;
 using HRMv2.Sessions;
+using HRMv2.Manager.Timesheet.Dto;
+using HRMv2.Manager.Timesheet;
 
 namespace HRMv2.APIs.Payslips
 {
@@ -166,13 +168,7 @@ namespace HRMv2.APIs.Payslips
         [HttpPost]
         public string SendMailToAllEmployee(SendMailAllEmployeeDto input)
         {
-            return _payslipManager.SendMailToAllEmployee(input);
-        }
-
-        [HttpPost]
-        public string SendMailToAllEmployeeLink(SendMailAllEmployeeDto input)
-        {
-            return _payslipManager.SendMailToAllEmploeeLink(input);
+            return _payslipManager.SendMailToAllEmployeeLink(input);
         }
 
         [HttpGet]
@@ -279,12 +275,24 @@ namespace HRMv2.APIs.Payslips
         {
             return _payslipManager.GetAvailablePunishmentsInMonth(payslipId);
         }
-       /* [HttpGet]
-        public async Task<GetPayslipMailContentDto> GetTextEmployeeByEmailStatus(long payslipId)
+        [HttpGet]
+        [AbpAuthorize(PermissionNames.ViewAllPayslipLink, PermissionNames.ViewMyPayslipLink)]
+        public async Task<string> ConfirmPayslipMail(long id)
         {
-            return await _payslipManager.GetPayslipMailLinkTemplatetest(payslipId);
-        }*/
-
+            return await _payslipManager.ConfirmPayslipMail(id);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.ViewAllPayslipLink, PermissionNames.ViewMyPayslipLink)]
+        public async Task<string> ComplainPayslipMail(InputcomplainPayslipDto input)
+        {
+            return await _payslipManager.ComplainPayslipMail(input);
+        }
+        [HttpGet]
+        [AbpAuthorize(PermissionNames.ViewAllPayslipLink, PermissionNames.ViewMyPayslipLink)]
+        public GetPayslipToConfirmDto GetStatusEmployeeToComplain(long payslippId)
+        {
+            return _payslipManager.GetStatusEmployeeToComplain(payslippId);
+        }
 
     }
 }

@@ -29,6 +29,7 @@ namespace HRMv2.Authorization
     {
         private ILogger Logger { get; set; }
         private readonly EmployeeManager _employeeManager;
+        private readonly UserManager _userManager;
         public LogInManager(
             UserManager userManager,
             IMultiTenancyConfig multiTenancyConfig,
@@ -58,6 +59,7 @@ namespace HRMv2.Authorization
         {
             Logger = NullLogger.Instance;
             _employeeManager = employeeManager;
+            _userManager = userManager;
         }
         [UnitOfWork]
         public async Task<AbpLoginResult<Tenant, User>> LoginAsyncNoPass(string token, string secretCode = "", string tenancyName = null, bool shouldLockout = true)
@@ -126,7 +128,7 @@ namespace HRMv2.Authorization
                             if (employee.Status == EmployeeStatus.Working || employee.Status == EmployeeStatus.MaternityLeave)
                             {
 
-                                user = await CreateUserAsync(emailAddress, tenantId, Utils.CommonUtil.GetNameByFullName(employee.FullName), Utils.CommonUtil.GetSurNameByFullName(employee.FullName));
+                                user = await _userManager.CreateUserForEmployee(emailAddress, tenantId, Utils.CommonUtil.GetNameByFullName(employee.FullName), Utils.CommonUtil.GetSurNameByFullName(employee.FullName));
                             }
                             else
                             {
@@ -160,34 +162,6 @@ namespace HRMv2.Authorization
             {
                 return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidUserNameOrEmailAddress, null);
             }
-        }
-        private async Task<User> CreateUserAsync(string emailAddress, int? tenantId, string name, string surname)
-        {
-            var user = new User
-            {
-                TenantId = tenantId,
-                EmailAddress = emailAddress,
-                UserName = emailAddress,
-                Name = name,
-                Surname = surname,
-                Roles = new List<UserRole>(),
-                Password ="",
-            };
-            user.SetNormalizedNames();
-            var role = await RoleManager.GetRoleByNameAsync(StaticRoleNames.Tenants.Employee);
-            if (role == null)
-            {
-                throw new UserFriendlyException("Role not found");
-            }
-
-            user.Roles.Add(new UserRole
-            {
-                TenantId = tenantId,
-                RoleId = role.Id,
-                UserId = user.Id
-            });
-            await UserManager.CreateAsync(user);
-            return user;
         }
     }
 }

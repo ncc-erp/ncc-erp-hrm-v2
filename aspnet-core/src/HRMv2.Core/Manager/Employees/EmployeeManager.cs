@@ -54,6 +54,7 @@ using System.Threading;
 using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
 using HRMv2.Authorization.Users;
 using HRMv2.Authorization.Roles;
+using System.Net.Mail;
 
 namespace HRMv2.Manager.Employees
 {
@@ -696,17 +697,13 @@ namespace HRMv2.Manager.Employees
             //them validate, kiem tra nhung truong co thay doi
             var entity = await WorkScope.GetAsync<Employee>(input.Id);
             ObjectMapper.Map(input, entity);
-            var employeeIsActive = WorkScope.GetAll<User>()
-                .Where(x => x.EmailAddress == entity.Email)
-                .Select(x => x.Id)
-                .FirstOrDefault();
             if (entity.Status == EmployeeStatus.Working || entity.Status == EmployeeStatus.MaternityLeave)
             {
-                await _userManager.UpdateUserActive(employeeIsActive, true);
+                await _userManager.UpdateUserActive(input.Email, true);
             }
             else
             {
-                await _userManager.UpdateUserActive(employeeIsActive, false);
+                await _userManager.UpdateUserActive(input.Email, false);
             }
             var qSCRE = WorkScope.GetAll<SalaryChangeRequestEmployee>()
                          .Where(x => x.EmployeeId == entity.Id);
@@ -929,7 +926,7 @@ namespace HRMv2.Manager.Employees
         }
 
 
-        public async Task<long> Delete(long id, bool deteleUserWithEmail)
+        public async Task<long> Delete(long id)
         {
             var employee = await WorkScope.GetAsync<Employee>(id);
 
@@ -938,6 +935,7 @@ namespace HRMv2.Manager.Employees
                 .ToList();
 
             var october = new DateTime(2022, 10, 1).Date;
+            var employeeEmail = employee.Email.ToLower().Trim();
             if (payslips.Any(s => s.Payroll.ApplyMonth >= october))
             {
                 throw new UserFriendlyException($"Employee has payslip >= 10/2022 => CAN NOT delete employee");
@@ -949,24 +947,10 @@ namespace HRMv2.Manager.Employees
             {
                 throw new UserFriendlyException($"Employee is {employee.Status} and has {payslipIds.Count} payslip => Can't delete");
             }
-            var employeeForUser = WorkScope.GetAll<Employee>()
-                .Where(x => x.Id == id)
-                .Select(x => x.Email)
-                .FirstOrDefault();
-            var user = WorkScope.GetAll<User>()
-                .Where(x => x.EmailAddress == employeeForUser)
-                .Select(x => x.Id)
-                .FirstOrDefault();
-            if (user != 0)
+           
+            if (employeeEmail != null)
             {
-                if (deteleUserWithEmail)
-                {
-                    await _userManager.DeleteAsync(user);
-                }
-                else
-                {
-                    await _userManager.UpdateUserActive(user, false);
-                }
+                await _userManager.DeleteAsync(employeeEmail);
             }
 
             var employeeChangeRequest = WorkScope.GetAll<SalaryChangeRequestEmployee>()

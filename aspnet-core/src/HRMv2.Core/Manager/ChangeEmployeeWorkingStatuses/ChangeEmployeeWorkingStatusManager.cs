@@ -105,23 +105,9 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             DeleteOldRequestInBackgroundJob(input.EmployeeId);
             input.CurrentUserLoginId = (long)AbpSession.UserId;
             input.TenantId = AbpSession.TenantId;
-            var employee = WorkScope.GetAll<Employee>()
-               .Where(x => x.Id == input.EmployeeId)
-               .Select(x => x.Email)
-               .FirstOrDefault();
-            var employeeEqualUser = WorkScope.GetAll<User>()
-                .Where(x => x.EmailAddress == employee)
-                .Select(x => x.Id)
-                .FirstOrDefault();
-            var user = _userManager.GetUserByEmail(employee);
             if (input.ApplyDate.Date <= DateTimeUtils.GetNow() || input.IsConfirmed)
             {
                 ToQuit(input);
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, false);
-                }
-
             }
             else
             {
@@ -167,13 +153,6 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                     $" {employeeInfo.PositionName} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
                 _komuService.NotifyToChannel(message, channelId);
-
-
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, false);
-                }
-
             }
         }
 
@@ -238,30 +217,17 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                     $" {employee.JobPosition.Name} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
             _komuService.NotifyToChannel(message, channelId);
+
+            _userManager.UpdateUserActive(employee.Email, false);
         }
         public void ChangeStatusToPause(ToPauseDto input)
         {
             DeleteOldRequestInBackgroundJob(input.EmployeeId);
             input.CurrentUserLoginId = (long)AbpSession.UserId;
             input.TenantId = AbpSession.TenantId;
-            var employee = WorkScope.GetAll<Employee>()
-             .Where(x => x.Id == input.EmployeeId)
-             .Select(x => x.Email)
-             .FirstOrDefault();
-            var employeeEqualUser = WorkScope.GetAll<User>()
-                .Where(x => x.EmailAddress == employee)
-                .Select(x => x.Id)
-                .FirstOrDefault();
-            var user = _userManager.GetUserByEmail(employee);
             if (input.ApplyDate.Date <= DateTimeUtils.GetNow() || input.IsConfirmed)
             {
                 ToPause(input);
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, false);
-                }
-
-
             }
             else
             {
@@ -276,12 +242,6 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
 
                 _backgroundJobManager.Enqueue<ChangeWorkingStatusToPause, ToPauseDto>(
                     input, BackgroundJobPriority.High, TimeSpan.FromHours(delayHour));
-
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, false);
-                }
-
 
             }
         }
@@ -322,6 +282,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
 
             };
             ConfirmUserPause(inputChangeUserWorkingStatusToOtherTool);
+            _userManager.UpdateUserActive(employee.Email, false);
         }
 
 
@@ -331,22 +292,10 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             DeleteOldRequestInBackgroundJob(input.EmployeeId);
             input.CurrentUserLoginId = (long)AbpSession.UserId;
             input.TenantId = AbpSession.TenantId;
-            var employee = WorkScope.GetAll<Employee>()
-            .Where(x => x.Id == input.EmployeeId)
-            .Select(x => x.Email)
-            .FirstOrDefault();
-            var employeeEqualUser = WorkScope.GetAll<User>()
-                .Where(x => x.EmailAddress == employee)
-                .Select(x => x.Id)
-                .FirstOrDefault();
-            var user = _userManager.GetUserByEmail(employee);
             if (input.ApplyDate.Date <= DateTimeUtils.GetNow() || input.IsConfirmed)
             {
                 ToMaternityLeave(input);
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, true);
-                }
+              
             }
             else
             {
@@ -361,11 +310,6 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
 
                 _backgroundJobManager.Enqueue<ChangeWorkingStatusToMaterinyLeave, ToMaternityLeaveDto>(
                     input, BackgroundJobPriority.High, TimeSpan.FromHours(delayHour));
-
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, true);
-                }
             }
         }
         public void ToMaternityLeave(ToMaternityLeaveDto input)
@@ -412,25 +356,9 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             DeleteOldRequestInBackgroundJob(input.EmployeeId);
             input.CurrentUserLoginId = (long)AbpSession.UserId;
             input.TenantId = AbpSession.TenantId;
-            var employee = WorkScope.GetAll<Employee>()
-           .Where(x => x.Id == input.EmployeeId)
-           .Select(x => x.Email)
-           .FirstOrDefault();
-            var employeeEqualUser = WorkScope.GetAll<User>()
-                .Where(x => x.EmailAddress == employee)
-                .Select(x => x.Id)
-                .FirstOrDefault();
-            var user = _userManager.GetUserByEmail(employee);
             if (input.ApplyDate.Date <= DateTimeUtils.GetNow() || input.IsConfirmed)
             {
                 ToWorking(input);
-
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, true);
-                }
-
-
             }
             else
             {
@@ -440,13 +368,6 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
 
                 _backgroundJobManager.Enqueue<ChangeWorkingStatusToWorking, ToWorkingDto>(
                     input, BackgroundJobPriority.High, TimeSpan.FromHours(delayHour));
-
-                if (user != null)
-                {
-                    _userManager.UpdateUserActive(employeeEqualUser, true);
-                }
-
-
             }
 
         }
