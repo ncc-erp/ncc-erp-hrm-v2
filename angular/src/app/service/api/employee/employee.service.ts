@@ -105,7 +105,4 @@ export class EmployeeService extends BaseApiService {
     return this.processPost(`QuitJobToOtherTool`, input);
   }
  
-  public deleteWithEmail(id: number, deteleUserWithEmail: boolean): Observable<any> {
-    return this.processDelete(`DeleteWithEmail?id=${id}&deteleUserWithEmail=${deteleUserWithEmail}`);
-  }
 }

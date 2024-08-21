@@ -19,7 +19,7 @@ export class PayslipDetailPreviewLinkComponent
   implements OnInit
 {
   public payslipId: number;
-  public payslipDetail: PaysslipToConfirm;
+  public payslipDetail: PayslipToConfirm;
   constructor(
     injector: Injector,
     private payslipService: PayslipService,
@@ -43,7 +43,7 @@ export class PayslipDetailPreviewLinkComponent
       });
   }
 }
-export interface PaysslipToConfirm {
+export interface PayslipToConfirm {
   deadline: number;
   mailInfo: MailPreviewInfoDto;
   checkValidType: CheckValidType;

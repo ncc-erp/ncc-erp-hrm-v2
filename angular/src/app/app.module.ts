@@ -43,6 +43,7 @@ import { ChartDetailDataComponent } from './home/chart-detail-data/chart-detail-
 import { UserDataForChartDetailComponent } from './home/chart-detail-data/user-data-for-chart-detail/user-data-for-chart-detail.component';
 import { PayslipDetailPreviewLinkComponent } from './modules/payslip-detail-preview-link/payslip-detail-preview-link.component';
 import { NotHaveAccessComponent } from './modules/not-have-access/not-have-access.component';
+import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-to-confirm-mail-or-complain-mail/payslip-to-confirm-mail-or-complain-mail.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -69,6 +70,7 @@ import { NotHaveAccessComponent } from './modules/not-have-access/not-have-acces
     UserDataForChartDetailComponent,
     PayslipDetailPreviewLinkComponent,
     NotHaveAccessComponent,
+    PayslipToConfirmMailOrComplainMailComponent,
   ],
   imports: [
     CommonModule,

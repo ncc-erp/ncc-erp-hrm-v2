@@ -137,6 +137,9 @@ export interface GetPayslipEmployeeDto{
   realSalary:number;
   employeeId: number;
 }
-
+export interface InputcomplainPayslipDto{
+  ComplainNote:string,
+  PayslipId:number,
+}
 
 

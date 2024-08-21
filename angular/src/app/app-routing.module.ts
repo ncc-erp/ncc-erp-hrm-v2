@@ -8,6 +8,7 @@ import { AboutComponent } from './about/about.component';
 import { PayslipDetailPreviewLinkComponent } from './modules/payslip-detail-preview-link/payslip-detail-preview-link.component';
 import { NotHaveAccessComponent } from './modules/not-have-access/not-have-access.component';
 import { PERMISSIONS_CONSTANT } from './permission/permission';
+import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-to-confirm-mail-or-complain-mail/payslip-to-confirm-mail-or-complain-mail.component';
 
 @NgModule({
     imports: [
@@ -21,13 +22,6 @@ import { PERMISSIONS_CONSTANT } from './permission/permission';
                         permission: PERMISSIONS_CONSTANT.Home,
                         preload: true,
                     }, canActivate: [AppRouteGuard] },
-                    { path: 'payslip-confirm', component: PayslipDetailPreviewLinkComponent,
-                        data: {
-                            permission: PERMISSIONS_CONSTANT.ViewMyPayslipLink,
-                            preload: true,
-                        
-                        },
-                         canActivate: [AppRouteGuard] },
                     { path: 'test', component: TestComponentComponent, canActivate: [AppRouteGuard] },
                     {
                         path: 'admin',
@@ -142,7 +136,31 @@ import { PERMISSIONS_CONSTANT } from './permission/permission';
                         path: "not-have-access",
                         component : NotHaveAccessComponent,
                         canActivate: [AppRouteGuard]
-                    }
+                    }, 
+                    { path: 'payslip-confirm', component: PayslipDetailPreviewLinkComponent,
+                        data: {
+                            permission: PERMISSIONS_CONSTANT.ViewMyPayslipLink,
+                            preload: true,
+                        
+                        },
+                         canActivate: [AppRouteGuard] 
+                    },
+                    { path: 'confirm-mail', component: PayslipToConfirmMailOrComplainMailComponent,
+                        data: {
+                            permission: PERMISSIONS_CONSTANT.ViewMyPayslipLink,
+                            preload: true,
+                        
+                        },
+                         canActivate: [AppRouteGuard] 
+                    },
+                    { path: 'complain-mail', component: PayslipToConfirmMailOrComplainMailComponent,
+                        data: {
+                            permission: PERMISSIONS_CONSTANT.ViewMyPayslipLink,
+                            preload: true,
+                        
+                        },
+                         canActivate: [AppRouteGuard] 
+                    },
                 ]
             },
         ])
