@@ -13,6 +13,7 @@ namespace HRMv2.Authorization.Roles
             public const string KT = "KT";
             public const string SubKT = "SubKT";
             public const string CEO = "CEO";
+            public const string Employee = "Employee";
         }       
     }
 }

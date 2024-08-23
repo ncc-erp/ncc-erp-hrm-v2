@@ -1,0 +1,32 @@
+<div class="center-text-payslip" [busy]="isLoading">
+  <div class="image-payslip">
+    <img
+      src="https://do78x13wq0td.cloudfront.net/prod/avatars/host/logo-ncc.png"
+    />
+  </div>
+  <div *ngIf="uri === 'confirm-mail'" class="center-text-payslip">
+    <div
+      class="title-pause payslip-content"
+      [innerHTML]="payslipToConfirm"
+    ></div>
+  </div>
+  <div class="content-complain-confirm">
+    <div *ngIf="uri !== 'confirm-mail' && isSent" [innerHTML]="result"></div>
+    <div *ngIf="uri !== 'confirm-mail' && !isSent " class="content">
+      <h5>Nhập khiếu nại:</h5>
+      <textarea
+        matInput
+        [(ngModel)]="complainMessage"
+        class="form-control"
+        name="complain"
+        id=""
+        cols="30"
+        rows="10"
+      >
+      </textarea>
+      <div class="text-right send-btn">
+        <button class="btn btn-primary mt-2" (click)="send()">Gửi khiếu nại</button>
+      </div>
+    </div>
+  </div>
+</div>

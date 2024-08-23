@@ -154,6 +154,7 @@ namespace HRMv2.Constants.Enum
             PayrollApprovedByCEO = 11,
             PayrollRejectedByCEO= 12,
             PayrollExecuted = 13,
+            LinkToPreviewPayslip = 14,
 
         }
 

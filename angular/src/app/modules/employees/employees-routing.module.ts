@@ -13,6 +13,7 @@ import { SalaryChangesComponent } from './employee-detail/salary-changes/salary-
 import { WorkingHistoryComponent } from './employee-detail/working-history/working-history.component';
 import { BranchHistoryComponent } from './employee-detail/branch-history/branch-history.component';
 import { PayslipHistoryComponent } from './employee-detail/payslip-history/payslip-history.component';
+import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 const routes: Routes = [
     {
       path:"",
@@ -22,17 +23,29 @@ const routes: Routes = [
     {
       path: "list-employee",
       component: EmployeeListComponent,
+      data: {
+        permission: PERMISSIONS_CONSTANT.Employee_View,
+        preload: true
+      },
       canActivate: [AppRouteGuard],
     },
     {
       path: 'create',
       component: EmployeeDetailComponent,
+      data: {
+        permission: PERMISSIONS_CONSTANT.Employee_Create,
+        preload: true
+      },
       canActivate: [AppRouteGuard],
       children:[
         {
           path: "",
           pathMatch: "full",
           component: PersonalInfoComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_View,
+            preload: true
+          },
           canActivate: [AppRouteGuard]
         },
         {
@@ -45,56 +58,100 @@ const routes: Routes = [
     {
       path: "list-employee/employee-detail",
       component: EmployeeDetailComponent,
+      data: {
+        permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail,
+        preload: true
+      },
       canActivate: [AppRouteGuard],
       children:[
         {
           path: "personal-info",
           component: PersonalInfoComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_View,
+            preload: true
+          },
           canActivate: [AppRouteGuard]
         },
         {
           path: "contract",
           component: EmployeeContractComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabContract_View,
+            preload: true
+          },
           canActivate: [AppRouteGuard]
         },
         {
           path: "debt",
           component: EmployeeDebtComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabDebt_View,
+            preload: true
+          },
           canActivate: [AppRouteGuard]
         },
         {
           path: "benefit",
           component: EmployeeBenefitComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabBenefit_View,
+            preload: true
+          },
           canActivate: [AppRouteGuard]
         },
         {
           path: "bonus",                                                                                              
           component: EmployeeBonusComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabBonus_View,
+            preload: true
+          },
           canActivate: [AppRouteGuard]
         },
         {
           path: "punishment",
           component: EmployeePunishmentComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPunishment_View,
+            preload: true
+          },
           canActivate: [AppRouteGuard]
         },
         {
           path: "salary-changes",
-          component: SalaryChangesComponent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ,
+          component: SalaryChangesComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabSalaryHistory,
+            preload: true
+          }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ,
           canActivate: [AppRouteGuard]
         },
         {
           path: "working-history",
-          component: WorkingHistoryComponent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ,
+          component: WorkingHistoryComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabWorkingHistory_View,
+            preload: true
+          }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ,
           canActivate: [AppRouteGuard]
         },
         {
           path: "branch-history",
-          component: BranchHistoryComponent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ,
+          component: BranchHistoryComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabBranchHistory_View,
+            preload: true
+          }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ,
           canActivate: [AppRouteGuard]
         },
         {
           path: "payslip-history",
-          component: PayslipHistoryComponent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ,
+          component: PayslipHistoryComponent,
+          data: {
+            permission: PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPayslipHistory_View,
+            preload: true
+          }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ,
           canActivate: [AppRouteGuard]
         }
       ]

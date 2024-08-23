@@ -198,6 +198,16 @@
                                             <i class="fas fa-lock mr-1"></i>
                                             <span>{{ "ResetPassword" | localize }}</span>
                                         </button>
+                                        <button *ngIf="!user.isActive" type="button"
+                                        class="mat-menu-item  w-100" (click)="updateUserActive(user,true)">
+                                        <i class="fas fa-check fa-lg mr-1"></i>
+                                        Activate
+                                      </button>
+                                      <button *ngIf="user.isActive" type="button"
+                                        class="mat-menu-item  w-100" (click)="updateUserActive(user,false)">
+                                        <i class="fas fa-times fa-lg mr-1"></i>
+                                        Deactivate
+                                      </button>
                                         <button *ngIf="isShowDeleteBtn()" class="mat-menu-item  w-100 " (click)="onDelete(user)">
                                             <i class="fas fa-trash fa-lg mr-1"></i>
                                             Delete

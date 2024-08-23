@@ -1,0 +1,44 @@
+.header-card{
+  background-color: #ffff; 
+  display: flex; 
+  flex-direction: column;
+}
+.center-text-payslip {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  height: 74vh;
+  width: 87vw;
+  text-align: center;
+  margin-bottom: 250px;
+  gap: 20px;
+}
+.title {
+    width: 84%;
+    text-align: left;
+    font-size: 140%;
+}
+.footer {
+  width: 100%;
+  font-size: 100%;
+}
+.title-quit {
+    width: 89%;
+    text-align: center;
+    font-size: 250%;
+}
+.title-pause {
+    width: 89%;
+    width: 80vw !important;
+    text-align: center;
+    font-size: 200%;
+}
+.image-payslip{
+  margin-top: 100px;
+  height: 88px;
+  width: 204px;
+}
+.payslip-content{
+ 
+}

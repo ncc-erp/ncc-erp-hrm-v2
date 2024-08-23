@@ -4,21 +4,34 @@ import { AppRouteGuard } from "@shared/auth/auth-route-guard";
 import { AddEmployeeToSalaryChangeRequestComponent } from "./salary-change-request-detail/add-employee-to-salary-change-request/add-employee-to-salary-change-request.component";
 import { SalaryChangeRequestDetailComponent } from "./salary-change-request-detail/salary-change-request-detail.component";
 import { SalaryChangeRequestListComponent } from "./salary-change-request-list/salary-change-request-list.component";
+import { PERMISSIONS_CONSTANT } from "@app/permission/permission";
 
 export const routes: Routes = [
     {
         path: "list-request",
         component: SalaryChangeRequestListComponent,
+        data:{
+            permisson: PERMISSIONS_CONSTANT.SalaryChangeRequest_View,
+            preload:true
+        },
         canActivate: [AppRouteGuard]
     },
     {
         path: "list-request/request-detail/request-employee",
         component: AddEmployeeToSalaryChangeRequestComponent,
+        data:{
+            permission:PERMISSIONS_CONSTANT.SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_Edit,
+            preload:true
+        },
         canActivate: [AppRouteGuard] 
     },
     {
         path: "list-request/request-detail",
         component: SalaryChangeRequestDetailComponent,
+        data:{
+            permisson:PERMISSIONS_CONSTANT.SalaryChangeRequest_SalaryChangeRequestDetail_View,
+            preload:true
+        },
         canActivate: [AppRouteGuard]
     },
     {

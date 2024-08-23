@@ -193,61 +193,6 @@ namespace HRMv2.Manager.Timesheet
             }
         }
 
-        public async Task<string> ComplainPayslipMail(InputcomplainPayslipDto input)
-        {
-            using (CurrentUnitOfWork.DisableFilter(AbpDataFilters.MayHaveTenant))
-            {
-            var activePayslip = WorkScope.GetAll<Payslip>()
-                .Where(x => x.Id == input.PayslipId)
-                .Where(x => x.Employee.Email == input.Email)
-                .Where(x => x.Payroll.Status != PayrollStatus.Executed)
-                .OrderByDescending(x => x.CreationTime)
-                .FirstOrDefault();
-
-            if (activePayslip == default)
-            {
-                return "Không tìm thấy phiếu lương, vui lòng kiểm tra lại email";
-            }
-            activePayslip.ConfirmStatus = PayslipConfirmStatus.ConfirmWrong;
-            activePayslip.ComplainNote = input.ComplainNote;
-
-            await WorkScope.UpdateAsync(activePayslip);
-
-            return "Khiếu nại của bạn đã được gửi đi, hãy đợi kết quả từ HR nhé";
-        }
-         }
-
-        public async Task<string> ConfirmPayslipMail(InputConfirmPayslipMailDto input)
-        {
-            using (CurrentUnitOfWork.DisableFilter(AbpDataFilters.MayHaveTenant))
-            {
-            var payslip = WorkScope.GetAll<Payslip>()
-                .Where(x => x.Id == input.PayslipId)
-                .Select(s => new { Payslip = s, s.Payroll.Status, s.Payroll.ApplyMonth, s.Employee.Email })
-                .FirstOrDefault();
-
-            if (payslip == default)
-            {
-                return "Không tìm thấy phiếu lương";
-            }
-
-            if (payslip.Status == PayrollStatus.Executed)
-            {
-                return "Đã quá hạn complain";
-            }
-
-            if (payslip.Email.ToLower().Trim() != input.Email.Trim().ToLower())
-            {
-                return "Đây không phải phiếu lương của bạn. Hệ thống đã lưu lại các thông tin để truy vết";
-            }
-
-            payslip.Payslip.ConfirmStatus = PayslipConfirmStatus.ConfirmRight;
-
-            await WorkScope.UpdateAsync(payslip.Payslip);
-
-            return $"Bạn đã xác nhận phiếu lương {DateTimeUtils.ToMMYYYY(payslip.ApplyMonth)} của {payslip.Email} là chính xác";
-        }
-            }
 
         public GetUserInfoByEmailDto GetUserInfoByEmail(string email)
         {

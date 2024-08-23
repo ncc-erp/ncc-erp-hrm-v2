@@ -6,7 +6,7 @@ import { BaseApiService } from '../base-api.service'
 import { AddEmployeeToPayroll } from '@app/service/model/payslip/AddEmployeeToPayroll';
 import { GetSalaryDetailDto } from '@app/service/model/payslip/GetSalaryDetailDto';
 import { CollectPayslipDto } from '@app/service/model/payslip/CollectPayslipDto'
-import { CreatePayslipDetailDto, CreatePayslipBonusDto, GetPayslipEmployeeDto, ReCalculateDto, UpdatePayslipDeadLineDto, UpdatePayslipDetailDto, UpdatePayslipInfo } from '@app/service/model/payslip/payslip.dto';
+import { CreatePayslipDetailDto, CreatePayslipBonusDto, GetPayslipEmployeeDto, ReCalculateDto, UpdatePayslipDeadLineDto, UpdatePayslipDetailDto, UpdatePayslipInfo, InputcomplainPayslipDto } from '@app/service/model/payslip/payslip.dto';
 import { MailPreviewInfo } from '@app/service/model/mail/mail.dto';
 import { GetInputFilterDto } from '@app/service/model/employee/GetEmployeeExcept.dto';
 import { SendMailAllEmployeeDto, SendMailOneemployeeDto } from '@app/service/model/mail/sendMail.dto';
@@ -100,7 +100,12 @@ export class PayslipService extends BaseApiService {
   public getEmailTemplate(payslipId: number): Observable<ApiResponseDto<any>> {
     return this.processGet(`GetEmailTemplate?payslippId=${payslipId}`)
   }
-
+  public getPayslipPreviewToSendEmail(payslipId: number): Observable<ApiResponseDto<any>> {
+    return this.processGet(`GetPayslipPreviewToSendEmail?payslippId=${payslipId}`)
+  }
+  public getPayslipPreviewToConfirm(payslipId: number): Observable<ApiResponseDto<any>> {
+    return this.processGet(`GetPayslipPreviewToConfirm?payslipId=${payslipId}`)
+  }
   public sendMailToOneEmployee(input: SendMailOneemployeeDto): Observable<ApiResponseDto<any>> {
     return this.processPost(`SendMailToOneEmployee`, input)
   }
@@ -169,4 +174,13 @@ export class PayslipService extends BaseApiService {
   public GetAvailablePunishmentsInMonth(payslipId:number):Observable<ApiResponseDto<any>>{
     return this.processGet(`GetAvailablePunishmentsInMonth?payslipId=${payslipId}`)
   }
+  public confirmPayslipMail(id: number): Observable<any>{
+    return this.processGet(`ConfirmPayslipMail?id=${id}`);
+  }
+  public complainPayslipMail(id: number, note: string): Observable<any>{
+    return this.processPost(`ComplainPayslipMail`,{ payslipId: id, complainNote: note })
+  }
+  public getStatusEmployeeToComplain(payslipId: number): Observable<ApiResponseDto<any>> {
+    return this.processGet(`GetStatusEmployeeToComplain?payslipId=${payslipId}`)
+  } 
 }
