@@ -300,22 +300,12 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
 
   public onDelete(employee: GetEmployeeDto) {
     const emailConvert = this.extractEmailUsername(employee.email);
-    this.confirmDelete(`Delete employee <strong>${employee.fullName}</strong>
-      <br> <input type="checkbox" id="deleteEmailCheckbox" (change)="onCheckboxChange($event)" checked> Delete user <strong>${emailConvert}</strong>`, () => {
-        const checkbox = document.getElementById('deleteEmailCheckbox') as HTMLInputElement;
-        this.deteleUserWithEmail = checkbox.checked;
-        this.employeeService.deleteWithEmail(employee.id, this.deteleUserWithEmail).subscribe(() => {
-          if(this.deteleUserWithEmail){
-            abp.notify.success(`Deleted employee ${employee.fullName} and deleted User ${emailConvert}`)
-
-          }
-          else{
-            abp.notify.success(`Deleted employee ${employee.fullName}`)
-
-          }
-          this.refresh();
-        });
-      });
+    this.confirmDelete(`Delete employee <strong>${employee.fullName}</strong> </br> Delete user <strong>${emailConvert}</strong>` , () => {
+      this.employeeService.delete(employee.id).subscribe(() => {
+        abp.notify.success(`Deleted employee ${employee.fullName} and delete user ${emailConvert}`)
+        this.refresh();
+      })
+    })
   }
   public extractEmailUsername(email: string) {
     const atIndex = email.indexOf('@');
