@@ -30,7 +30,7 @@ namespace HRMv2.Manager.Employees.Dto
         public Sex Sex => string.IsNullOrEmpty(SexCode) ? Sex.Male : (Sex)CommonUtil.GetValueOfSex(SexCode);
 
     }
-    public class UpdtaeEmployeeFromFileDto
+    public class UpdateEmployeeFromFileDto
     {
         public string Email { get; set; }
         public string Phone { get; set; }

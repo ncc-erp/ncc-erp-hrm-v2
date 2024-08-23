@@ -127,7 +127,7 @@ namespace HRMv2.Controllers
         private async Task<AbpLoginResult<Tenant, User>> GetLoginResultGoogleAsync(string token, string tenancyName, string secretCode)
         {
             Logger.Info("GetLoginResultGoogleAsync");
-            var loginResult = await _logInManager.LoginAsyncNoPass(token, secretCode, tenancyName, false);
+            var loginResult = await _logInManager.LoginAsyncNoPass(token, tenancyName, false);
 
             switch (loginResult.Result)
             {
