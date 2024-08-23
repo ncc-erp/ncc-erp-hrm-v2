@@ -12,11 +12,15 @@ using Abp.Organizations;
 using Abp.Runtime.Caching;
 using HRMv2.Authorization.Roles;
 using Abp.Authorization.Roles;
+using System.Threading.Tasks;
+using Abp.UI;
+using HRMv2.Manager.Employees.Dto;
 
 namespace HRMv2.Authorization.Users
 {
     public class UserManager : AbpUserManager<Role, User>
     {
+        private readonly RoleManager _roleManager;
         public UserManager(
           RoleManager roleManager,
           UserStore store,
@@ -56,6 +60,59 @@ namespace HRMv2.Authorization.Users
               settingManager,
               userLoginRepository)
         {
+            _roleManager = roleManager;
+        }
+       /* public async Task DeactiveUser(long userId)
+        {
+            await UpdateUserActive(userId, false);
+        }*/
+
+        public async Task UpdateUserActive(string email, bool isActive)
+        {
+            var user = await FindByNameOrEmailAsync(email);
+            user.IsActive = isActive;
+            await UpdateAsync(user);
+        }
+        public async Task DeleteAsync(string email)
+        {
+            var user = await FindByNameOrEmailAsync(email);
+            await DeleteAsync(user);
+        }
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var user = FindByNameOrEmailAsync(email);
+                
+            return await user;
+        }
+        public async Task<User> CreateUserForEmployee(string email, int? tenantId, string name, string surName)
+        {
+            var userName = email.Split('@')[0];
+            var userCreateDto = new User
+            {
+                TenantId = tenantId,
+                UserName = userName,
+                Name = name,
+                Surname = surName,
+                EmailAddress = email,
+                IsActive = true,
+                Roles = new List<UserRole>(),
+                Password = User.CreateRandomPassword(),
+            };
+            userCreateDto.SetNormalizedNames();
+            var role = await _roleManager.GetRoleByNameAsync(StaticRoleNames.Tenants.Employee);
+            if (role == null)
+            {
+                throw new UserFriendlyException("Role not found");
+            }
+
+            userCreateDto.Roles.Add(new UserRole
+            {
+                TenantId = tenantId,
+                RoleId = role.Id,
+                UserId = userCreateDto.Id
+            });
+            await CreateAsync(userCreateDto);
+            return userCreateDto;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HRMv2.Utils;
+﻿using HRMv2.Constants.Enum;
+using HRMv2.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace HRMv2.Manager.Employees.Dto
         public string FullName { get; set; }
         public string BranchCode { get; set; }
         public string BranchName { get; set; }
+        public EmployeeStatus Status { get; set; }
     }
 }

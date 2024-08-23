@@ -11,7 +11,7 @@ namespace HRMv2.Manager.Salaries.Payslips.Dto
     {
         public List<PayslipContractSalaryDto> InputSalary { get; set; }
         public CalculateResultDto CalculateResult { get; set; }
-        public DateTime ParollMonth { get; set; }
+        public DateTime PayrollMonth { get; set; }
         public string EmployeeFullName { get; set; }
         public double TotalRealSalary { get; set; }
         public double LeaveDayAfter { get; set; }
@@ -30,6 +30,7 @@ namespace HRMv2.Manager.Salaries.Payslips.Dto
         public PayslipConfirmStatus ConfirmStatus { get; set; }
         public string ComplainNote { get; set; }
         public DateTime? ComplainDeadline { get; set; }
+        public string Email { get; set; }
     }
 
     public class PayslipContractSalaryDto

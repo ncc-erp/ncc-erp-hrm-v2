@@ -41,6 +41,9 @@ import { LineChartComponent } from './home/line-chart/line-chart.component';
 import { DateSelectorHomepageComponent } from './home/date-selector-homepage/date-selector-homepage.component';
 import { ChartDetailDataComponent } from './home/chart-detail-data/chart-detail-data.component';
 import { UserDataForChartDetailComponent } from './home/chart-detail-data/user-data-for-chart-detail/user-data-for-chart-detail.component';
+import { PayslipDetailPreviewLinkComponent } from './modules/payslip-detail-preview-link/payslip-detail-preview-link.component';
+import { NotHaveAccessComponent } from './modules/not-have-access/not-have-access.component';
+import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-to-confirm-mail-or-complain-mail/payslip-to-confirm-mail-or-complain-mail.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -65,6 +68,9 @@ import { UserDataForChartDetailComponent } from './home/chart-detail-data/user-d
     DateSelectorHomepageComponent,
     ChartDetailDataComponent,
     UserDataForChartDetailComponent,
+    PayslipDetailPreviewLinkComponent,
+    NotHaveAccessComponent,
+    PayslipToConfirmMailOrComplainMailComponent,
   ],
   imports: [
     CommonModule,
@@ -83,7 +89,8 @@ import { UserDataForChartDetailComponent } from './home/chart-detail-data/user-d
     CategoriesModule,
     PunishmentsModule,
     DebtModule,
-    RefundsModule
+    RefundsModule,
+    
   ],
   providers: [
     {

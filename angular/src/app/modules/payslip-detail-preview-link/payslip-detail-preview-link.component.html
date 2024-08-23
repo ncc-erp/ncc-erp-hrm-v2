@@ -1,0 +1,17 @@
+<div class="header-card" [busy]="isLoading">
+  <div
+    *ngIf="payslipDetail.checkValidType == 1"
+    class="email-content px-2"
+    [innerHtml]="sanitizer.bypassSecurityTrustHtml(payslipDetail.mailInfo.bodyMessage)"
+  ></div>
+  <div *ngIf="payslipDetail.checkValidType !== 1" class="center-text-payslip">
+    <div   class="image-payslip">
+      <img src="https://do78x13wq0td.cloudfront.net/prod/avatars/host/logo-ncc.png"/>
+    </div>
+    <div class="center-text-payslip">
+      <div class="title-pause payslip-content" [innerHTML]="payslipDetail.message">
+       
+      </div>
+    </div>
+  </div>
+</div>

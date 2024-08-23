@@ -97,7 +97,8 @@ namespace HRMv2.EntityFrameworkCore.Seed.Tenants
             {
                 StaticRoleNames.Tenants.CEO,
                 StaticRoleNames.Tenants.KT,
-                StaticRoleNames.Tenants.SubKT
+                StaticRoleNames.Tenants.SubKT,
+                StaticRoleNames.Tenants.Employee,
             };
             foreach (var roleSeed in roleSeeds)
             {

@@ -35,7 +35,7 @@ export class PayslipDetailDto{
     totalRefund:number,
     remainingLeaveHour: number
   };
-  parollMonth: string;
+  payrollMonth: string;
   employeeFullName: string;
   standardWorkingDay: number;
   standardOpenTalk: number;
@@ -137,6 +137,9 @@ export interface GetPayslipEmployeeDto{
   realSalary:number;
   employeeId: number;
 }
-
+export interface InputcomplainPayslipDto{
+  ComplainNote:string,
+  PayslipId:number,
+}
 
 

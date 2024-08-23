@@ -104,7 +104,8 @@ namespace HRMv2.EntityFrameworkCore.Seed.Host
         {
             var roleSeeds = new List<string>() { StaticRoleNames.Tenants.CEO,
                                                 StaticRoleNames.Tenants.KT,
-                                                StaticRoleNames.Tenants.SubKT};
+                                                StaticRoleNames.Tenants.SubKT,
+                                                StaticRoleNames.Tenants.Employee,};
 
             foreach (var roleSeed in roleSeeds)
             {

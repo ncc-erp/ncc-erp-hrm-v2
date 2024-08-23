@@ -1,0 +1,31 @@
+
+.text-not-have-access {
+   
+    color: #333;
+   
+    
+}
+.header-page-no-access {
+    background-color: #ffff; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 100vw; 
+    padding-top: 20px;
+}
+
+.image-logo {
+    display: flex;
+    justify-content: center; 
+    margin: 50px 250px 100px 0; 
+    height: 120px;
+    width: 250px;
+
+}
+
+.no-access-text {
+    margin-top: 10px;
+    margin-right: 250px;
+    font-size: 4vw;
+}
