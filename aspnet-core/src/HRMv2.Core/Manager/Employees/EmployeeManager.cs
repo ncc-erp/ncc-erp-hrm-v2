@@ -645,8 +645,8 @@ namespace HRMv2.Manager.Employees
             {
                 OnboardTempEmployee(tempEmployeeId);
             }
-
             CreateOrUpdateToOtherTool(entity, ActionMode.Create);
+            
             return input;
         }
 
@@ -1496,9 +1496,9 @@ namespace HRMv2.Manager.Employees
                 throw new UserFriendlyException("File null or is not .xlsx file");
             }
         }
-        private async Task<List<UpdtaeEmployeeFromFileDto>> GetDataUpdateFromFile([FromForm] InputFileDto input)
+        private async Task<List<UpdateEmployeeFromFileDto>> GetDataUpdateFromFile([FromForm] InputFileDto input)
         {
-            var datas = new List<UpdtaeEmployeeFromFileDto>();
+            var datas = new List<UpdateEmployeeFromFileDto>();
             using (var stream = new MemoryStream())
             {
                 input.File.CopyTo(stream);
@@ -1515,7 +1515,7 @@ namespace HRMv2.Manager.Employees
 
                     for (int row = 2; row <= rowCount; row++)
                     {
-                        var data = new UpdtaeEmployeeFromFileDto();
+                        var data = new UpdateEmployeeFromFileDto();
                         data.Email = worksheet.Cells[row, 1].GetCellValue<string>() ?? "";
                         data.Phone = worksheet.Cells[row, 2].GetCellValue<string>() ?? "";
                         data.Phone = data.Phone.Replace(" ", "").Replace("-", "");
@@ -1684,7 +1684,7 @@ namespace HRMv2.Manager.Employees
             return new { successList, failedList };
         }
 
-        public bool ValidDataToUpdate(UpdtaeEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList)
+        public bool ValidDataToUpdate(UpdateEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList)
         {
             var dictBank = WorkScope.GetAll<Bank>()
                                     .Select(s => new { Key = s.Code.ToLower(), s.Id })
