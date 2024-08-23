@@ -38,7 +38,7 @@ namespace HRMv2.Authorization.Users
           IRepository<OrganizationUnit, long> organizationUnitRepository,
           IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
           IOrganizationUnitSettings organizationUnitSettings,
-          ISettingManager settingManager, 
+          ISettingManager settingManager,
           IRepository<UserLogin, long> userLoginRepository)
           : base(
               roleManager,
@@ -62,57 +62,62 @@ namespace HRMv2.Authorization.Users
         {
             _roleManager = roleManager;
         }
-       /* public async Task DeactiveUser(long userId)
-        {
-            await UpdateUserActive(userId, false);
-        }*/
+        /* public async Task DeactiveUser(long userId)
+         {
+             await UpdateUserActive(userId, false);
+         }*/
 
         public async Task UpdateUserActive(string email, bool isActive)
         {
             var user = await FindByNameOrEmailAsync(email);
+            if (user == null)
+            {
+                Logger.LogInformation("not found user with email " + email);
+                return;
+            }
             user.IsActive = isActive;
             await UpdateAsync(user);
         }
         public async Task DeleteAsync(string email)
         {
+
             var user = await FindByNameOrEmailAsync(email);
+            if (user == null)
+            {
+                Logger.LogInformation("not found user with email " + email);
+                return;
+            }
             await DeleteAsync(user);
         }
-        public async Task<User> GetUserByEmail(string email)
-        {
-            var user = FindByNameOrEmailAsync(email);
-                
-            return await user;
-        }
-        public async Task<User> CreateUserForEmployee(string email, int? tenantId, string name, string surName)
+
+        public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName)
         {
             var userName = email.Split('@')[0];
-            var userCreateDto = new User
+            var user = new User
             {
                 TenantId = tenantId,
-                UserName = userName,
+                UserName = userName.ToLower(),
                 Name = name,
                 Surname = surName,
-                EmailAddress = email,
+                EmailAddress = email.ToLower(),
                 IsActive = true,
                 Roles = new List<UserRole>(),
-                Password = User.CreateRandomPassword(),
             };
-            userCreateDto.SetNormalizedNames();
+            user.Password = PasswordHasher.HashPassword(user, User.CreateRandomPassword());
+            user.SetNormalizedNames();
             var role = await _roleManager.GetRoleByNameAsync(StaticRoleNames.Tenants.Employee);
             if (role == null)
             {
-                throw new UserFriendlyException("Role not found");
+                throw new UserFriendlyException("Not found role: " + StaticRoleNames.Tenants.Employee);
             }
-
-            userCreateDto.Roles.Add(new UserRole
+            user.Roles.Add(new UserRole
             {
                 TenantId = tenantId,
                 RoleId = role.Id,
-                UserId = userCreateDto.Id
+                UserId = user.Id
             });
-            await CreateAsync(userCreateDto);
-            return userCreateDto;
+            await CreateAsync(user);
+            return user;
         }
     }
 }

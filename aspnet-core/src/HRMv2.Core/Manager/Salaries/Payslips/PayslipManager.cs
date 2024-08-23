@@ -2953,97 +2953,66 @@ namespace HRMv2.Manager.Salaries.Payslips
         }
         public async Task<string> ConfirmPayslipMail(long id)
         {
-            using (CurrentUnitOfWork.DisableFilter(AbpDataFilters.MayHaveTenant))
+            var payslip = WorkScope.GetAll<Payslip>()
+                .Where(x => x.Id == id)
+                .Select(s => new { Payslip = s, s.Payroll.Status, s.Payroll.ApplyMonth, s.Employee.Email, EmployeeStatus = s.Employee.Status })
+                .FirstOrDefault();
+            if (payslip == default)
             {
-                var payslip = WorkScope.GetAll<Payslip>()
-                    .Where(x => x.Id == id)
-                    .Select(s => new { Payslip = s, s.Payroll.Status, s.Payroll.ApplyMonth, s.Employee.Email, EmployeeStatus = s.Employee.Status })
-                    .FirstOrDefault();
-                var sessionEmail = WorkScope.GetAll<User>()
-               .Where(s => s.Id == AbpSession.UserId)
-               .Select(s => s.EmailAddress)
-               .FirstOrDefault();
-                var isViewAll = this.IsGranted(PermissionNames.ViewAllPayslipLink);
-                if (payslip == default)
-                {
-                    return "Không tìm thấy phiếu lương";
-                }
-
-                if (payslip.Status == PayrollStatus.Executed)
-                {
-                    return "Đã quá hạn complain";
-                }
-                if (!isViewAll && (payslip.EmployeeStatus == EmployeeStatus.Pausing || payslip.EmployeeStatus == EmployeeStatus.Quit))
-                {
-
-                    return $"Hi <strong>{sessionEmail}</strong>, bạn không thể xác nhận phiếu lương này vì bạn đã nghỉ việc.";
-                }
-                if (payslip.Email.ToLower().Trim() != sessionEmail.Trim().ToLower() && !isViewAll)
-                {
-                    return $"Hi <strong>{sessionEmail}</strong>, bạn không thể xác nhận phiếu lương của <strong>{payslip.Email}</strong> . <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR.";
-                }
-
-                payslip.Payslip.ConfirmStatus = PayslipConfirmStatus.ConfirmRight;
-
-                await WorkScope.UpdateAsync(payslip.Payslip);
-
-                return $"Bạn đã xác nhận phiếu lương <strong>{DateTimeUtils.ToMMYYYY(payslip.ApplyMonth)}</strong> của <strong>{payslip.Email}</strong> là chính xác";
+                return "Không tìm thấy phiếu lương";
             }
+
+            if (payslip.Status == PayrollStatus.Executed)
+            {
+                return "Đã quá hạn complain";
+            }
+
+            if (payslip.EmployeeStatus == EmployeeStatus.Pausing || payslip.EmployeeStatus == EmployeeStatus.Quit)
+            {
+                return $"Hi <strong>{payslip.Email}</strong>, bạn không thể xác nhận phiếu lương này vì bạn đã nghỉ việc.";
+            }
+
+            var sessionEmail = this.GetSessionUserEmail();
+            if (payslip.Email.ToLower().Trim() != sessionEmail.Trim().ToLower())
+            {
+                return $"Hi <strong>{sessionEmail}</strong>, bạn không thể xác nhận phiếu lương của <strong>{payslip.Email}</strong> . <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR.";
+            }
+
+            payslip.Payslip.ConfirmStatus = PayslipConfirmStatus.ConfirmRight;
+
+            await WorkScope.UpdateAsync(payslip.Payslip);
+
+            return $"Bạn đã xác nhận phiếu lương <strong>{DateTimeUtils.ToMMYYYY(payslip.ApplyMonth)}</strong> của <strong>{payslip.Email}</strong> là chính xác";
+            
         }
         public async Task<string> ComplainPayslipMail(InputcomplainPayslipDto input)
         {
-            using (CurrentUnitOfWork.DisableFilter(AbpDataFilters.MayHaveTenant))
-            {
-                var activePayslip = WorkScope.GetAll<Payslip>()
-                    .Where(x => x.Id == input.PayslipId)
-                    .Where(x => x.Payroll.Status != PayrollStatus.Executed)
-                    .OrderByDescending(x => x.CreationTime)
-                    .FirstOrDefault();
-                activePayslip.ConfirmStatus = PayslipConfirmStatus.ConfirmWrong;
-                activePayslip.ComplainNote = input.ComplainNote;
-                await WorkScope.UpdateAsync(activePayslip);
-
-                return "Khiếu nại của bạn đã được gửi đi, hãy đợi kết quả từ HR nhé";
-            }
-        }
-
-        public GetPayslipToConfirmDto GetStatusEmployeeToComplain(long payslipId)
-        {
-
-            var payslip = WorkScope.GetAll<Payslip>()
-                .Where(x => x.Id == payslipId)
-                .Select(x => new
-                {
-                    x.ComplainDeadline,
-                    x.Employee.Email,
-                    x.Employee.Status
-                })
-                .FirstOrDefault();
-            var sessionEmail = WorkScope.GetAll<User>()
-                .Where(s => s.Id == AbpSession.UserId)
-                .Select(s => s.EmailAddress)
+            var activePayslip = WorkScope.GetAll<Payslip>()
+                .Include(x => x.Employee)
+                .Where(x => x.Id == input.PayslipId)
+                .Where(x => x.Payroll.Status != PayrollStatus.Executed)
+                .OrderByDescending(x => x.CreationTime)
                 .FirstOrDefault();
 
-            var isViewAll = this.IsGranted(PermissionNames.ViewAllPayslipLink);
-            if (!isViewAll && (payslip.Status == EmployeeStatus.Pausing || payslip.Status == EmployeeStatus.Quit))
+            if (activePayslip == default)
             {
-                return new GetPayslipToConfirmDto
-                {
-                    CheckValidType = CheckValidType.InvalidBecauseEmployeePauseOrQuit,
-                    Message = $"Hi <strong>{sessionEmail}</strong>, bạn không thể khiếu nại phiếu lương này vì bạn đã nghỉ việc."
-                };
+                return "Không tìm thấy phiếu lương";
             }
-            if (!isViewAll && payslip.Email.ToLower().Trim() != sessionEmail.ToLower().Trim())
+
+            var sessionEmail = this.GetSessionUserEmail();
+           
+            if(sessionEmail != activePayslip.Employee.Email)
             {
-                return new GetPayslipToConfirmDto
-                {
-                    CheckValidType = CheckValidType.InvalidBecauseEmployeeViewOther,
-                    Message = $"Hi <strong>{sessionEmail}</strong>, bạn không thể khiếu nại phiếu lương của <strong>{payslip.Email}</strong> . <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR."
-                };
+                return $"bạn không thể khiếu nại phiếu lương của <strong>{activePayslip.Employee.Email}</strong>. <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR. ";
             }
-            return new GetPayslipToConfirmDto{
-                CheckValidType = CheckValidType.Valid,
-            };
+
+            activePayslip.ConfirmStatus = PayslipConfirmStatus.ConfirmWrong;
+            activePayslip.ComplainNote = input.ComplainNote;
+            await WorkScope.UpdateAsync(activePayslip);
+
+            return "Khiếu nại của bạn đã được gửi đi, hãy đợi kết quả từ HR nhé";
+            
         }
+
     }
 }

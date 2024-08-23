@@ -62,16 +62,16 @@ namespace HRMv2.Authorization
             _userManager = userManager;
         }
         [UnitOfWork]
-        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncNoPass(string token, string secretCode = "", string tenancyName = null, bool shouldLockout = true)
+        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncNoPass(string token, string tenancyName = null, bool shouldLockout = true)
         {
             Logger.Info("LoginAsyncNoPass");
-            var result = await LoginAsyncInternalNoPass(token, secretCode, tenancyName, shouldLockout);
+            var result = await LoginAsyncInternalNoPass(token, tenancyName, shouldLockout);
             var user = result.User;
             SaveLoginAttempt(result, tenancyName, user == null ? null : user.EmailAddress);
             return result;
         }
 
-        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncInternalNoPass(string token, string secretCode, string tenancyName, bool shouldLockout)
+        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncInternalNoPass(string token, string tenancyName, bool shouldLockout)
         {
             Logger.Info("LoginAsyncInternalNoPass");
             if (token.IsNullOrEmpty())
@@ -125,16 +125,16 @@ namespace HRMv2.Authorization
                         if (user == null)
                         {
                             var employee = _employeeManager.GetEmployeeByEmail(emailAddress);
-                            if (employee.Status == EmployeeStatus.Working || employee.Status == EmployeeStatus.MaternityLeave)
+                            if (employee == null)
                             {
-
-                                user = await _userManager.CreateUserForEmployee(emailAddress, tenantId, Utils.CommonUtil.GetNameByFullName(employee.FullName), Utils.CommonUtil.GetSurNameByFullName(employee.FullName));
+                                throw new UserFriendlyException("Login Fail - Not found employee with email " + emailAddress);
                             }
-                            else
+                            if (employee.Status != EmployeeStatus.Working && employee.Status != EmployeeStatus.MaternityLeave)
                             {
-
-                                throw new UserFriendlyException(string.Format("Login Fail - Account does not exist"));
+                                throw new UserFriendlyException(string.Format("Login Fail - " + emailAddress + "is not working or maternity leave "));
                             }
+
+                            user = await _userManager.CreateUserAsync(emailAddress, tenantId, Utils.CommonUtil.GetNameByFullName(employee.FullName), Utils.CommonUtil.GetSurNameByFullName(employee.FullName));
                         }
 
                         if (await UserManager.IsLockedOutAsync(user))
