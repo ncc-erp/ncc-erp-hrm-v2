@@ -11,9 +11,8 @@
     ></div>
   </div>
   <div class="content-complain-confirm">
-    <div class="login-error" *ngIf="uri !== 'confirm-mail' && userLogin.checkValidType !== 1" [innerHTML]="userLogin.message"></div>
-    <div *ngIf="uri !== 'confirm-mail' && isSent && userLogin.checkValidType === 1" [innerHTML]="result"></div>
-    <div *ngIf="uri !== 'confirm-mail' && !isSent && userLogin.checkValidType === 1" class="content">
+    <div *ngIf="uri !== 'confirm-mail' && isSent" [innerHTML]="result"></div>
+    <div *ngIf="uri !== 'confirm-mail' && !isSent " class="content">
       <h5>Nhập khiếu nại:</h5>
       <textarea
         matInput

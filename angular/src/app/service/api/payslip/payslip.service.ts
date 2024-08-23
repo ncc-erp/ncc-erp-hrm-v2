@@ -104,7 +104,7 @@ export class PayslipService extends BaseApiService {
     return this.processGet(`GetPayslipPreviewToSendEmail?payslippId=${payslipId}`)
   }
   public getPayslipPreviewToConfirm(payslipId: number): Observable<ApiResponseDto<any>> {
-    return this.processGet(`GetPayslipPreviewToConfirm?payslippId=${payslipId}`)
+    return this.processGet(`GetPayslipPreviewToConfirm?payslipId=${payslipId}`)
   }
   public sendMailToOneEmployee(input: SendMailOneemployeeDto): Observable<ApiResponseDto<any>> {
     return this.processPost(`SendMailToOneEmployee`, input)
@@ -181,6 +181,6 @@ export class PayslipService extends BaseApiService {
     return this.processPost(`ComplainPayslipMail`,{ payslipId: id, complainNote: note })
   }
   public getStatusEmployeeToComplain(payslipId: number): Observable<ApiResponseDto<any>> {
-    return this.processGet(`GetStatusEmployeeToComplain?payslippId=${payslipId}`)
+    return this.processGet(`GetStatusEmployeeToComplain?payslipId=${payslipId}`)
   } 
 }

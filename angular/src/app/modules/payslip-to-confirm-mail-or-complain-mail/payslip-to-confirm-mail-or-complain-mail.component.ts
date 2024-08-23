@@ -33,30 +33,19 @@ export class PayslipToConfirmMailOrComplainMailComponent
     this.uri = this.activatedRoute.snapshot.url.map((segment) => segment.path).join("/");
     if (this.uri === "confirm-mail") {
       this.confirmPayslipMail();
-    }else{
-      this.getCurrentUser();
     }
-    
-
   }
   send() {
     this.payslipService.complainPayslipMail(this.payslipId, this.complainMessage)
       .subscribe(rs => {
         this.isSent = true
         this.result = `<h3>${rs.result}</h3>`
-        abp.notify.success("Complain send successful")
+        abp.notify.success("Sent to HR Success")
       })
   }
   public confirmPayslipMail() {
     this.payslipService.confirmPayslipMail(this.payslipId).subscribe((rs) => {
       this.payslipToConfirm = rs.result;
     });
-  }
-  getCurrentUser() {
-    this.payslipService
-      .getStatusEmployeeToComplain(this.payslipId)
-      .subscribe((rs) => {
-        this.userLogin = rs.result
-      });
   }
 }
