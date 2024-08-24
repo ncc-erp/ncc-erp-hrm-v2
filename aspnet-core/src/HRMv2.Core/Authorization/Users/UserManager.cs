@@ -15,6 +15,7 @@ using Abp.Authorization.Roles;
 using System.Threading.Tasks;
 using Abp.UI;
 using HRMv2.Manager.Employees.Dto;
+using HRMv2.Authorization.Users.Dto;
 
 namespace HRMv2.Authorization.Users
 {
@@ -88,6 +89,20 @@ namespace HRMv2.Authorization.Users
                 return;
             }
             await DeleteAsync(user);
+        }
+        
+        public async Task<GetUserName> GetUserByEmail(string email)
+        {
+            var userName = await FindByNameOrEmailAsync(email);
+            if(userName == null)
+            {
+                return null;
+            }
+
+            return new GetUserName
+            {
+                UserName = userName.UserName,
+            };
         }
 
         public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName)

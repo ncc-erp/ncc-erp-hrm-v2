@@ -12,6 +12,7 @@ import * as FileSaver from 'file-saver';
 import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { CreateEmployeeFromFileComponent } from '@app/modules/employees/employee-list/create-employee-from-file/create-employee-from-file.component';
 import { UpdateEmployeeFromFileComponent } from '@app/modules/employees/employee-list/update-employee-from-file/update-employee-from-file.component';
+import { UserService } from '@app/service/api/user/user.service';
 @Component({
   selector: 'app-list-employee',
   templateUrl: './list-employee.component.html',
@@ -69,10 +70,11 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   public requestInput = {} as GetInputFilterDto;
   public birthdayFromDate:string;
   public birthdayToDate:string;
-  public deteleUserWithEmail: boolean = true;
+  public textOnNotiWhenDeleteEmployee : string;
   constructor(injector: Injector,
     private datePipe: DatePipe,
-    private employeeService: EmployeeService, @Inject(MAT_DIALOG_DATA) public data: any) {
+    private employeeService: EmployeeService,
+    private userService : UserService, @Inject(MAT_DIALOG_DATA) public data: any) {
     super(injector)
   }
 
@@ -299,22 +301,24 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   }
 
   public onDelete(employee: GetEmployeeDto) {
-    const emailConvert = this.extractEmailUsername(employee.email);
-    this.confirmDelete(`Delete employee <strong>${employee.fullName}</strong> </br> Delete user <strong>${emailConvert}</strong>` , () => {
-      this.employeeService.delete(employee.id).subscribe(() => {
-        abp.notify.success(`Deleted employee ${employee.fullName} and delete user ${emailConvert}`)
-        this.refresh();
+    this.userService.getUserByEmail(employee.email).subscribe((rs)=> {
+      if(rs.result == null){
+        this.textOnNotiWhenDeleteEmployee = `Deleted employee <strong>${employee.fullName}</strong>`;
+      }
+      else{
+        this.textOnNotiWhenDeleteEmployee = `Delete employee <strong>${employee.fullName}</strong> </br> Delete user <strong>${rs.result.userName}</strong>`
+      }
+      this.confirmDelete(`${this.textOnNotiWhenDeleteEmployee}` , () => {
+        this.employeeService.delete(employee.id).subscribe(() => {
+          this.userService.getUserByEmail(employee.email).subscribe((rs)=> {
+            abp.notify.success(`${this.textOnNotiWhenDeleteEmployee}`)
+          })
+          this.refresh();
+        })
       })
-    })
+    });
   }
-  public extractEmailUsername(email: string) {
-    const atIndex = email.indexOf('@');
-    if (atIndex !== -1) {
-      return email.substring(0, atIndex);
-    }
-    return email;
-  }
-  
+
   public onUpdateAvatar(employee) {
     const dialogRef = this.dialog.open(UploadAvatarComponent, {
       width: '600px',

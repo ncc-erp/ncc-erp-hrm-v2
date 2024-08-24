@@ -18,6 +18,8 @@ export class UserService  extends BaseApiService{
   updateUserActive(userId:number, isActive:boolean): Observable<any> {
     return this.processPut(`UpdateUserActive?userId=${userId}&&isActive=${isActive}`,{});
   }
-
+  public getUserByEmail(email: string):Observable<any>{
+    return this.processGet(`GetUserByEmail?email=${email}`)
+  }
 }
 

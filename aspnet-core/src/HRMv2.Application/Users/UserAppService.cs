@@ -18,6 +18,7 @@ using HRMv2.Authorization;
 using HRMv2.Authorization.Accounts;
 using HRMv2.Authorization.Roles;
 using HRMv2.Authorization.Users;
+using HRMv2.Authorization.Users.Dto;
 using HRMv2.NccCore;
 using HRMv2.Roles.Dto;
 using HRMv2.Users.Dto;
@@ -314,6 +315,11 @@ namespace HRMv2.Users
         public async Task UpdateUserActive(string email, bool isActive)
         {
             await _userManager.UpdateUserActive(email, isActive);
+        }
+        [HttpGet]
+        public async Task<GetUserName> GetUserByEmail(string email)
+        {
+            return await _userManager.GetUserByEmail(email);
         }
     }
 }
