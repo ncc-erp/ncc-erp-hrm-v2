@@ -71,6 +71,7 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   public birthdayFromDate:string;
   public birthdayToDate:string;
   public textOnNotiWhenDeleteEmployee : string;
+  public textOnNotiWhenDeleteEmployeeSuccess : string;
   constructor(injector: Injector,
     private datePipe: DatePipe,
     private employeeService: EmployeeService,
@@ -303,15 +304,17 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   public onDelete(employee: GetEmployeeDto) {
     this.userService.getUserByEmail(employee.email).subscribe((rs)=> {
       if(rs.result == null){
-        this.textOnNotiWhenDeleteEmployee = `Deleted employee <strong>${employee.fullName}</strong>`;
+        this.textOnNotiWhenDeleteEmployee = `Delete employee <strong>${employee.fullName}</strong>`;
+        this.textOnNotiWhenDeleteEmployeeSuccess = `Deleted employee <strong>${employee.fullName}</strong> successful`;
       }
       else{
-        this.textOnNotiWhenDeleteEmployee = `Delete employee <strong>${employee.fullName}</strong> </br> Delete user <strong>${rs.result.userName}</strong>`
+        this.textOnNotiWhenDeleteEmployee = `Delete employee <strong>${employee.fullName}</strong> </br> Delete user <strong>${rs.result.userName}</strong>`;
+        this.textOnNotiWhenDeleteEmployeeSuccess = `Deleted both employee and user <strong>${rs.result.userName}</strong> successful`;
       }
       this.confirmDelete(`${this.textOnNotiWhenDeleteEmployee}` , () => {
         this.employeeService.delete(employee.id).subscribe(() => {
           this.userService.getUserByEmail(employee.email).subscribe((rs)=> {
-            abp.notify.success(`${this.textOnNotiWhenDeleteEmployee}`)
+            abp.notify.success(`${this.textOnNotiWhenDeleteEmployeeSuccess}`)
           })
           this.refresh();
         })
