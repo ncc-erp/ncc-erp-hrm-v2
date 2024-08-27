@@ -62,10 +62,6 @@ namespace HRMv2.Authorization.Users
         {
             _roleManager = roleManager;
         }
-        /* public async Task DeactiveUser(long userId)
-         {
-             await UpdateUserActive(userId, false);
-         }*/
 
         public async Task UpdateUserActive(string email, bool isActive)
         {
@@ -89,6 +85,18 @@ namespace HRMv2.Authorization.Users
             }
             await DeleteAsync(user);
         }
+        
+        public async Task<string> GetUserByEmail(string email)
+        {
+            var userName = await FindByNameOrEmailAsync(email);
+            if(userName == null)
+            {
+                return null;
+            }
+            return email;
+           
+        }
+
 
         public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName)
         {
