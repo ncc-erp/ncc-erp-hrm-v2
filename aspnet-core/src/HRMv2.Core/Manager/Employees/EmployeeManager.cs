@@ -4,7 +4,6 @@ using HRMv2.Entities;
 using HRMv2.Manager.Categories.Benefits;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.EmployeeContracts;
-using HRMv2.Manager.EmployeeContracts.Dto;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.WebServices.Dto;
 using HRMv2.WebServices.Project;
@@ -14,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
 using NccCore.Paging;
-using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,37 +22,28 @@ using HRMv2.Manager.SalaryRequests;
 using HRMv2.Manager.SalaryRequests.Dto;
 using static HRMv2.Constants.Enum.HRMEnum;
 using HRMv2.NccCore;
-using ClosedXML.Excel;
 using System.IO;
 using Abp.Collections.Extensions;
 using Abp.Linq.Extensions;
 using HRMv2.Manager.Categories.UserTypes;
 using HRMv2.Manager.Histories;
 using HRMv2.Manager.Histories.Dto;
-using HRMv2.WebServices.Timesheet.Dto;
-using HRMv2.WebServices.Project.Dto;
 using HRMv2.WebServices.Talent;
 using HRMv2.WebServices.IMS;
-using HRMv2.WebServices.IMS.Dto;
 using HRMv2.Manager.ChangeEmployeeWorkingStatuses;
 using HRMv2.Manager.ChangeEmployeeWorkingStatuses.Dto;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
-using HRMv2.Constants.Enum;
-using Abp.Extensions;
-using Castle.Core.Internal;
 using HRMv2.Net.MimeTypes;
 using HRMv2.WebServices.Talent.Dto;
 using Abp.BackgroundJobs;
 using HRMv2.BackgroundJob.ChangeEmployeeBranch;
 using Abp.Domain.Repositories;
 using Microsoft.Extensions.Logging;
-using NccCore.Helper;
 using System.Threading;
 using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
 using HRMv2.Authorization.Users;
 using HRMv2.Authorization.Roles;
-using System.Net.Mail;
 
 namespace HRMv2.Manager.Employees
 {
@@ -74,7 +63,6 @@ namespace HRMv2.Manager.Employees
         private readonly IRepository<BackgroundJobInfo, long> _storeJob;
         private readonly ILogger<EmployeeManager> Logger;
         private readonly UserManager _userManager;
-        private readonly RoleManager _roleManager;
 
 
         public EmployeeManager(UploadFileService uploadFileService,
@@ -109,7 +97,6 @@ namespace HRMv2.Manager.Employees
             _storeJob = storeJob;
             Logger = log;
             _userManager = userManager;
-            _roleManager = roleManager;
         }
         public IQueryable<GetEmployeeDto> QueryAllEmployee()
         {
@@ -990,14 +977,15 @@ namespace HRMv2.Manager.Employees
 
             employee.IsDeleted = true;
 
-            CurrentUnitOfWork.SaveChanges();
-            var userEmail = await _userManager.DoesUserExistByEmail(employeeEmail);
-            if (userEmail)
+            var user = await _userManager.GetUserByEmailAsync(employeeEmail);
+            var resultMessage = $"Deleted employee <strong>{employeeEmail}</strong>";
+            if (user != null)
             {
-                await _userManager.DeleteAsync(employeeEmail);
-                return $"Deleted both employee and user <strong>{employeeEmail}</strong>";
+                user.IsDeleted = true;
+                resultMessage =  $"Deleted both employee and user <strong>{employeeEmail}</strong>";
             }
-            return $"Deleted employee <strong>{employeeEmail}</strong>";
+            CurrentUnitOfWork.SaveChanges();
+            return resultMessage;
         }
 
         public async Task<string> UploadAvatar([FromForm] AvatarDto input)
