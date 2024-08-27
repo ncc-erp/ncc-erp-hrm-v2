@@ -301,9 +301,7 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   public onDelete(employee: GetEmployeeDto) {
       this.confirmDelete(`Delete Employee <strong>${employee.email}</strong>` , () => {
         this.employeeService.delete(employee.id).subscribe((rs) => {
-            const notiSuccessful = rs.result
-            abp.notify.success(`${notiSuccessful}`)
-          
+            abp.notify.success(rs.result)
           this.refresh();
         })
       })
