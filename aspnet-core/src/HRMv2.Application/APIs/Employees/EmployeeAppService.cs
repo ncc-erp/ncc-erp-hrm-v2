@@ -63,7 +63,7 @@ namespace HRMv2.APIs.Employees
 
         [HttpDelete]
         [AbpAuthorize(PermissionNames.Employee_Delete)]
-        public async Task<long> Delete(long id)
+        public async Task<string> Delete(long id)
         {
             return await _employeeManager.Delete(id);
         }

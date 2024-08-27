@@ -69,10 +69,10 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   public requestInput = {} as GetInputFilterDto;
   public birthdayFromDate:string;
   public birthdayToDate:string;
-  public deteleUserWithEmail: boolean = true;
   constructor(injector: Injector,
     private datePipe: DatePipe,
-    private employeeService: EmployeeService, @Inject(MAT_DIALOG_DATA) public data: any) {
+    private employeeService: EmployeeService,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
     super(injector)
   }
 
@@ -299,32 +299,14 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   }
 
   public onDelete(employee: GetEmployeeDto) {
-    const emailConvert = this.extractEmailUsername(employee.email);
-    this.confirmDelete(`Delete employee <strong>${employee.fullName}</strong>
-      <br> <input type="checkbox" id="deleteEmailCheckbox" (change)="onCheckboxChange($event)" checked> Delete user <strong>${emailConvert}</strong>`, () => {
-        const checkbox = document.getElementById('deleteEmailCheckbox') as HTMLInputElement;
-        this.deteleUserWithEmail = checkbox.checked;
-        this.employeeService.deleteWithEmail(employee.id, this.deteleUserWithEmail).subscribe(() => {
-          if(this.deteleUserWithEmail){
-            abp.notify.success(`Deleted employee ${employee.fullName} and deleted User ${emailConvert}`)
-
-          }
-          else{
-            abp.notify.success(`Deleted employee ${employee.fullName}`)
-
-          }
+      this.confirmDelete(`Delete Employee and User <strong>${employee.email}</strong>` , () => {
+        this.employeeService.delete(employee.id).subscribe((rs) => {
+            abp.notify.success(rs.result)
           this.refresh();
-        });
-      });
+        })
+      })
   }
-  public extractEmailUsername(email: string) {
-    const atIndex = email.indexOf('@');
-    if (atIndex !== -1) {
-      return email.substring(0, atIndex);
-    }
-    return email;
-  }
-  
+
   public onUpdateAvatar(employee) {
     const dialogRef = this.dialog.open(UploadAvatarComponent, {
       width: '600px',
