@@ -997,7 +997,7 @@ namespace HRMv2.Manager.Employees
                 await _userManager.DeleteAsync(employeeEmail);
                 return $"Deleted both employee and user <strong>{employeeEmail}</strong>";
             }
-            return $"Deleted employee <strong>{employeeEmail}</strong> successful";
+            return $"Deleted employee <strong>{employeeEmail}</strong>";
         }
 
         public async Task<string> UploadAvatar([FromForm] AvatarDto input)
