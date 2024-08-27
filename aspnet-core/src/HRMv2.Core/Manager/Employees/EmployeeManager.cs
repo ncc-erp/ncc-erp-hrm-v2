@@ -926,7 +926,7 @@ namespace HRMv2.Manager.Employees
         }
 
 
-        public async Task<long> Delete(long id)
+        public async Task<string> Delete(long id)
         {
             var employee = await WorkScope.GetAsync<Employee>(id);
 
@@ -946,11 +946,6 @@ namespace HRMv2.Manager.Employees
             if ((employee.Status == EmployeeStatus.Working || employee.Status == EmployeeStatus.MaternityLeave) && payslips.Count > 0)
             {
                 throw new UserFriendlyException($"Employee is {employee.Status} and has {payslipIds.Count} payslip => Can't delete");
-            }
-           
-            if (employeeEmail != null)
-            {
-                await _userManager.DeleteAsync(employeeEmail);
             }
 
             var employeeChangeRequest = WorkScope.GetAll<SalaryChangeRequestEmployee>()
@@ -996,7 +991,13 @@ namespace HRMv2.Manager.Employees
             employee.IsDeleted = true;
 
             CurrentUnitOfWork.SaveChanges();
-            return id;
+            var userEmail = _userManager.GetUserByEmail(employeeEmail);
+            if (userEmail.Result != null)
+            {
+                await _userManager.DeleteAsync(employeeEmail);
+                return $"Deleted both employee and user <strong>{employeeEmail}</strong>";
+            }
+            return $"Deleted employee <strong>{employeeEmail}</strong> successful";
         }
 
         public async Task<string> UploadAvatar([FromForm] AvatarDto input)
