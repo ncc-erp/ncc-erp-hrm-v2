@@ -85,18 +85,11 @@ namespace HRMv2.Authorization.Users
             }
             await DeleteAsync(user);
         }
-        
-        public async Task<string> GetUserByEmail(string email)
+   
+        public async Task<bool> DoesUserExistByEmail(string email)
         {
-            var userName = await FindByNameOrEmailAsync(email);
-            if(userName == null)
-            {
-                return null;
-            }
-            return email;
-           
+            return await FindByNameOrEmailAsync(email) != null;
         }
-
 
         public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName)
         {

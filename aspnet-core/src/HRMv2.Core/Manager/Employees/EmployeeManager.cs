@@ -991,8 +991,8 @@ namespace HRMv2.Manager.Employees
             employee.IsDeleted = true;
 
             CurrentUnitOfWork.SaveChanges();
-            var userEmail = _userManager.GetUserByEmail(employeeEmail);
-            if (userEmail.Result != null)
+            var userEmail = await _userManager.DoesUserExistByEmail(employeeEmail);
+            if (userEmail)
             {
                 await _userManager.DeleteAsync(employeeEmail);
                 return $"Deleted both employee and user <strong>{employeeEmail}</strong>";
