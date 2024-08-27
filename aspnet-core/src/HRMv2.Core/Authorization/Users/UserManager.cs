@@ -11,10 +11,8 @@ using Abp.Domain.Uow;
 using Abp.Organizations;
 using Abp.Runtime.Caching;
 using HRMv2.Authorization.Roles;
-using Abp.Authorization.Roles;
 using System.Threading.Tasks;
 using Abp.UI;
-using HRMv2.Manager.Employees.Dto;
 
 namespace HRMv2.Authorization.Users
 {
@@ -85,12 +83,11 @@ namespace HRMv2.Authorization.Users
             }
             await DeleteAsync(user);
         }
-   
-        public async Task<bool> DoesUserExistByEmail(string email)
-        {
-            return await FindByNameOrEmailAsync(email) != null;
-        }
 
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await FindByEmailAsync(email);
+        }
         public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName)
         {
             var userName = email.Split('@')[0];
