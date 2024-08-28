@@ -701,7 +701,7 @@ namespace HRMv2.Manager.Notifications.Email
             {
                 return new ResultTemplateEmail<InputPayslipLinkMailTemplate>
                 {
-                    
+                    Result = TemplateHelper.GetPayslipToConfirmFakeData()
                 };
             }
 

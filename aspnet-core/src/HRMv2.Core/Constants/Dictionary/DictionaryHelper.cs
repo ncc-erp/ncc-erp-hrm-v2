@@ -141,7 +141,7 @@ namespace HRMv2.Constants.Dictionary
                 {
                     Name = "Payslip Email Link Template",
                     Description = "",
-                    Subject = "[NCC]_BẢNG LƯƠNG"
+                    Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }
             }
 
