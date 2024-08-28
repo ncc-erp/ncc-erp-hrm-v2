@@ -1,8 +1,4 @@
-﻿
-using Abp.UI;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using HRMv2.Manager.Employees.Dto;
+﻿using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Home.Dtos;
 
 using HRMv2.Manager.WorkingHistories;
@@ -11,7 +7,6 @@ using HRMv2.NccCore;
 using HRMv2.Net.MimeTypes;
 using NccCore.Extension;
 using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -158,7 +153,7 @@ namespace HRMv2.Manager.Home
                 quitWorksheet.Cells[rowIndex, 3].Value = emp.Email;
                 quitWorksheet.Cells[rowIndex, 4].Value = emp.Sex.ToString();
                 quitWorksheet.Cells[rowIndex, 5].Value = emp.BranchInfo.Name;
-                quitWorksheet.Cells[rowIndex, 6].Value = emp.UserTypeInfo.Name;
+                quitWorksheet.Cells[rowIndex, 6].Value = emp.UserTypeInfo.Name; 
                 quitWorksheet.Cells[rowIndex, 7].Value = emp.LevelInfo.Name;
                 quitWorksheet.Cells[rowIndex, 8].Value = emp.JobPositionInfo.Name;                
                 quitWorksheet.Cells[rowIndex, 9].Value = emp.DateAt;
