@@ -134,6 +134,15 @@ namespace HRMv2.Constants.Dictionary
                     Description = "",
                     Subject = "[NCC]_BẢNG LƯƠNG"
                 }
+            },
+            {
+                MailFuncEnum.LinkToPreviewPayslip,
+                new MailInfoDto
+                {
+                    Name = "Payslip Email Link Template",
+                    Description = "",
+                    Subject = "[NCC]_BẢNG LƯƠNG"
+                }
             }
 
         };
