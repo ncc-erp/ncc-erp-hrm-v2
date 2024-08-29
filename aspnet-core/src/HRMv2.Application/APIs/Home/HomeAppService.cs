@@ -1,14 +1,13 @@
 ﻿using Abp.Authorization;
-using HRMv2.Authorization;
 using HRMv2.Manager.Categories.Charts;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.DisplayChartDto;
+using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Home;
 using HRMv2.Manager.Home.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-
 using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Home
@@ -70,6 +69,12 @@ namespace HRMv2.APIs.Home
         {
             var result = await _chartDetailManager.GetDetailDataChart(input.ChartDetailId, input.ChartDataType, input.StartDate, input.EndDate);
             return result;
+        }
+
+        [HttpPost]
+        public async Task<FileBase64Dto> ExportOnboardQuitEmployees(InputDateRangeDto input)
+        {
+            return await _homePageManager.ExportOnboardQuitEmployees(input);
         }
     }
 }
