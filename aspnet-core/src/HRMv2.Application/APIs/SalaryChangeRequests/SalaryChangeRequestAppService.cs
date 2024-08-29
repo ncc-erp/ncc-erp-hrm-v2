@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.SalaryChangeRequests
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.SalaryChangeRequest_View)]
     public class SalaryChangeRequestAppService : HRMv2AppServiceBase
     {
         private readonly SalaryRequestManager _salaryRequestManager;
