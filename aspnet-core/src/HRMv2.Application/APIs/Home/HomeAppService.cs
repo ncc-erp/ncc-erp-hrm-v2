@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using HRMv2.Authorization;
 using HRMv2.Manager.Categories.Charts;
 using HRMv2.Manager.Categories.Charts.ChartDetails;
 using HRMv2.Manager.Categories.Charts.DisplayChartDto;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Home
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Home)]
     public class HomeAppService : HRMv2AppServiceBase
     {
         private readonly HomePageManager _homePageManager;

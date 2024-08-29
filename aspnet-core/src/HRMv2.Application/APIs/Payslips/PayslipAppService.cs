@@ -25,7 +25,7 @@ using HRMv2.Manager.Timesheet;
 
 namespace HRMv2.APIs.Payslips
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Payroll_Payslip_View)]
     public class PayslipAppService : HRMv2AppServiceBase
     {
         private readonly PayslipManager _payslipManager;

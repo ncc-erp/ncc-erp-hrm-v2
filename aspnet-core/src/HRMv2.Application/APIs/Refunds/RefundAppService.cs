@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using HRMv2.Authorization;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Punishments.Dto;
 using HRMv2.Manager.Refunds;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Refunds
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Refund_View)]
     public class RefundAppService : HRMv2AppServiceBase
     {
         private readonly RefundManager _refundManager;

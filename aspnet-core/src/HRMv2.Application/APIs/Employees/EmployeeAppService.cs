@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Employees
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Employee_View)]
     public class EmployeeAppService : HRMv2AppServiceBase
     {
         private readonly EmployeeManager _employeeManager;
@@ -101,11 +101,13 @@ namespace HRMv2.APIs.Employees
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Employee_CreateEmployeeByFile)]
         public async Task<Object> CreateEmployeeFromFile([FromForm] InputFileDto input)
         {
             return await _employeeManager.CreateEmployeeFromFile(input);
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Employee_UpdateEmployeeByFile)]
         public async Task<Object> UpdateEmployeeFromFile([FromForm] InputFileDto input)
         {
             return await _employeeManager.UpdateEmployeeFromFile(input);
@@ -130,18 +132,21 @@ namespace HRMv2.APIs.Employees
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Employee_Export)]
         public async Task<FileBase64Dto> ExportEmployeeStatistic(InputExportEmployeeStatisticDto input)
         {
            return await _employeeManager.ExportEmployeeStatistic(input);
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_QuitJobUserToOtherTool)]
         public void QuitJobToOtherTool(EmployeeIdDto input)
         {
             _employeeManager.QuitJobToOtherTool(input);
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_EditUserToOtherTool)]
         public void UpdateEmployeeInfoToOtherTool(EmployeeIdDto input)
         {
             _employeeManager.UpdateEmployeeInfoToOtherTool(input);

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Bonuses
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Bonus_View)]
     public class BonusAppService : HRMv2AppServiceBase
     {
         private readonly BonusManager _bonusManager;

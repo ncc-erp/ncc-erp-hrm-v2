@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.PunishmentTypes
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Category_PunishmentType_View)]
     public class PunishmentTypeAppService : HRMv2AppServiceBase
     {
         private readonly PunishmentTypeManager _punishmentTypeManager;

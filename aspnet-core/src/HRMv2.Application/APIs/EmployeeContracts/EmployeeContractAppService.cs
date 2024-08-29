@@ -14,7 +14,7 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.APIs.EmployeeContracts
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabContract_View)]
     public class EmployeeContractAppService : HRMv2AppServiceBase
     {
         private readonly ContractManager _contracManager;

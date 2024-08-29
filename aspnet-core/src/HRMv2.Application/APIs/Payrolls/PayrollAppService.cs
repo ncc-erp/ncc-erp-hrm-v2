@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Payrolls
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Payroll_View)]
     public class PayrollAppService : HRMv2AppServiceBase
     {
         private readonly PayrollManager _payrollManager;
@@ -77,6 +77,7 @@ namespace HRMv2.APIs.Payrolls
         }
 
         [HttpPut]
+        [AbpAuthorize(PermissionNames.Payroll_Execute)]
         public string ExecuatePayroll(long payrollId)
         {
             return _payrollManager.ExecuatePayroll(payrollId);
