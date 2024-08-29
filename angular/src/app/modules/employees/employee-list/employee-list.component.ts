@@ -64,6 +64,9 @@ export class EmployeeListComponent extends PagedListingComponentBase<GetEmployee
   isShowBranch() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_View);
   }
+  isShowButtonSyncAllEmployeeToOtherTool(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Employee_SyncUpdateEmployeesInforToOtherTools)
+  }
 
   getListNotHavePermission(){
     if (!this.isShowBranch()) this.listNotHavePermission.push("Branch")

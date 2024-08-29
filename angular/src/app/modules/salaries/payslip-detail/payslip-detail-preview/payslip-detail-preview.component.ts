@@ -51,9 +51,10 @@ export class PayslipDetailPreviewComponent extends AppComponentBase implements O
   sendMail() {
     abp.message.confirm(`Send mai to ${this.mailInfo.sendToEmail}`, "", rs => {
       if (rs) {
+        this.payslipService.getPayslipPreviewToSendEmail(this.payslipId).subscribe((rs) => {
         let dto = {
           payslipId: this.payslipId,
-          mailContent: this.mailInfo,
+          mailContent: rs.result.mailInfo,
           deadline: this.formatDateYMDHm(this.deadline)
         } as SendMailOneemployeeDto
 
@@ -64,30 +65,11 @@ export class PayslipDetailPreviewComponent extends AppComponentBase implements O
           },
             () => { this.isLoading = false })
         )
-      }
+      })}
     })
 
   }
-
-  onEdit() {
-    const editMailDialogData: EditEmailDialogData = {
-      mailInfo: cloneDeep(this.mailInfo),
-      showDialogHeader: false,
-      temporarySave: true,
-    }
-    const dialogRef = this.dialog.open(EditEmailDialogComponent, {
-      data: editMailDialogData,
-      width: '1600px',
-      panelClass: 'email-dialog'
-    })
-    dialogRef.afterClosed().subscribe(rs => {
-      if (rs) {
-        this.mailInfo = cloneDeep(rs)
-      }
-    })
-  }
-
-
+  
   getMailContent() {
     this.payslipService.getEmailTemplate(this.payslipId).subscribe(rs => {
       this.mailInfo = rs.result.mailInfo

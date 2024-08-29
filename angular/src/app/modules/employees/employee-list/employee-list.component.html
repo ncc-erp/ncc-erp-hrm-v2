@@ -3,7 +3,7 @@
         <div class="w-100 d-flex justify-content-between">
             <app-bread-crumb  [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
             <div>
-                <button [disabled]="isLoading" (click)="OnSyncToAllEmployees()" _ngcontent-fqs-c454="" class="mat-menu-trigger btn btn-warning mr-2 ng-star-inserted" ng-reflect-menu="[object Object]" aria-haspopup="true">
+                <button [disabled]="isLoading" *ngIf="isShowButtonSyncAllEmployeeToOtherTool()" (click)="OnSyncToAllEmployees()" _ngcontent-fqs-c454="" class="mat-menu-trigger btn btn-warning mr-2 ng-star-inserted" ng-reflect-menu="[object Object]" aria-haspopup="true">
                     Sync all employees to other tools
                 </button>    
                 <app-create-button *ngIf="isShowCreateBtn()" (create)="onCreate()"></app-create-button>
@@ -11,7 +11,7 @@
                     <i class="fa-solid fa-download mr-1"></i>
                     Export employee
                 </button>
-                <button class="btn btn-success ml-2" (click)="exportStatistic()">
+                <button *ngIf="isShowExportBtn()" class="btn btn-success ml-2" (click)="exportStatistic()">
                     <i class="fa-solid fa-download mr-1"></i>
                     Export Statistic
                 </button>
