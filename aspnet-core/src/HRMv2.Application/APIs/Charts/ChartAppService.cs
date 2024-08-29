@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Charts
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Category_Chart_View)]
     public class ChartAppService : HRMv2AppServiceBase
     {
         private readonly ChartManager _chartManager;

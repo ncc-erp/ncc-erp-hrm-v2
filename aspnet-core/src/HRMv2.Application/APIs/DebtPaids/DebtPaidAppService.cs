@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.DebtPaids
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Debt_View)]
     public class DebtPaidAppService : HRMv2AppServiceBase
     {
         private readonly DebtManager _debtManager;

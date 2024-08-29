@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.EmailTemplates
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Admin_EmailTemplate_View)]
     public class EmailTemplateAppService : HRMv2AppServiceBase
     {
         private readonly EmailManager _emailManager;
@@ -49,6 +49,7 @@ namespace HRMv2.APIs.EmailTemplates
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Admin_EmailTemplate_PreviewTemplate_SendMail)]
         public void SendMail(MailPreviewInfoDto input)
         {
             _emailManager.SendMail(input);
