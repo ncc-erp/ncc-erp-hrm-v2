@@ -176,6 +176,7 @@ export const PERMISSIONS_CONSTANT = {
     Employee_UpdateEmployeeByFile: 'Employee.UpdateEmployeeByFile',
     Employee_DownloadCreateTemplate: 'Employee.DownloadCreateTemplate',
     Employee_DownloadUpdateTemplate: 'Employee.DownloadUpdateTemplate',
+    Employee_SyncUpdateEmployeesInforToOtherTools: 'Employee.SyncUpdateEmployeesInforToOtherTools',
     Employee_EmployeeDetail: 'Employee.EmployeeDetail',
     Employee_EmployeeDetail_TabPersonalInfo: 'Employee.EmployeeDetail.TabPersonalInfo',
     Employee_EmployeeDetail_TabPersonalInfo_View: 'Employee.EmployeeDetail.TabPersonalInfo.View',
