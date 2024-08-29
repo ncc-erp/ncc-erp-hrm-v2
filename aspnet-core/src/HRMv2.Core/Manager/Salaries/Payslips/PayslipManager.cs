@@ -3001,7 +3001,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             var sessionEmail = this.GetSessionUserEmail();
            
-            if(sessionEmail != activePayslip.Employee.Email)
+            if(sessionEmail != activePayslip.Employee.Email.Trim().ToLower())
             {
                 return $"bạn không thể khiếu nại phiếu lương của <strong>{activePayslip.Employee.Email}</strong>. <br/>Sự truy cập bất hợp pháp này đã được gửi tới bộ phận HR. ";
             }
