@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Punishments
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Punishment_View)]
     public class PunishmentAppService : HRMv2AppServiceBase
     {
         private readonly PunishmentManager _punishmentManager;

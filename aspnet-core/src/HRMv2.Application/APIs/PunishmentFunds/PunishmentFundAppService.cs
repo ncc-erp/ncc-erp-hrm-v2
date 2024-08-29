@@ -22,6 +22,7 @@ namespace HRMv2.APIs.PunishmentFunds
             _punishmentFundManager = punishmentFundManager;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.PunishmentFund_View)]
         public async Task<GridResult<GetAllPunishmentFundsDto>> GetAllPaging(InputToGetAllPagingDto input)
         {
             return await _punishmentFundManager.GetAllPaging(input);

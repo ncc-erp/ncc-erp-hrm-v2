@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.DebtPaymentPlans
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Debt_DebtDetail_View)]
+
     public class DebtPaymentPlanAppService : HRMv2AppServiceBase
     {
         private readonly DebtManager _debtManager;

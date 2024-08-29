@@ -21,6 +21,7 @@ namespace HRMv2.APIs.BackgroundJobs
             _backgroundJobInfosManager = backgroundJobManager;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Admin_BackgroundJob_View)]
         public async Task<GridResult<GetBackgroundJobDto>> GetAllPaging(InputToGetAll input)
         {
             return await _backgroundJobInfosManager.GetAllPaging(input);
@@ -33,6 +34,7 @@ namespace HRMv2.APIs.BackgroundJobs
             _backgroundJobInfosManager.Delete(Id);
         }
         [HttpPut]
+        [AbpAuthorize(PermissionNames.Admin_BackgroundJob_Retry)]
         public void RetryBackgroundJob(RetryBackgroundJobDto input)
         {
             _backgroundJobInfosManager.RetryBackgroundJob(input);

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.ChangeEmployeeWorkingStatus
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Employee_EmployeeDetail_TabWorkingHistory_View)]
     public class ChangeEmployeeWorkingStatusAppService : HRMv2AppServiceBase
     {
         private readonly ChangeEmployeeWorkingStatusManager _changeEmployeeWorkingStatus;

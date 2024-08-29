@@ -23,6 +23,7 @@ namespace HRMv2.APIs.Banks
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Category_Bank_View)]
         public List<BankDto> GetAll()
         {
             return _bankManager.GetAll();

@@ -56,6 +56,7 @@ namespace HRMv2.APIs.Teams
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Category_Team_Create)]
         public async Task<AddEmployeesToTeamDto> AddEmployeeToTeam(AddEmployeesToTeamDto input)
         {
             return await _teamManager.AddEmployeeToTeam(input);
