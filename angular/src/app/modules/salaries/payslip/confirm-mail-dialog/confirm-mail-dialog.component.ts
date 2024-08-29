@@ -48,59 +48,64 @@ export class ConfirmMailDialogComponent extends AppComponentBase {
       deadline: this.formatDateYMDHm(this.deadline),
       payrollId: this.data.payrollId
     } as SendMailAllEmployeeDto
-
     this.isLoading = true
-
     this.subscription.push(
-      this.payslipService.sendMailToAllEmployee(dto).subscribe(rs => {
-        abp.message.success(rs.result)
-        this.dialogRef.close(true)
-      },
-        () => this.isLoading = false)
-    )
+      this.payslipService.sendMailToAllEmployee(dto).subscribe(
+        (rs) => {
+          abp.message.success(rs.result)
+          this.dialogRef.close(true)
+        },
+        () => (this.isLoading = false)
+      )
+    );
   }
 
   private async sendMailOneEmployee() {
     let input = {
       deadline: this.formatDateYMDHm(this.deadline),
-      payslipId: this.payslipId
-    } as UpdatePayslipDeadLineDto
+      payslipId: this.payslipId,
+    } as UpdatePayslipDeadLineDto;
 
-    await this.payslipService.updatePayslipDeadline(input).toPromise().then()
+    await this.payslipService.updatePayslipDeadline(input).toPromise().then();
 
     this.subscription.push(
-      this.payslipService.getEmailTemplate(this.payslipId).subscribe(rs => {
+      this.payslipService.getPayslipPreviewToSendEmail(this.payslipId).subscribe((rs) => {
         const dialogData = {
           showEditButton: true,
           mailInfo: rs.result.mailInfo,
           showDialogHeader: false,
           deadline: this.deadline,
           showSendMailButton: true,
-          showSendMailHeader: true
-        }
+          showSendMailHeader: true,
+        };
+            const ref = this.dialog.open(MailDialogComponent, {
+              data: dialogData,
+              width: "1600px",
+              panelClass: "email-dialog",
+            });
 
-        const ref = this.dialog.open(MailDialogComponent, {
-          data: dialogData,
-          width: '1600px',
-          panelClass: 'email-dialog',
-        })
-
-        ref.afterClosed().subscribe(result => {
-          if (result) {
-            let dto = {
-              payslipId: this.payslipId,
-              mailContent: result,
-              deadline: this.formatDateYMDHm(this.deadline)
-            } as SendMailOneemployeeDto
-            this.subscription.push(
-              this.payslipService.sendMailToOneEmployee(dto).subscribe(response => {
-                abp.message.success(`Mail sent to ${rs.result.mailInfo.sendToEmail}!`)
-                this.dialogRef.close(true)
-              })
-            )
-          }
-        })
+            ref.afterClosed().subscribe((result) => {
+              if (result) {
+                let dto = {
+                  payslipId: this.payslipId,
+                  mailContent: result,
+                  deadline: this.formatDateYMDHm(this.deadline)
+                } as SendMailOneemployeeDto
+                    this.subscription.push(
+                      this.payslipService
+                        .sendMailToOneEmployee(dto)
+                        .subscribe((response) => {
+                          abp.message.success(
+                            `Mail sent to ${rs.result.mailInfo.sendToEmail}!`
+                          );
+                          this.dialogRef.close(true);
+                        })
+                    );
+                  
+              }
+            });
+         
       })
-    )
+    );
   }
 }

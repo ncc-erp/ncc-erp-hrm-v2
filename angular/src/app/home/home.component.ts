@@ -34,6 +34,7 @@ import {
   DisplayLineChartDto,
 } from "../service/model/chart-settings/chart.dto";
 import { ListInfoComponent } from "./listinfo/list-info/list-info.component";
+import * as FileSaver from 'file-saver';
 
 @Component({
   templateUrl: "./home.component.html",
@@ -692,5 +693,20 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     this.filterFromDate = data?.fromDate;
     this.filterToDate = data?.toDate;
     this.getData(this.filterFromDate, this.filterToDate);
+  }
+
+  public onExport() {
+    var input = {
+      StartDate: this.filterFromDate,
+      EndDate: this.filterToDate
+    }
+    this.subscription.push(
+      this.homePageService.ExportOnboardQuitEmployees(input).subscribe(rs => {
+        const file = new Blob([this.convertFile(atob(rs.result.base64))], {
+          type: rs.result.fileType
+        });
+        FileSaver.saveAs(file, rs.result.fileName);
+      })
+    )
   }
 }

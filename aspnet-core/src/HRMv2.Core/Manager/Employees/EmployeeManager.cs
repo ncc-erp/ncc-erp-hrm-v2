@@ -4,7 +4,6 @@ using HRMv2.Entities;
 using HRMv2.Manager.Categories.Benefits;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.EmployeeContracts;
-using HRMv2.Manager.EmployeeContracts.Dto;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.WebServices.Dto;
 using HRMv2.WebServices.Project;
@@ -14,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
 using NccCore.Paging;
-using NccCore.Uitls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,34 +22,28 @@ using HRMv2.Manager.SalaryRequests;
 using HRMv2.Manager.SalaryRequests.Dto;
 using static HRMv2.Constants.Enum.HRMEnum;
 using HRMv2.NccCore;
-using ClosedXML.Excel;
 using System.IO;
 using Abp.Collections.Extensions;
 using Abp.Linq.Extensions;
 using HRMv2.Manager.Categories.UserTypes;
 using HRMv2.Manager.Histories;
 using HRMv2.Manager.Histories.Dto;
-using HRMv2.WebServices.Timesheet.Dto;
-using HRMv2.WebServices.Project.Dto;
 using HRMv2.WebServices.Talent;
 using HRMv2.WebServices.IMS;
-using HRMv2.WebServices.IMS.Dto;
 using HRMv2.Manager.ChangeEmployeeWorkingStatuses;
 using HRMv2.Manager.ChangeEmployeeWorkingStatuses.Dto;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
-using HRMv2.Constants.Enum;
-using Abp.Extensions;
-using Castle.Core.Internal;
 using HRMv2.Net.MimeTypes;
 using HRMv2.WebServices.Talent.Dto;
 using Abp.BackgroundJobs;
 using HRMv2.BackgroundJob.ChangeEmployeeBranch;
 using Abp.Domain.Repositories;
 using Microsoft.Extensions.Logging;
-using NccCore.Helper;
 using System.Threading;
 using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
+using HRMv2.Authorization.Users;
+using HRMv2.Authorization.Roles;
 
 namespace HRMv2.Manager.Employees
 {
@@ -70,6 +62,8 @@ namespace HRMv2.Manager.Employees
         private readonly IBackgroundJobManager _backgroundJobManager;
         private readonly IRepository<BackgroundJobInfo, long> _storeJob;
         private readonly ILogger<EmployeeManager> Logger;
+        private readonly UserManager _userManager;
+
 
         public EmployeeManager(UploadFileService uploadFileService,
             ContractManager contractManager,
@@ -85,7 +79,9 @@ namespace HRMv2.Manager.Employees
             ChangeEmployeeWorkingStatusManager changeEmployeeWorkingStatusManager,
             IBackgroundJobManager backgroundJobManager,
             IRepository<BackgroundJobInfo, long> storeJob,
-            ILogger<EmployeeManager> log
+            ILogger<EmployeeManager> log,
+              UserManager userManager,
+              RoleManager roleManager
             ) : base(workScope)
         {
             _contractManager = contractManager;
@@ -100,6 +96,7 @@ namespace HRMv2.Manager.Employees
             _backgroundJobManager = backgroundJobManager;
             _storeJob = storeJob;
             Logger = log;
+            _userManager = userManager;
         }
         public IQueryable<GetEmployeeDto> QueryAllEmployee()
         {
@@ -394,7 +391,7 @@ namespace HRMv2.Manager.Employees
                 var sessionUserBranchId = GetSessionUserBranchId();
                 query = query.Where(x => x.BranchId == sessionUserBranchId);
             }
-             
+
             else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
 
@@ -463,7 +460,7 @@ namespace HRMv2.Manager.Employees
                 }
             }
 
-            if(input.BirthdayFromDate.HasValue  && input.BirthdayToDate.HasValue)
+            if(input.BirthdayFromDate.HasValue && input.BirthdayToDate.HasValue)
             {
                 var fromDate = input.BirthdayFromDate.Value;
                 var toDate = input.BirthdayToDate.Value;
@@ -635,12 +632,10 @@ namespace HRMv2.Manager.Employees
             {
                 OnboardTempEmployee(tempEmployeeId);
             }
-
             CreateOrUpdateToOtherTool(entity, ActionMode.Create);
-
+            
             return input;
         }
-
 
         public void OnboardTempEmployee(long? id)
         {
@@ -689,7 +684,14 @@ namespace HRMv2.Manager.Employees
             //them validate, kiem tra nhung truong co thay doi
             var entity = await WorkScope.GetAsync<Employee>(input.Id);
             ObjectMapper.Map(input, entity);
-
+            if (entity.Status == EmployeeStatus.Working || entity.Status == EmployeeStatus.MaternityLeave)
+            {
+                await _userManager.UpdateUserActive(input.Email, true);
+            }
+            else
+            {
+                await _userManager.UpdateUserActive(input.Email, false);
+            }
             var qSCRE = WorkScope.GetAll<SalaryChangeRequestEmployee>()
                          .Where(x => x.EmployeeId == entity.Id);
             var hasOnlyInitial = !qSCRE.Any(x => x.Type != SalaryRequestType.Initial);
@@ -911,7 +913,7 @@ namespace HRMv2.Manager.Employees
         }
 
 
-        public async Task<long> Delete(long id)
+        public async Task<string> Delete(long id)
         {
             var employee = await WorkScope.GetAsync<Employee>(id);
 
@@ -920,6 +922,7 @@ namespace HRMv2.Manager.Employees
                 .ToList();
 
             var october = new DateTime(2022, 10, 1).Date;
+            var employeeEmail = employee.Email.ToLower().Trim();
             if (payslips.Any(s => s.Payroll.ApplyMonth >= october))
             {
                 throw new UserFriendlyException($"Employee has payslip >= 10/2022 => CAN NOT delete employee");
@@ -974,8 +977,15 @@ namespace HRMv2.Manager.Employees
 
             employee.IsDeleted = true;
 
+            var user = await _userManager.GetUserByEmailAsync(employeeEmail);
+            var resultMessage = $"Deleted employee <strong>{employeeEmail}</strong>";
+            if (user != null)
+            {
+                user.IsDeleted = true;
+                resultMessage =  $"Deleted both employee and user <strong>{employeeEmail}</strong>";
+            }
             CurrentUnitOfWork.SaveChanges();
-            return id;
+            return resultMessage;
         }
 
         public async Task<string> UploadAvatar([FromForm] AvatarDto input)
@@ -1011,7 +1021,7 @@ namespace HRMv2.Manager.Employees
             {
                 throw new UserFriendlyException($"Email is Already Exist");
             }
-            if(input.FullName.Split(' ').Length == 1)
+            if (input.FullName.Split(' ').Length == 1)
             {
                 throw new UserFriendlyException($"Full name is invalid");
             }
@@ -1061,11 +1071,11 @@ namespace HRMv2.Manager.Employees
         {
             var employee = WorkScope.GetAll<Employee>()
                 .Where(x => x.Id == input.EmployeeId).FirstOrDefault();
-            if(employee == default)
+            if (employee == default)
             {
                 throw new UserFriendlyException($"Can not found employee with Id={input.EmployeeId}");
             }
-            if(employee.BranchId == input.BranchId)
+            if (employee.BranchId == input.BranchId)
             {
                 throw new UserFriendlyException($"Employee already has this branch");
             }
@@ -1475,9 +1485,9 @@ namespace HRMv2.Manager.Employees
                 throw new UserFriendlyException("File null or is not .xlsx file");
             }
         }
-        private async Task<List<UpdtaeEmployeeFromFileDto>> GetDataUpdateFromFile([FromForm] InputFileDto input)
+        private async Task<List<UpdateEmployeeFromFileDto>> GetDataUpdateFromFile([FromForm] InputFileDto input)
         {
-            var datas = new List<UpdtaeEmployeeFromFileDto>();
+            var datas = new List<UpdateEmployeeFromFileDto>();
             using (var stream = new MemoryStream())
             {
                 input.File.CopyTo(stream);
@@ -1494,7 +1504,7 @@ namespace HRMv2.Manager.Employees
 
                     for (int row = 2; row <= rowCount; row++)
                     {
-                        var data = new UpdtaeEmployeeFromFileDto();
+                        var data = new UpdateEmployeeFromFileDto();
                         data.Email = worksheet.Cells[row, 1].GetCellValue<string>() ?? "";
                         data.Phone = worksheet.Cells[row, 2].GetCellValue<string>() ?? "";
                         data.Phone = data.Phone.Replace(" ", "").Replace("-", "");
@@ -1663,7 +1673,7 @@ namespace HRMv2.Manager.Employees
             return new { successList, failedList };
         }
 
-        public bool ValidDataToUpdate(UpdtaeEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList)
+        public bool ValidDataToUpdate(UpdateEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList)
         {
             var dictBank = WorkScope.GetAll<Bank>()
                                     .Select(s => new { Key = s.Code.ToLower(), s.Id })
@@ -2010,23 +2020,24 @@ namespace HRMv2.Manager.Employees
                 }).ToList();
             return employees;
         }
-        public async Task<GetEmployeeByEmailDto> GetEmployeeByEmail(string email)
+        public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
         {
-            return await WorkScope.GetAll<Employee>()
+            return WorkScope.GetAll<Employee>()
                  .Select(x => new GetEmployeeByEmailDto
                  {
                      Email = x.Email,
                      FullName = x.FullName,
                      BranchCode = x.Branch.Code,
-                     BranchName = x.Branch.Name
+                     BranchName = x.Branch.Name,
+                     Status = x.Status
                  })
                  .Where(s => s.Email.ToLower() == email.ToLower())
-                 .FirstOrDefaultAsync();
+                 .FirstOrDefault();
         }
 
         public async void UpdateAllWorkingEmployeeInfoToOtherTools()
         {
-            var employees =  WorkScope.GetAll<Employee>()
+            var employees = WorkScope.GetAll<Employee>()
                 .Where(x => x.Status == EmployeeStatus.Working)
                 .Select(x => new CreateOrUpdateUserOtherToolDto
                 {
@@ -2043,9 +2054,9 @@ namespace HRMv2.Manager.Employees
                     EmergencyContactPhone = x.EmergencyContactPhone
                 })
                 .ToList();
-            if(employees == null || employees.Count() == 0)  return;
+            if (employees == null || employees.Count() == 0) return;
 
-            foreach(var employee in employees)
+            foreach (var employee in employees)
             {
                 try
                 {

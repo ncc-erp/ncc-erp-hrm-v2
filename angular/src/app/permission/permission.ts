@@ -57,6 +57,10 @@ export const PERMISSIONS_CONSTANT = {
     Admin_BackgroundJob_View: "Admin.BackgroundJob.View",
     Admin_BackgroundJob_Delete: "Admin.BackgroundJob.Delete",
     Admin_BackgroundJob_Retry: "Admin.BackgroundJob.Retry",
+
+    //Audit Log
+    Admin_AuditLog:"Admin.AuditLong",
+    Admin_AuditLog_View:"Admin.AuditLog.View",
     //Category
     Category: 'Category',
     //Branch
@@ -77,7 +81,7 @@ export const PERMISSIONS_CONSTANT = {
     Category_JobPosition_Delete: 'Category.JobPosition.Delete',
 
     //Level
-    Category_Level: 'Category.JobPosition',
+    Category_Level: 'Category.Level',
     Category_Level_View: 'Category.Level.View',
     Category_Level_Create: 'Category.Level.Create',
     Category_Level_Edit: 'Category.Level.Edit',
@@ -172,6 +176,7 @@ export const PERMISSIONS_CONSTANT = {
     Employee_UpdateEmployeeByFile: 'Employee.UpdateEmployeeByFile',
     Employee_DownloadCreateTemplate: 'Employee.DownloadCreateTemplate',
     Employee_DownloadUpdateTemplate: 'Employee.DownloadUpdateTemplate',
+    Employee_SyncUpdateEmployeesInforToOtherTools: 'Employee.SyncUpdateEmployeesInforToOtherTools',
     Employee_EmployeeDetail: 'Employee.EmployeeDetail',
     Employee_EmployeeDetail_TabPersonalInfo: 'Employee.EmployeeDetail.TabPersonalInfo',
     Employee_EmployeeDetail_TabPersonalInfo_View: 'Employee.EmployeeDetail.TabPersonalInfo.View',
@@ -422,16 +427,9 @@ export const PERMISSIONS_CONSTANT = {
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_View: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.View',
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_Edit: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.Edit',
     SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_UploadContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.UploadContractFile',
-    SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.DeleteContractFile'
+    SalaryChangeRequest_SalaryChangeRequestDetail_SalaryChangeRequestEmployeeDetail_DeleteContractFile: 'SalaryChangeRequest.SalaryChangeRequestDetail.SalaryChangeRequestEmployeeDetail.DeleteContractFile',
 
-
-
-
-
-
-
-
-
-
+    ViewMyPayslipLink:'ViewMyPayslipLink',
+    ViewAllPayslipLink:'ViewAllPayslipLink'
 
 };

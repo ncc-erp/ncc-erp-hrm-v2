@@ -158,7 +158,7 @@ namespace HRMv2.APIs.Publics
       }
 
       [NccAuthentication]
-      public Task<GetEmployeeByEmailDto> GetEmployeeByEmail(string email)
+      public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
       {
          var employees = _employeeManager.GetEmployeeByEmail(email);
          return employees;

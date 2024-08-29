@@ -30,7 +30,9 @@ export class HomePageService extends BaseApiService {
   GetDetailDataChart(payload: any):Observable<ApiResponseDto<EmployeeDataFromChartDetailDto[]>>{
     return this.processPost(`GetDetailDataChart`, payload)
   }
-
+  ExportOnboardQuitEmployees(payload: any):Observable<ApiResponseDto<any>> {
+    return this.processPost(`ExportOnboardQuitEmployees`, payload)
+  }
   // getAllActive(startDate:string, endDate:string):Observable<ApiResponseDto<ResultChartDto[]>>{
   //   return this.processPost(`GetAllActiveCharts`, { startDate ,endDate})
   // }

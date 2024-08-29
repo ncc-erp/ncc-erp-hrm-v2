@@ -71,7 +71,8 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   public birthdayToDate:string;
   constructor(injector: Injector,
     private datePipe: DatePipe,
-    private employeeService: EmployeeService, @Inject(MAT_DIALOG_DATA) public data: any) {
+    private employeeService: EmployeeService,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
     super(injector)
   }
 
@@ -298,13 +299,14 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   }
 
   public onDelete(employee: GetEmployeeDto) {
-    this.confirmDelete(`Delete employee <strong>${employee.fullName}</strong>`, () => {
-      this.employeeService.delete(employee.id).subscribe(() => {
-        abp.notify.success(`Deleted employee ${employee.fullName}`)
-        this.refresh();
+      this.confirmDelete(`Delete Employee and User <strong>${employee.email}</strong>` , () => {
+        this.employeeService.delete(employee.id).subscribe((rs) => {
+            abp.notify.success(rs.result)
+          this.refresh();
+        })
       })
-    })
   }
+
   public onUpdateAvatar(employee) {
     const dialogRef = this.dialog.open(UploadAvatarComponent, {
       width: '600px',

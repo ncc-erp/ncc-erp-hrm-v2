@@ -1,0 +1,41 @@
+.center-text-payslip {
+    background-color: #ffff; 
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 87vw;
+    text-align: center;
+    margin-bottom: 250px;
+    gap: 20px;
+  }
+  .content-complain-confirm{
+    height: 100vh;
+    width: 87vw;
+    text-align: center;
+    margin-bottom: 250px;
+    gap: 20px;
+  }
+  .image-payslip{
+    margin-top: 100px;
+    height: 88px;
+    width: 204px;
+  }
+  .title-pause {
+    width: 89%;
+    width: 80vw !important;
+    text-align: center;
+    font-size: 200%;
+}
+.content {
+    width: 50%;
+    margin: 0 auto;
+  }
+  
+  .send-btn {
+    margin-top: 15px;
+  }
+.login-error{
+  font-size: 30px
+}

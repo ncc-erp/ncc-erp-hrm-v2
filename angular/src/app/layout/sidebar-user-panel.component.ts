@@ -4,6 +4,7 @@ import {
   Injector,
   OnInit
 } from '@angular/core';
+import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { AppComponentBase } from '@shared/app-component-base';
 import { AppAuthService } from '@shared/auth/app-auth.service';
 
@@ -22,7 +23,11 @@ export class SidebarUserPanelComponent extends AppComponentBase
   ngOnInit() {
     this.shownLoginName = this.appSession.getShownLoginName();
   }
-
+  
+  canUpdatePassword() {
+    return this.isGranted(PERMISSIONS_CONSTANT.Admin_User_ResetPassword) 
+    
+  }
   logout(): void {
     this._authService.logout();
   }

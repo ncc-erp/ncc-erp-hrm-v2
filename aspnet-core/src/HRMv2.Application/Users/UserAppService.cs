@@ -116,7 +116,7 @@ namespace HRMv2.Users
 
             return MapToEntityDto(user);
         }
-
+     
         
         public override async Task<UserDto> UpdateAsync(UserDto input)
         {
@@ -177,8 +177,8 @@ namespace HRMv2.Users
                 entity.IsActive = true;
             });
         }
+        
 
-       
         public async Task DeActivate(EntityDto<long> user)
         {
             await Repository.UpdateAsync(user.Id, async (entity) =>
@@ -308,6 +308,12 @@ namespace HRMv2.Users
             }
 
             return true;
+        }
+
+        [HttpPut]
+        public async Task UpdateUserActive(string email, bool isActive)
+        {
+            await _userManager.UpdateUserActive(email, isActive);
         }
     }
 }

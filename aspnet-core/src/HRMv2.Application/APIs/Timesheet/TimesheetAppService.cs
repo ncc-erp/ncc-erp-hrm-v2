@@ -39,19 +39,6 @@ namespace HRMv2.APIs.Timesheet
         }
 
         [AbpAllowAnonymous]
-        [HttpPost]
-        public async Task<string> ComplainPayslipMail(InputcomplainPayslipDto input)
-        {
-           return await _timesheetManager.ComplainPayslipMail(input);
-        }
-
-        [AbpAllowAnonymous]
-        [HttpPost]
-        public async Task<string> ConfirmPayslipMail(InputConfirmPayslipMailDto input)
-        {
-            return await _timesheetManager.ConfirmPayslipMail(input);
-        }
-        [AbpAllowAnonymous]
         [HttpGet]
         public GetUserInfoByEmailDto GetUserInfoByEmail(string email)
         {
