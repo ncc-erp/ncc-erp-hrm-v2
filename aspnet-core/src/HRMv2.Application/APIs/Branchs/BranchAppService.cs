@@ -15,7 +15,7 @@ using HRMv2.Authorization;
 
 namespace HRMv2.APIs.Branchs
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Category_Branch_View)]
     public class BranchAppService:HRMv2AppServiceBase
     {
         private readonly BranchManager _branhcManager;

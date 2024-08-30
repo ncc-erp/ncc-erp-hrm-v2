@@ -270,7 +270,16 @@ namespace HRMv2.Manager.Notifications.Templates
                     }
             };
         }
-
+        public static InputPayslipLinkMailTemplate GetPayslipToConfirmFakeData()
+        {
+            return new InputPayslipLinkMailTemplate
+            {
+                EmployeeFullName = "Nguyễn Văn A",
+                PayrollMonth = "9",
+                PayrollYear = "2022",
+                ComplainDeadline = "5/10/2022 5:20",
+            };
+        }
         public static DebtMailTemplateDto GetDebtFakeDate()
         {
             return new DebtMailTemplateDto

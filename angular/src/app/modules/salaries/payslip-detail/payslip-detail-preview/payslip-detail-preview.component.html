@@ -2,7 +2,6 @@
     <div *ngIf="mailInfo?.bodyMessage" class="container-fluid">
         <div class="d-flex px-2 mt-2 mb-2" *ngIf="isShowActions()">
             <div class="col-6">
-                <button class="btn btn-secondary mr-2" (click)="onEdit()">Edit</button>
                 <button class="btn btn-primary" [disabled]="sending" (click)="sendMail()">
                     {{sending? "Sending..." : "Send"}}
                 </button>
