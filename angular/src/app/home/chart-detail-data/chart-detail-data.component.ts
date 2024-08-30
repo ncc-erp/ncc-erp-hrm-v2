@@ -11,6 +11,7 @@ import { InputChartDetailDto, EmployeeDataFromChartDetailDto } from '@app/servic
 import { AppConsts } from '@shared/AppConsts';
 import { APP_ENUMS, ChartDataType, EmployeeMonthlyStatus } from '@shared/AppEnums';
 import { AppComponentBase } from '@shared/app-component-base';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-chart-detail-data',
@@ -181,5 +182,19 @@ export class ChartDetailDataComponent extends AppComponentBase implements OnInit
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail);
   }
 
+  exportChartDetailData() {
+    let payload = {
+      chartDetailId: this.chartDetailId,
+      chartDataType: this.chartDataType,
+      startDate: this.startDate,
+      endDate: this.endDate
+    } as InputChartDetailDto;
+    this.homePageService.ExportChartDetailData(payload).subscribe(rs => {
+      const file = new Blob([this.convertFile(atob(rs.result.base64))], {
+        type: rs.result.fileType
+      });
+      FileSaver.saveAs(file, rs.result.fileName);
+    })
+  }
 }
 

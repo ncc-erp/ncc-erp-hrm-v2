@@ -76,5 +76,11 @@ namespace HRMv2.APIs.Home
         {
             return await _homePageManager.ExportOnboardQuitEmployees(input);
         }
+
+        [HttpPost]
+        public async Task<FileBase64Dto> ExportChartDetailData(InputChartDetailDto input)
+        {
+            return await _homePageManager.ExportChartDetailData(input);
+        }
     }
 }
