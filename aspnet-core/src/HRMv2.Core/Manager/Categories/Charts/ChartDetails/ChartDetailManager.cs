@@ -10,13 +10,17 @@ using HRMv2.Manager.Categories.JobPositions;
 using HRMv2.Manager.Categories.Levels;
 using HRMv2.Manager.Categories.Teams;
 using HRMv2.Manager.Common.Dto;
+using HRMv2.Manager.Employees.Dto;
 using HRMv2.NccCore;
+using HRMv2.Net.MimeTypes;
 using HRMv2.Utils;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
 using NccCore.Uitls;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
@@ -30,7 +34,7 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
         protected readonly LevelManager _levelManager;
         protected readonly JobPositionManager _jobPositionManager;
         protected readonly TeamManager _teamManager;
-
+        private readonly string templateFolder = Path.Combine("wwwroot", "template");
 
         public ChartDetailManager(IWorkScope workScope,
             ChartManager chartManager,
@@ -270,9 +274,9 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
             var chartDetail = await WorkScope.GetAsync<ChartDetail>(updateChartDetailDto.Id);
 
             // validate
-            var isExistedName = WorkScope.GetAll<ChartDetail>().Any(c => 
+            var isExistedName = WorkScope.GetAll<ChartDetail>().Any(c =>
                 c.ChartId == chartDetail.ChartId &&
-                c.Name == updateChartDetailDto.Name && 
+                c.Name == updateChartDetailDto.Name &&
                 c.Id != updateChartDetailDto.Id);
 
             if (isExistedName)
@@ -331,9 +335,9 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
         }
 
         public async Task<List<EmployeeDataFromChartDetailDto>> GetDetailDataChart(
-            long chartDetailId, 
+            long chartDetailId,
             ChartDataType chartDataType,
-            DateTime startDate, 
+            DateTime startDate,
             DateTime endDate)
         {
             startDate = DateTimeUtils.FirstDayOfMonth(startDate);
@@ -356,7 +360,7 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                                     Gender = s.Gender,
                                 }).FirstOrDefaultAsync();
             var listPayslipDataChart = new List<PayslipDataChartDto>();
-            
+
             if (chartDataType == ChartDataType.Employee)
             {
                 listPayslipDataChart = FilterDataEmployeeChart(chartDetailInfo, startDate, endDate);
@@ -460,6 +464,94 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
                 .ToList();
 
             return employeePayslips;
+        }
+
+        public async Task<FileBase64Dto> ExportChartDetailData(InputChartDetailDto input)
+        {
+            CheckPermissionToExportChartDetailData(input.ChartDetailId, input.ChartDataType);
+            var employees = GetExportDataFromChartDetail(input);
+            var templateFilePath = Path.Combine(templateFolder, "ChartDetailDataTemplate.xlsx");
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using var memoryStream = new MemoryStream(File.ReadAllBytes(templateFilePath));
+            using var package = new ExcelPackage(memoryStream);
+
+            FillChartDataToExport(package, employees);
+
+            string fileBase64 = Convert.ToBase64String(package.GetAsByteArray());
+            var file = new FileBase64Dto()
+            {
+                FileName = $"{input.StartDate:yyyyMMdd}_{input.EndDate:yyyyMMdd}-{employees.ChartName}_{employees.ChartDetailName}.xlsx",
+                FileType = MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet,
+                Base64 = fileBase64
+            };
+            return file;
+        }
+
+        private void FillChartDataToExport(ExcelPackage package, DataFromChartDetailDto data)
+        {
+            var worksheet = package.Workbook.Worksheets[0];
+            worksheet.Name = $"{data.ChartName} - {data.ChartDetailName}";
+            var rowIndex = 2;
+            foreach (var emp in data.Employees)
+            {
+                worksheet.Cells[rowIndex, 1].Value = data.Employees.IndexOf(emp) + 1;
+                worksheet.Cells[rowIndex, 2].Value = emp.FullName;
+                worksheet.Cells[rowIndex, 3].Value = emp.Email;
+                worksheet.Cells[rowIndex, 4].Value = emp.Gender;
+                var lastWorkingHistory = emp.MonthlyEmployeeDetails.LastOrDefault();
+                worksheet.Cells[rowIndex, 5].Value = lastWorkingHistory.BranchInfo.Name;
+                worksheet.Cells[rowIndex, 6].Value = lastWorkingHistory.UserTypeInfo.Name;
+                worksheet.Cells[rowIndex, 7].Value = lastWorkingHistory.LevelInfo.Name;
+                worksheet.Cells[rowIndex, 8].Value = lastWorkingHistory.JobPositionInfo.Name;
+                worksheet.Cells[rowIndex, 10].Value = emp.Avatar;
+
+                // fill detail by month
+                var maxRowsForDetailByMonth = emp.MonthlyEmployeeDetails.Count;
+                for (var i = 0; i < maxRowsForDetailByMonth; i++)
+                {
+                    var empDetail = emp.MonthlyEmployeeDetails[i];
+                    worksheet.Cells[rowIndex + i, 9].Value = $"{empDetail.BranchInfo.Name} {empDetail.UserTypeInfo.Name} {empDetail.LevelInfo.Name} {empDetail.JobPositionInfo.Name} {empDetail.StatusMonth.Month}/{empDetail.StatusMonth.Year}";
+                }
+                // merge cell
+                if (emp.MonthlyEmployeeDetails.Count > 1)
+                {
+                    worksheet.Cells[rowIndex, 1, rowIndex + maxRowsForDetailByMonth - 1, 1].Merge = true;
+                    worksheet.Cells[rowIndex, 2, rowIndex + maxRowsForDetailByMonth - 1, 2].Merge = true;
+                    worksheet.Cells[rowIndex, 3, rowIndex + maxRowsForDetailByMonth - 1, 3].Merge = true;
+                    worksheet.Cells[rowIndex, 4, rowIndex + maxRowsForDetailByMonth - 1, 4].Merge = true;
+                    worksheet.Cells[rowIndex, 5, rowIndex + maxRowsForDetailByMonth - 1, 5].Merge = true;
+                    worksheet.Cells[rowIndex, 6, rowIndex + maxRowsForDetailByMonth - 1, 6].Merge = true;
+                    worksheet.Cells[rowIndex, 7, rowIndex + maxRowsForDetailByMonth - 1, 7].Merge = true;
+                    worksheet.Cells[rowIndex, 8, rowIndex + maxRowsForDetailByMonth - 1, 8].Merge = true;
+                    worksheet.Cells[rowIndex, 10, rowIndex + maxRowsForDetailByMonth - 1, 10].Merge = true;
+                }
+
+                rowIndex += maxRowsForDetailByMonth > 0 ? maxRowsForDetailByMonth : 1;
+            }
+        }
+
+        private DataFromChartDetailDto GetExportDataFromChartDetail(InputChartDetailDto input)
+        {
+            var chartDetailData = WorkScope.GetAll<ChartDetail>()
+                                .Where(c => c.Id == input.ChartDetailId)
+                                .Select(s => new DataFromChartDetailDto()
+                                {
+                                    ChartName = s.Chart.Name,
+                                    ChartDetailName = s.Name
+                                }).FirstOrDefault();
+            chartDetailData.Employees = GetDetailDataChart(input.ChartDetailId, input.ChartDataType, input.StartDate, input.EndDate).Result;
+            return chartDetailData;
+        }
+
+        private void CheckPermissionToExportChartDetailData(long chartDetailId, ChartDataType chartDataType)
+        {
+            var chartIds = _chartManager.GetAuthorizedChartIdsByDataType(chartDataType);
+            var havePermission = WorkScope.GetAll<ChartDetail>().Any(c => c.Id == chartDetailId && chartIds.Contains(c.ChartId));
+            if (!havePermission)
+            {
+                throw new UserFriendlyException("Current user does not have permission to export chart detail data");
+            }
         }
     }
 }
