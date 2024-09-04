@@ -547,8 +547,16 @@ namespace HRMv2.Manager.Categories.Charts.ChartDetails
         private void CheckPermissionToExportChartDetailData(long chartDetailId, ChartDataType chartDataType)
         {
             var chartIds = _chartManager.GetAuthorizedChartIdsByDataType(chartDataType);
-            var havePermission = WorkScope.GetAll<ChartDetail>().Any(c => c.Id == chartDetailId && chartIds.Contains(c.ChartId));
-            if (!havePermission)
+            var chartId = WorkScope.GetAll<ChartDetail>()
+                                          .Where(c => c.Id == chartDetailId)
+                                          .Select(c => c.ChartId)
+                                          .FirstOrDefault();
+
+            if (chartId == default)
+            {
+                throw new UserFriendlyException("Chart does not exist");
+            }
+            if (!chartIds.Contains(chartId))
             {
                 throw new UserFriendlyException("Current user does not have permission to export chart detail data");
             }
