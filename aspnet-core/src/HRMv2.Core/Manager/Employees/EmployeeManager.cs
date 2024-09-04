@@ -686,11 +686,11 @@ namespace HRMv2.Manager.Employees
             ObjectMapper.Map(input, entity);
             if (entity.Status == EmployeeStatus.Working || entity.Status == EmployeeStatus.MaternityLeave)
             {
-                await _userManager.UpdateUserActive(input.Email, true);
+                await _userManager.UpdateUserActiveAsync(input.Email, true);
             }
             else
             {
-                await _userManager.UpdateUserActive(input.Email, false);
+                await _userManager.UpdateUserActiveAsync(input.Email, false);
             }
             var qSCRE = WorkScope.GetAll<SalaryChangeRequestEmployee>()
                          .Where(x => x.EmployeeId == entity.Id);

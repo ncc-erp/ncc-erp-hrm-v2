@@ -313,7 +313,7 @@ namespace HRMv2.Users
         [HttpPut]
         public async Task UpdateUserActive(string email, bool isActive)
         {
-            await _userManager.UpdateUserActive(email, isActive);
+            await _userManager.UpdateUserActiveAsync(email, isActive);
         }
     }
 }

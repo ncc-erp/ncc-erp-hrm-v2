@@ -61,7 +61,7 @@ namespace HRMv2.Authorization.Users
             _roleManager = roleManager;
         }
 
-        public async Task UpdateUserActive(string email, bool isActive)
+        public async Task UpdateUserActiveAsync(string email, bool isActive)
         {
             var user = await FindByNameOrEmailAsync(email);
             if (user == null)
