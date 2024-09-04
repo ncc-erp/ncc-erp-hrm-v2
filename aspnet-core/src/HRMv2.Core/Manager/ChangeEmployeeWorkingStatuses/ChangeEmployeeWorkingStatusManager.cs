@@ -218,7 +218,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
 
             _komuService.NotifyToChannel(message, channelId);
 
-            _userManager.UpdateUserActive(employee.Email, false);
+            _userManager.UpdateUserActiveAsync(employee.Email, false).GetAwaiter().GetResult(); ;
         }
         public void ChangeStatusToPause(ToPauseDto input)
         {
@@ -282,7 +282,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
 
             };
             ConfirmUserPause(inputChangeUserWorkingStatusToOtherTool);
-            _userManager.UpdateUserActive(employee.Email, false);
+            _userManager.UpdateUserActiveAsync(employee.Email, false).GetAwaiter().GetResult();
         }
 
 
