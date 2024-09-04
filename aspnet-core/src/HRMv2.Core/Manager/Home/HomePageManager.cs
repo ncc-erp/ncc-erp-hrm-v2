@@ -1,4 +1,7 @@
-﻿using HRMv2.Manager.Employees.Dto;
+﻿using HRMv2.Entities;
+using HRMv2.Manager.Categories.Charts.ChartDetails;
+using HRMv2.Manager.Categories.Charts.DisplayChartDto;
+using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Home.Dtos;
 
 using HRMv2.Manager.WorkingHistories;
@@ -21,14 +24,18 @@ namespace HRMv2.Manager.Home
     public class HomePageManager : BaseManager
     {
         protected readonly WorkingHistoryManager _workingHistoryManager;
+        protected readonly ChartDetailManager _chartDetailManager;
+        
         private readonly string templateFolder = Path.Combine("wwwroot", "template");
 
         public HomePageManager(
             IWorkScope workScope,
-            WorkingHistoryManager workingHistoryManager
+            WorkingHistoryManager workingHistoryManager,
+            ChartDetailManager chartDetailManager
             ) : base(workScope)
         {
             _workingHistoryManager = workingHistoryManager;
+            _chartDetailManager = chartDetailManager;
         }
 
         public List<HomepageEmployeeStatisticDto> GetAllEmployeeWorkingHistoryByTimeSpan(DateTime startDate, DateTime endDate)
@@ -143,7 +150,7 @@ namespace HRMv2.Manager.Home
                 onboardWorksheet.Cells[rowIndex, 9].Value = emp.DateAt;
                 rowIndex++;
             }
-            
+
             // Fill data to Quit Employees Sheet
             rowIndex = 2;
             foreach (var emp in data.QuitEmployees)
@@ -153,9 +160,9 @@ namespace HRMv2.Manager.Home
                 quitWorksheet.Cells[rowIndex, 3].Value = emp.Email;
                 quitWorksheet.Cells[rowIndex, 4].Value = emp.Sex.ToString();
                 quitWorksheet.Cells[rowIndex, 5].Value = emp.BranchInfo.Name;
-                quitWorksheet.Cells[rowIndex, 6].Value = emp.UserTypeInfo.Name; 
+                quitWorksheet.Cells[rowIndex, 6].Value = emp.UserTypeInfo.Name;
                 quitWorksheet.Cells[rowIndex, 7].Value = emp.LevelInfo.Name;
-                quitWorksheet.Cells[rowIndex, 8].Value = emp.JobPositionInfo.Name;                
+                quitWorksheet.Cells[rowIndex, 8].Value = emp.JobPositionInfo.Name;
                 quitWorksheet.Cells[rowIndex, 9].Value = emp.DateAt;
                 rowIndex++;
             }
@@ -187,6 +194,6 @@ namespace HRMv2.Manager.Home
                 OnboardAndQuitEmployees = empWorkingHistories.Where(s => s.IsOnboardAndQuitInTimeSpan).ToList(),
             };
             return result;
-        }
+        }                    
     }
 }

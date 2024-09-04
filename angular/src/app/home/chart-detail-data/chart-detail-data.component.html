@@ -8,13 +8,18 @@
                     <span class="truncate">{{this.chartDetailName}}</span>
                 </ng-container>
             </span>
+            
             <div class="d-inline" style="font-size: 20px;">
                 <span class="badge bg-primary ml-2">{{startDate | DMYDateFormat}}
-                    - {{endDate | DMYDateFormat}}</span>
+                    - {{endDate | DMYDateFormat}}</span>                
                 <button class="viewBtn btn btn-outline-primary btn-sm ml-2" (click)="onViewChartSetting()">
                     <mat-icon style="font-size: 20px; vertical-align: middle; height: fit-content;">settings</mat-icon>
-                </button>
+                </button>            
             </div>
+            <button class="btn btn-outline-primary btn-sm ml-2" matTooltip="Export" (click)="exportChartDetailData()">
+                <mat-icon style="font-size: 20px; vertical-align: middle; height: fit-content;">download</mat-icon>
+                Export
+            </button>
         </div>
         <div class="d-flex align-items-center">
             <i class="fas fa-times pointer" (click)="onClose()"></i>
