@@ -36,4 +36,7 @@ export class HomePageService extends BaseApiService {
   // getAllActive(startDate:string, endDate:string):Observable<ApiResponseDto<ResultChartDto[]>>{
   //   return this.processPost(`GetAllActiveCharts`, { startDate ,endDate})
   // }
+  ExportChartDetailData(payload: any):Observable<ApiResponseDto<any>> {
+    return this.processPost(`ExportChartDetailData`, payload)
+  }
 }
