@@ -2,6 +2,7 @@
 using Abp.UI;
 using HRMv2.Entities;
 using HRMv2.Manager.Categories.JobPositions.Dto;
+using HRMv2.Manager.Categories.Levels.Dto;
 using HRMv2.NccCore;
 using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
@@ -36,6 +37,17 @@ namespace HRMv2.Manager.Categories.JobPositions
         public List<JobPositionDto> GetAll()
         {
             return QueryAllJobPosition().ToList();
+        }
+
+        public List<JobPositionPublicDto> GetAllPublic()
+        {
+            return QueryAllJobPosition().Select(x => new JobPositionPublicDto
+            {
+                Name = x.Name,
+                Code = x.Code,
+                Color = x.Color,
+                ShortName = x.ShortName
+            }).ToList();
         }
 
         public async Task<GridResult<JobPositionDto>> GetAllPaging(GridParam input)
