@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 using HRMv2.Constants;
 using HRMv2.Utils;
+using Abp.AutoMapper;
 
 namespace HRMv2.Manager.Categories.UserTypes
 {
@@ -21,6 +22,18 @@ namespace HRMv2.Manager.Categories.UserTypes
         {
             return CommonUtil.USERTYPE_COLOR;
 
+        }
+
+        public List<UserTypePublicDto> GetAllPublic()
+        {
+            return CommonUtil.USERTYPE_COLOR.Select(x => new
+            UserTypePublicDto
+            {
+                Code = x.Code,
+                Color = x.Color,
+                Name = x.Name,
+                ShortName = x.ShortName
+            }).ToList();
         }
 
     }
