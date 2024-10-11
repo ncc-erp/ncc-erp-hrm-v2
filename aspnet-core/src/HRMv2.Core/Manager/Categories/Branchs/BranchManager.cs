@@ -60,7 +60,11 @@ namespace HRMv2.Manager.Categories
                 Name = x.Name,
                 Code = x.Code,
                 Color = x.Color,
-                ShortName = x.ShortName
+                ShortName = x.ShortName,
+                DirectorEmail = WorkScope.GetAll<Employee>()
+                .Where(d => d.Id == x.CEOId)
+                .Select(d => d.Email)
+                .FirstOrDefault(),
             }).ToList();
         }
 
