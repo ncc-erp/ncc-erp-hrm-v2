@@ -7,5 +7,6 @@ namespace HRMv2.Manager.Categories.Branchs.Dto
         public string ShortName { get; set; }
         public string Code { get; set; }
         public string Color { get; set; }
+        public string DirectorEmail { get; set; }
     }
 }
