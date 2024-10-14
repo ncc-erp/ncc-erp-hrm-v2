@@ -1,4 +1,5 @@
 ﻿using Abp.Timing;
+using HRMv2.Constants;
 using HRMv2.Manager.BackgroundJobInfos.Dto;
 using HRMv2.Manager.Categories.Charts.ChartDetails.Dto;
 using HRMv2.Manager.Categories.UserTypes.Dto;
@@ -453,10 +454,7 @@ namespace HRMv2.Utils
             }
             return email.Split("@")[0];
         }
-        public static string GetDiscordTagUser(string email)
-        {
-            return "${" + GetUserNameByEmail(email) + "}";
-        }
+                
 
         public static TemplateType GetTemplateType(MailFuncEnum type)
         {

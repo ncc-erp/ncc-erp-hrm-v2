@@ -247,6 +247,9 @@ export class AppConsts {
             class: "badge badge-error"
         }
     }
+
+    static readonly NotifyToKomu = 'komu'
+    static readonly NotifyToMezon = 'mezon'
 }
 
 export const BenefitType =

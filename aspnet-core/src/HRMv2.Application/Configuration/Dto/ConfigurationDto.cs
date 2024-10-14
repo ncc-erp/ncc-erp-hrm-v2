@@ -19,6 +19,7 @@ namespace HRMv2.Configuration.Dto
         public SettingDto TalentService { get; set; }
         public KomuSettingDto KomuService { get; set; }
         public SettingDto HRMService { get; set; }
+        public MezonSettingDto MezonService { get; set; }
     }
 
     public class KomuSettingDto
@@ -27,6 +28,12 @@ namespace HRMv2.Configuration.Dto
         public string SecurityCode { get; set; }
         public string ChannelIdDevMode { get; set; }
         public string EnableNoticeKomu { get; set; }
+    }
+
+    public class MezonSettingDto
+    {
+        public string DevModeUrl { get; set; }
+        public string EnableMezonNotification { get; set; }
     }
 
     public class SettingDto

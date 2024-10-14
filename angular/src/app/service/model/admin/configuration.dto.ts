@@ -48,9 +48,10 @@ export interface EmailSettingDto {
     useDefaultCredentials: string
 }
 
-export interface DiscordChannelDto {
-    itChannel: string
-    payrollChannelId: string
+export interface NotifyChannelDto {
+    notifyPlatform: string,
+    itChannel: string,
+    payrollChannel: string    
 }
 export interface GetConnectResultDto {
     isConnected: boolean,

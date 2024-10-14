@@ -10,5 +10,7 @@ namespace HRMv2.Constants
         public const string DefaultPassPhrase = "gsKxGZ012HLL3MI5";
         public const string CompanyName = "Công ty cổ phần NCCPLUS Việt Nam";
         public const bool EnableSyncDataService = true;
+        public const string NotifyToMezon = "mezon";
+        public const string NotifyToKomu = "komu";
     }
 }

@@ -5,6 +5,8 @@ using Abp.Runtime.Session;
 using AutoMapper.Configuration;
 using HRMv2.Authorization;
 using HRMv2.Configuration.Dto;
+using HRMv2.Manager.Notifications.NotifyToChannel;
+using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.WebServices;
 using HRMv2.WebServices.Dto;
 using HRMv2.WebServices.Finfast;
@@ -27,12 +29,14 @@ namespace HRMv2.Configuration
         private readonly ProjectService _projectService;
         private readonly IMSWebService _imsWebService;
         private readonly FinfastWebService _finfastWebService;
+        private readonly NotificationService _notificationService;
         public ConfigurationAppService(Microsoft.Extensions.Configuration.IConfiguration appConfiguration,
             TimesheetWebService timesheetWebService,
             TalentWebService talentWebService,
             ProjectService projectService,
             IMSWebService imsWebService,
-            FinfastWebService finfastWebService)
+            FinfastWebService finfastWebService,
+            NotificationService notificationService)
         {
             _appConfiguration = appConfiguration;
             _timesheetWebService = timesheetWebService;
@@ -40,7 +44,7 @@ namespace HRMv2.Configuration
             _projectService = projectService;
             _imsWebService = imsWebService;
             _finfastWebService = finfastWebService;
-            
+            _notificationService = notificationService;
 
         }
         public async Task ChangeUiTheme(ChangeUiThemeInput input)
@@ -105,36 +109,18 @@ namespace HRMv2.Configuration
                     SecurityCode = _appConfiguration.GetValue<string>("KomuService:SecurityCode"),
                     EnableNoticeKomu = _appConfiguration.GetValue<string>("KomuService:EnableKomuNotification"),
                     ChannelIdDevMode = _appConfiguration.GetValue<string>("KomuService:ChannelIdDevMode"),
-                },
+                },                
                 HRMService = new SettingDto
                 {
                     SecurityCode = _appConfiguration.GetValue<string>("App:SecurityCode")
                 },
+                MezonService = new MezonSettingDto
+                {
+                    DevModeUrl = _appConfiguration.GetValue<string>("MezonService:DevModeUrl"),
+                    EnableMezonNotification = _appConfiguration.GetValue<string>("MezonService:EnableMezonNotification")
+                },
             };
-        }
-
-        [HttpGet]
-        public async Task<DiscordChannelDto> GetDiscordChannels()
-        {
-            return new DiscordChannelDto
-            {
-                ITChannel = await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.KomuITChannelId),
-                PayrollChannelId = await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.PayrollChannelId),
-            };
-        }
-
-        [HttpPost]
-        public async Task<DiscordChannelDto> SetDiscordChannels(DiscordChannelDto input)
-        {
-            await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.KomuITChannelId, input.ITChannel);
-            await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.PayrollChannelId, input.PayrollChannelId);
-
-            return new DiscordChannelDto
-            {
-                ITChannel = await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.KomuITChannelId),
-                PayrollChannelId = await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.PayrollChannelId),
-            };
-        }
+        }        
 
         [AbpAuthorize(PermissionNames.Admin_Configuration_LoginSetting_Edit)]
         public async Task<LoginSettingDto> ChangeLoginSetting(LoginSettingDto input)
@@ -217,5 +203,23 @@ namespace HRMv2.Configuration
        {
            return _imsWebService.CheckConnectToIMS();
        }
+
+        [HttpGet] 
+        public async Task<NotifyToChannelDto> GetNotifySettings()
+        {
+            return await _notificationService.GetNotifySettingAsync();
+        }
+
+        [HttpPost]
+        public async Task ChangeNotifySettings(NotifyToChannelDto input)
+        {
+            await _notificationService.ChangeNotifySettingAsync(input);
+        }
+
+        [HttpPost]
+        public async Task ChangeNotifyPlatform(NotifyToPlatformDto input)
+        {
+            await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.NotifyToPlatform, input.ToPlatform);
+        }
     }
 }

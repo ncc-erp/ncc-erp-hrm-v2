@@ -1,7 +1,8 @@
+import { NotifyChannelDto } from './../../model/admin/configuration.dto';
 import { Injectable, Injector } from '@angular/core';
 import { ApiResponseDto } from '@app/service/model/common.dto';
 import { Observable } from 'rxjs';
-import { ConfigurationDto, DiscordChannelDto, EmailSettingDto, GetConnectResultDto, LoginConfigDto,WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto } from '../../model/admin/configuration.dto';
+import { ConfigurationDto, EmailSettingDto, GetConnectResultDto, LoginConfigDto,WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto } from '../../model/admin/configuration.dto';
 import { BaseApiService } from '../base-api.service';
 
 @Injectable({
@@ -39,14 +40,6 @@ export class ConfigurationService extends BaseApiService {
   public getEmailSetting():Observable<ApiResponseDto<EmailSettingDto>> {
     return this.processGet("GetEmailSetting")
   }
-
-  public GetDiscordChannels():Observable<ApiResponseDto<DiscordChannelDto>> {
-    return this.processGet("GetDiscordChannels")
-  }
-
-  public SetDiscordChannels(input: DiscordChannelDto) {
-    return this.processPost("SetDiscordChannels", input)
-  }
   
   public checkConnectToTimesheet():Observable<ApiResponseDto<GetConnectResultDto>> {
     return this.processGet("CheckConnectToTimesheet")
@@ -62,6 +55,15 @@ export class ConfigurationService extends BaseApiService {
   }
   public checkConnectToIMS():Observable<ApiResponseDto<GetConnectResultDto>> {
     return this.processGet("CheckConnectToIMS")
+  }
+  public getNotifySettings():Observable<ApiResponseDto<NotifyChannelDto>> {
+    return this.processGet("GetNotifySettings")
+  }
+  public changeNotifyPlatform(payload: any):Observable<ApiResponseDto<any>> {
+    return this.processPost(`ChangeNotifyPlatform`, payload)
+  }
+  public changeNotifySettings(payload: NotifyChannelDto):Observable<ApiResponseDto<any>> {
+    return this.processPost(`ChangeNotifySettings`, payload)
   }
 
 }
