@@ -15,13 +15,13 @@ using System.Threading.Tasks;
 
 namespace HRMv2.Manager.Notifications.NotifyToChannel
 {
-    public class Notification: DomainService
+    public class NotificationService: DomainService
     {
         private readonly KomuService _komuService;
         private readonly MezonService _mezonService;
         private readonly string _platform;
         private readonly ISettingManager _settingManager;
-        public Notification(IWorkScope workScope, KomuService komuService, MezonService mezonService, ISettingManager settingManager) 
+        public NotificationService(IWorkScope workScope, KomuService komuService, MezonService mezonService, ISettingManager settingManager) 
         {
             _komuService = komuService;
             _mezonService = mezonService;

@@ -38,7 +38,7 @@ namespace HRMv2.Manager.Payrolls
         private readonly ISettingManager _settingManager;
         private readonly EmailManager _emailManager;
         private readonly PayslipManager _payslipManager;
-        private readonly Notification _notification;
+        private readonly NotificationService _notificationService;
 
         public PayrollManager(TimesheetManager timesheetManager,
             FinfastWebService finfastWebService,
@@ -47,7 +47,7 @@ namespace HRMv2.Manager.Payrolls
             PayslipManager payslipManager,
             IWorkScope workScope,
             EmailManager emailManager,
-            Notification notification) : base(workScope)
+            NotificationService notificationService) : base(workScope)
         {
             _timesheetManager = timesheetManager;
             _finfastService = finfastWebService;
@@ -55,7 +55,7 @@ namespace HRMv2.Manager.Payrolls
             _settingManager = settingManager;
             _emailManager = emailManager;
             _payslipManager = payslipManager;
-            _notification = notification;
+            _notificationService = notificationService;
         }
 
         public IQueryable<GetPayrollDto> QueryAllPayroll()
@@ -293,7 +293,7 @@ namespace HRMv2.Manager.Payrolls
                 .Where(x => x.Id == AbpSession.UserId)
                 .Select(x => x.EmailAddress)
                 .FirstOrDefault();
-            var tagLoginUser = _notification.GetTagUser(loginUserEmail);
+            var tagLoginUser = _notificationService.GetTagUser(loginUserEmail);
 
 
             var message = "";
@@ -305,34 +305,34 @@ namespace HRMv2.Manager.Payrolls
             {
                 case PayrollStatus.PendingCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.CEO.ToUpper());
-                    ccAccount = _notification.GetTagUser(ccEmail);
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
                     message = $"{tagLoginUser} submited **{payrollName}** [PendingCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.PendingKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notification.GetTagUser(ccEmail);
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
                     message = $"{tagLoginUser} submited **{payrollName}** [PendingKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.SubKT.ToUpper());
-                    ccAccount = _notification.GetTagUser(ccEmail);
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
                     message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notification.GetTagUser(ccEmail);
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
                     message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.ApprovedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notification.GetTagUser(ccEmail);
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
                     message = $"{tagLoginUser} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.Executed:
                     message = $"{tagLoginUser} executed **{payrollName}** [Executed]";
                     break;
             }
-            _notification.NotifyToPayrollChannel(message);
+            _notificationService.NotifyToPayrollChannel(message);
         }
 
         private string GetFirstUserEmailHasRole(string roleName)

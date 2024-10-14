@@ -29,14 +29,14 @@ namespace HRMv2.Configuration
         private readonly ProjectService _projectService;
         private readonly IMSWebService _imsWebService;
         private readonly FinfastWebService _finfastWebService;
-        private readonly Notification _notification;
+        private readonly NotificationService _notificationService;
         public ConfigurationAppService(Microsoft.Extensions.Configuration.IConfiguration appConfiguration,
             TimesheetWebService timesheetWebService,
             TalentWebService talentWebService,
             ProjectService projectService,
             IMSWebService imsWebService,
             FinfastWebService finfastWebService,
-            Notification notification)
+            NotificationService notificationService)
         {
             _appConfiguration = appConfiguration;
             _timesheetWebService = timesheetWebService;
@@ -44,7 +44,7 @@ namespace HRMv2.Configuration
             _projectService = projectService;
             _imsWebService = imsWebService;
             _finfastWebService = finfastWebService;
-            _notification = notification;
+            _notificationService = notificationService;
 
         }
         public async Task ChangeUiTheme(ChangeUiThemeInput input)
@@ -207,13 +207,13 @@ namespace HRMv2.Configuration
         [HttpGet] 
         public async Task<NotifyToChannelDto> GetNotifySettings()
         {
-            return await _notification.GetNotifySettingAsync();
+            return await _notificationService.GetNotifySettingAsync();
         }
 
         [HttpPost]
         public async Task ChangeNotifySettings(NotifyToChannelDto input)
         {
-            await _notification.ChangeNotifySettingAsync(input);
+            await _notificationService.ChangeNotifySettingAsync(input);
         }
 
         [HttpPost]

@@ -61,7 +61,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
         private readonly TalentWebService _talentWebService;
         private readonly ISettingManager _settingManager;
         private readonly UserManager _userManager;
-        private readonly Notification _notification;
+        private readonly NotificationService _notificationService;
 
         public ChangeEmployeeWorkingStatusManager
             (IWorkScope workScope,
@@ -80,7 +80,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             TalentWebService talentWebService,
             ISettingManager settingManager,
             UserManager userManager,
-            Notification notification)
+            NotificationService notificationService)
             : base(workScope)
         {
             _benefitManager = benefitManager;
@@ -97,7 +97,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             _iMSWebService = iMSWebService;
             _talentWebService = talentWebService;
             _settingManager = settingManager;
-            _notification = notification;
+            _notificationService = notificationService;
             _userManager = userManager;
         }
 
@@ -146,13 +146,13 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                     .FirstOrDefault();
 
 
-                var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notification.GetTagUser(CEOUserName)}, " : "";
-                var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notification.GetTagUser(HRUserName)}, " : "";
+                var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notificationService.GetTagUser(CEOUserName)}, " : "";
+                var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notificationService.GetTagUser(HRUserName)}, " : "";
 
                 var message = $"{tagCEO}{tagHR}HRM plan **{employeeInfo.Email}** {employeeInfo.BranchName} {CommonUtil.GetUserTypeNameVN(employeeInfo.UserType)}" +
                     $" {employeeInfo.PositionName} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
-                _notification.NotifyToITChannel(message);
+                _notificationService.NotifyToITChannel(message);
             }
         }
 
@@ -210,12 +210,12 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                 .Select(x => x.Email)
                 .FirstOrDefault();
 
-            var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notification.GetTagUser(CEOUserName)}, " : "";
-            var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notification.GetTagUser(HRUserName)}, " : "";
+            var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notificationService.GetTagUser(CEOUserName)}, " : "";
+            var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notificationService.GetTagUser(HRUserName)}, " : "";
             var message = $"{tagCEO}{tagHR}HRM confirm **{employee.Email}** {employee.Branch.Name} {CommonUtil.GetUserTypeNameVN(employee.UserType)}" +
                     $" {employee.JobPosition.Name} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
-            _notification.NotifyToITChannel(message);
+            _notificationService.NotifyToITChannel(message);
             _userManager.UpdateUserActiveAsync(employee.Email, false).GetAwaiter().GetResult(); ;
         }
         public void ChangeStatusToPause(ToPauseDto input)
