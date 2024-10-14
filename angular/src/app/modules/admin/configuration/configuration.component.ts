@@ -1,4 +1,4 @@
-import { ConfigurationDto, DiscordChannelDto, EmailSettingDto, GetConnectResultDto, LoginConfigDto,WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto} from './../../../service/model/admin/configuration.dto';
+import { ConfigurationDto, EmailSettingDto, GetConnectResultDto, LoginConfigDto, WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto, NotifyChannelDto } from './../../../service/model/admin/configuration.dto';
 import { ConfigurationService } from './../../../service/api/admin/configuration.service';
 import { AppComponentBase } from 'shared/app-component-base';
 import { Component, Injector, OnInit } from '@angular/core';
@@ -13,10 +13,10 @@ import { takeWhile } from 'rxjs/operators';
 })
 export class ConfigurationComponent extends AppComponentBase implements OnInit {
   public configuration: ConfigurationDto = {} as ConfigurationDto;
-  public discordChannels = {} as DiscordChannelDto;
+  public notifyChannels = {} as NotifyChannelDto;
   public isEditLoginSetting: boolean = false;
   public isEditAutoUpdateSetting: boolean = false;
-  public isEditDiscordSetting: boolean = false;
+  public isEditNotifySetting: boolean = false;
   public loginSetting: LoginConfigDto = {} as LoginConfigDto;
   public WorkerAutoUpdateAllEmployeeInfoToOtherToolSetting: WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto = {} as WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto;
   public emailSetting: EmailSettingDto = {} as EmailSettingDto;
@@ -39,7 +39,7 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
     this.getLoginSetting();
     this.getAutoUpdateAllEmployeeInfoToOther();
     this.getEmailSetting();
-    this.getDiscordChannels();
+    this.getNotifyChannels();
     this.checkConnectToTimesheet();
     this.checkConnectToFinfast();
     this.checkConnectToTalent();
@@ -140,24 +140,58 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
     })
   }
 
-  getDiscordChannels(){
+  getNotifyChannels() {
     this.subscription.push(
-      this.configService.GetDiscordChannels().subscribe(rs => {
-        this.discordChannels = rs.result;
+      this.configService.getNotifySettings().subscribe(rs => {
+        this.notifyChannels = rs.result
       })
     )
   }
 
-  changeDiscordChannels(){
+  changeNotifyPlatform() {
+    var changePlatform = {
+      toPlatform : this.notifyChannels.notifyPlatform
+    }
     this.subscription.push(
-      this.configService.SetDiscordChannels(this.discordChannels).subscribe(rs =>{
-        if(rs){
-          abp.notify.success("Change setting successful!");
+      this.configService.changeNotifyPlatform(changePlatform).subscribe(rs => {
+        if (rs) {
+          abp.notify.success(`Change notify to ${this.notifyChannels.notifyPlatform}`)
         }
-        this.getDiscordChannels();
+        this.getNotifyChannels()
       })
     )
   }
+
+  changeNotifySettings() {
+    this.subscription.push(
+      this.configService.changeNotifySettings(this.notifyChannels).subscribe(rs => {
+        if (rs) {
+          abp.notify.success(`Change setting successful!`)
+        }
+        this.getNotifyChannels()
+      })
+    )
+  }
+
+  get itChannelLabel(): string {
+    if (this.notifyChannels.notifyPlatform == this.APP_CONST.NotifyToKomu) {
+      return "HR-IT channelId"
+    } 
+    if (this.notifyChannels.notifyPlatform == this.APP_CONST.NotifyToMezon) {
+      return "HR-IT channelURL"
+    }
+    return "HR-IT channel"
+  }
+
+  get payrollChannelLabel(): string {
+    if (this.notifyChannels.notifyPlatform == this.APP_CONST.NotifyToKomu) {
+      return "Payroll channelId"
+    } 
+    if (this.notifyChannels.notifyPlatform == this.APP_CONST.NotifyToMezon) {
+      return "Payroll channelURL"
+    }
+    return "Payroll channel"
+  }  
   
   changeLoginSetting(){
     this.subscription.push(

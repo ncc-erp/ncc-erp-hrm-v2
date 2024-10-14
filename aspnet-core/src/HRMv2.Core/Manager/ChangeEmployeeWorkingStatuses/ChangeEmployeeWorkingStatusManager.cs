@@ -15,6 +15,7 @@ using HRMv2.Manager.Benefits.Dto;
 using HRMv2.Manager.Categories.Benefits;
 using HRMv2.Manager.ChangeEmployeeWorkingStatuses.Dto;
 using HRMv2.Manager.EmployeeContracts;
+using HRMv2.Manager.Notifications.NotifyToChannel;
 using HRMv2.Manager.SalaryRequests.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
@@ -22,6 +23,7 @@ using HRMv2.WebServices.Dto;
 using HRMv2.WebServices.IMS;
 using HRMv2.WebServices.IMS.Dto;
 using HRMv2.WebServices.Komu;
+using HRMv2.WebServices.Mezon;
 using HRMv2.WebServices.Project;
 using HRMv2.WebServices.Project.Dto;
 using HRMv2.WebServices.Talent;
@@ -58,8 +60,8 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
         private readonly IMSWebService _iMSWebService;
         private readonly TalentWebService _talentWebService;
         private readonly ISettingManager _settingManager;
-        private readonly KomuService _komuService;
         private readonly UserManager _userManager;
+        private readonly Notification _notification;
 
         public ChangeEmployeeWorkingStatusManager
             (IWorkScope workScope,
@@ -76,9 +78,9 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             TimesheetWebService timesheetWebService,
             IMSWebService iMSWebService,
             TalentWebService talentWebService,
-            KomuService komuService,
             ISettingManager settingManager,
-            UserManager userManager)
+            UserManager userManager,
+            Notification notification)
             : base(workScope)
         {
             _benefitManager = benefitManager;
@@ -95,13 +97,12 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             _iMSWebService = iMSWebService;
             _talentWebService = talentWebService;
             _settingManager = settingManager;
-            _komuService = komuService;
+            _notification = notification;
             _userManager = userManager;
         }
 
         public void ChangeStatusToQuit(ToQuitDto input)
         {
-
             DeleteOldRequestInBackgroundJob(input.EmployeeId);
             input.CurrentUserLoginId = (long)AbpSession.UserId;
             input.TenantId = AbpSession.TenantId;
@@ -144,15 +145,14 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                     .Select(x => x.Email)
                     .FirstOrDefault();
 
-                var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.KomuITChannelId);
 
-                var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{CommonUtil.GetDiscordTagUser(CEOUserName)}, " : "";
-                var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{CommonUtil.GetDiscordTagUser(HRUserName)}, " : "";
+                var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notification.GetTagUser(CEOUserName)}, " : "";
+                var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notification.GetTagUser(HRUserName)}, " : "";
 
                 var message = $"{tagCEO}{tagHR}HRM plan **{employeeInfo.Email}** {employeeInfo.BranchName} {CommonUtil.GetUserTypeNameVN(employeeInfo.UserType)}" +
                     $" {employeeInfo.PositionName} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
-                _komuService.NotifyToChannel(message, channelId);
+                _notification.NotifyToITChannel(message);
             }
         }
 
@@ -210,14 +210,12 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                 .Select(x => x.Email)
                 .FirstOrDefault();
 
-            var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.KomuITChannelId);
-            var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{CommonUtil.GetDiscordTagUser(CEOUserName)}, " : "";
-            var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{CommonUtil.GetDiscordTagUser(HRUserName)}, " : "";
+            var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notification.GetTagUser(CEOUserName)}, " : "";
+            var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notification.GetTagUser(HRUserName)}, " : "";
             var message = $"{tagCEO}{tagHR}HRM confirm **{employee.Email}** {employee.Branch.Name} {CommonUtil.GetUserTypeNameVN(employee.UserType)}" +
                     $" {employee.JobPosition.Name} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
-            _komuService.NotifyToChannel(message, channelId);
-
+            _notification.NotifyToITChannel(message);
             _userManager.UpdateUserActiveAsync(employee.Email, false).GetAwaiter().GetResult(); ;
         }
         public void ChangeStatusToPause(ToPauseDto input)

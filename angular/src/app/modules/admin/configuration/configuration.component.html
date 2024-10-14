@@ -363,60 +363,26 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-6 col-xs-12">
-      <div class="card">
-        <div class="card-header">
-          <div class="title">Komu Setting</div>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col col-12 col-md-12">
-              <mat-form-field class="w-100 mt-2">
-                <input readonly class="w-100" type="text" matInput placeholder="komu Uri"
-                  [(ngModel)]="configuration?.komuService.baseAddress" #komuServicetUri />
-              </mat-form-field>
-            </div>
-            <div class="col col-12 col-md-12">
-              <mat-form-field class="w-100 mt-2">
-                <input readonly class="w-100" type="text" matInput placeholder="Security Code"
-                  [(ngModel)]="configuration?.komuService.securityCode" #komuServiceSecretKey />
-              </mat-form-field>
-            </div>
-            <div class="col col-12 col-md-12">
-              <mat-form-field class="w-100 mt-2">
-                <input readonly class="w-100" type="text" matInput placeholder="Channel Id devMode"
-                  [(ngModel)]="configuration?.komuService.channelIdDevMode" #channelIdDevMode />
-              </mat-form-field>
-            </div>
-            <div class="col col-12 col-md-12">
-              <mat-form-field class="w-100 mt-2">
-                <input readonly class="w-100" type="text" matInput placeholder="Enable notice Komu"
-                  [(ngModel)]="configuration?.komuService.enableNoticeKomu" #enableNoticeKomu />
-              </mat-form-field>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>     
+    
     <div class="col-lg-6 col-xs-12">
         <div class="card">
           <div class="card-header">
             <div class="row">
-              <div class="align-middle title">Discord channels</div>
+              <div class="align-middle title">Notify Settings</div>
               <div class="ml-3">
                 <button class="btn bg-blue mr-3"
-                  (click)="isEditDiscordSetting = !isEditDiscordSetting; iTChannel.focus();$event.stopPropagation()"
-                  [hidden]="isEditDiscordSetting">
+                  (click)="isEditNotifySetting = !isEditNotifySetting; iTChannel.focus();$event.stopPropagation()"
+                  [hidden]="isEditNotifySetting">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="btn bg-primary"
-                  (click)="isEditDiscordSetting = !isEditDiscordSetting;changeDiscordChannels() ;$event.stopPropagation()"
-                  [hidden]="!isEditDiscordSetting">
+                  (click)="isEditNotifySetting = !isEditNotifySetting;changeNotifySettings() ;$event.stopPropagation()"
+                  [hidden]="!isEditNotifySetting">
                   <i class="fas fa-check"></i>
                 </button>
                 <button class="btn btn-secondary btn-action ml-3"
-                  (click)="getDiscordChannels(); isEditDiscordSetting = !isEditDiscordSetting;$event.stopPropagation()"
-                  [hidden]="!isEditDiscordSetting">
+                  (click)="getNotifyChannels(); isEditNotifySetting = !isEditNotifySetting;$event.stopPropagation()"
+                  [hidden]="!isEditNotifySetting">
                   <i class="fas fa-x"></i>
                 </button>
               </div>
@@ -425,17 +391,26 @@
           <div class="card-body">
             <div class="row">
               <div class="col col-12 col-md-12 mt-2">
+                <mat-radio-group [disabled]="!isEditNotifySetting" aria-label="Notify to" [(ngModel)]="notifyChannels.notifyPlatform"
+                  (change)="changeNotifyPlatform()">
+                  <mat-radio-button class="mr-2" [value]="APP_CONST.NotifyToKomu">Komu</mat-radio-button>
+                  <mat-radio-button [value]="APP_CONST.NotifyToMezon">Mezon</mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-12 col-md-12 mt-2">
                 <mat-form-field class="w-100 ml-1 mt-2">
-                  <input [disabled]="!isEditDiscordSetting" name="dciTChannel" class="w-100" type="text" matInput placeholder="HR-IT channelId"
-                    [(ngModel)]="discordChannels.itChannel" #iTChannel />
+                  <input [disabled]="!isEditNotifySetting" name="dciTChannel" class="w-100" type="text" matInput [placeholder]="itChannelLabel"
+                    [(ngModel)]="notifyChannels.itChannel" #iTChannel />
                 </mat-form-field>
               </div>
             </div>
             <div class="row">
               <div class="col col-12 col-md-12 mt-2">
                 <mat-form-field class="w-100 ml-1 mt-2">
-                  <input [disabled]="!isEditDiscordSetting" name="channelId" class="w-100" type="text" matInput placeholder="Payroll channel"
-                    [(ngModel)]="discordChannels.payrollChannelId" #payrollChannelId />
+                  <input [disabled]="!isEditNotifySetting" name="channelId" class="w-100" type="text" matInput [placeholder]="payrollChannelLabel"
+                    [(ngModel)]="notifyChannels.payrollChannel" #payrollChannel />
                 </mat-form-field>
               </div>
             </div>
