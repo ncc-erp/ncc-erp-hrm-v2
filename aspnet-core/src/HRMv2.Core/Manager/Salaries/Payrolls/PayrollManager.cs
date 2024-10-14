@@ -9,6 +9,7 @@ using HRMv2.Entities;
 using HRMv2.Manager.Debts;
 using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.Email.Dto;
+using HRMv2.Manager.Notifications.NotifyToChannel;
 using HRMv2.Manager.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Timesheet;
@@ -34,27 +35,27 @@ namespace HRMv2.Manager.Payrolls
         private readonly TimesheetManager _timesheetManager;
         private readonly FinfastWebService _finfastService;
         private readonly DebtManager _debtManager;
-        private readonly KomuService _komuService;
         private readonly ISettingManager _settingManager;
         private readonly EmailManager _emailManager;
         private readonly PayslipManager _payslipManager;
+        private readonly NotificationService _notificationService;
 
         public PayrollManager(TimesheetManager timesheetManager,
             FinfastWebService finfastWebService,
             DebtManager debtManager,
-            KomuService komuService,
             ISettingManager settingManager,
             PayslipManager payslipManager,
             IWorkScope workScope,
-            EmailManager emailManager) : base(workScope)
+            EmailManager emailManager,
+            NotificationService notificationService) : base(workScope)
         {
             _timesheetManager = timesheetManager;
             _finfastService = finfastWebService;
             _debtManager = debtManager;
-            _komuService = komuService;
             _settingManager = settingManager;
             _emailManager = emailManager;
             _payslipManager = payslipManager;
+            _notificationService = notificationService;
         }
 
         public IQueryable<GetPayrollDto> QueryAllPayroll()
@@ -287,52 +288,51 @@ namespace HRMv2.Manager.Payrolls
         // TODO: NotifyChangeStatus_Test1() [can't test result]
         public void NotifyChangeStatus(PayrollStatus status, DateTime payrollDate)
         {
-            //Get tag Discord for Login User
+            //Get tag for Login User
             var loginUserEmail = WorkScope.GetAll<User>()
                 .Where(x => x.Id == AbpSession.UserId)
                 .Select(x => x.EmailAddress)
                 .FirstOrDefault();
-            var tagLoginUserDiscord = CommonUtil.GetDiscordTagUser(loginUserEmail);
+            var tagLoginUser = _notificationService.GetTagUser(loginUserEmail);
 
 
-            var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.PayrollChannelId);
             var message = "";
             var payrollName = $"payroll {payrollDate.Month}/{payrollDate.Year}";
 
             var ccEmail = "";
-            var ccAccountDiscord = "";
+            var ccAccount = "";
             switch (status)
             {
                 case PayrollStatus.PendingCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.CEO.ToUpper());
-                    ccAccountDiscord = CommonUtil.GetDiscordTagUser(ccEmail);
-                    message = $"{tagLoginUserDiscord} submited **{payrollName}** [PendingCEO] - cc: {ccAccountDiscord}";
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    message = $"{tagLoginUser} submited **{payrollName}** [PendingCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.PendingKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccountDiscord = CommonUtil.GetDiscordTagUser(ccEmail);
-                    message = $"{tagLoginUserDiscord} submited **{payrollName}** [PendingKT] - cc: {ccAccountDiscord}";
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    message = $"{tagLoginUser} submited **{payrollName}** [PendingKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.SubKT.ToUpper());
-                    ccAccountDiscord = CommonUtil.GetDiscordTagUser(ccEmail);
-                    message = $"{tagLoginUserDiscord} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccountDiscord}";
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccountDiscord = CommonUtil.GetDiscordTagUser(ccEmail);
-                    message = $"{tagLoginUserDiscord} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccountDiscord}";
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.ApprovedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccountDiscord = CommonUtil.GetDiscordTagUser(ccEmail);
-                    message = $"{tagLoginUserDiscord} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccountDiscord}";
+                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    message = $"{tagLoginUser} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.Executed:
-                    message = $"{tagLoginUserDiscord} executed **{payrollName}** [Executed]";
+                    message = $"{tagLoginUser} executed **{payrollName}** [Executed]";
                     break;
             }
-            _komuService.NotifyToChannel(message, channelId);
+            _notificationService.NotifyToPayrollChannel(message);
         }
 
         private string GetFirstUserEmailHasRole(string roleName)

@@ -2020,6 +2020,24 @@ namespace HRMv2.Manager.Employees
                 }).ToList();
             return employees;
         }
+
+        public List<EmployeePublicDto> GetAllEmployeePublic()
+        {
+            var employees = WorkScope.GetAll<Employee>()
+                .Select(x => new EmployeePublicDto
+                {
+                    Email = x.Email,
+                    FullName = x.FullName,
+                    Avatar = x.Avatar,
+                    Sex = x.Sex,
+                    LevelCode = x.Level.Code,
+                    BranchCode = x.Branch.Code,
+                    UserType = x.UserType,
+                    Status = x.Status,
+                    JobPositionCode = x.JobPosition.Code,   
+                }).ToList();
+            return employees;
+        }
         public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
         {
             return WorkScope.GetAll<Employee>()

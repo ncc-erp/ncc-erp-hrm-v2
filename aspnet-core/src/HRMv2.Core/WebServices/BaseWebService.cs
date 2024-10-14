@@ -29,61 +29,62 @@ namespace HRMv2.WebServices
 
         protected virtual async Task<T> GetAsync<T>(string url)
         {
-            var fullUrl = $"{httpClient.BaseAddress}/{url}";
+            var logInfo = $"Get: BaseAddress [{httpClient.BaseAddress}], url: {url}";
             try
             {
-                Logger.Info($"Get: {fullUrl}");
+                Logger.Info(logInfo);
                 var response = await httpClient.GetAsync(url);
 
                 var responseContent = await response.Content.ReadAsStringAsync();                
-                Logger.Info($"Get: {fullUrl} response: {responseContent}");
+                Logger.Info($"{logInfo} response: {responseContent}");
                 return JsonConvert.DeserializeObject<T>(responseContent);
             }
             catch (Exception ex)
             {
-                Logger.Error($"Get: {fullUrl} error: {ex.Message}");
+                Logger.Error($"{logInfo} error: {ex.Message}");
             }
             return default;
 
         }
         protected virtual async Task<T> PostAsync<T>(string url, object input)
         {
-            var fullUrl = $"{httpClient.BaseAddress}/{url}";
             var strInput = JsonConvert.SerializeObject(input);
+            var logInfo = $"Post: BaseAddress [{httpClient.BaseAddress}], url: {url}, input: {strInput}";
             var contentString = new StringContent(strInput, Encoding.UTF8, "application/json");
 
             try
             {
+                Logger.Info(logInfo);
                 var response = await httpClient.PostAsync(url, contentString);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    Logger.Info($"Post: {fullUrl} input: {strInput} response: {responseContent}");
+                    Logger.Info($"{logInfo} response: {responseContent}");
                     return JsonConvert.DeserializeObject<T>(responseContent);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Error($"Post: {fullUrl} error: {ex.Message}");
+                Logger.Error($"{logInfo} error: {ex.Message}");
             }
             return default;
         }
 
         public void Post(string url, object input)
         {
-            var fullUrl = $"{httpClient.BaseAddress}/{url}";
             string strInput = JsonConvert.SerializeObject(input);
+            var logInfo = $"Post: BaseAddress [{httpClient.BaseAddress}], url: {url}, input: {strInput}";
             try
             {
                 var contentString = new StringContent(strInput, Encoding.UTF8, "application/json");
 
-                Logger.Info($"Post: {fullUrl} input: {strInput}");
+                Logger.Info(logInfo);
 
                 httpClient.PostAsync(url, contentString);
             }
             catch (Exception e)
             {
-                Logger.Error($"Post: {fullUrl} input: {strInput} Error: {e.Message}");
+                Logger.Error($"{logInfo} Error: {e.Message}");
             }
 
         }

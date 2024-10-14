@@ -27,6 +27,9 @@
         public const string PayrollChannelId = "App.PayrollChannelId";
         public const string EnableWorkerAutoUpdateAllEmployeeInfoToOtherToolSetting = "App.EnableWorkerAutoUpdateAllEmployeeInfoToOtherToolSetting";
         public const string AutoUpdateEmployeeInfoToOtherToolAtHour = "App.AutoUpdateEmployeeInfoToOtherToolAtHour";
+        public const string ITMezonChannel = "App.ITMezonChannel";
+        public const string PayrollMezonChannel = "App.PayrollMezonChannel";
+        public const string NotifyToPlatform = "App.NotifyToPlatform";
 
         public static string FaceUri { get; internal set; }
     }

@@ -33,6 +33,9 @@ namespace HRMv2.Configuration
                 new SettingDefinition(AppSettingNames.PayrollChannelId,"PayrollChannelId",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.EnableWorkerAutoUpdateAllEmployeeInfoToOtherToolSetting,"True",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.AutoUpdateEmployeeInfoToOtherToolAtHour,"23",scopes:SettingScopes.Application|SettingScopes.Tenant),
+                new SettingDefinition(AppSettingNames.ITMezonChannel,"ITMezonChannel",scopes:SettingScopes.Application|SettingScopes.Tenant),
+                new SettingDefinition(AppSettingNames.PayrollMezonChannel,"",scopes:SettingScopes.Application|SettingScopes.Tenant),
+                new SettingDefinition(AppSettingNames.NotifyToPlatform,"mezon",scopes:SettingScopes.Application|SettingScopes.Tenant),
             };
         }
     }

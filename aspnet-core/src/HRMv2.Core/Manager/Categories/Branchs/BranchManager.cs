@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.UI;
 using HRMv2.Entities;
+using HRMv2.Manager.Categories.Branchs.Dto;
 using HRMv2.NccCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,21 @@ namespace HRMv2.Manager.Categories
         public List<BranchDto> GetAll()
         {
             return QueryAllBranch().ToList();
+        }
+
+        public List<BranchPublicDto> GetAllPublic()
+        {
+            return QueryAllBranch().Select(x => new BranchPublicDto
+            {
+                Name = x.Name,
+                Code = x.Code,
+                Color = x.Color,
+                ShortName = x.ShortName,
+                DirectorEmail = WorkScope.GetAll<Employee>()
+                .Where(d => d.Id == x.CEOId)
+                .Select(d => d.Email)
+                .FirstOrDefault(),
+            }).ToList();
         }
 
         public async Task<GridResult<BranchDto>> GetAllPaging(GridParam input)

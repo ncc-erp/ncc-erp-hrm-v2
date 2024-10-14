@@ -1,6 +1,7 @@
 ﻿using HRMv2.WebServices.Finfast;
 using HRMv2.WebServices.IMS;
 using HRMv2.WebServices.Komu;
+using HRMv2.WebServices.Mezon;
 using HRMv2.WebServices.Project;
 using HRMv2.WebServices.Timesheet;
 using Microsoft.Extensions.Configuration;
@@ -53,6 +54,7 @@ namespace HRMv2.WebServices
                 option.DefaultRequestHeaders.Add("X-Secret-Key", _appConfiguration.GetValue<string>("KomuService:SecurityCode", "SecurityCode"));
             });
 
+            services.AddHttpClient<MezonService>(option => {});
 
             return services;
         }
