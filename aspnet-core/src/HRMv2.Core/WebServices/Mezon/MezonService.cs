@@ -35,7 +35,7 @@ namespace HRMv2.WebServices.Mezon
                 Logger.Error("channelUrlToSend null or empty");
                 return;
             }
-            Post(channelUrlToSend, new { type = "HRMv2", message = new { username = "HRMv2", t = mezonMessage } });
+            Post(channelUrlToSend, new { type = "HRM", message = new { username = "HRM", t = mezonMessage } });
         }
 
     }
