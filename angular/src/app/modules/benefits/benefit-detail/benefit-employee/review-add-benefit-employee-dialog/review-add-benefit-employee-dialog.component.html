@@ -1,24 +1,22 @@
 <div class="dialog-container">    
     <div class="dialog-header" cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
         <div class="out-line w-100 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <div class="dialogTitle mr-2" [innerHTML]="headerTitle">
-                </div>
-                <div class="text-right">
-                    <button class="p-0 fs-16" mat-icon-button [matMenuTriggerFor]="menu">
-                        <i class="fas fa-bars fa-lg"></i>
-                      </button>
-                      <mat-menu #menu="matMenu">
-                            <button mat-menu-item (click)="accordion.openAll()">
-                                Expand All
-                            </button>
-                            <button mat-menu-item (click)="accordion.closeAll()">
-                                Collapse All 
-                            </button>
-                       </mat-menu>
-                </div>
+            <div class="dialogTitle mr-2" [innerHTML]="headerTitle">
             </div>
-            <div class="pt-2">                
+            <div class="pt-2 d-flex align-items-center">                
+                <div class="text-right p-0 mr-3">
+                    <button class="mb-1 fs-16" mat-icon-button [matMenuTriggerFor]="menu">
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                    <mat-menu #menu="matMenu" xPosition="before" yPosition="below">
+                        <button mat-menu-item (click)="accordion.openAll()">
+                            Expand All
+                        </button>
+                        <button mat-menu-item (click)="accordion.closeAll()">
+                            Collapse All
+                        </button>
+                    </mat-menu>
+                </div>
                 <button class="close-btn p-0">
                     <i class="fas fa-times" mat-dialog-close></i>
                 </button>

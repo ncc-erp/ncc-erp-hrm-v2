@@ -291,7 +291,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
 
   openReviewDialog(title, data) {
     this.dialog.open(ReviewAddBenefitEmployeeDialogComponent, {
-      width: "60vw",
+      width: "65vw",
       data: {
         headerTitle: title,
         newBenefitId: this.benefit.id,

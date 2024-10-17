@@ -28,6 +28,7 @@ export class ReviewAddBenefitEmployeeDialogComponent
     private employeeService: EmployeeService
   ) {
     super(injector);
+    this.dialogRef.disableClose = true
     this.employeeIds = this.dialogData.listEmployeeId;
     this.newBenefitId = this.dialogData.newBenefitId;
     this.headerTitle = this.dialogData.headerTitle
