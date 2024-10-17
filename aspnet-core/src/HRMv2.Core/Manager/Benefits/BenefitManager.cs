@@ -24,7 +24,7 @@ namespace HRMv2.Manager.Categories.Benefits
 
         public BenefitManager(IWorkScope workScope) : base(workScope)
         {
-            
+
         }
 
         public IQueryable<GetBenefitDto> QueryAllBenefit()
@@ -32,26 +32,26 @@ namespace HRMv2.Manager.Categories.Benefits
             return WorkScope.GetAll<Benefit>()
                 .OrderByDescending(x => x.CreationTime)
                 .Select(x => new GetBenefitDto
-            {
-                Id = x.Id,
-                Name = x.Name,
-                IsActive = x.IsActive,
-                IsBelongToAllEmployee = x.IsBelongToAllEmployee,
-                Money = x.Money,
-                Type = x.Type,
-                ApplyDate = x.ApplyDate,
-                UpdatedUser = x.LastModifierUser == null ? string.Empty : x.LastModifierUser.FullName,
-                UpdatedTime = (DateTime)x.LastModificationTime,
-                CreatorUser = x.CreatorUser == null ? string.Empty : x.CreatorUser.FullName,
-                CreationTime = x.CreationTime
-            });
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    IsActive = x.IsActive,
+                    IsBelongToAllEmployee = x.IsBelongToAllEmployee,
+                    Money = x.Money,
+                    Type = x.Type,
+                    ApplyDate = x.ApplyDate,
+                    UpdatedUser = x.LastModifierUser == null ? string.Empty : x.LastModifierUser.FullName,
+                    UpdatedTime = (DateTime)x.LastModificationTime,
+                    CreatorUser = x.CreatorUser == null ? string.Empty : x.CreatorUser.FullName,
+                    CreationTime = x.CreationTime
+                });
         }
 
         public IQueryable<GetbenefitEmployeeDto> QueryAllBenefitEmployee()
         {
             var employeeStatus = WorkScope.GetAll<EmployeeWorkingHistory>()
                 .GroupBy(x => x.EmployeeId)
-                .Select(x => new 
+                .Select(x => new
                 {
                     x.Key,
                     WorkingStatus = new BEWorkingStatus
@@ -130,7 +130,7 @@ namespace HRMv2.Manager.Categories.Benefits
                     {
                         EmployeeId = employeeId,
                         StartDate = input.StartDate != null ? (DateTime)input.StartDate : employeeWorkingDate,
-                        EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null ,
+                        EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null,
                         BenefitId = input.BenefitId,
                         LastModificationTime = DateTimeUtils.GetNow(),
                         LastModifierUserId = AbpSession.UserId
@@ -146,7 +146,8 @@ namespace HRMv2.Manager.Categories.Benefits
         {
             var EmployeesToClone = QueryAllBenefitEmployee()
                 .Where(x => x.BenefitId == input.BenefitId)
-                .Select(x => new {
+                .Select(x => new
+                {
                     EmployeeId = x.EmployeeId,
                     StartDate = x.StartDate,
                     EndDate = x.EndDate
@@ -193,7 +194,7 @@ namespace HRMv2.Manager.Categories.Benefits
             {
                 EmployeeId = input.EmployeeId,
                 StartDate = input.StartDate != null ? (DateTime)input.StartDate : employeeWorkingDate,
-                EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null ,
+                EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null,
                 BenefitId = input.BenefitId,
             };
             await WorkScope.InsertAsync(entity);
@@ -212,20 +213,20 @@ namespace HRMv2.Manager.Categories.Benefits
                 .ToDictionaryAsync(x => x.Key, x => x.CountEmployee);
             var query = QueryAllBenefit()
                 .Select(x => new GetBenefitDto
-            {
-                Id = x.Id,
-                Name = x.Name,
-                IsActive = x.IsActive,
-                IsBelongToAllEmployee = x.IsBelongToAllEmployee,
-                Money = x.Money,
-                Type = x.Type,
-                ApplyDate = x.ApplyDate,
-                UpdatedTime = x.UpdatedTime,
-                UpdatedUser = x.UpdatedUser,
-                CreationTime = x.CreationTime,
-                CreatorUser = x.CreatorUser,
-                UserCount = queryCountemployee.ContainsKey(x.Id) ? queryCountemployee[x.Id] : 0
-            });
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    IsActive = x.IsActive,
+                    IsBelongToAllEmployee = x.IsBelongToAllEmployee,
+                    Money = x.Money,
+                    Type = x.Type,
+                    ApplyDate = x.ApplyDate,
+                    UpdatedTime = x.UpdatedTime,
+                    UpdatedUser = x.UpdatedUser,
+                    CreationTime = x.CreationTime,
+                    CreatorUser = x.CreatorUser,
+                    UserCount = queryCountemployee.ContainsKey(x.Id) ? queryCountemployee[x.Id] : 0
+                });
             return await query.GetGridResult(query, input);
         }
 
@@ -253,7 +254,7 @@ namespace HRMv2.Manager.Categories.Benefits
 
 
 
-            
+
             if (input.TeamIds == null || input.TeamIds.Count == 0)
             {
                 return await query.GetGridResult(query, input.GridParam);
@@ -288,7 +289,7 @@ namespace HRMv2.Manager.Categories.Benefits
         public List<GetEmployeeDto> GetAllEmployeeNotInBenefit(long benefitId)
         {
             var employeeIdsInBenefit = GetListEmployeeIdInBenefit(benefitId);
-            
+
             var query = WorkScope.GetAll<Employee>()
                 .Select(x => new GetEmployeeDto
                 {
@@ -327,7 +328,7 @@ namespace HRMv2.Manager.Categories.Benefits
                         Color = x.JobPosition.Color
                     },
                 })
-                .Where(x=> !employeeIdsInBenefit.Contains(x.Id))
+                .Where(x => !employeeIdsInBenefit.Contains(x.Id))
                 .ToList();
 
             return query;
@@ -335,7 +336,7 @@ namespace HRMv2.Manager.Categories.Benefits
 
         public async Task<GridResult<GetBenefitsOfEmployeeDto>> GetBenefitByEmployeeId(long id, GridParam input)
         {
-            var query =  WorkScope.GetAll<BenefitEmployee>()
+            var query = WorkScope.GetAll<BenefitEmployee>()
                 .Where(x => x.EmployeeId == id)
                 .Select(x => new GetBenefitsOfEmployeeDto
                 {
@@ -485,7 +486,7 @@ namespace HRMv2.Manager.Categories.Benefits
             var hasNameBenefitEmployee = await WorkScope.GetAll<BenefitEmployee>()
                 .Where(x => x.BenefitId == id).Select(s => s.Benefit.Name)
                 .FirstOrDefaultAsync();
-            if(hasNameBenefitEmployee != default)
+            if (hasNameBenefitEmployee != default)
             {
                 throw new UserFriendlyException($"Benefit {hasNameBenefitEmployee} has benefit employee");
             }
@@ -495,8 +496,8 @@ namespace HRMv2.Manager.Categories.Benefits
         {
             var query = WorkScope.GetAll<BenefitEmployee>()
                 .Where(x => x.EmployeeId == id)
-                .Where(x=> x.Benefit.IsActive)
-                .Where(x=> x.Benefit.Type != BenefitType.CheDoChung)
+                .Where(x => x.Benefit.IsActive)
+                .Where(x => x.Benefit.Type != BenefitType.CheDoChung)
                 .Select(x => new GetBenefitsOfEmployeeDto
                 {
                     Id = x.Id,
@@ -538,26 +539,22 @@ namespace HRMv2.Manager.Categories.Benefits
                         Name = x.JobPosition.Name,
                         Color = x.JobPosition.Color
                     },
+                    benefits = x.BenefitEmployees.Where(x => x.Benefit.IsActive)
+                                                 .OrderByDescending(x => x.CreationTime)
+                                                 .Select(x => new GetBenefitsOfEmployeeDto
+                                                 {
+                                                     Id = x.Id,
+                                                     BenefitId = x.Benefit.Id,
+                                                     BenefitName = x.Benefit.Name,
+                                                     BenefitType = x.Benefit.Type,
+                                                     Status = x.Benefit.IsActive,
+                                                     StartDate = x.StartDate,
+                                                     EndDate = x.EndDate,
+                                                     Money = x.Benefit.Money,
+                                                 })
+                                                 .ToList()
                 })
                 .ToList();
-            foreach(var item in employees)
-            {
-                item.benefits = WorkScope.GetAll<BenefitEmployee>()
-                    .Where(x => x.EmployeeId == item.Id)
-                    .Where(x => x.Benefit.IsActive)
-                    .OrderByDescending(x => x.CreationTime)
-                    .Select(x => new GetBenefitsOfEmployeeDto
-                    {
-                        Id = x.Id,
-                        BenefitId = x.Benefit.Id,
-                        BenefitName = x.Benefit.Name,
-                        BenefitType = x.Benefit.Type,
-                        Status = x.Benefit.IsActive,
-                        StartDate = x.StartDate,
-                        EndDate = x.EndDate,
-                        Money = x.Benefit.Money,
-                    }).ToList();
-            }
             return employees;
         }
     }
