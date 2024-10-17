@@ -161,7 +161,11 @@ namespace HRMv2.APIs.Benefits
             return _benefitManager.GetAllBenefitsByEmployeeId(id);
         }
 
-
+        [HttpPost]
+        public List<GetEmployeeBenefitsDto> GetEmployeeBenefits(List<long> ids)
+        {
+            return _benefitManager.GetAllBenefitsByEmployeeIds(ids);
+        }
 
     }
 }

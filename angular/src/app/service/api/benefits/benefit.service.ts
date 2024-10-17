@@ -81,5 +81,7 @@ export class BenefitService extends BaseApiService {
   GetAllBenefitsByEmployeeId(id: number): Observable<ApiResponseDto<any>>{
     return this.processGet(`GetAllBenefitsByEmployeeId?id=${id}`)
   }
-
+  GetEmployeeBenefits(ids: number[]): Observable<ApiResponseDto<any>>{
+    return this.processPost(`GetEmployeeBenefits`, ids)
+  }
 }
