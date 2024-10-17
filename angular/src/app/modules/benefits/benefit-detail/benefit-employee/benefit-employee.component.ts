@@ -234,7 +234,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
             this.isLoading = false;
           }))
           .subscribe(rs => {
-            let messageTitle = `Added ${result.listEmployeeId.length} Employee to benefit`
+            let messageTitle = `Added ${result.listEmployeeId.length} Employee to benefit: <strong>${this.benefit.name}</strong>`
             this.openSuccessMessage(
               {
                 title: messageTitle,
@@ -273,7 +273,7 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
             this.isLoading = false;
           }))
           .subscribe(result => {
-            let messageTitle = `Added ${selectedEmployees.length} Employee to benefit`
+            let messageTitle = `Added ${selectedEmployees.length} Employee to benefit: <strong>${this.benefit.name}</strong>`
             this.openSuccessMessage(
               {
                 title: messageTitle,
@@ -290,10 +290,13 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
   }
 
   openReviewDialog(title, data) {
-    this.openDialog(ReviewAddBenefitEmployeeDialogComponent, {
-      headerTitle: title,
-      newBenefitId: this.benefit.id,
-      listEmployeeId: data
+    this.dialog.open(ReviewAddBenefitEmployeeDialogComponent, {
+      width: "60vw",
+      data: {
+        headerTitle: title,
+        newBenefitId: this.benefit.id,
+        listEmployeeId: data
+      }
     })
   }
 

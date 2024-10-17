@@ -1,5 +1,31 @@
 <div class="dialog-container">
-    <app-dialog-header [dialogTitle]="headerTitle"></app-dialog-header>
+    <!-- <app-dialog-header [dialogTitle]="headerTitle"></app-dialog-header> -->
+    <div class="dialog-header" cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
+        <div class="out-line w-100 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="dialogTitle mr-2" [innerHTML]="headerTitle">
+                </div>
+                <div class="text-right">
+                    <button class="p-0 fs-16" mat-icon-button [matMenuTriggerFor]="menu">
+                        <i class="fas fa-bars fa-lg"></i>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="accordion.openAll()">
+                                Expand All
+                            </button>
+                            <button mat-menu-item (click)="accordion.closeAll()">
+                                Collapse All 
+                            </button>
+                       </mat-menu>
+                </div>
+            </div>
+            <div class="pt-2">                
+                <button class="close-btn p-0">
+                    <i class="fas fa-times" mat-dialog-close></i>
+                </button>
+            </div>
+        </div>
+    </div>    
     <div class="dialog-body pt-3">
         <mat-accordion class="example-headers-align" multi>
             <mat-expansion-panel *ngFor="let employee of employeesInfo">
@@ -22,7 +48,7 @@
                                 <td class="text-center">{{ (i+1) }}</td>
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">
-                                        <span class="mr-1">{{ benefit.benefitName }}</span>
+                                        <span class="mr-1"><strong>{{ benefit.benefitName }}</strong></span>
                                         <span class="badge rounded-pill bg-danger p-1"
                                             *ngIf="benefit.benefitId == newBenefitId">New</span>
                                     </div>

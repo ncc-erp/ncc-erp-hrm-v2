@@ -1,8 +1,8 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { Component, Injector, OnInit, ViewChild } from '@angular/core';
+import { MatAccordion } from '@angular/material/expansion';
 import { BenefitService } from '@app/service/api/benefits/benefit.service';
 import { EmployeeService } from '@app/service/api/employee/employee.service';
 import { BenefitOfEmployeeDto } from '@app/service/model/benefits/benefitEmployee.dto';
-import { benefitDto } from '@app/service/model/benefits/beneft.dto';
 import { DialogComponentBase } from '@shared/dialog-component-base';
 import { BadgeInfoDto } from '@shared/dto/user-infoDto';
 
@@ -20,6 +20,7 @@ export class ReviewAddBenefitEmployeeDialogComponent
   public newBenefitId: number;
   public employeesInfo = [] as EmployeeBenefitsInfo[];
   public headerTitle = ''
+  @ViewChild(MatAccordion)accordion: MatAccordion
 
   constructor(
     injector: Injector,
