@@ -161,7 +161,12 @@ namespace HRMv2.APIs.Benefits
             return _benefitManager.GetAllBenefitsByEmployeeId(id);
         }
 
-
+        [AbpAuthorize(PermissionNames.Benefit_View)]
+        [HttpPost]
+        public List<GetEmployeeBenefitsDto> GetEmployeeBenefits(List<long> ids)
+        {
+            return _benefitManager.GetAllBenefitsByEmployeeIds(ids);
+        }
 
     }
 }

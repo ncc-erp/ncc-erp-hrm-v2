@@ -1,3 +1,4 @@
+import { options } from './../../../punishments/punishments.module';
 import { AddBenefitEmployeeDialogComponent } from './add-benefit-employee-dialog/add-benefit-employee-dialog.component';
 import { BEmployeeDefaultFilterDto, BenefitEmployeeDto, updateDateType } from './../../../../service/model/benefits/benefitEmployee.dto';
 import { AfterViewInit, Component, Injector, OnInit, QueryList, ViewChildren } from '@angular/core';
@@ -28,6 +29,8 @@ import { benefitDto } from '@app/service/model/benefits/beneft.dto';
 import { AbstractControl, NgControl, NgModel } from '@angular/forms';
 import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { startWithTap } from '@shared/helpers/observerHelper';
+import Swal from 'sweetalert2';
+import { ReviewAddBenefitEmployeeDialogComponent } from './review-add-benefit-employee-dialog/review-add-benefit-employee-dialog.component';
 
 @Component({
   selector: 'app-benefit-employee',
@@ -231,7 +234,15 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
             this.isLoading = false;
           }))
           .subscribe(rs => {
-            abp.message.success(`Added ${result.listEmployeeId.length} Employee to benefit`)
+            let messageTitle = `Added ${result.listEmployeeId.length} Employee to benefit: <strong>${this.benefit.name}</strong>`
+            this.openSuccessMessage(
+              {
+                title: messageTitle,
+                icon: `success`,
+                buttonText: "Details",
+              },
+              () => this.openReviewDialog(messageTitle, result.listEmployeeId)
+            );            
             this.refresh()
           }))
         }
@@ -262,12 +273,44 @@ export class BenefitEmployeeComponent extends PagedListingComponentBase<BenefitE
             this.isLoading = false;
           }))
           .subscribe(result => {
-            abp.message.success(`Added ${selectedEmployees.length} Employee to benefit`)
+            let messageTitle = `Added ${selectedEmployees.length} Employee to benefit: <strong>${this.benefit.name}</strong>`
+            this.openSuccessMessage(
+              {
+                title: messageTitle,
+                icon: `success`,
+                buttonText: "Details",
+              },
+              () => this.openReviewDialog(messageTitle, selectedEmployees)
+            );
             this.refresh()
           }))
         }
       })
     }
+  }
+
+  openReviewDialog(title, data) {
+    this.dialog.open(ReviewAddBenefitEmployeeDialogComponent, {
+      width: "65vw",
+      data: {
+        headerTitle: title,
+        newBenefitId: this.benefit.id,
+        listEmployeeId: data
+      }
+    })
+  }
+
+  openSuccessMessage(options: any, callback: Function) {
+    Swal.fire({
+      title: options.title ? options.title : 'Success',
+      icon: options.icon ? options.icon : `success`,
+      showCloseButton: true,
+      confirmButtonText: options.buttonText ? options.buttonText : 'Ok', 
+    }).then((result) => {
+      if (result.isConfirmed) {     
+        callback()
+      }
+    })
   }
   public updateStartDate() {
     this.openDialog(UpdateBenefitDateDialogComponent,
