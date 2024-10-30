@@ -149,6 +149,12 @@ namespace HRMv2.APIs.SalaryChangeRequests
         {
             return await _salaryRequestManager.GetTemplateToImportCheckpoint();
         }
+        [HttpPost]
+        public async Task GetSalaryRequestFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
+        {
+             await _salaryRequestManager.GetSalaryRequestFromCheckpoint(input);
+        }
+
 
     }
 }
