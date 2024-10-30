@@ -191,5 +191,10 @@ namespace HRMv2.APIs.Bonuses
             return _bonusManager.SendMailToAllEmployee(id, input);
         }
 
+        [HttpPost]
+        public async Task<List<ResultSendBonus>> AcceptBonusFromCheckpoint(AcceptBonusFromCheckpointDto input)
+        {
+            return await _bonusManager.AcceptBonusFromCheckpoint(input);
+        }
     }
 }

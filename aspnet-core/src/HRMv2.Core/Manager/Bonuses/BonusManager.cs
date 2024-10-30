@@ -23,6 +23,7 @@ using HRMv2.Manager.Notifications.Email.Dto;
 using HRMv2.Manager.Notifications.Email;
 using Abp.BackgroundJobs;
 using HRMv2.BackgroundJob.SendMail;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace HRMv2.Manager.Categories.Bonuss
 {
@@ -176,9 +177,8 @@ namespace HRMv2.Manager.Categories.Bonuss
             await ValidCreate(input);
             input.ApplyMonth = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 15);
             input.IsActive = true;
-            var entity = ObjectMapper.Map<Bonus>(input);
+            var entity = ObjectMapper.Map<Bonus>(input);       
             input.Id = await WorkScope.InsertAndGetIdAsync(entity);
-
             return input;
         }
 
@@ -711,7 +711,85 @@ namespace HRMv2.Manager.Categories.Bonuss
 
         }
 
+        public async Task<List<ResultSendBonus>> AcceptBonusFromCheckpoint(AcceptBonusFromCheckpointDto input)
+        {
+            var isCheck = WorkScope.GetAll<Bonus>()
+                .Any(x => x.Name == input.Name);
+            if (isCheck)
+            {
+                throw new UserFriendlyException(" Name Bonus is exits !");
+            }        
 
+            var newBonus = await Create(new BonusDto
+            {
+                Name = input.Name,
+                ApplyMonth = input.ApplyMonth,
+            });
+            var newBonusId =newBonus.Id;
 
+  
+            var dicUsers = WorkScope.GetAll<Employee>()
+                .Select(x => new { x.Email, Employee = x }).ToList()
+                .GroupBy(x => x.Email)
+                .ToDictionary(x => x.Key, x => x.ToList());
+
+            var listNote = new List<ResultSendBonus>();
+
+            foreach (var i in input.BonusEmployees)
+            {
+                if (dicUsers.TryGetValue(i.EmailAddress, out var foundEmployee))
+                {
+                    var employeeBonus = new EmployeeInBonusDto()
+                    {
+                        EmailAddress = i.EmailAddress,
+                        Money = i.Money,
+                        Note = i.Note,
+                    };
+                    await AddBonusEmployee(employeeBonus, newBonusId);
+
+                    listNote.Add(new ResultSendBonus
+                    {
+                        EmailAddress = i.EmailAddress,
+                        SyncNote = " Send Bonus Success ",
+                    });
+                }
+                else
+                {
+                    listNote.Add(new ResultSendBonus
+                    {
+                        EmailAddress = i.EmailAddress,
+                        SyncNote = "False: email not found in the Hrm "
+                    });
+                }
+            }
+
+            var misEmail = dicUsers.Keys
+                .Except(input.BonusEmployees.Select(x => x.EmailAddress));
+
+            listNote.AddRange(misEmail.Select(email => new ResultSendBonus
+            {
+                EmailAddress = email,
+                SyncNote = "Not found in CheckPoint ",
+            }));
+            return listNote;
+
+        }
+        private async Task AddBonusEmployee(EmployeeInBonusDto input, long BonusId)
+        {
+            var employeeId = WorkScope.GetAll<Employee>()
+                .Where(e => e.Email == input.EmailAddress)
+                .Select(e => e.Id)
+                .FirstOrDefault();
+            await ValidAddEmployee(employeeId, BonusId);
+            var bonusEmployee = new BonusEmployee
+            {
+                BonusId = BonusId,
+                EmployeeId = employeeId,
+                Money = input.Money,
+                Note = input.Note
+            };
+            if (input.Note == null) bonusEmployee.Note = "1";         
+            await WorkScope.InsertAsync(bonusEmployee);
+        }
     }
 }
