@@ -729,6 +729,7 @@ namespace HRMv2.Manager.Categories.Bonuss
 
 
             var dicUsers = WorkScope.GetAll<Employee>()
+                .Where(x => x.Status == EmployeeStatus.Working && x.UserType == UserType.Staff)
                 .Select(x => new { x.Email, Employee = x }).ToList()
                 .GroupBy(x => x.Email)
                 .ToDictionary(x => x.Key, x => x.First().Employee);
@@ -761,7 +762,6 @@ namespace HRMv2.Manager.Categories.Bonuss
                     });
                 }
             }
-
 
             await WorkScope.InsertRangeAsync(listBonusEmployeeInsert);
 
