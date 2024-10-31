@@ -714,39 +714,38 @@ namespace HRMv2.Manager.Categories.Bonuss
         public async Task<List<ResultSendBonus>> AcceptBonusFromCheckpoint(AcceptBonusFromCheckpointDto input)
         {
             var isCheck = WorkScope.GetAll<Bonus>()
-                .Any(x => x.Name == input.Name);
+                .Any(x => x.Name == input.Name && x.ApplyMonth == input.ApplyMonth);
             if (isCheck)
             {
-                throw new UserFriendlyException(" Name Bonus is exits !");
-            }        
+                throw new UserFriendlyException(" Bonus is exits !");
+            }
 
             var newBonus = await Create(new BonusDto
             {
                 Name = input.Name,
                 ApplyMonth = input.ApplyMonth,
             });
-            var newBonusId =newBonus.Id;
+            var newBonusId = newBonus.Id;
 
-  
+
             var dicUsers = WorkScope.GetAll<Employee>()
                 .Select(x => new { x.Email, Employee = x }).ToList()
                 .GroupBy(x => x.Email)
                 .ToDictionary(x => x.Key, x => x.First().Employee);
 
             var listNote = new List<ResultSendBonus>();
-
+            var listBonusEmployeeInsert = new List<BonusEmployee>();
             foreach (var i in input.BonusEmployees)
             {
                 if (dicUsers.TryGetValue(i.EmailAddress, out var foundEmployee))
                 {
-                    var employeeBonus = new EmployeeInBonusDto()
+                    listBonusEmployeeInsert.Add(new BonusEmployee()
                     {
-                        EmailAddress = i.EmailAddress,
+                        EmployeeId = foundEmployee.Id,
+                        BonusId = newBonusId,
                         Money = i.Money,
                         Note = i.Note,
-                    };
-                    await AddBonusEmployee(employeeBonus, newBonusId);
-
+                    });
                     listNote.Add(new ResultSendBonus
                     {
                         EmailAddress = i.EmailAddress,
@@ -763,6 +762,9 @@ namespace HRMv2.Manager.Categories.Bonuss
                 }
             }
 
+
+            await WorkScope.InsertRangeAsync(listBonusEmployeeInsert);
+
             var misEmail = dicUsers.Keys
                 .Except(input.BonusEmployees.Select(x => x.EmailAddress));
 
@@ -773,23 +775,6 @@ namespace HRMv2.Manager.Categories.Bonuss
             }));
             return listNote;
 
-        }
-        private async Task AddBonusEmployee(EmployeeInBonusDto input, long BonusId)
-        {
-            var employeeId = WorkScope.GetAll<Employee>()
-                .Where(e => e.Email == input.EmailAddress)
-                .Select(e => e.Id)
-                .FirstOrDefault();
-            await ValidAddEmployee(employeeId, BonusId);
-            var bonusEmployee = new BonusEmployee
-            {
-                BonusId = BonusId,
-                EmployeeId = employeeId,
-                Money = input.Money,
-                Note = input.Note
-            };
-            if (input.Note == null) bonusEmployee.Note = "1";         
-            await WorkScope.InsertAsync(bonusEmployee);
         }
     }
 }
