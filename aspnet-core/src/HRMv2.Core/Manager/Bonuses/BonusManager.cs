@@ -711,7 +711,8 @@ namespace HRMv2.Manager.Categories.Bonuss
 
         }
 
-        public async Task<List<ResultSendBonus>> AcceptBonusFromCheckpoint(AcceptBonusFromCheckpointDto input)
+        
+        public async Task<List<ResultSendBonus>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
         {
             var isCheck = WorkScope.GetAll<Bonus>()
                 .Any(x => x.Name == input.Name && x.ApplyMonth == input.ApplyMonth);
@@ -726,7 +727,6 @@ namespace HRMv2.Manager.Categories.Bonuss
                 ApplyMonth = input.ApplyMonth,
             });
             var newBonusId = newBonus.Id;
-
 
             var dicUsers = WorkScope.GetAll<Employee>()
                 .Where(x => x.Status == EmployeeStatus.Working && x.UserType == UserType.Staff)
@@ -758,21 +758,13 @@ namespace HRMv2.Manager.Categories.Bonuss
                     listNote.Add(new ResultSendBonus
                     {
                         EmailAddress = i.EmailAddress,
-                        SyncNote = "NotfoundEmailInHrm"
+                        SyncNote = "False : email not found in the Hrm"
                     });
                 }
             }
 
             await WorkScope.InsertRangeAsync(listBonusEmployeeInsert);
 
-            var misEmail = dicUsers.Keys
-                .Except(input.BonusEmployees.Select(x => x.EmailAddress));
-
-            listNote.AddRange(misEmail.Select(email => new ResultSendBonus
-            {
-                EmailAddress = email,
-                SyncNote = "NotfoundEmailInCheckpoint",
-            }));
             return listNote;
 
         }
