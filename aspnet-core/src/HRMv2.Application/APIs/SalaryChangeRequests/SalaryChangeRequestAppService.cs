@@ -152,7 +152,7 @@ namespace HRMv2.APIs.SalaryChangeRequests
 
         [HttpPost]
         [NccAuthentication]
-        public async Task<List<ResultSendChageRequestDto>> CreateSalaryRequestChangeFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
+        public async Task<List<ResultSendChangeRequestDto>> CreateSalaryRequestChangeFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
         {
           return  await _salaryRequestManager.CreateSalaryRequestChangeFromCheckpoint(input);
         }

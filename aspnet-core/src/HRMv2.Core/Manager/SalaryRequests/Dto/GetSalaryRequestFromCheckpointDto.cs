@@ -15,15 +15,15 @@ namespace HRMv2.Manager.SalaryRequests.Dto
     {
         public string Name { get; set; }
         public DateTime ApplyMonth { get; set; }
-        public List<EmployeeInRequestChageSalaryDto> RequestChangeSalaryEmployee { get ; set; }
+        public List<EmployeeInRequestChangeSalaryDto> RequestChangeSalaryEmployee { get ; set; }
 
     }
-    public class ResultSendChageRequestDto
+    public class ResultSendChangeRequestDto
     {
-        public string EmaillAddress { get; set; }
+        public string EmailAddress { get; set; }
         public string SyncNote { get; set; }
     }
-    public class EmployeeInRequestChageSalaryDto
+    public class EmployeeInRequestChangeSalaryDto
     {
         public long ToLevelId { get; set; }
         public long ToJobPositionId { get; set; }

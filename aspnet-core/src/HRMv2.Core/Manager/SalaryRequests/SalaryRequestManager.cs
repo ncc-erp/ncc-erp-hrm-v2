@@ -375,13 +375,8 @@ namespace HRMv2.Manager.SalaryRequests
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
             return await query.GetGridResult(query, input.GridParam);
         }
-        public async Task<List<ResultSendChageRequestDto>> CreateSalaryRequestChangeFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
+        public async Task<List<ResultSendChangeRequestDto>> CreateSalaryRequestChangeFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
         {
-            if (WorkScope.GetAll<SalaryChangeRequest>().Any(x => x.Name == input.Name && x.ApplyMonth == input.ApplyMonth))
-            {
-                throw new UserFriendlyException($"Salary change request already exists!");
-            }
-
             var newChangeRequest = Create(new CreateSalaryRequestDto
             {
                 Name = input.Name,
@@ -395,7 +390,7 @@ namespace HRMv2.Manager.SalaryRequests
               .GroupBy(x => x.Email)
               .ToDictionary(x => x.Key, x => x.First().Employee);
 
-            var listNote = new List<ResultSendChageRequestDto>();
+            var listNote = new List<ResultSendChangeRequestDto>();
             var listRequestChageSlary = new List<SalaryChangeRequestEmployee>();
 
             foreach (var employeeInput in input.RequestChangeSalaryEmployee)
@@ -412,17 +407,17 @@ namespace HRMv2.Manager.SalaryRequests
                         ToSalary = employeeInput.ToSlary + employee.Salary,
                         Note = employeeInput.Note ?? "Checkpoint"
                     });
-                    listNote.Add(new ResultSendChageRequestDto
+                    listNote.Add(new ResultSendChangeRequestDto
                     {
-                        EmaillAddress = employeeInput.EmailAddress,
+                        EmailAddress = employeeInput.EmailAddress,
                         SyncNote = "Send Request Change Salary Success"
                     });
                 }
                 else
                 {
-                    listNote.Add(new ResultSendChageRequestDto
+                    listNote.Add(new ResultSendChangeRequestDto
                     {
-                        EmaillAddress = employeeInput.EmailAddress,
+                        EmailAddress = employeeInput.EmailAddress,
                         SyncNote = "False: email not found in the Hrm"
                     });
                 }
