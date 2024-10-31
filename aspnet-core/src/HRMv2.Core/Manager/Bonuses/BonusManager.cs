@@ -745,7 +745,7 @@ namespace HRMv2.Manager.Categories.Bonuss
                         EmployeeId = foundEmployee.Id,
                         BonusId = newBonusId,
                         Money = i.Money,
-                        Note = i.Note,
+                        Note = i.Note ?? "1",
                     });
                     listNote.Add(new ResultSendBonus
                     {
@@ -758,7 +758,7 @@ namespace HRMv2.Manager.Categories.Bonuss
                     listNote.Add(new ResultSendBonus
                     {
                         EmailAddress = i.EmailAddress,
-                        SyncNote = "False"
+                        SyncNote = "NotfoundEmailInHrm"
                     });
                 }
             }
@@ -771,7 +771,7 @@ namespace HRMv2.Manager.Categories.Bonuss
             listNote.AddRange(misEmail.Select(email => new ResultSendBonus
             {
                 EmailAddress = email,
-                SyncNote = "Notfound",
+                SyncNote = "NotfoundEmailInCheckpoint",
             }));
             return listNote;
 
