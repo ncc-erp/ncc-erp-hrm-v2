@@ -750,7 +750,7 @@ namespace HRMv2.Manager.Categories.Bonuss
                     listNote.Add(new ResultSendBonus
                     {
                         EmailAddress = i.EmailAddress,
-                        SyncNote = " Send Bonus Success ",
+                        SyncNote = "Success",
                     });
                 }
                 else
@@ -758,7 +758,7 @@ namespace HRMv2.Manager.Categories.Bonuss
                     listNote.Add(new ResultSendBonus
                     {
                         EmailAddress = i.EmailAddress,
-                        SyncNote = "False: email not found in the Hrm "
+                        SyncNote = "False"
                     });
                 }
             }
@@ -769,7 +769,7 @@ namespace HRMv2.Manager.Categories.Bonuss
             listNote.AddRange(misEmail.Select(email => new ResultSendBonus
             {
                 EmailAddress = email,
-                SyncNote = "Not found in CheckPoint ",
+                SyncNote = "Notfound",
             }));
             return listNote;
 

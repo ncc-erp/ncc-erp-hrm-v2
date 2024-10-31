@@ -9,7 +9,7 @@ namespace HRMv2.Manager.Bonuses.Dto
     public class EmployeeInBonusDto
     {
         public string EmailAddress { get; set; }
-        public double Money { get; set; }
+        public long Money { get; set; }
         public string Note { get; set; }
     }
 
