@@ -714,11 +714,11 @@ namespace HRMv2.Manager.Categories.Bonuss
         
         public async Task<List<ResultSendBonus>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
         {
-            var isCheck = WorkScope.GetAll<Bonus>()
-                .Any(x => x.Name == input.Name && x.ApplyMonth == input.ApplyMonth);
-            if (isCheck)
+            var bonusExists = await WorkScope.GetAll<Bonus>()
+               .AnyAsync(x => x.Name == input.Name && x.ApplyMonth == input.ApplyMonth);
+            if (bonusExists)
             {
-                throw new UserFriendlyException(" Bonus is exits !");
+                throw new UserFriendlyException("Bonus already exists!");
             }
 
             var newBonus = await Create(new BonusDto
