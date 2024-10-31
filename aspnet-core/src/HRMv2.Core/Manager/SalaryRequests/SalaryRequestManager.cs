@@ -1,13 +1,9 @@
 ﻿using Abp.BackgroundJobs;
-using Abp.Runtime.Caching;
 using Abp.UI;
-using DocumentFormat.OpenXml.VariantTypes;
 using HRMv2.BackgroundJob.SendMail;
 using HRMv2.Entities;
-using HRMv2.Manager.Bonuses.Dto;
 using HRMv2.Manager.Categories.JobPositions;
 using HRMv2.Manager.Categories.Levels;
-using HRMv2.Manager.Categories.Levels.Dto;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.EmployeeContracts;
 using HRMv2.Manager.Employees.Dto;
@@ -379,94 +375,62 @@ namespace HRMv2.Manager.SalaryRequests
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
             return await query.GetGridResult(query, input.GridParam);
         }
-
-        public async Task GetSalaryRequestFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
+        public async Task<List<ResultSendChageRequestDto>> CreateSalaryRequestChangeFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
         {
-            var check = WorkScope.GetAll<SalaryChangeRequest>()
-                .Any(x => x.Name == input.Name);
-            if (check)
+            if (WorkScope.GetAll<SalaryChangeRequest>().Any(x => x.Name == input.Name && x.ApplyMonth == input.ApplyMonth))
             {
-                throw new UserFriendlyException(" Salary change request with Name {0} is exits !", input.Name);
-
+                throw new UserFriendlyException($"Salary change request already exists!");
             }
-            var newChangRequest = Create(new CreateSalaryRequestDto()
+
+            var newChangeRequest = Create(new CreateSalaryRequestDto
             {
                 Name = input.Name,
                 ApplyMonth = input.ApplyMonth
             });
-            var RequestChageSalaryId = newChangRequest.Id;
+            var requestChangeSalaryId = newChangeRequest.Id;
 
             var dicUsers = WorkScope.GetAll<Employee>()
-           .Select(x => new { x.Email, Employee = x })
-           .GroupBy(x => x.Email)
-           .ToDictionary(x => x.Key, x => x.ToList());
+              .Where(x => x.Status == EmployeeStatus.Working)
+              .Select(x => new { x.Email, Employee = x }).ToList()
+              .GroupBy(x => x.Email)
+              .ToDictionary(x => x.Key, x => x.First().Employee);
 
-            var listNote = new List<ResultSendChageRequest>();
+            var listNote = new List<ResultSendChageRequestDto>();
+            var listRequestChageSlary = new List<SalaryChangeRequestEmployee>();
 
-            foreach (var i in input.RequestChangeSalaryEmployee)
+            foreach (var employeeInput in input.RequestChangeSalaryEmployee)
             {
-                if (dicUsers.ContainsKey(i.EmailAddress))
+                if (dicUsers.TryGetValue(employeeInput.EmailAddress, out var employee))
                 {
-                    var employeeChangeSalary = new AddOrUpdateEmployeeRequestDto()
+                    listRequestChageSlary.Add(new SalaryChangeRequestEmployee
                     {
-                        Salary = i.Salary + i.ToSlary,
-                        Note = i.Note,
-                    };
-                    await AddEmployeeTosalaryRequest(employeeChangeSalary);
-                    listNote.Add(new ResultSendChageRequest
+                        EmployeeId = employee.Id,
+                        ToJobPositionId = employeeInput.ToJobPositionId,
+                        ToLevelId = employeeInput.ToLevelId,
+                        ToUserType = employeeInput.ToUserType,
+                        Salary = employee.Salary,
+                        ToSalary = employeeInput.ToSlary + employee.Salary,
+                        Note = employeeInput.Note ?? "Checkpoint"
+                    });
+                    listNote.Add(new ResultSendChageRequestDto
                     {
-                        EmaillAddress = i.EmailAddress,
-                        SyncNote = " Send Request Chage Salary Success ",
+                        EmaillAddress = employeeInput.EmailAddress,
+                        SyncNote = "Send Request Change Salary Success"
                     });
                 }
                 else
                 {
-                    listNote.Add(new ResultSendChageRequest
+                    listNote.Add(new ResultSendChageRequestDto
                     {
-                        EmaillAddress = i.EmailAddress,
-                        SyncNote = "False: email not found in the Hrm "
+                        EmaillAddress = employeeInput.EmailAddress,
+                        SyncNote = "False: email not found in the Hrm"
                     });
                 }
             }
-            var misEmail = dicUsers.Keys
-                .Except(input.RequestChangeSalaryEmployee.Select(x => x.EmailAddress));
-            listNote.AddRange(misEmail.Select(email => new ResultSendChageRequest
-            {
-                EmaillAddress = email,
-                SyncNote = "Not found in CheckPoint tool ",
-            }));
+            await WorkScope.InsertRangeAsync(listRequestChageSlary);
+            return listNote;
         }
-
-
-
-        private async Task AddRequestChangeSalaryEmployee(Employee input, long requestChangeSalaryId)
-        {
-            var employeeId = WorkScope.GetAll<Employee>()
-                .Where(e => e.Email == input.Email)
-                .Select(e => e.Id)
-                .FirstOrDefault();
-            await ValidAddEmployee(employeeId, requestChangeSalaryId);
-            var bonusEmployee = new EmployeeInRequestChageSalaryDto
-            {
-                EmailAddress = input.Email,
-                Salary = input.Salary,
-                ToSlary = input.Salary + input.RealSalary,
-               
-            };
-            var entity = ObjectMapper.Map<BonusEmployee>(bonusEmployee);
-            await WorkScope.InsertAsync(entity);
-        }
-        private async Task ValidAddEmployee(long employeeId, long requestChangeSlaryId)
-        {
-            var isExist = await WorkScope.GetAll<SalaryChangeRequestEmployee>()
-                .Where(x => x.EmployeeId == employeeId)
-                .Where(x => x.SalaryChangeRequestId == requestChangeSlaryId).AnyAsync();
-            if (isExist)
-            {
-                throw new UserFriendlyException($"This User Is Already Exist");
-            }
-        }
-
+        
         private void ValidUpdate(UpdateSalaryRequestDto input)
         {
             var isExist = WorkScope.GetAll<SalaryChangeRequest>()
@@ -486,8 +450,6 @@ namespace HRMv2.Manager.SalaryRequests
                 throw new UserFriendlyException($"Request name is Already Exist");
             }
         }
-
-       
 
         public async Task<UpdateRequestEmployeeInfoDto> UpdateRequestEmployeeInfo(UpdateRequestEmployeeInfoDto input)
         {
