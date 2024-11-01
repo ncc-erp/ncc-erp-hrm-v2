@@ -28,6 +28,10 @@ namespace HRMv2.Manager.SalaryRequests.Dto
         public string EmailAddress { get; set; }
         public string ToLevelCode { get; set; }
         public double SalaryIncrease { get; set; }
+        public bool HasContract { get; set; }
+        public UserType ToUserType { get; set; }
+        public DateTime ApplyDate { get; set; }
+        public string ToJobPositionCode { get; set; }
 
     }
 }

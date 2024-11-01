@@ -381,12 +381,16 @@ namespace HRMv2.Manager.SalaryRequests
             var newChangeRequest = Create(new CreateSalaryRequestDto
             {
                 Name = input.Name ?? "Checkpoint",
-                ApplyMonth = input.ApplyMonth
+                ApplyMonth = input.ApplyMonth 
             });
 
             var dictLevel = WorkScope.GetAll<Level>()
                                       .Select(s => new { Key = s.Code.ToLower().Trim(), s.Id })
                                       .ToDictionary(s => s.Key, s => s.Id);
+
+            var dicJobPosition = WorkScope.GetAll<JobPosition>()
+                                    .Select(s => new { Key = s.Code.ToLower().Trim(), s.Id })
+                                    .ToDictionary(s => s.Key, s => s.Id);
 
 
             var dicUsers = WorkScope.GetAll<Employee>()
@@ -400,6 +404,7 @@ namespace HRMv2.Manager.SalaryRequests
 
             foreach (var employeeInput in input.RequestChangeSalaryEmployee)
             {
+                long newJobPositionId = dicJobPosition[employeeInput.ToJobPositionCode.ToLower().Trim()];
                 long newLevelId = dictLevel[employeeInput.ToLevelCode.ToLower().Trim()];
 
                 if (dicUsers.TryGetValue(employeeInput.EmailAddress, out var employee))
@@ -408,8 +413,17 @@ namespace HRMv2.Manager.SalaryRequests
                     listRequestChageSlary.Add(new SalaryChangeRequestEmployee
                     {
                         EmployeeId = employee.Id,
+                        Salary = employee.Salary,
                         ToSalary = employeeInput.SalaryIncrease + employee.Salary,
-                        ToLevelId = newLevelId
+                        LevelId = employee.LevelId,
+                        ToLevelId = newLevelId,
+                        JobPositionId = employee.JobPositionId,
+                        ToJobPositionId = newJobPositionId,
+                        FromUserType = employee.UserType,
+                        ToUserType = employeeInput.ToUserType,
+                        ApplyDate = employeeInput.ApplyDate,
+                        HasContract = employeeInput.HasContract,
+                        Note = "Create from Hrm By admin admin"
                     });
                     
                     listNote.Add(new ResultSendChangeRequestDto
