@@ -11,11 +11,11 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.SalaryRequests.Dto
 {
-    public class GetSalaryRequestFromCheckpointDto : Entity<long>
+    public class CreateSalaryChangeRequestFromCheckpointDto : Entity<long>
     {
         public string Name { get; set; }
         public DateTime ApplyMonth { get; set; }
-        public List<EmployeeInRequestChangeSalaryDto> RequestChangeSalaryEmployee { get ; set; }
+        public List<EmployeeSalaryChangeRequestDto> RequestChangeSalaryEmployee { get ; set; }
 
     }
     public class ResultSendChangeRequestDto
@@ -23,15 +23,11 @@ namespace HRMv2.Manager.SalaryRequests.Dto
         public string EmailAddress { get; set; }
         public string SyncNote { get; set; }
     }
-    public class EmployeeInRequestChangeSalaryDto
+    public class EmployeeSalaryChangeRequestDto
     {
-        public long ToLevelId { get; set; }
-        public long ToJobPositionId { get; set; }
-        public UserType ToUserType { get; set; }
         public string EmailAddress { get; set; }
-        public double Slary { get; set; }
-        public double ToSlary { get; set; }
-        public string Note { get; set; }
+        public string ToLevelCode { get; set; }
+        public double SalaryIncrease { get; set; }
 
     }
 }

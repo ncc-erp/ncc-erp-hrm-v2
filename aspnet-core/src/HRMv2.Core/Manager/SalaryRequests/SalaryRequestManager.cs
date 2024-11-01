@@ -375,14 +375,19 @@ namespace HRMv2.Manager.SalaryRequests
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
             return await query.GetGridResult(query, input.GridParam);
         }
-        public async Task<List<ResultSendChangeRequestDto>> CreateSalaryRequestChangeFromCheckpoint(GetSalaryRequestFromCheckpointDto input)
+        
+        public async Task<List<ResultSendChangeRequestDto>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
         {
             var newChangeRequest = Create(new CreateSalaryRequestDto
             {
-                Name = input.Name,
+                Name = input.Name ?? "Checkpoint",
                 ApplyMonth = input.ApplyMonth
             });
-            var requestChangeSalaryId = newChangeRequest.Id;
+
+            var dictLevel = WorkScope.GetAll<Level>()
+                                      .Select(s => new { Key = s.Code.ToLower().Trim(), s.Id })
+                                      .ToDictionary(s => s.Key, s => s.Id);
+
 
             var dicUsers = WorkScope.GetAll<Employee>()
               .Where(x => x.Status == EmployeeStatus.Working)
@@ -395,18 +400,18 @@ namespace HRMv2.Manager.SalaryRequests
 
             foreach (var employeeInput in input.RequestChangeSalaryEmployee)
             {
+                long newLevelId = dictLevel[employeeInput.ToLevelCode.ToLower().Trim()];
+
                 if (dicUsers.TryGetValue(employeeInput.EmailAddress, out var employee))
                 {
+
                     listRequestChageSlary.Add(new SalaryChangeRequestEmployee
                     {
                         EmployeeId = employee.Id,
-                        ToJobPositionId = employeeInput.ToJobPositionId,
-                        ToLevelId = employeeInput.ToLevelId,
-                        ToUserType = employeeInput.ToUserType,
-                        Salary = employee.Salary,
-                        ToSalary = employeeInput.ToSlary + employee.Salary,
-                        Note = employeeInput.Note ?? "Checkpoint"
+                        ToSalary = employeeInput.SalaryIncrease + employee.Salary,
+                        ToLevelId = newLevelId
                     });
+                    
                     listNote.Add(new ResultSendChangeRequestDto
                     {
                         EmailAddress = employeeInput.EmailAddress,

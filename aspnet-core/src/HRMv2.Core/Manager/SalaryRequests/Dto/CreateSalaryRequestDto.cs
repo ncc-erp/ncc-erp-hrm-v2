@@ -11,7 +11,7 @@ using static HRMv2.Constants.Enum.HRMEnum;
 namespace HRMv2.Manager.SalaryRequests.Dto
 {
     [AutoMapTo(typeof(SalaryChangeRequest))]
-    public class CreateSalaryRequestDto : Entity<long>
+    public class CreateSalaryRequestDto 
     {
         public string Name { get; set; }
         public DateTime ApplyMonth { get; set; }
