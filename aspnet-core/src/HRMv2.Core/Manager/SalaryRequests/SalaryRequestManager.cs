@@ -383,6 +383,7 @@ namespace HRMv2.Manager.SalaryRequests
                 Name = input.Name ?? "Checkpoint",
                 ApplyMonth = input.ApplyMonth 
             });
+            var newSalaryChangeRequestId = newChangeRequest.Id;
 
             var dictLevel = WorkScope.GetAll<Level>()
                                       .Select(s => new { Key = s.Code.ToLower().Trim(), s.Id })
@@ -412,6 +413,7 @@ namespace HRMv2.Manager.SalaryRequests
 
                     listRequestChageSlary.Add(new SalaryChangeRequestEmployee
                     {
+                        SalaryChangeRequestId = newSalaryChangeRequestId,
                         EmployeeId = employee.Id,
                         Salary = employee.Salary,
                         ToSalary = employeeInput.SalaryIncrease + employee.Salary,
