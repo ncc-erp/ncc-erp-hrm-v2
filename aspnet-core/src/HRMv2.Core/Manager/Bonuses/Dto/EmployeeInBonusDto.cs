@@ -9,13 +9,9 @@ namespace HRMv2.Manager.Bonuses.Dto
     public class EmployeeInBonusDto
     {
         public string EmailAddress { get; set; }
-        public long Money { get; set; }
-        public string Note { get; set; }
+        public float BonusXMonth { get; set; }
+        public string EmailAddressToLowerTrim => EmailAddress.ToLower().Trim();
     }
 
-    public class ResultSendBonus
-    {
-        public string EmailAddress { get; set; }
-        public string SyncNote { get; set; }
-    }
+
 }

@@ -24,11 +24,13 @@ using HRMv2.Manager.Notifications.Email;
 using Abp.BackgroundJobs;
 using HRMv2.BackgroundJob.SendMail;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.VariantTypes;
+using Abp.Collections.Extensions;
 
 namespace HRMv2.Manager.Categories.Bonuss
 {
     public class BonusManager : BaseManager
-    { 
+    {
         private readonly EmployeeManager _employeeManager;
         private readonly EmailManager _emailManager;
         private readonly BackgroundJobManager _backgroundJobManager;
@@ -52,53 +54,54 @@ namespace HRMv2.Manager.Categories.Bonuss
 
         public IQueryable<GetBonusEmployeeDto> QueryAllBonusEmployee()
         {
-           return WorkScope.GetAll<BonusEmployee>()
-                .OrderByDescending(x => x.CreationTime)
-                .Select(x => new GetBonusEmployeeDto
-                {
-                    Id = x.Id,
-                    Money = x.Money,
-                    Note = x.Note,
-                    EmployeeId = x.EmployeeId,
-                    BonusId = x.BonusId,
-                    FullName = x.Employee.FullName,
-                    LastModificationTime = x.LastModificationTime,
-                    FullNameModification = x.CreatorUser.FullName,
-                    Skills = x.Employee.EmployeeSkills.Select(s => new EmployeeSkillDto
-                    {
-                        SkillId = s.Skill.Id,
-                        SkillName = s.Skill.Name
-                    }).ToList(),
-                    Teams = x.Employee.EmployeeTeams.Select(s => new EmployeeTeamDto
-                    {
-                        TeamId = s.Team.Id,
-                        TeamName = s.Team.Name
-                    }).ToList(),
-                    BranchInfo = new BadgeInfoDto
-                    {
-                        Name = x.Employee.Branch.Name,
-                        Color = x.Employee.Branch.Color
-                    },
-                    LevelInfo = new BadgeInfoDto
-                    {
-                        Name = x.Employee.Level.Name,
-                        Color = x.Employee.Level.Color
-                    },
-                    JobPositionInfo = new BadgeInfoDto {
-                        Name = x.Employee.JobPosition.Name,
-                        Color = x.Employee.JobPosition.Color
-                    },
-                    JobPositionId = x.Employee.JobPositionId,
-                    Avatar = x.Employee.Avatar,
-                    Sex = x.Employee.Sex,
-                    Email = x.Employee.Email,
-                    BranchId = x.Employee.BranchId,
-                    LevelId = x.Employee.LevelId,
-                    UserType = x.Employee.UserType,
-                    Status = x.Employee.Status,
-                    BonusName = x.Bonus.Name,
-                    ApplyDate = x.Bonus.ApplyMonth
-                });
+            return WorkScope.GetAll<BonusEmployee>()
+                 .OrderByDescending(x => x.CreationTime)
+                 .Select(x => new GetBonusEmployeeDto
+                 {
+                     Id = x.Id,
+                     Money = x.Money,
+                     Note = x.Note,
+                     EmployeeId = x.EmployeeId,
+                     BonusId = x.BonusId,
+                     FullName = x.Employee.FullName,
+                     LastModificationTime = x.LastModificationTime,
+                     FullNameModification = x.CreatorUser.FullName,
+                     Skills = x.Employee.EmployeeSkills.Select(s => new EmployeeSkillDto
+                     {
+                         SkillId = s.Skill.Id,
+                         SkillName = s.Skill.Name
+                     }).ToList(),
+                     Teams = x.Employee.EmployeeTeams.Select(s => new EmployeeTeamDto
+                     {
+                         TeamId = s.Team.Id,
+                         TeamName = s.Team.Name
+                     }).ToList(),
+                     BranchInfo = new BadgeInfoDto
+                     {
+                         Name = x.Employee.Branch.Name,
+                         Color = x.Employee.Branch.Color
+                     },
+                     LevelInfo = new BadgeInfoDto
+                     {
+                         Name = x.Employee.Level.Name,
+                         Color = x.Employee.Level.Color
+                     },
+                     JobPositionInfo = new BadgeInfoDto
+                     {
+                         Name = x.Employee.JobPosition.Name,
+                         Color = x.Employee.JobPosition.Color
+                     },
+                     JobPositionId = x.Employee.JobPositionId,
+                     Avatar = x.Employee.Avatar,
+                     Sex = x.Employee.Sex,
+                     Email = x.Employee.Email,
+                     BranchId = x.Employee.BranchId,
+                     LevelId = x.Employee.LevelId,
+                     UserType = x.Employee.UserType,
+                     Status = x.Employee.Status,
+                     BonusName = x.Bonus.Name,
+                     ApplyDate = x.Bonus.ApplyMonth
+                 });
         }
 
         public async Task<GridResult<GetAllBonusDto>> GetAllPaging(GridParam input)
@@ -163,7 +166,7 @@ namespace HRMv2.Manager.Categories.Bonuss
         {
             var employeeIdsInBonus = WorkScope.GetAll<BonusEmployee>()
                 .Where(x => x.BonusId == id)
-                .Select(x=> x.EmployeeId)
+                .Select(x => x.EmployeeId)
                 .ToList();
 
             var query = _employeeManager.GetAllEmployeeBasicInfo()
@@ -177,7 +180,7 @@ namespace HRMv2.Manager.Categories.Bonuss
             await ValidCreate(input);
             input.ApplyMonth = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 15);
             input.IsActive = true;
-            var entity = ObjectMapper.Map<Bonus>(input);       
+            var entity = ObjectMapper.Map<Bonus>(input);
             input.Id = await WorkScope.InsertAndGetIdAsync(entity);
             return input;
         }
@@ -189,7 +192,7 @@ namespace HRMv2.Manager.Categories.Bonuss
             await ValidUpdate(input);
             var entity = await WorkScope.GetAsync<Bonus>(input.Id);
 
-            if(input.ApplyMonth.Month != entity.ApplyMonth.Month)
+            if (input.ApplyMonth.Month != entity.ApplyMonth.Month)
             {
                 await ValidUpdateMonth(input);
             }
@@ -245,7 +248,7 @@ namespace HRMv2.Manager.Categories.Bonuss
             if (isExist)
             {
                 throw new UserFriendlyException($"Name is Already Exist");
-            }   
+            }
         }
         private async Task ValidUpdateMonth(EditBonusDto input)
         {
@@ -272,10 +275,10 @@ namespace HRMv2.Manager.Categories.Bonuss
         {
 
             var hadUser = await WorkScope.GetAll<BonusEmployee>()
-                                .AnyAsync(x=> x.BonusId == bonusId);
+                                .AnyAsync(x => x.BonusId == bonusId);
             if (hadUser) return true;
             return false;
-                
+
         }
 
 
@@ -426,7 +429,7 @@ namespace HRMv2.Manager.Categories.Bonuss
         public async Task<UpdateBonusEmployeeDto> UpdateBonusEmployee(UpdateBonusEmployeeDto input)
         {
             var entity = await WorkScope.GetAsync<BonusEmployee>(input.Id);
-           
+
             ObjectMapper.Map(input, entity);
 
             await WorkScope.UpdateAsync(entity);
@@ -536,7 +539,7 @@ namespace HRMv2.Manager.Categories.Bonuss
                 .Select(x => x.EmployeeId).ToListAsync();
         }
 
-             public async Task<List<DateTime>> GetListMonthFilterOfEmployee(long employeeId)
+        public async Task<List<DateTime>> GetListMonthFilterOfEmployee(long employeeId)
         {
             var query = await WorkScope.GetAll<BonusEmployee>()
                 .Where(x => x.EmployeeId == employeeId)
@@ -573,8 +576,8 @@ namespace HRMv2.Manager.Categories.Bonuss
                     .ToHashSet();
 
             var mapEmailToId = await WorkScope.GetAll<Employee>()
-                .Select(x=> new {x.Email, x.Id})
-                .ToDictionaryAsync(k=> k.Email, v=> v.Id);
+                .Select(x => new { x.Email, x.Id })
+                .ToDictionaryAsync(k => k.Email, v => v.Id);
 
             var bonusName = GetBonusById(input.BonusId).Name;
 
@@ -596,7 +599,7 @@ namespace HRMv2.Manager.Categories.Bonuss
                     var rowCount = worksheet.Dimension.End.Row;
 
                     BonusEmployee bonusEmployee = null;
-   
+
                     for (int row = 2; row <= rowCount; row++)
                     {
                         var email = worksheet.Cells[row, 1].GetCellValue<string>();
@@ -642,7 +645,7 @@ namespace HRMv2.Manager.Categories.Bonuss
                             Logger.Error("row: " + row + ", error: " + ex.Message);
                             failedList.Add(new ResponseFailDto { Row = row, Email = email, Money = strMoney, ReasonFail = "Exception: " + ex.Message });
                         }
-                        
+
                     }
                     await WorkScope.InsertRangeAsync(successList);
                 }
@@ -654,7 +657,7 @@ namespace HRMv2.Manager.Categories.Bonuss
         }
         public async Task ValidImportEmployeeToBonus([FromForm] ImportFileDto input)
         {
-            if(input.File == null || !Path.GetExtension(input.File.FileName).Equals(".xlsx"))
+            if (input.File == null || !Path.GetExtension(input.File.FileName).Equals(".xlsx"))
             {
                 throw new UserFriendlyException("File upload is invalid");
             }
@@ -680,7 +683,7 @@ namespace HRMv2.Manager.Categories.Bonuss
         public string SendMailToAllEmployee(long id, GetBonusEmployeeInputDto input)
         {
             var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.Bonus);
-            if(emailTemplate == default)
+            if (emailTemplate == default)
             {
                 throw new UserFriendlyException($"Not found email template for bonus");
             }
@@ -699,67 +702,112 @@ namespace HRMv2.Manager.Categories.Bonuss
             }).ToList();
 
             var delaySendMail = 0;
-            foreach(var be in emailBonusEmployees)
+            foreach (var be in emailBonusEmployees)
             {
                 MailPreviewInfoDto mailInput = _emailManager.GenerateEmailContent(be.Result, emailTemplate);
                 _backgroundJobManager.Enqueue<SendMail, MailPreviewInfoDto>(mailInput, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendMail));
                 delaySendMail += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
             }
-  
+
 
             return $"Started sending {emailBonusEmployees.Count} email.";
 
         }
+ 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate">ngay dau tien cua thang checkoint, ex 1/1/2024</param>
+        /// <param name="endDate">ngay cuoi cung cua thang checkpoint, ex 30/6/2024</param>
+        /// <param name="employeeIds">list empoloyeeId muon lay</param>
+        /// <returns></returns>
+        public Dictionary<long, int> GetDicEmployeeIdToPayslipCount(DateTime startDate, DateTime endDate, List<long> employeeIds)
+        {
+            return WorkScope.GetAll<Payslip>()
+                .Include(s => s.Payroll)
+                .Select(s => new
+                {
+                    s.Payroll.ApplyMonth,
+                    s.EmployeeId,
+                    s.UserType,
+                }).Where(s => s.ApplyMonth >= startDate.Date)
+                .Where(s => s.ApplyMonth.Date <= endDate)
+                .Where(s => s.UserType != UserType.Internship)
+                .Where(s => s.UserType != UserType.Vendor)
+                .Where(s => employeeIds.Contains(s.EmployeeId))
+                .ToList()
+                .GroupBy(s => s.EmployeeId)
+                .ToDictionary(s => s.Key, s => s.Count());
+
+        }
 
         
-        public async Task<List<ResultSendBonus>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
+                
+        public async Task<List<string>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
         {
-            
-            var newBonus = await Create(new BonusDto
+
+            var bonus = await Create(new BonusDto
             {
                 Name = input.Name,
                 ApplyMonth = input.ApplyMonth,
             });
-            var newBonusId = newBonus.Id;
 
-            var dicUsers = WorkScope.GetAll<Employee>()
-                .Where(x => x.Status == EmployeeStatus.Working && x.UserType == UserType.Staff)
-                .Select(x => new { x.Email, Employee = x }).ToList()
-                .GroupBy(x => x.Email)
-                .ToDictionary(x => x.Key, x => x.First().Employee);
+            var bonusId = bonus.Id;
 
-            var listNote = new List<ResultSendBonus>();
+
+            var dicEmployeeEmailToId =  WorkScope.GetAll<Employee>()
+                                     .Where(s => s.Status != EmployeeStatus.Quit)
+                                     .Select(s => new { s.Id, s.Email, s.RealSalary })
+                                     .ToList()
+                                     .GroupBy(s => s.Email.ToLower().Trim())
+                                     .ToDictionary(s => s.Key, s => s.FirstOrDefault());
+
+            var employeeIds = input.BonusEmployees
+                .Where(s => dicEmployeeEmailToId.ContainsKey(s.EmailAddressToLowerTrim))
+                .Select(s => dicEmployeeEmailToId[s.EmailAddressToLowerTrim].Id)
+                .ToList();
+
+            var dicEmployeeIdToPayslipCount = GetDicEmployeeIdToPayslipCount(input.StartDate, input.EndDate, employeeIds);
+
+            var listResult = new List<string>();
             var listBonusEmployeeInsert = new List<BonusEmployee>();
-            foreach (var i in input.BonusEmployees)
+            long employeeId;
+            int numberMothHasBonus;
+            double realSalary;
+
+            foreach (var dto in input.BonusEmployees)
             {
-                if (dicUsers.TryGetValue(i.EmailAddress, out var foundEmployee))
+                try
                 {
-                    listBonusEmployeeInsert.Add(new BonusEmployee()
+                    if (!dicEmployeeEmailToId.ContainsKey(dto.EmailAddressToLowerTrim))
                     {
-                        EmployeeId = foundEmployee.Id,
-                        BonusId = newBonusId,
-                        Money = i.Money,
-                        Note = i.Note ?? "1",
-                    });
-                    listNote.Add(new ResultSendBonus
+                        listResult.Add($"{dto.EmailAddress} - fail: not found in HRM");
+                        continue;
+                    }
+
+                    employeeId = dicEmployeeEmailToId[dto.EmailAddressToLowerTrim].Id;
+                    numberMothHasBonus = dicEmployeeIdToPayslipCount.ContainsKey(employeeId) ? dicEmployeeIdToPayslipCount[employeeId] : 0;
+                    realSalary = dicEmployeeEmailToId[dto.EmailAddressToLowerTrim].RealSalary;
+
+                    await WorkScope.InsertAsync(new BonusEmployee()
                     {
-                        EmailAddress = i.EmailAddress,
-                        SyncNote = "Success",
+                        EmployeeId = employeeId,
+                        BonusId = bonusId,
+                        Note = input.Name,
+                        Money = dto.BonusXMonth * numberMothHasBonus * realSalary / input.numberMonth,
                     });
+
+                    listResult.Add($"{dto.EmailAddress} - success");
                 }
-                else
+                catch (Exception ex)
                 {
-                    listNote.Add(new ResultSendBonus
-                    {
-                        EmailAddress = i.EmailAddress,
-                        SyncNote = "False : email not found in the Hrm"
-                    });
-                }
+                    listResult.Add($"{dto.EmailAddress} - error: " + ex.Message);
+                }      
+               
             }
+           
 
-            await WorkScope.InsertRangeAsync(listBonusEmployeeInsert);
-
-            return listNote;
+            return listResult;
 
         }
     }

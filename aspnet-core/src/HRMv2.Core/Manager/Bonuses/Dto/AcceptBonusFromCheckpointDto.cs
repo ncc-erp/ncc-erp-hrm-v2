@@ -12,6 +12,9 @@ namespace HRMv2.Manager.Bonuses.Dto
         public string Name { get; set; }
         public DateTime ApplyMonth { get; set; }
         public bool IsActive { get; set; }
+        public int numberMonth {  get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public List<EmployeeInBonusDto> BonusEmployees { get; set; }
     }
 }

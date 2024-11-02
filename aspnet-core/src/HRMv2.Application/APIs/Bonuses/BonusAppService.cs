@@ -194,7 +194,7 @@ namespace HRMv2.APIs.Bonuses
 
         [NccAuthentication]
         [HttpPost]
-        public async Task<List<ResultSendBonus>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
+        public async Task<List<string>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
         {
             return await _bonusManager.CreateBonusesFromCheckpointTool(input);
         }

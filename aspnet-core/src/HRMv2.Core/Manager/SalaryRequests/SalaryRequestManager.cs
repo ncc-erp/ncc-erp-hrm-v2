@@ -327,21 +327,31 @@ namespace HRMv2.Manager.SalaryRequests
                     .Where(x => x.SalaryChangeRequestId == request.Id)
                     .ToList();
 
-                foreach (var employee in employeesInRequest)
-                {
-                    var entity = WorkScope.GetAll<Employee>()
-                        .Where(x => x.Id == employee.EmployeeId)
-                        .FirstOrDefault();
+                var employeeIds = employeesInRequest.Select(s => s.EmployeeId).ToList();
 
-                    if (entity != default)
+                var dicEmployee = WorkScope.GetAll<Employee>()
+                    .Where(s => employeeIds.Contains(s.Id))                    
+                    .ToDictionary(s => s.Id);
+
+                foreach (var dto in employeesInRequest)
+                {
+                    if (!dicEmployee.ContainsKey(dto.Id))
                     {
-                        entity.RealSalary = employee.ToSalary;
-                        entity.UserType = employee.ToUserType;
-                        entity.LevelId = employee.ToLevelId;
-                        entity.JobPositionId = employee.ToJobPositionId;
-                        if(employee.FromUserType != UserType.Staff && employee.ToUserType == UserType.Staff) entity.StartWorkingDate = employee.ApplyDate;
-                        await WorkScope.UpdateAsync(entity);
+                        Logger.Error("dicEmployee not containkey employeeId " + dto.Id);
+                        continue;
                     }
+
+                    var employee = dicEmployee[dto.Id];
+
+                    employee.RealSalary = dto.ToSalary;
+                    employee.UserType = dto.ToUserType;
+                    employee.LevelId = dto.ToLevelId;
+                    employee.JobPositionId = dto.ToJobPositionId;
+
+                    if(dto.FromUserType != UserType.Staff && dto.ToUserType == UserType.Staff) employee.StartWorkingDate = dto.ApplyDate;
+
+                    await WorkScope.UpdateAsync(employee);
+                    
                 }
             }
         }

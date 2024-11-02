@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services;
+using Abp.Collections.Extensions;
 using Abp.Dependency;
 using HRMv2.Authorization.Users;
 using HRMv2.Entities;
@@ -21,12 +22,16 @@ namespace HRMv2.Manager
             WorkScope = workScope;
         }
 
-        public Dictionary<string, long> GetDicEmployeeEmailToId()
+        public Dictionary<string, long> GetDicEmployeeEmailToId(Constants.Enum.HRMEnum.EmployeeStatus ?ExceptStatus = null)
         {
             return WorkScope.GetAll<Employee>()
+                .WhereIf(ExceptStatus != null, s => s.Status != ExceptStatus)
                 .Select(s => new {s.Id, s.Email})
-                .ToDictionary(s => s.Email,s => s.Id);
+                .ToList()
+                .GroupBy(s => s.Email.ToLower().Trim())
+                .ToDictionary(s => s.Key,s => s.First().Id);
         }
+
 
         public IQueryable<long> QueryEmployeeHaveAnyTeams(List<long> TeamsId)
         {
