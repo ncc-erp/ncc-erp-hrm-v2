@@ -12,7 +12,7 @@ using NccCore.Extension;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Abp.Collections.Extensions;
 namespace HRMv2.Manager
 {
     public class BaseManager : ApplicationService
@@ -24,11 +24,14 @@ namespace HRMv2.Manager
             WorkScope = workScope;
         }
 
-        public Dictionary<string, long> GetDicEmployeeEmailToId()
+        public Dictionary<string, long> GetDicEmployeeEmailToId(Constants.Enum.HRMEnum.EmployeeStatus? ExceptStatus = null)
         {
             return WorkScope.GetAll<Employee>()
-                .Select(s => new {s.Id, s.Email})
-                .ToDictionary(s => s.Email,s => s.Id);
+                .WhereIf(ExceptStatus != null, s => s.Status != ExceptStatus)
+                .Select(s => new { s.Id, s.Email })
+                .ToList()
+                .GroupBy(s => s.Email.ToLower().Trim())
+                .ToDictionary(s => s.Key, s => s.First().Id);
         }
 
         public IQueryable<long> QueryEmployeeHaveAnyTeams(List<long> TeamsId)

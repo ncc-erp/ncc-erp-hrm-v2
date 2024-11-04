@@ -5,6 +5,7 @@ using HRMv2.Manager.Bonuses.Dto;
 using HRMv2.Manager.Categories.Bonuss;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Notifications.Email.Dto;
+using HRMv2.NCC;
 using HRMv2.Utils;
 using Microsoft.AspNetCore.Mvc;
 using NccCore.Paging;
@@ -192,5 +193,11 @@ namespace HRMv2.APIs.Bonuses
             return _bonusManager.SendMailToAllEmployee(id, input);
         }
 
+        [NccAuthentication]
+        [HttpPost]
+        public async Task<List<string>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
+        {
+            return await _bonusManager.CreateBonusesFromCheckpointTool(input);
+        }
     }
 }
