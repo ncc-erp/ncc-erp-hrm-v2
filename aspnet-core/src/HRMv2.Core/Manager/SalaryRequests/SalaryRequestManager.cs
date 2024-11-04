@@ -1,4 +1,5 @@
-﻿using Abp.BackgroundJobs;
+﻿using Abp.Application.Services.Dto;
+using Abp.BackgroundJobs;
 using Abp.UI;
 using HRMv2.BackgroundJob.SendMail;
 using HRMv2.Entities;
@@ -375,15 +376,13 @@ namespace HRMv2.Manager.SalaryRequests
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
             return await query.GetGridResult(query, input.GridParam);
         }
-        
-        public async Task<List<ResultSendChangeRequestDto>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
+        public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
         {
             var newChangeRequest = Create(new CreateSalaryRequestDto
             {
                 Name = input.Name ?? "Checkpoint",
                 ApplyMonth = input.ApplyMonth 
             });
-            var newSalaryChangeRequestId = newChangeRequest.Id;
 
             var dictLevel = WorkScope.GetAll<Level>()
                                       .Select(s => new { Key = s.Code.ToLower().Trim(), s.Id })
@@ -393,58 +392,60 @@ namespace HRMv2.Manager.SalaryRequests
                                     .Select(s => new { Key = s.Code.ToLower().Trim(), s.Id })
                                     .ToDictionary(s => s.Key, s => s.Id);
 
+            var dicEmployeeEmailToId = WorkScope.GetAll<Employee>()
+              .Where(x => x.Status != EmployeeStatus.Quit)
+              .Select(x => new { x.Email, x.Id , x.RealSalary })
+              .ToList()
+              .GroupBy(x => x.Email.ToLower().Trim())
+              .ToDictionary(x => x.Key, s => s.FirstOrDefault());
 
-            var dicUsers = WorkScope.GetAll<Employee>()
-              .Where(x => x.Status == EmployeeStatus.Working)
-              .Select(x => new { x.Email, Employee = x }).ToList()
-              .GroupBy(x => x.Email)
-              .ToDictionary(x => x.Key, x => x.First().Employee);
+            var employeeIds = input.RequestChangeSalaryEmployee
+              .Where(s => dicEmployeeEmailToId.ContainsKey(s.EmailAddressToLowerTrim))
+              .Select(s => dicEmployeeEmailToId[s.EmailAddressToLowerTrim].Id)
+              .ToList();
 
-            var listNote = new List<ResultSendChangeRequestDto>();
-            var listRequestChageSlary = new List<SalaryChangeRequestEmployee>();
+            var listResult = new List<string>();
+            var listRequestChangeSalary = new List<SalaryChangeRequestEmployee>();
+            long employeeId;
+            double realSalary;
 
             foreach (var employeeInput in input.RequestChangeSalaryEmployee)
             {
-                long newJobPositionId = dicJobPosition[employeeInput.ToJobPositionCode.ToLower().Trim()];
-                long newLevelId = dictLevel[employeeInput.ToLevelCode.ToLower().Trim()];
-
-                if (dicUsers.TryGetValue(employeeInput.EmailAddress, out var employee))
+                try
                 {
+                    long newJobPositionId = dicJobPosition[employeeInput.ToJobPositionCode.ToLower().Trim()];
+                    long newLevelId = dictLevel[employeeInput.ToLevelCode.ToLower().Trim()];
 
-                    listRequestChageSlary.Add(new SalaryChangeRequestEmployee
+                    if (!dicEmployeeEmailToId.ContainsKey(employeeInput.EmailAddressToLowerTrim))
                     {
-                        SalaryChangeRequestId = newSalaryChangeRequestId,
-                        EmployeeId = employee.Id,
-                        Salary = employee.Salary,
-                        ToSalary = employeeInput.SalaryIncrease + employee.Salary,
-                        LevelId = employee.LevelId,
+                        listResult.Add($"{employeeInput.EmailAddress} - fail: not found in HRM");
+                        continue;
+                    }
+                    employeeId = dicEmployeeEmailToId[employeeInput.EmailAddressToLowerTrim].Id;
+                    realSalary = dicEmployeeEmailToId[employeeInput.EmailAddressToLowerTrim].RealSalary;
+                    await WorkScope.InsertAsync(new SalaryChangeRequestEmployee()
+                    {
+                        EmployeeId = employeeId,
+                        ToSalary = employeeInput.SalaryIncrease + realSalary,
                         ToLevelId = newLevelId,
-                        JobPositionId = employee.JobPositionId,
                         ToJobPositionId = newJobPositionId,
-                        FromUserType = employee.UserType,
                         ToUserType = employeeInput.ToUserType,
                         ApplyDate = employeeInput.ApplyDate,
                         HasContract = employeeInput.HasContract,
-                        Note = "Create from Hrm By admin admin"
+                        Note = employeeInput.Note ?? "Created from HRM by admim"
                     });
-                    
-                    listNote.Add(new ResultSendChangeRequestDto
-                    {
-                        EmailAddress = employeeInput.EmailAddress,
-                        SyncNote = "Send Request Change Salary Success"
-                    });
+
+                    listResult.Add($"{employeeInput.EmailAddress} - success");
+
                 }
-                else
+                catch (Exception ex)
                 {
-                    listNote.Add(new ResultSendChangeRequestDto
-                    {
-                        EmailAddress = employeeInput.EmailAddress,
-                        SyncNote = "False: email not found in the Hrm"
-                    });
+                    listResult.Add($"{employeeInput.EmailAddress} - error: " + ex.Message);
                 }
+
             }
-            await WorkScope.InsertRangeAsync(listRequestChageSlary);
-            return listNote;
+            await WorkScope.InsertRangeAsync(listRequestChangeSalary);
+            return listResult;
         }
         
         private void ValidUpdate(UpdateSalaryRequestDto input)
