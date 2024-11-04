@@ -711,6 +711,96 @@ namespace HRMv2.Manager.Categories.Bonuss
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate">ngay dau tien cua thang checkoint, ex 1/1/2024</param>
+        /// <param name="endDate">ngay cuoi cung cua thang checkpoint, ex 30/6/2024</param>
+        /// <param name="employeeIds">list empoloyeeId muon lay</param>
+        /// <returns></returns>
+        public Dictionary<long, int> GetDicEmployeeIdToPayslipCount(DateTime startDate, DateTime endDate, List<long> employeeIds)
+        {
+            return WorkScope.GetAll<Payslip>()
+                .Include(s => s.Payroll)
+                .Select(s => new
+                {
+                    s.Payroll.ApplyMonth,
+                    s.EmployeeId,
+                    s.UserType,
+                }).Where(s => s.ApplyMonth >= startDate.Date)
+                .Where(s => s.ApplyMonth.Date <= endDate)
+                .Where(s => s.UserType != UserType.Internship)
+                .Where(s => s.UserType != UserType.Vendor)
+                .Where(s => employeeIds.Contains(s.EmployeeId))
+                .ToList()
+                .GroupBy(s => s.EmployeeId)
+                .ToDictionary(s => s.Key, s => s.Count());
+
+        }
+
+        public async Task<List<string>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
+        {
+
+            var bonus = await Create(new BonusDto
+            {
+                Name = input.Name,
+                ApplyMonth = input.ApplyMonth,
+            });
+
+            var bonusId = bonus.Id;
+
+
+            var dicEmployeeEmailToId = WorkScope.GetAll<Employee>()
+                                     .Where(s => s.Status != EmployeeStatus.Quit)
+                                     .Select(s => new { s.Id, s.Email, s.RealSalary })
+                                     .ToList()
+                                     .GroupBy(s => s.Email.ToLower().Trim())
+                                     .ToDictionary(s => s.Key, s => s.FirstOrDefault());
+
+            var employeeIds = input.BonusEmployees
+                .Where(s => dicEmployeeEmailToId.ContainsKey(s.EmailAddressToLowerTrim))
+                .Select(s => dicEmployeeEmailToId[s.EmailAddressToLowerTrim].Id)
+                .ToList();
+
+            var dicEmployeeIdToPayslipCount = GetDicEmployeeIdToPayslipCount(input.StartDate, input.EndDate, employeeIds);
+
+            var listResult = new List<string>();
+            var listBonusEmployeeInsert = new List<BonusEmployee>();
+            long employeeId;
+            int numberMothHasBonus;
+            double realSalary;
+
+            foreach (var dto in input.BonusEmployees)
+            {
+                try
+                {
+                    if (!dicEmployeeEmailToId.ContainsKey(dto.EmailAddressToLowerTrim))
+                    {
+                        listResult.Add($"{dto.EmailAddress} - fail: not found in HRM");
+                        continue;
+                    }
+
+                    employeeId = dicEmployeeEmailToId[dto.EmailAddressToLowerTrim].Id;
+                    numberMothHasBonus = dicEmployeeIdToPayslipCount.ContainsKey(employeeId) ? dicEmployeeIdToPayslipCount[employeeId] : 0;
+                    realSalary = dicEmployeeEmailToId[dto.EmailAddressToLowerTrim].RealSalary;
+
+                    await WorkScope.InsertAsync(new BonusEmployee()
+                    {
+                        EmployeeId = employeeId,
+                        BonusId = bonusId,
+                        Note = input.Name,
+                        Money = dto.BonusXMonth * numberMothHasBonus * realSalary / input.numberMonth,
+                    });
+
+                    listResult.Add($"{dto.EmailAddress} - success");
+                }
+                catch (Exception ex)
+                {
+                    listResult.Add($"{dto.EmailAddress} - error: " + ex.Message);
+                }
+            }
+            return listResult;
+        }
 
 
     }
