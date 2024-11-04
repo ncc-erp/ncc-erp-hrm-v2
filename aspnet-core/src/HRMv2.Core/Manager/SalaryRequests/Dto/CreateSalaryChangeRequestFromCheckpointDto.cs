@@ -18,12 +18,6 @@ namespace HRMv2.Manager.SalaryRequests.Dto
         public List<EmployeeSalaryChangeRequestDto> RequestChangeSalaryEmployee { get ; set; }
 
     }
-    public class ResultSendChangeRequestDto
-    {
-        public string EmailAddress { get; set; }
-        public string SyncNote { get; set; }
-      
-    }
     public class EmployeeSalaryChangeRequestDto 
     {
         public string EmailAddress { get; set; }

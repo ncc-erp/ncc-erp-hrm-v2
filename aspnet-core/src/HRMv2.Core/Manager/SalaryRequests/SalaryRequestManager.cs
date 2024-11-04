@@ -444,7 +444,6 @@ namespace HRMv2.Manager.SalaryRequests
                 }
 
             }
-            await WorkScope.InsertRangeAsync(listRequestChangeSalary);
             return listResult;
         }
         
