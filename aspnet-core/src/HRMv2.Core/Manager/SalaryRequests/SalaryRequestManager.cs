@@ -396,9 +396,7 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
               .Select(x => new
               { 
                   x.Id,
-                  x.Branch,
                   x.Level,
-                  x.JobPosition,
                   x.Email,
                   x.Salary,
                   x.RealSalary,
@@ -410,7 +408,6 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
 
             var listResult = new List<string>();
             var listRequestChangeSalary = new List<SalaryChangeRequestEmployee>();
-            long employeeId;
             double realSalary;
 
             foreach (var dto in input.RequestChangeSalaryEmployees)
@@ -419,7 +416,7 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
                 {
                     if (!dictLevel.ContainsKey(dto.ToLevelCodeToLowerTrim))
                     {
-                        listResult.Add($"{dto.ToLevelCode} - fail: not found level in HRM");
+                        listResult.Add($"{dto.EmailAddress} - {dto.ToLevelCode} - fail: not found level code in HRM");
                         continue;
                     }
                     if (!dicEmployee.ContainsKey(dto.EmailAddressToLowerTrim)) 
@@ -428,14 +425,18 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
                         continue;
                     }
                     long newLevelId = dictLevel[dto.ToLevelCodeToLowerTrim].Id;
-                    employeeId = dicEmployee[dto.EmailAddressToLowerTrim].Id;
+                    var employee = dicEmployee[dto.EmailAddressToLowerTrim];
                     realSalary = dicEmployee[dto.EmailAddressToLowerTrim].RealSalary;
                     await WorkScope.InsertAsync(new SalaryChangeRequestEmployee()
                     {
-                        EmployeeId = employeeId,
-                        ToSalary = dto.SalaryIncrease + realSalary,
+                        EmployeeId = employee.Id,
+                        LevelId = employee.Level.Id, 
                         ToLevelId = newLevelId,
-                        ToUserType = dto.ToUserType
+                        FromUserType = employee.UserType,
+                        ToUserType = employee.UserType,
+                        Salary = employee.Salary, 
+                        ToSalary = dto.SalaryIncrease + realSalary,
+                        ApplyDate = input.ApplyMonth,
                     });
 
                     listResult.Add($"{dto.EmailAddress} - success");

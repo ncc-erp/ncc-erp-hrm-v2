@@ -27,12 +27,16 @@ namespace HRMv2.APIs.SalaryChangeRequests
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_View)]
+
         public List<GetSalaryRequestDto> GetAll()
         {
             return _salaryRequestManager.GetAll();
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_View)]
+
         public GetSalaryRequestDto Get(long id)
         {
             return _salaryRequestManager.Get(id);
@@ -46,18 +50,24 @@ namespace HRMv2.APIs.SalaryChangeRequests
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_View)]
+
         public List<DateTime> GetListDateFromSalaryRequest()
         {
             return _salaryRequestManager.GetListDateFromSalaryRequest();
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_View)]
+
         public GetRequestEmployeeDto GetRequestEmployeeById(long id)
         {
             return _salaryRequestManager.GetRequestEmployeeById(id);
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_View)]
+
         public List<GetEmployeeNotInRequestDto> GetEmployeeNotInRequest(long requestId)
         {
             return _salaryRequestManager.GetEmployeeNotInRequest(requestId);
@@ -84,6 +94,8 @@ namespace HRMv2.APIs.SalaryChangeRequests
         {
             return _salaryRequestManager.Create(input);
         }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_Edit)]
 
         public async Task UpdateRequestStatus(UpdateChangeRequestDto input)
         {
@@ -119,33 +131,44 @@ namespace HRMv2.APIs.SalaryChangeRequests
         }
 
         [HttpPut]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_Edit)]
+
         public async Task<UpdateRequestEmployeeInfoDto> UpdateRequestEmployeeInfo(UpdateRequestEmployeeInfoDto input)
         {
             return await _salaryRequestManager.UpdateRequestEmployeeInfo(input);
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_ImportCheckpoint)]
+
         public async Task<Object> ImportCheckpoint([FromForm] ImportCheckpointDto input)
         {
             return await _salaryRequestManager.ImportCheckpoint(input);
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_View)]
         public MailPreviewInfoDto GetCheckpointTemplate(long requestId)
         {
             return _salaryRequestManager.GetCheckpointTemplate(requestId);
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SendAllMail)]
+
         public string SendMailToAllEmployee(long id, InputGetEmployeeInSalaryRequestDto input)
         {
             return _salaryRequestManager.SendMailToAllEmployee(id, input);
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_SendMail)]
+
         public void SendMailToOneEmployee(SendMailCheckpointDto input)
         {
             _salaryRequestManager.SendMailToOneEmployee(input);
         }
         [HttpGet]
+        [AbpAuthorize(PermissionNames.SalaryChangeRequest_SalaryChangeRequestDetail_View)]
+
         public async Task<FileBase64Dto> GetTemplateToImportCheckpoint()
         {
             return await _salaryRequestManager.GetTemplateToImportCheckpoint();
