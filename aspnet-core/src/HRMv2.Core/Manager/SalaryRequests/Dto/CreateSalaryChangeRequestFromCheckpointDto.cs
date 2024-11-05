@@ -24,6 +24,8 @@ namespace HRMv2.Manager.SalaryRequests.Dto
 
         public string EmailAddressToLowerTrim => EmailAddress.ToLower().Trim();
         public string ToLevelCode { get; set; }
+
+        public string ToLevelCodeToLowerTrim => ToLevelCode.ToLower().Trim();
         public double SalaryIncrease { get; set; }
 
         public UserType ToUserType { get; set; }

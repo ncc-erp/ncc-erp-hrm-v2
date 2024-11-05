@@ -417,12 +417,17 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
             {
                 try
                 {
-                    long newLevelId = dictLevel[dto.ToLevelCode.ToLower().Trim()].Id;
+                    if (!dictLevel.ContainsKey(dto.ToLevelCodeToLowerTrim))
+                    {
+                        listResult.Add($"{dto.ToLevelCode} - fail: not found level in HRM");
+                        continue;
+                    }
                     if (!dicEmployee.ContainsKey(dto.EmailAddressToLowerTrim)) 
                     {
                         listResult.Add($"{dto.EmailAddress} - fail: not found in HRM");
                         continue;
                     }
+                    long newLevelId = dictLevel[dto.ToLevelCodeToLowerTrim].Id;
                     employeeId = dicEmployee[dto.EmailAddressToLowerTrim].Id;
                     realSalary = dicEmployee[dto.EmailAddressToLowerTrim].RealSalary;
                     await WorkScope.InsertAsync(new SalaryChangeRequestEmployee()
