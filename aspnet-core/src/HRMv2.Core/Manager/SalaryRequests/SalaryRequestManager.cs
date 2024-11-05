@@ -377,8 +377,74 @@ namespace HRMv2.Manager.SalaryRequests
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
             return await query.GetGridResult(query, input.GridParam);
         }
+public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
+        {
+            var newChangeRequest = Create(new CreateSalaryRequestDto
+            {
+                Name = input.Name ?? "Checkpoint",
+                ApplyMonth = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 1)
+            });
 
+            var dictLevel = WorkScope.GetAll<Level>()
+                                      .Select(s => new { s.Code, s.Id })
+                                      .ToList()
+                                      .GroupBy(s => s.Code.ToLower().Trim())
+                                      .ToDictionary(s => s.Key, s => s.FirstOrDefault());
+            
+            var dicEmployee = WorkScope.GetAll<Employee>()
+              .Where(x => x.Status != EmployeeStatus.Quit)
+              .Select(x => new
+              { 
+                  x.Id,
+                  x.Branch,
+                  x.Level,
+                  x.JobPosition,
+                  x.Email,
+                  x.Salary,
+                  x.RealSalary,
+                  x.UserType,
+              })
+              .ToList()
+              .GroupBy(x => x.Email.ToLower().Trim())
+              .ToDictionary(x => x.Key, s => s.FirstOrDefault());
 
+            var listResult = new List<string>();
+            var listRequestChangeSalary = new List<SalaryChangeRequestEmployee>();
+            long employeeId;
+            double realSalary;
+
+            foreach (var dto in input.RequestChangeSalaryEmployees)
+            {
+                try
+                {
+                    long newLevelId = dictLevel[dto.ToLevelCode.ToLower().Trim()].Id;
+                    if (!dicEmployee.ContainsKey(dto.EmailAddressToLowerTrim)) 
+                    {
+                        listResult.Add($"{dto.EmailAddress} - fail: not found in HRM");
+                        continue;
+                    }
+                    employeeId = dicEmployee[dto.EmailAddressToLowerTrim].Id;
+                    realSalary = dicEmployee[dto.EmailAddressToLowerTrim].RealSalary;
+                    await WorkScope.InsertAsync(new SalaryChangeRequestEmployee()
+                    {
+                        EmployeeId = employeeId,
+                        ToSalary = dto.SalaryIncrease + realSalary,
+                        ToLevelId = newLevelId,
+                        ToUserType = dto.ToUserType
+                    });
+
+                    listResult.Add($"{dto.EmailAddress} - success");
+
+                }
+                catch (Exception ex)
+                {
+                    listResult.Add($"{dto.EmailAddress} - error: " + ex.Message);
+                }
+
+            }
+            return listResult;
+        }
+        
         private void ValidUpdate(UpdateSalaryRequestDto input)
         {
             var isExist = WorkScope.GetAll<SalaryChangeRequest>()

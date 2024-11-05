@@ -5,6 +5,7 @@ using HRMv2.Manager.Notifications.Email.Dto;
 using HRMv2.Manager.SalaryRequestEmployees.Dto;
 using HRMv2.Manager.SalaryRequests;
 using HRMv2.Manager.SalaryRequests.Dto;
+using HRMv2.NCC;
 using Microsoft.AspNetCore.Mvc;
 using NccCore.Paging;
 using System;
@@ -148,6 +149,13 @@ namespace HRMv2.APIs.SalaryChangeRequests
         public async Task<FileBase64Dto> GetTemplateToImportCheckpoint()
         {
             return await _salaryRequestManager.GetTemplateToImportCheckpoint();
+        }
+
+        [HttpPost]
+        [NccAuthentication]
+        public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
+        {
+          return  await _salaryRequestManager.CreateSalaryChangeRequestFromCheckpointTool(input);
         }
 
     }
