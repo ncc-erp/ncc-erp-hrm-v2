@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Bonuses
 {
-    [AbpAuthorize(PermissionNames.Bonus_View)]
+    
     public class BonusAppService : HRMv2AppServiceBase
     {
         private readonly BonusManager _bonusManager;
@@ -34,6 +34,7 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public List<GetEmployeeBasicInfoDto> GetAllEmployeeNotInBonus(long bonusId)
         {
             return _bonusManager.GetAllEmployeeNotInBonus(bonusId);
@@ -61,6 +62,7 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public async Task<bool> IsBonusHasEmployee(long bonusId)
         {
             return await _bonusManager.IsBonusHasEmployee(bonusId);
@@ -73,6 +75,7 @@ namespace HRMv2.APIs.Bonuses
 
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public Task<List<DateTime>> GetListMonthFilter()
         {
             return _bonusManager.GetListMonthFilter();
@@ -86,7 +89,6 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpGet]
-
         [AbpAuthorize(PermissionNames.Bonus_BonusDetail_TabInformation_View, PermissionNames.Bonus_BonusDetail)]
         public async Task<GetDetailBonusDto> GetBonusDetail(long id)
         {
@@ -95,7 +97,6 @@ namespace HRMv2.APIs.Bonuses
 
 
         [HttpPost]
-
         [AbpAuthorize(PermissionNames.Bonus_BonusDetail_TabEmployee_View)]
         public async Task<GridResult<GetBonusEmployeeDto>> GetAllBonusEmployee(long id, GetBonusEmployeeInputDto input)
         {
@@ -103,7 +104,6 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpPost]
-
         [AbpAuthorize(PermissionNames.Bonus_BonusDetail_TabEmployee_QuickAdd)]
         public async Task<AddEmployeeToBonusDto> QuickAddEmployeeToBonus(AddEmployeeToBonusDto input)
         {
@@ -111,7 +111,6 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpPost]
-
         [AbpAuthorize(PermissionNames.Bonus_BonusDetail_TabEmployee_Add)]
         public async Task<AddEmployeeToBonusDto> MultipleAddEmployeeToBonus(AddEmployeeToBonusDto input)
         {
@@ -119,7 +118,6 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpPut]
-
         [AbpAuthorize(PermissionNames.Bonus_BonusDetail_TabEmployee_Edit)]
         public async Task<EditEmployeeToBonusDto> UpdateEmployeeInBonus(EditEmployeeToBonusDto input)
         {
@@ -127,7 +125,6 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpDelete]
-
         [AbpAuthorize(PermissionNames.Bonus_BonusDetail_TabEmployee_Delete)]
         public async Task<long> DeleteEmployeeFromBonus(long id, long bonusId)
         {
@@ -136,6 +133,7 @@ namespace HRMv2.APIs.Bonuses
 
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public async Task<List<long>> GetAllEmployeeInBonus(long bonusId)
         {
             return await _bonusManager.GetAllEmployeeInBonus(bonusId);
@@ -150,13 +148,13 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public Task<List<DateTime>> GetListMonthFilterOfEmployee(long employeeId)
         {
             return _bonusManager.GetListMonthFilterOfEmployee(employeeId);
         }
 
         [HttpPost]
-
         [AbpAuthorize(PermissionNames.Bonus_BonusDetail_TabEmployee_Import)]
         public async Task<Object> ImportEmployeeToBonus([FromForm] ImportFileDto input)
         {
@@ -164,30 +162,35 @@ namespace HRMv2.APIs.Bonuses
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public List<GetBonusDto> GetAll()
         {
             return _bonusManager.GetAll();
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public async Task<AddBonusForEmployeeDto> AddBonusForEmployee(AddBonusForEmployeeDto input)
         {
             return await _bonusManager.AddBonusForEmployee(input);
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public MailPreviewInfoDto GetBonusTemplate(long bonusEmployeeId)
         {
             return _bonusManager.GetBonusTemplate(bonusEmployeeId);
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public void SendMailToOneEmployee(SendMailBonusDto input)
         {
              _bonusManager.SendMailToOneEmployee(input);
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Bonus_View)]
         public string SendMailToAllEmployee(long id, GetBonusEmployeeInputDto input)
         {
             return _bonusManager.SendMailToAllEmployee(id, input);
