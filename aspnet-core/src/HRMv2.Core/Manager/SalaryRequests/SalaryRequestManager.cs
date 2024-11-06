@@ -437,6 +437,7 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
                         Salary = employee.Salary, 
                         ToSalary = dto.SalaryIncrease + realSalary,
                         ApplyDate = input.ApplyMonth,
+                        Note = $"Create from Checkpoint by {AbpSession.UserId.Value}"
                     });
 
                     listResult.Add($"{dto.EmailAddress} - success");
