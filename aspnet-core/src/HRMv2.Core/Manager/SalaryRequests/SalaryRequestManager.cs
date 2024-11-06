@@ -377,12 +377,13 @@ namespace HRMv2.Manager.SalaryRequests
             else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
             return await query.GetGridResult(query, input.GridParam);
         }
-public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
+        public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
         {
             var newChangeRequest = Create(new CreateSalaryRequestDto
             {
                 Name = input.Name ?? "Checkpoint",
-                ApplyMonth = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 1)
+                ApplyMonth = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 1),
+               
             });
 
             var dictLevel = WorkScope.GetAll<Level>()
@@ -396,7 +397,6 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
               .Select(x => new
               { 
                   x.Id,
-                  x.Level,
                   x.Email,
                   x.Salary,
                   x.RealSalary,
@@ -408,7 +408,6 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
 
             var listResult = new List<string>();
             var listRequestChangeSalary = new List<SalaryChangeRequestEmployee>();
-            double realSalary;
 
             foreach (var dto in input.RequestChangeSalaryEmployees)
             {
@@ -424,18 +423,15 @@ public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(Crea
                         listResult.Add($"{dto.EmailAddress} - fail: not found in HRM");
                         continue;
                     }
-                    long newLevelId = dictLevel[dto.ToLevelCodeToLowerTrim].Id;
                     var employee = dicEmployee[dto.EmailAddressToLowerTrim];
-                    realSalary = dicEmployee[dto.EmailAddressToLowerTrim].RealSalary;
                     await WorkScope.InsertAsync(new SalaryChangeRequestEmployee()
                     {
                         EmployeeId = employee.Id,
-                        LevelId = employee.Level.Id, 
-                        ToLevelId = newLevelId,
+                        ToLevelId = dictLevel[dto.ToLevelCodeToLowerTrim].Id,                    
                         FromUserType = employee.UserType,
                         ToUserType = employee.UserType,
                         Salary = employee.Salary, 
-                        ToSalary = dto.SalaryIncrease + realSalary,
+                        ToSalary = dto.SalaryIncrease + employee.RealSalary,
                         ApplyDate = input.ApplyMonth,
                         Note = $"Create from Checkpoint by {AbpSession.UserId.Value}"
                     });
