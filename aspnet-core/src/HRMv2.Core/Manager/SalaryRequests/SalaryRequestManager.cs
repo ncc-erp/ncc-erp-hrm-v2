@@ -1,4 +1,5 @@
-﻿using Abp.BackgroundJobs;
+﻿
+using Abp.BackgroundJobs;
 using Abp.Runtime.Caching;
 using Abp.UI;
 using HRMv2.BackgroundJob.SendMail;
@@ -379,12 +380,25 @@ namespace HRMv2.Manager.SalaryRequests
         }
         public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
         {
-            var newChangeRequest = Create(new CreateSalaryRequestDto
+            var isExist = WorkScope.GetAll<SalaryChangeRequest>()
+              .Any(x => x.Name.Trim() == input.Name.Trim());
+            if (isExist)
+            {
+                throw new UserFriendlyException($"Request name is Already Exist");
+            }
+
+            var newChagngRequestId =  WorkScope.InsertAndGetId(new SalaryChangeRequest
             {
                 Name = input.Name ?? "Checkpoint",
                 ApplyMonth = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 1),
-               
+                Status = SalaryRequestStatus.New,
             });
+           
+            var dictChageRequest = WorkScope.GetAll<SalaryChangeRequest>()
+                .Select(s => new { s.Id })
+                .ToList()
+                .GroupBy(s => s.Id)
+                .ToDictionary(s => s.Key, s => s.FirstOrDefault());
 
             var dictLevel = WorkScope.GetAll<Level>()
                                       .Select(s => new { s.Code, s.Id })
@@ -427,7 +441,7 @@ namespace HRMv2.Manager.SalaryRequests
                     var employee = dicEmployee[dto.EmailAddressToLowerTrim];
                     await WorkScope.InsertAsync(new SalaryChangeRequestEmployee()
                     {
-                        SalaryChangeRequestId = input.Id,
+                        SalaryChangeRequestId = newChagngRequestId,
                         LevelId = employee.LevelId,
                         ToLevelId = dictLevel[dto.ToLevelCodeToLowerTrim].Id,
                         JobPositionId = employee.JobPositionId,
@@ -437,7 +451,7 @@ namespace HRMv2.Manager.SalaryRequests
                         ToUserType = employee.UserType,
                         Salary = employee.RealSalary, 
                         ToSalary = dto.SalaryIncrease + employee.RealSalary,
-                        ApplyDate = newChangeRequest.ApplyMonth,
+                        ApplyDate = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 1),
                         Note = input.Name,
                         HasContract = false,
                         Type = SalaryRequestType.Change,

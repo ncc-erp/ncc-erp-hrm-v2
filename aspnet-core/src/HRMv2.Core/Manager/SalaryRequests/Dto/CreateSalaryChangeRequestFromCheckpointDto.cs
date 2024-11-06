@@ -11,7 +11,7 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.SalaryRequests.Dto
 {
-    public class CreateSalaryChangeRequestFromCheckpointDto : Entity<long>
+    public class CreateSalaryChangeRequestFromCheckpointDto 
     {
         public string Name { get; set; }
         public DateTime ApplyMonth { get; set; }
