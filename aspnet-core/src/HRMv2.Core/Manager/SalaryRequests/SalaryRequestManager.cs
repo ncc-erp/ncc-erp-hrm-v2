@@ -391,14 +391,15 @@ namespace HRMv2.Manager.SalaryRequests
                                       .ToList()
                                       .GroupBy(s => s.Code.ToLower().Trim())
                                       .ToDictionary(s => s.Key, s => s.FirstOrDefault());
-            
+
             var dicEmployee = WorkScope.GetAll<Employee>()
               .Where(x => x.Status != EmployeeStatus.Quit)
               .Select(x => new
               { 
                   x.Id,
+                  x.LevelId,
+                  x.JobPositionId,
                   x.Email,
-                  x.Salary,
                   x.RealSalary,
                   x.UserType,
               })
@@ -426,14 +427,20 @@ namespace HRMv2.Manager.SalaryRequests
                     var employee = dicEmployee[dto.EmailAddressToLowerTrim];
                     await WorkScope.InsertAsync(new SalaryChangeRequestEmployee()
                     {
+                        SalaryChangeRequestId = input.Id,
+                        LevelId = employee.LevelId,
+                        ToLevelId = dictLevel[dto.ToLevelCodeToLowerTrim].Id,
+                        JobPositionId = employee.JobPositionId,
+                        ToJobPositionId = employee.JobPositionId,
                         EmployeeId = employee.Id,
-                        ToLevelId = dictLevel[dto.ToLevelCodeToLowerTrim].Id,                    
                         FromUserType = employee.UserType,
                         ToUserType = employee.UserType,
-                        Salary = employee.Salary, 
+                        Salary = employee.RealSalary, 
                         ToSalary = dto.SalaryIncrease + employee.RealSalary,
-                        ApplyDate = input.ApplyMonth,
-                        Note = $"Create from Checkpoint by {AbpSession.UserId.Value}"
+                        ApplyDate = newChangeRequest.ApplyMonth,
+                        Note = input.Name,
+                        HasContract = false,
+                        Type = SalaryRequestType.Change,
                     });
 
                     listResult.Add($"{dto.EmailAddress} - success");
