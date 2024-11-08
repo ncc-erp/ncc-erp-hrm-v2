@@ -380,13 +380,6 @@ namespace HRMv2.Manager.SalaryRequests
         }
         public async Task<List<string>> CreateSalaryChangeRequestFromCheckpointTool(CreateSalaryChangeRequestFromCheckpointDto input)
         {
-            var isExist = WorkScope.GetAll<SalaryChangeRequest>()
-              .Any(x => x.Name.Trim() == input.Name.Trim());
-            if (isExist)
-            {
-                throw new UserFriendlyException($"Request name is Already Exist");
-            }
-
             var newChagngRequestId =  WorkScope.InsertAndGetId(new SalaryChangeRequest
             {
                 Name = input.Name ?? "Checkpoint",
@@ -416,7 +409,7 @@ namespace HRMv2.Manager.SalaryRequests
                   x.Email,
                   x.RealSalary,
                   x.UserType,
-              })
+              }) 
               .ToList()
               .GroupBy(x => x.Email.ToLower().Trim())
               .ToDictionary(x => x.Key, s => s.FirstOrDefault());
