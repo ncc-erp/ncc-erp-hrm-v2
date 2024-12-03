@@ -553,24 +553,23 @@ namespace HRMv2.Manager.Payrolls
                     ApplyMonth = s.Payroll.ApplyMonth,
                 }
                 ).FirstOrDefault();
-          //  var confirmUrl=  hrmv2Uri + $"app/payslip-confirm?id={paySlipId}"
-            var confirmUrl = $"https://dev-hrmv2.nccsoft.vn/app/payslip-confirm?id={paySlipId}";
+            var confirmUrl = hrmv2Uri + $"app/payslip-confirm?id={paySlipId}";         
             var check = rs.ApplyMonth.ToString("MM/yyyy");
             var message = $@"Chào anh/chị {rs.FullName},Bộ phận kế toán gửi anh/chị bảng lương tháng {rs.ApplyMonth.ToString("MM/yyyy")}:
 {confirmUrl}
 Anh/chị vui lòng xác nhận bảng lương trước {deadLine.ToString("HH:mm dd/MM/yyyy ")}.Sau thời điểm trên, mọi trường hợp thiếu lương sẽ không được giải quyết.";
-        //  var url = _settingManager.GetSettingValueForApplication(AppSettingNames.SendDMToMezon);
+            var url = _settingManager.GetSettingValueForApplication(AppSettingNames.SendDMToMezon);
             var startIndex = message.IndexOf(confirmUrl) -1;
             var endIndex = startIndex + confirmUrl.Length;
             var processedMessage = message
-            .Replace("\r", "")  // Loại bỏ ký tự xuống dòng không cần thiết
-            .Replace("\n", "\\n")  // Escape xuống dòng
+            .Replace("\r", "")  
+            .Replace("\n", "\\n")  
             .Replace("\"", "\\\"");
             var content = $@"{{""t"":""{processedMessage}"",""lk"":[{{""s"":{startIndex},""e"":{endIndex}}}]}}";
             var dto = new DmMezonDto
             {
                 UserName = rs.Email.Split('@')[0], 
-                Url = "https://webhook.mezon.ai/clanwebhooks/MTczMjg0NTk2NzcxNDUxMzQ4MzoxODQwNjU4NzA3MzIzNTU1ODQwOjE4NDA2NTkwMzQzNDA4NTU4MDg.VE7FAfVh15hCaCWhHAHKV-CORfPedWtXwn8_cnWUBbg",
+                Url = url,
                 Content = content
             };
 

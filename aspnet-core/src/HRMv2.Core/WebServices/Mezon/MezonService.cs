@@ -55,7 +55,7 @@ namespace HRMv2.WebServices.Mezon
                 Logger.Error("channelUrlToSend null or empty");
                 return;
             }
-            var url = $"{input.Url}/{input.UserName}";
+            var url = $"{channelUrlToSend}/{input.UserName}";
             Post(url, new { content = input.Content });
         }
 
