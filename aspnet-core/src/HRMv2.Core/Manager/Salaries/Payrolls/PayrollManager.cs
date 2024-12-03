@@ -10,8 +10,11 @@ using HRMv2.Manager.Debts;
 using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.Email.Dto;
 using HRMv2.Manager.Notifications.NotifyToChannel;
+using HRMv2.Manager.Notifications.SendDMToMezon;
+using HRMv2.Manager.Notifications.SendDMToMezon.Dto;
 using HRMv2.Manager.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips;
+using HRMv2.Manager.Salaries.Payslips.Dto;
 using HRMv2.Manager.Timesheet;
 using HRMv2.NccCore;
 using HRMv2.Utils;
@@ -39,6 +42,7 @@ namespace HRMv2.Manager.Payrolls
         private readonly EmailManager _emailManager;
         private readonly PayslipManager _payslipManager;
         private readonly NotificationService _notificationService;
+        private readonly SendDmToMezon _sendDmToMezon;
 
         public PayrollManager(TimesheetManager timesheetManager,
             FinfastWebService finfastWebService,
@@ -47,7 +51,8 @@ namespace HRMv2.Manager.Payrolls
             PayslipManager payslipManager,
             IWorkScope workScope,
             EmailManager emailManager,
-            NotificationService notificationService) : base(workScope)
+            NotificationService notificationService,
+             SendDmToMezon sendDmToMezon) : base(workScope)
         {
             _timesheetManager = timesheetManager;
             _finfastService = finfastWebService;
@@ -56,6 +61,7 @@ namespace HRMv2.Manager.Payrolls
             _emailManager = emailManager;
             _payslipManager = payslipManager;
             _notificationService = notificationService;
+            _sendDmToMezon = sendDmToMezon;
         }
 
         public IQueryable<GetPayrollDto> QueryAllPayroll()
@@ -532,5 +538,62 @@ namespace HRMv2.Manager.Payrolls
                 }
             }
         }
+
+        public void SendDmConfirmPaySlip(long paySlipId, DateTime deadLine)
+        {
+            var hrmv2Uri = HRMv2Consts.HRM_Uri;
+            var rs = WorkScope.GetAll<Payslip>()
+                .Include(s => s.Employee)
+                .Include(s => s.Payroll)
+                .Where(s => s.Id == paySlipId)
+                .Select(s => new
+                { 
+                    Email = s.Employee.Email,
+                    FullName = s.Employee.FullName,
+                    ApplyMonth = s.Payroll.ApplyMonth,
+                }
+                ).FirstOrDefault();
+          //  var confirmUrl=  hrmv2Uri + $"app/payslip-confirm?id={paySlipId}"
+            var confirmUrl = $"https://dev-hrmv2.nccsoft.vn/app/payslip-confirm?id={paySlipId}";
+            var check = rs.ApplyMonth.ToString("MM/yyyy");
+            var message = $@"Chào anh/chị {rs.FullName},Bộ phận kế toán gửi anh/chị bảng lương tháng {rs.ApplyMonth.ToString("MM/yyyy")}:
+{confirmUrl}
+Anh/chị vui lòng xác nhận bảng lương trước {deadLine.ToString("HH:mm dd/MM/yyyy ")}.Sau thời điểm trên, mọi trường hợp thiếu lương sẽ không được giải quyết.";
+        //  var url = _settingManager.GetSettingValueForApplication(AppSettingNames.SendDMToMezon);
+            var startIndex = message.IndexOf(confirmUrl) -1;
+            var endIndex = startIndex + confirmUrl.Length;
+            var processedMessage = message
+            .Replace("\r", "")  // Loại bỏ ký tự xuống dòng không cần thiết
+            .Replace("\n", "\\n")  // Escape xuống dòng
+            .Replace("\"", "\\\"");
+            var content = $@"{{""t"":""{processedMessage}"",""lk"":[{{""s"":{startIndex},""e"":{endIndex}}}]}}";
+            var dto = new DmMezonDto
+            {
+                UserName = rs.Email.Split('@')[0], 
+                Url = "https://webhook.mezon.ai/clanwebhooks/MTczMjg0NTk2NzcxNDUxMzQ4MzoxODQwNjU4NzA3MzIzNTU1ODQwOjE4NDA2NTkwMzQzNDA4NTU4MDg.VE7FAfVh15hCaCWhHAHKV-CORfPedWtXwn8_cnWUBbg",
+                Content = content
+            };
+
+            _sendDmToMezon.SendDMToMezon(dto);
+
+        }
+
+        public void SendAllDMPaySlipToMezon(SendMailAllEmployeeDto input)
+        {
+            var listPaySlip = WorkScope.GetAll<Payslip>()
+                .Where(s => s.PayrollId == input.PayrollId)
+                .Select(s => s.Id)
+                .ToList();
+            if (listPaySlip.IsEmpty())
+            {
+                throw new UserFriendlyException($"There is no payslip in the payroll {input.PayrollId}.");
+            }
+
+            foreach (var payslip in listPaySlip)
+            {
+                SendDmConfirmPaySlip(payslip,input.Deadline);
+            }
+        }
+
     }
 }

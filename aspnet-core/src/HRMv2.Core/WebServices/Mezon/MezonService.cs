@@ -1,6 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Runtime.Session;
+using DocumentFormat.OpenXml.Spreadsheet;
+using HRMv2.Configuration;
+using HRMv2.Manager.Notifications.SendDMToMezon.Dto;
 using Microsoft.Extensions.Configuration;
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +40,23 @@ namespace HRMv2.WebServices.Mezon
                 return;
             }
             Post(channelUrlToSend, new { type = "HRM", message = new { username = "HRM", t = mezonMessage } });
+        }
+
+        public void SendDMToMezon(DmMezonDto input)
+        {
+            if (_isNotifyToMezon != "true")
+            {
+                Logger.Info("_isNotifyToMezon=" + _isNotifyToMezon + " => stop");
+                return;
+            }
+            var channelUrlToSend = string.IsNullOrEmpty(_mezonDevChannelUrl) ? input.Url : _mezonDevChannelUrl;
+            if (string.IsNullOrEmpty(channelUrlToSend))
+            {
+                Logger.Error("channelUrlToSend null or empty");
+                return;
+            }
+            var url = $"{input.Url}/{input.UserName}";
+            Post(url, new { content = input.Content });
         }
 
     }

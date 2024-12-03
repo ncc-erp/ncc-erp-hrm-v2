@@ -64,6 +64,7 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             {
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.ITMezonChannel, input.ITChannel);
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.PayrollMezonChannel, input.PayrollChannel);
+                await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.SendDMToMezon, input.SendDMToMezon);
             } 
             else if (input.NotifyPlatform == AppConsts.NotifyToKomu)
             {
@@ -81,6 +82,8 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             {
                 setting.ITChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.ITMezonChannel);
                 setting.PayrollChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.PayrollMezonChannel);
+                setting.SendDMToMezon = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.SendDMToMezon);
+
             }
             else if (platform == AppConsts.NotifyToKomu)
             {

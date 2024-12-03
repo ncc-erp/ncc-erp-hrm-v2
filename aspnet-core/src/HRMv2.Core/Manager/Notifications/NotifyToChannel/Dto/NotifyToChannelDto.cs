@@ -11,6 +11,7 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel.Dto
         public string NotifyPlatform { get; set; }
         public string ITChannel { get; set; }
         public string PayrollChannel { get; set; }
+        public string SendDMToMezon { get; set; }
     }
 
     public class NotifyToPlatformDto
