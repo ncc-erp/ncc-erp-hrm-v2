@@ -45,6 +45,7 @@ using HRMv2.Authorization;
 using Abp.Domain.Uow;
 using HRMv2.Manager.Timesheet.Dto;
 using Abp.Json;
+using HRMv2.Manager.Payrolls;
 
 
 namespace HRMv2.Manager.Salaries.Payslips
@@ -60,6 +61,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         private readonly IAbpSession _abpSession;
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
+        private readonly PayrollManager _parollManager;
 
 
 
@@ -72,7 +74,8 @@ namespace HRMv2.Manager.Salaries.Payslips
              EmployeeManager employeeManager,
               IAbpSession abpSession,
               RoleManager roleManager,
-              UserManager userManager
+              UserManager userManager,
+              PayrollManager payrollManager
              ) : base(workScope)
         {
             _emailManager = emailManager;
@@ -84,7 +87,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             _abpSession = abpSession;
             _roleManager = roleManager;
             _userManager = userManager;
-
+            _parollManager = payrollManager;
         }
 
         public IQueryable<GetPayslipDto> QueryAllPayslip()
@@ -2245,7 +2248,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 _backgroundJobManager.Enqueue<SendMail, MailPreviewInfoDto>(mailInput, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendMail));
                 delaySendMail += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
             };
-
+            
             return $"Started sending {emailPayslips.Count} email.";
         }
 
@@ -2291,7 +2294,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 _backgroundJobManager.Enqueue<SendMail, MailPreviewInfoDto>(mailInput, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendMail));
                 delaySendMail += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
             };
-
+            _parollManager.SendAllDMPaySlipToMezon(input);
             return $"Started sending {emailPayslips.Count} email.";
         }
         private Dictionary<long, List<PayslipSalaryEmailDto>> GetDicInputPayslipSalaries(List<long> payslipIds)
@@ -2345,8 +2348,8 @@ namespace HRMv2.Manager.Salaries.Payslips
             }
 
             payslip.ComplainDeadline = input.Deadline;
-            WorkScope.UpdateAsync(payslip);
-
+            WorkScope.UpdateAsync(payslip);         
+            _parollManager.SendDmConfirmPaySlip(input.PayslipId,input.Deadline);
             _emailManager.Send(input.MailContent);
         }
 
