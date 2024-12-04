@@ -740,15 +740,12 @@ namespace HRMv2.Manager.Categories.Bonuss
 
         public async Task<List<string>> CreateBonusesFromCheckpointTool(AcceptBonusFromCheckpointDto input)
         {
-
-            var bonus = await Create(new BonusDto
+            var bonusId =  WorkScope.InsertAndGetId(new Bonus
             {
                 Name = input.Name,
                 ApplyMonth = input.ApplyMonth,
+                IsActive = true,
             });
-
-            var bonusId = bonus.Id;
-
 
             var dicEmployeeEmailToId = WorkScope.GetAll<Employee>()
                                      .Where(s => s.Status != EmployeeStatus.Quit)
