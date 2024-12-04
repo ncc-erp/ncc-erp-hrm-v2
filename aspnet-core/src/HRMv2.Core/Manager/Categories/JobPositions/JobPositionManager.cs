@@ -41,13 +41,16 @@ namespace HRMv2.Manager.Categories.JobPositions
 
         public List<JobPositionPublicDto> GetAllPublic()
         {
-            return QueryAllJobPosition().Select(x => new JobPositionPublicDto
+            using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
             {
-                Name = x.Name,
-                Code = x.Code,
-                Color = x.Color,
-                ShortName = x.ShortName
-            }).ToList();
+                return QueryAllJobPosition().Select(x => new JobPositionPublicDto
+                {
+                    Name = x.Name,
+                    Code = x.Code,
+                    Color = x.Color,
+                    ShortName = x.ShortName
+                }).ToList();
+            }
         }
 
         public async Task<GridResult<JobPositionDto>> GetAllPaging(GridParam input)
