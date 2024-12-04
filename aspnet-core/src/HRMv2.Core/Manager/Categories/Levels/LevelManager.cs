@@ -39,13 +39,16 @@ namespace HRMv2.Manager.Categories.Levels
 
         public List<LevelPublicDto> GetAllPublic()
         {
-            return QueryAllLevel().Select(x => new LevelPublicDto
+            using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
             {
-                Name = x.Name,
-                Code = x.Code,
-                Color = x.Color,
-                ShortName = x.ShortName
-            }).ToList();
+                return QueryAllLevel().Select(x => new LevelPublicDto
+                {
+                    Name = x.Name,
+                    Code = x.Code,
+                    Color = x.Color,
+                    ShortName = x.ShortName
+                }).ToList();
+            }
         }
 
         public async Task<GridResult<LevelDto>> GetAllPaging(GridParam input)

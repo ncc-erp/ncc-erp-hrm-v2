@@ -55,17 +55,20 @@ namespace HRMv2.Manager.Categories
 
         public List<BranchPublicDto> GetAllPublic()
         {
-            return QueryAllBranch().Select(x => new BranchPublicDto
+            using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
             {
-                Name = x.Name,
-                Code = x.Code,
-                Color = x.Color,
-                ShortName = x.ShortName,
-                DirectorEmail = WorkScope.GetAll<Employee>()
+                return QueryAllBranch().Select(x => new BranchPublicDto
+                {
+                    Name = x.Name,
+                    Code = x.Code,
+                    Color = x.Color,
+                    ShortName = x.ShortName,
+                    DirectorEmail = WorkScope.GetAll<Employee>()
                 .Where(d => d.Id == x.CEOId)
                 .Select(d => d.Email)
                 .FirstOrDefault(),
-            }).ToList();
+                }).ToList();
+            }
         }
 
         public async Task<GridResult<BranchDto>> GetAllPaging(GridParam input)
