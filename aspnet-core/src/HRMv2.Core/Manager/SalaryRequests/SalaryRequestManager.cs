@@ -396,12 +396,7 @@ namespace HRMv2.Manager.SalaryRequests
                 ApplyMonth = new DateTime(input.ApplyMonth.Year, input.ApplyMonth.Month, 1),
                 Status = SalaryRequestStatus.New,
             });
-           
-            var dictChageRequest = WorkScope.GetAll<SalaryChangeRequest>()
-                .Select(s => new { s.Id })
-                .ToList()
-                .GroupBy(s => s.Id)
-                .ToDictionary(s => s.Key, s => s.FirstOrDefault());
+                  
 
             var dictLevel = WorkScope.GetAll<Level>()
                                       .Select(s => new { s.Code, s.Id })
