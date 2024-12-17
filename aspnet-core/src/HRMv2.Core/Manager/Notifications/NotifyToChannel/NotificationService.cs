@@ -70,6 +70,7 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             {
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.KomuITChannelId, input.ITChannel);
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.PayrollChannelId, input.PayrollChannel);
+                await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.MezonClanWebhookURL, input.ClanWebhookURL);
             }
         }
 
@@ -89,6 +90,7 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
 
                 setting.ITChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.KomuITChannelId);
                 setting.PayrollChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.PayrollChannelId);
+                setting.ClanWebhookURL = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.MezonClanWebhookURL);
             }
             return setting;
         }
