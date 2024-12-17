@@ -139,7 +139,7 @@ namespace HRMv2.Constants.Dictionary
                 MailFuncEnum.LinkToPreviewPayslip,
                 new MailInfoDto
                 {
-                    Name = "Payslip Email Link Template",
+                    Name = "Payslip Email Link ",
                     Description = "",
                     Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }
@@ -148,7 +148,7 @@ namespace HRMv2.Constants.Dictionary
                 MailFuncEnum.MezonDM,
                 new MailInfoDto
                 {
-                    Name = "Payslip Mezon Direct Message Link Template",
+                    Name = "Payslip Mezon Direct Message Link ",
                     Description = "",
                     Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }

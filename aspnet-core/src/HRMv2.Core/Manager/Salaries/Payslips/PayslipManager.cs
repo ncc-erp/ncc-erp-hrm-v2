@@ -3090,7 +3090,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 delaySendDM += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
             };
 
-            return $"Started sending {mezonPayslip.Count} direct message user.";
+            return $"Started sending {mezonPayslip.Count} Mezon direct message to {mezonPayslip.Count} user.";
         }
 
         public void SendDirectMessageToUser(long paySlipId)
