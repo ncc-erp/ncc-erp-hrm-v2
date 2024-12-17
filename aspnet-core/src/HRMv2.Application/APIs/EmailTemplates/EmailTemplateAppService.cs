@@ -36,9 +36,20 @@ namespace HRMv2.APIs.EmailTemplates
         }
 
         [HttpGet]
+        public GetMezonPreviewInfoDto PreviewTemplateMezon(long id)
+        {
+            return _emailManager.PreviewTemplateMezon(id);
+        }
+
+        [HttpGet]
         public GetMailPreviewInfoDto GetTemplateById(long id)
         {
             return _emailManager.GetTemplateById(id);
+        }
+        [HttpGet]
+        public GetMezonPreviewInfoDto GetTemplateMezonById(long id)
+        {
+            return _emailManager.GetTemplateMezonById(id);
         }
 
         [HttpPost]

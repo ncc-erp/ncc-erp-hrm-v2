@@ -22,6 +22,7 @@ using HRMv2.Manager.Bonuses.Dto;
 using HRMv2.Sessions;
 using HRMv2.Manager.Timesheet.Dto;
 using HRMv2.Manager.Timesheet;
+using HRMv2.Manager.Notifications.SendDMToMezon.Dto;
 
 namespace HRMv2.APIs.Payslips
 {
@@ -165,7 +166,7 @@ namespace HRMv2.APIs.Payslips
         {
             _payslipManager.SendMailToOneEmployee(input);
         }
-
+  
         [HttpPost]
         public string SendMailToAllEmployee(SendMailAllEmployeeDto input)
         {
@@ -289,5 +290,18 @@ namespace HRMv2.APIs.Payslips
             return await _payslipManager.ComplainPayslipMail(input);
         }
 
+    
+
+        [HttpPost]
+        public void SendDMConfirmSalary(long payslipId)
+        {
+            _payslipManager.SendDirectMessageToUser(payslipId);
+        }
+
+        [HttpPost]
+        public string SendDirectMessageToAllEmployee(SendMailAllEmployeeDto input)
+        {
+            return _payslipManager.SendDirectMessageAllUser(input);
+        }
     }
 }

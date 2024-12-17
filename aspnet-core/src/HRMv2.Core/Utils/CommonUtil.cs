@@ -471,6 +471,8 @@ namespace HRMv2.Utils
                 case MailFuncEnum.ContractLD:
                 case MailFuncEnum.ContractTV:
                     return TemplateType.Print;
+                case MailFuncEnum.MezonDM:
+                    return TemplateType.Mezon;
             }
             return TemplateType.Mail;
         }

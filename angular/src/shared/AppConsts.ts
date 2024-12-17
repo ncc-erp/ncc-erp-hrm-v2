@@ -205,6 +205,10 @@ export class AppConsts {
         2: {
             name: "Print",
             class: "badge badge-warning"
+        },
+        3:{
+            name: "Mezon",
+            class: "badge badge-dark"
         }
     }
     static readonly PlanQuitEmployeeStatus = {

@@ -155,13 +155,14 @@ namespace HRMv2.Constants.Enum
             PayrollRejectedByCEO= 12,
             PayrollExecuted = 13,
             LinkToPreviewPayslip = 14,
-
+            MezonDM = 15,
         }
 
         public enum TemplateType
         {
             Mail = 1,
-            Print = 2
+            Print = 2,
+            Mezon = 3
         }
         
         public enum PayslipConfirmStatus

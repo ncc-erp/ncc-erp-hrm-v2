@@ -282,6 +282,7 @@ export enum EmailFunc  {
     PayrollRejectedByCEO= 12,
     PayrollExecuted = 13,
     LinkToPreviewPayslip = 14,
+    MezonDM = 15
 }
 export enum CheckValidType{
     Valid = 1,
@@ -290,7 +291,8 @@ export enum CheckValidType{
 }
 export enum TemplateType{
     Mail = 1,
-    Print = 2
+    Print = 2,
+    Mezon =3,
 }
 export enum DateSelectorHomeEnum {
     MONTH = "Month",

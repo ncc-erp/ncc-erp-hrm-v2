@@ -1,6 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Runtime.Session;
+using HRMv2.Manager.Notifications.SendDMToMezon.Dto;
+using HRMv2.Manager.Notifications.SendDMToMezon.Dto.HRMv2.Manager.Notifications.SendDMToMezon.Dto;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +39,27 @@ namespace HRMv2.WebServices.Mezon
                 return;
             }
             Post(channelUrlToSend, new { type = "HRM", message = new { username = "HRM", t = mezonMessage } });
+        }
+
+        public void SendDirectMessageToUser(InputMezonDM input, string mezonUrl, string userName)
+        {
+            if (_isNotifyToMezon != "true")
+            {
+                Logger.Info("_isNotifyToMezon=" + _isNotifyToMezon + " => stop");
+                return;
+            }
+            var channelUrlToSend = string.IsNullOrEmpty(_mezonDevChannelUrl) ? mezonUrl : _mezonDevChannelUrl;
+            if (string.IsNullOrEmpty(channelUrlToSend))
+            {
+                Logger.Error("channelUrlToSend null or empty");
+                return;
+            }
+            var json = JsonConvert.SerializeObject(input, Formatting.Indented);
+            var obj = JsonConvert.DeserializeObject<dynamic>(json);
+            obj.content = JsonConvert.SerializeObject(obj.content);       
+            var url = $"{channelUrlToSend}/{userName}";
+            Post(url,obj);
+           
         }
 
     }

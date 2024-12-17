@@ -3,8 +3,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { EmailTemplateService } from '@app/service/api/email-template/email-template.service';
 import { MailService } from '@app/service/api/mail/mail.service';
 import { MailPreviewInfo, UpdateEmailTemplate } from '@app/service/model/mail/mail.dto';
+import { AppConsts } from '@shared/AppConsts';
 import {  EmailFunc, TemplateType } from '@shared/AppEnums';
 import { DialogComponentBase } from '@shared/dialog-component-base';
+import { appendFileSync } from 'fs';
 @Component({
   selector: 'app-edit-email-dialog',
   templateUrl: './edit-email-dialog.component.html',
@@ -12,7 +14,7 @@ import { DialogComponentBase } from '@shared/dialog-component-base';
 })
 export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialogData> implements OnInit {
   public templateId: number;
-  public mailInfo: MailPreviewInfo = {} as MailPreviewInfo;
+  public mailInfo: any;
   public saving: boolean = false;
   public ccS = [];
   public showDialogHeader: boolean = true;
@@ -21,24 +23,35 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
   public temporarySave: boolean;
   public EmailTypes = EmailFunc;
   public showSendMailHeader: boolean = true;
+  public type :number;
+  public TemplateTypes = AppConsts.TemplateType;
   constructor(injector: Injector, private emailTemplateService: EmailTemplateService) {
     super(injector)
   }
 
   ngOnInit(): void {
     Object.assign(this, this.dialogData)
+    
     if (this.templateId) {
       this.getTemplateById()
     }
   }
 
   getTemplateById() {
+    if(this.TemplateTypes[this.type].name == "Mezon"){
+      this.subscription.push(
+        this.emailTemplateService.getTemplateMezonById(this.templateId).subscribe(rs => {
+          this.mailInfo = rs.result
+          return;
+        })
+      )
+    } else{
     this.subscription.push(
       this.emailTemplateService.getTemplateById(this.templateId).subscribe(rs => {
         this.mailInfo = rs.result
       })
     )
-  }
+  }}
 
   save() {
     if (this.templateId) {

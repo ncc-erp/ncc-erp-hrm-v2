@@ -143,6 +143,15 @@ namespace HRMv2.Constants.Dictionary
                     Description = "",
                     Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }
+            },
+            {
+                MailFuncEnum.MezonDM,
+                new MailInfoDto
+                {
+                    Name = "Send Direct Message To User",
+                    Description = "",
+                    Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
+                }
             }
 
         };
