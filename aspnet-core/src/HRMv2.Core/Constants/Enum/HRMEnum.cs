@@ -162,7 +162,7 @@ namespace HRMv2.Constants.Enum
         {
             Mail = 1,
             Print = 2,
-            Mezon = 3
+            MezonDM = 3
         }
         
         public enum PayslipConfirmStatus

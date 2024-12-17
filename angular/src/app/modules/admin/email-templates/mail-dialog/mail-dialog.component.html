@@ -40,9 +40,17 @@
                 </div>
             </div>
         </div>
-        <div class=" email-content bg-white">
+        <div class=" email-content bg-white" *ngIf="TemplateTypes[this.type].name !='MezonDM'"> 
             <div [innerHtml]="sanitizer.bypassSecurityTrustHtml(mailInfo.bodyMessage)">
             </div>
+        </div>
+        <div class=" email-content" *ngIf="TemplateTypes[this.type].name =='MezonDM'"> 
+            <textarea 
+            class ="w-100"
+            style="height: 300px;"
+            readonly
+            [(ngModel)]="mailInfo.bodyMessage"
+            ></textarea>
         </div>
     </div>
     <div class="modal-footer">

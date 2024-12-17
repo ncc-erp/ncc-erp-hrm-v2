@@ -207,7 +207,7 @@ export class AppConsts {
             class: "badge badge-warning"
         },
         3:{
-            name: "Mezon",
+            name: "MezonDM",
             class: "badge badge-dark"
         }
     }

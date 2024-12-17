@@ -37,8 +37,9 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
     }
   }
 
+
   getTemplateById() {
-    if(this.TemplateTypes[this.type].name == "Mezon"){
+    if(this.TemplateTypes[this.type].name == "MezonDM"){
       this.subscription.push(
         this.emailTemplateService.getTemplateMezonById(this.templateId).subscribe(rs => {
           this.mailInfo = rs.result

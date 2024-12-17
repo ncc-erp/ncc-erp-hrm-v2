@@ -46,7 +46,7 @@
                                 </div>
                             </div>
                             <div class="px-2 mb-1">
-                                <div class="col-12">
+                                <div class="col-12" *ngIf="TemplateTypes[this.type].name != 'MezonDM'" >
                                     <editor class="w-100" [init]="{
                                         height: 580,
                                         class: 'w-100',
@@ -55,7 +55,14 @@
                                         toolbars: ['image']
                                         }" [(ngModel)]="mailInfo.bodyMessage">
                                     </editor>
-                                </div>
+                                    </div>
+                                <div class="col-12" *ngIf="TemplateTypes[this.type].name == 'MezonDM'" >
+                                        <textarea 
+                                                    class="w-100" 
+                                                    style="height: 500px; width: 500px;" 
+                                                    [(ngModel)]="mailInfo.bodyMessage">
+                                         </textarea>
+                                    </div>
                             </div>
                         </td>
                         <td style="max-width: 200px" *ngIf="mailInfo?.propertiesSupport?.length">

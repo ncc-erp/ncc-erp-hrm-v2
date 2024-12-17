@@ -61,7 +61,7 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
   }
 
   getFakeData() {
-    if(this.TemplateTypes[this.type].name == "Mezon"){
+    if(this.TemplateTypes[this.type].name == "MezonDM"){
       this.subscription.push(
         this.emailTemplateService.previewTemplateMezon(this.templateId).subscribe(rs => {
           this.mailInfo = rs.result

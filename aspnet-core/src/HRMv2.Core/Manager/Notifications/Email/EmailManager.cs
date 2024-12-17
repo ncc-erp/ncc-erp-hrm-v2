@@ -222,12 +222,7 @@ namespace HRMv2.Manager.Notifications.Email
         }
 
         public async Task<UpdateTemplateDto> UpdateTemplate(UpdateTemplateDto input)
-        {
-            if(input.Type == MailFuncEnum.MezonDM)
-            {
-                input.BodyMessage = Regex.Replace(input.BodyMessage, @"<[^>]+>", string.Empty);
-                input.BodyMessage = HttpUtility.HtmlDecode(input.BodyMessage);
-            }
+        {        
             var entity = ObjectMapper.Map<EmailTemplate>(input);
             entity.CCs = string.Join(",", input.ListCC);
             await WorkScope.UpdateAsync(entity);

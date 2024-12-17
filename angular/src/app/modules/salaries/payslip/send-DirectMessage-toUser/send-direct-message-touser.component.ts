@@ -28,11 +28,11 @@ export class SendDirectMessageToUserComponent extends AppComponentBase {
     super(injector)
     this.payslipId = data.payslipId
     if (!this.payslipId) {
-      this.title = "Send DM to all employee"
+      this.title = "Send Mezon direct message to all employees"
     }
     else {
        this.userName = data.email.split("@")[0];
-      this.title = `Send DM to ${this.userName}`
+      this.title = `Send Mezon direct message to ${this.userName}`
     }
    
   }
@@ -74,7 +74,7 @@ export class SendDirectMessageToUserComponent extends AppComponentBase {
     this.subscription.push(
            this.payslipService.sendDirectMessageToUser(this.payslipId).subscribe(rs =>{        
                 abp.message.success(
-                    `Direct Message sent to user with name ${this.userName}!`
+                    `Mezon direct message sent do ${this.userName}!`
                   );
                 this.dialogRef.close(true);         
            })

@@ -472,7 +472,7 @@ namespace HRMv2.Utils
                 case MailFuncEnum.ContractTV:
                     return TemplateType.Print;
                 case MailFuncEnum.MezonDM:
-                    return TemplateType.Mezon;
+                    return TemplateType.MezonDM;
             }
             return TemplateType.Mail;
         }

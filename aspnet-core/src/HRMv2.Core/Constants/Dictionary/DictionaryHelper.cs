@@ -148,7 +148,7 @@ namespace HRMv2.Constants.Dictionary
                 MailFuncEnum.MezonDM,
                 new MailInfoDto
                 {
-                    Name = "Send Direct Message To User",
+                    Name = "Payslip Mezon Direct Message Link Template",
                     Description = "",
                     Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }
