@@ -1,4 +1,5 @@
-import { MailPreviewInfo } from "./mail.dto"
+import { PayslipDetailDebtComponent } from './../../../modules/salaries/payslip-detail/payslip-detail-debt/payslip-detail-debt.component';
+import { MailPreviewInfo, MezonPreviewInfo } from "./mail.dto"
 
 export interface SendMailAllEmployeeDto {
     payrollId: number,
@@ -10,7 +11,11 @@ export interface SendMailOneemployeeDto {
     deadline: string,
     payslipId: number
 }
-
+export interface SendDirectMessageToUserDto{
+    mezonContent : MezonPreviewInfo,
+    deadline: string,
+    payslipId: number,
+}
 export interface SendDebtMailToOneEmployeeDto{
     mailContent: MailPreviewInfo,
     debtId: number
