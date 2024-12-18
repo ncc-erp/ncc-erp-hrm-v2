@@ -3030,23 +3030,6 @@ namespace HRMv2.Manager.Salaries.Payslips
             
         }
 
-        public MezonPreviewInfoDto GetDMContentInfo(MailFuncEnum mailFunc, long payslipId)
-        {
-            var rs = WorkScope.GetAll<Payslip>()
-                .Include(s => s.Employee)
-               .Where(x => x.Id == payslipId)
-               .Select(x => new
-               {
-                  deadLine = x.ComplainDeadline,
-                  email = x.Employee.Email
-               }
-                   )
-               .FirstOrDefault();
-            MezonPreviewInfoDto mailTemplate = _emailManager.GetDMMezonContentById(MailFuncEnum.MezonDM, payslipId);
-            return mailTemplate;
-            
-        }
-
         public string SendDirectMessageAllUser(SendMailAllEmployeeDto input)
         {
             var template = _emailManager.GetEmailTemplateDto(MailFuncEnum.MezonDM);
@@ -3093,9 +3076,10 @@ namespace HRMv2.Manager.Salaries.Payslips
             return $"Started sending {mezonPayslip.Count} Mezon direct message to {mezonPayslip.Count} user.";
         }
 
-        public void SendDirectMessageToUser(long paySlipId)
+        public void SendDirectMessageToUser(long payslipId)
         {
-            var dmContent = GetDMContentInfo(MailFuncEnum.MezonDM,paySlipId);
+            var dmContent = _emailManager.GetDMMezonContentById(MailFuncEnum.MezonDM, payslipId);
+
             _sendDMService.SendDMToUser(dmContent);
 
         }

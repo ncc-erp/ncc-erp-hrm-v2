@@ -46,7 +46,7 @@
                                 </div>
                             </div>
                             <div class="px-2 mb-1">
-                                <div class="col-12" *ngIf="TemplateTypes[this.type].name != 'MezonDM'" >
+                                <div class="col-12" *ngIf="isNotMezonDM(); else mezonTemplate" >
                                     <editor class="w-100" [init]="{
                                         height: 580,
                                         class: 'w-100',
@@ -56,7 +56,7 @@
                                         }" [(ngModel)]="mailInfo.bodyMessage">
                                     </editor>
                                     </div>
-                                <div class="col-12" *ngIf="TemplateTypes[this.type].name == 'MezonDM'" >
+                                <div class="col-12" #mezonTemplate >
                                         <textarea 
                                                     class="w-100" 
                                                     style="height: 500px; width: 500px;" 

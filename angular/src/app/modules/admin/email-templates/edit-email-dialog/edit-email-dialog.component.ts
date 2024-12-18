@@ -37,7 +37,9 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
     }
   }
 
-
+  isNotMezonDM(): boolean {
+    return this.TemplateTypes[this.type]?.name !== 'MezonDM';
+}
   getTemplateById() {
     if(this.TemplateTypes[this.type].name == "MezonDM"){
       this.subscription.push(

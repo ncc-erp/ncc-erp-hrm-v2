@@ -40,7 +40,9 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
     }
   }
 
-
+  isNotMezonDM(): boolean {
+    return this.TemplateTypes[this.type]?.name !== 'MezonDM';
+}
   editTemplate() {
     const dialogData: EditEmailDialogData = {
       mailInfo: { ...this.mailInfo },

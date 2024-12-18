@@ -40,18 +40,19 @@
                 </div>
             </div>
         </div>
-        <div class=" email-content bg-white" *ngIf="TemplateTypes[this.type].name !='MezonDM'"> 
+        <div class=" email-content bg-white" *ngIf="isNotMezonDM(); else mezonTemplate"> 
             <div [innerHtml]="sanitizer.bypassSecurityTrustHtml(mailInfo.bodyMessage)">
             </div>
         </div>
-        <div class=" email-content" *ngIf="TemplateTypes[this.type].name =='MezonDM'"> 
+        <ng-template #mezonTemplate>
+        <div class=" email-content" > 
             <textarea 
             class ="w-100"
             style="height: 300px;"
             readonly
             [(ngModel)]="mailInfo.bodyMessage"
             ></textarea>
-        </div>
+        </div></ng-template>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary btn-action mr-2" [disabled]="cancelDisabled"

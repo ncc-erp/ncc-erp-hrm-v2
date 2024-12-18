@@ -292,7 +292,7 @@ export enum CheckValidType{
 export enum TemplateType{
     Mail = 1,
     Print = 2,
-    Mezon =3,
+    MezonDM = 3,
 }
 export enum DateSelectorHomeEnum {
     MONTH = "Month",
