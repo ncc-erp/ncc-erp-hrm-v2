@@ -282,7 +282,7 @@ export enum EmailFunc  {
     PayrollRejectedByCEO= 12,
     PayrollExecuted = 13,
     LinkToPreviewPayslip = 14,
-    MezonDM = 15
+    MezonDMLinkToPreviewPayslip = 15
 }
 export enum CheckValidType{
     Valid = 1,

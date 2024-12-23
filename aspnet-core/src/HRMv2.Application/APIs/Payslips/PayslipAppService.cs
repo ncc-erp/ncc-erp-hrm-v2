@@ -22,7 +22,7 @@ using HRMv2.Manager.Bonuses.Dto;
 using HRMv2.Sessions;
 using HRMv2.Manager.Timesheet.Dto;
 using HRMv2.Manager.Timesheet;
-using HRMv2.Manager.Notifications.SendDMToMezon.Dto;
+using HRMv2.Manager.Notifications.SendMezonDM.Dto;
 
 namespace HRMv2.APIs.Payslips
 {
@@ -301,7 +301,7 @@ namespace HRMv2.APIs.Payslips
         [HttpPost]
         public string SendDirectMessageToAllEmployee(SendMailAllEmployeeDto input)
         {
-            return _payslipManager.SendDirectMessageAllUser(input);
+            return _payslipManager.SendMezonDMAllUser(input);
         }
     }
 }

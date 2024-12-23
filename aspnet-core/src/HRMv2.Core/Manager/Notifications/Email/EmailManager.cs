@@ -6,8 +6,8 @@ using HRMv2.Constants.Dictionary;
 using HRMv2.Entities;
 using HRMv2.Manager.EmployeeContracts;
 using HRMv2.Manager.Notifications.Email.Dto;
-using HRMv2.Manager.Notifications.SendDMToMezon;
-using HRMv2.Manager.Notifications.SendDMToMezon.Dto;
+using HRMv2.Manager.Notifications.SendMezonDM;
+using HRMv2.Manager.Notifications.SendMezonDM.Dto;
 using HRMv2.Manager.Notifications.Templates;
 using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Salaries.Payslips.Dto;
@@ -121,7 +121,7 @@ namespace HRMv2.Manager.Notifications.Email
             }
             /*     ResultTemplateEmail<InputPayslipMailTemplate>*/
 
-            var data = EmailDispatchData(template.Type, null);
+            var data = GetDataForTemplate(template.Type, null);
 
             var result = GenerateEmailContent(data.Result, template);
             return new GetMailPreviewInfoDto
@@ -138,7 +138,7 @@ namespace HRMv2.Manager.Notifications.Email
             };
         }
 
-        public GetMezonPreviewInfoDto PreviewTemplateMezon(long templateId)
+        public PreviewUpdateMezonDMTemplateDto PreviewTemplateMezonDM(long templateId)
         {
             var template = WorkScope.GetAll<EmailTemplate>()
                 .Where(x => x.Id == templateId)
@@ -148,49 +148,41 @@ namespace HRMv2.Manager.Notifications.Email
             {
                 throw new UserFriendlyException($"Can't find template with id {templateId}");
             }
-            var data = EmailDispatchData(template.Type, null);
+            var data = GetDataForTemplate(template.Type, null);
 
-            var result = GenerateMezonContent(data.Result, template);
+            MezonPreviewInfoDto previewData = ApplyDataToMezonDMTemplate(data.Result, template);
 
-            var bodyMessageObj = JsonConvert.DeserializeObject<JObject>(result.BodyMessage.ToString());
-            var content = bodyMessageObj["content"]?["t"].ToString();
+          
 
+            var strMessage = previewData.InputMezonDM.Content.Text;
 
-            return new GetMezonPreviewInfoDto
+            return new PreviewUpdateMezonDMTemplateDto
             {
-                Id = result.TemplateId,
                 Name = template.Name,
+                BodyMessage = strMessage,
                 Type = template.Type,
-                BodyMessage = content,
-                Subject = template.Subject,
-                PropertiesSupport = data.PropertiesSupport,
-                Description = template.Description,
             };
         }
-        public GetMezonPreviewInfoDto GetTemplateMezonById(long templateId)
+        public PreviewUpdateMezonDMTemplateDto GetMezonDMTemplateById(long templateId)
         {
             var template = WorkScope.GetAll<EmailTemplate>()
                 .Where(x => x.Id == templateId)
+                .Select(s => new {s.BodyMessage, s.Name, s.Type})                
                 .FirstOrDefault();
+
             if (template == default)
             {
                 throw new UserFriendlyException($"Can't find template with id {templateId}");
             }
-            var pbodyMessage = JObject.Parse(template.BodyMessage).ToString();
-
            
-            var data = EmailDispatchData(template.Type, null);
-            var ccs = string.IsNullOrEmpty(template.CCs) ? new List<string>() : template.CCs.Split(",").ToList();
-            return new GetMezonPreviewInfoDto
-            {
+            var data = GetDataForTemplate(template.Type, null);
+            return new PreviewUpdateMezonDMTemplateDto
+            {        
                 Id = templateId,
                 Name = template.Name,
-                Type = template.Type,
-                BodyMessage = pbodyMessage,
-                CCs = ccs,
-                Subject = template.Subject,
+                BodyMessage = template.BodyMessage,
                 PropertiesSupport = data.PropertiesSupport,
-                Description = template.Description,
+                Type = template.Type,             
             };
         }
         public GetMailPreviewInfoDto GetTemplateById(long templateId)
@@ -204,7 +196,7 @@ namespace HRMv2.Manager.Notifications.Email
                 throw new UserFriendlyException($"Can't find template with id {templateId}");
             }
 
-            var data = EmailDispatchData(template.Type, null);
+            var data = GetDataForTemplate(template.Type, null);
             var ccs = string.IsNullOrEmpty(template.CCs) ? new List<string>() : template.CCs.Split(",").ToList();
 
             return new GetMailPreviewInfoDto
@@ -229,35 +221,46 @@ namespace HRMv2.Manager.Notifications.Email
             return input;
         }
 
-        public MailPreviewInfoDto GetEmailContentById(MailFuncEnum mailType, long id)
+        public async Task<PreviewUpdateMezonDMTemplateDto> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
+        {
+            var template = WorkScope.GetAll<EmailTemplate>()
+                .Where(s => s.Id == input.Id).FirstOrDefault();
+
+            template.BodyMessage = input.BodyMessage;
+           // template.PropertiesSupport = input.PropertiesSupport;
+           await WorkScope.UpdateAsync(template);
+           return input;
+        }
+
+        public MailPreviewInfoDto GetEmailContentById(NotifyTemplateEnum mailType, long id)
         {
             var template = WorkScope.GetAll<EmailTemplate>().Where(x => x.Type == mailType).FirstOrDefault();
 
-            var data = EmailDispatchData(mailType, id);
+            var data = GetDataForTemplate(mailType, id);
 
             return GenerateEmailContent(data.Result, template);
         }
 
-        public MezonPreviewInfoDto GetDMMezonContentById(MailFuncEnum mailType, long id)
+        public MezonPreviewInfoDto GetDMMezonContentById(NotifyTemplateEnum mailType, long id)
         {
             var template = WorkScope.GetAll<EmailTemplate>().Where(x => x.Type == mailType).FirstOrDefault();
-            var data = EmailDispatchData(mailType, id);
-            return GenerateMezonContent(data.Result, template);
+            var data = GetDataForTemplate(mailType, id);
+            return ApplyDataToMezonDMTemplate(data.Result, template);
         }
 
-        public MailPreviewInfoDto GetContractContentById(MailFuncEnum mailType, long contractId)
+        public MailPreviewInfoDto GetContractContentById(NotifyTemplateEnum mailType, long contractId)
         {
             var template = WorkScope.GetAll<EmailTemplate>().Where(x => x.Type == mailType).FirstOrDefault();
 
-            var data = EmailDispatchData(mailType, contractId);
+            var data = GetDataForTemplate(mailType, contractId);
 
             return GenerateEmailContent(data.Result, template);
         }
 
-        public EmailTemplateDto GetEmailTemplateDto(MailFuncEnum type)
+        public EmailTemplateDto GetEmailTemplateDto(NotifyTemplateEnum templateEnum)
         {
             var emailTemplateDto = WorkScope.GetAll<EmailTemplate>()
-                .Where(s => s.Type == type)
+                .Where(s => s.Type == templateEnum)
                 .Select(s => new EmailTemplateDto
                 {
                     Id = s.Id,
@@ -274,40 +277,40 @@ namespace HRMv2.Manager.Notifications.Email
         }
 
 
-        private dynamic EmailDispatchData(MailFuncEnum EmailType, long? id)
+        private dynamic GetDataForTemplate(NotifyTemplateEnum EmailType, long? id)
         {
             switch (EmailType)
             {
-                case MailFuncEnum.Payslip:
+                case NotifyTemplateEnum.Payslip:
                     return GetDataPayslip(id);
-                case MailFuncEnum.ContractBM:
+                case NotifyTemplateEnum.ContractBM:
                     return GetConfidentialContractData(id);
-                case MailFuncEnum.ContractDT:
+                case NotifyTemplateEnum.ContractDT:
                     return GetTrainingContractData(id);
-                case MailFuncEnum.ContractTV:
+                case NotifyTemplateEnum.ContractTV:
                     return GetProbationaryContractData(id);
-                case MailFuncEnum.ContractCTV:
+                case NotifyTemplateEnum.ContractCTV:
                     return GetCollaboratorContractData(id);
-                case MailFuncEnum.ContractLD:
+                case NotifyTemplateEnum.ContractLD:
                     return GetLaborContractData(id);
-                case MailFuncEnum.Debt:
+                case NotifyTemplateEnum.Debt:
                     return GeDataDebt(id);
-                case MailFuncEnum.Bonus:
+                case NotifyTemplateEnum.Bonus:
                     return GetBonusData(id);
-                case MailFuncEnum.Checkpoint:
+                case NotifyTemplateEnum.Checkpoint:
                     return GetCheckpointData(id);
-                case MailFuncEnum.PayrollPendingCEO:
+                case NotifyTemplateEnum.PayrollPendingCEO:
                     return GetPayrollPendingCEOData(id);
-                case MailFuncEnum.PayrollApprovedByCEO:
+                case NotifyTemplateEnum.PayrollApprovedByCEO:
                     return GetPayrollApprovedByCEOData(id);
-                case MailFuncEnum.PayrollRejectedByCEO:
+                case NotifyTemplateEnum.PayrollRejectedByCEO:
                     return GetPayrollRejectedByCEOData(id);
-                case MailFuncEnum.PayrollExecuted:
+                case NotifyTemplateEnum.PayrollExecuted:
                     return GetPayrollExecutedData(id);
-                case MailFuncEnum.LinkToPreviewPayslip:
+                case NotifyTemplateEnum.LinkToPreviewPayslip:
                     return GetDataPayslipToConfirm(id);
-                case MailFuncEnum.MezonDM:
-                    return GetDataMezonDM(id);
+                case NotifyTemplateEnum.MezonDMLinkToPreviewPayslip:
+                    return GetDataForMezonDMLinkToPreviewPayslip(id);
                 default:
                     return null;
             }
@@ -802,7 +805,7 @@ namespace HRMv2.Manager.Notifications.Email
             };
         }
 
-        private ResultTemplateEmail<InputMezonDMTemplateDto> GetDataMezonDM(long? payslipId)
+        private ResultTemplateEmail<InputMezonDMTemplateDto> GetDataForMezonDMLinkToPreviewPayslip(long? payslipId)
         {
             if (payslipId == null)
             {
@@ -824,7 +827,7 @@ namespace HRMv2.Manager.Notifications.Email
                 PayrollMonth = payslip.Payroll.ApplyMonth.Month.ToString(),
                 PayrollYear = payslip.Payroll.ApplyMonth.Year.ToString(),
                 SalaryLink = hrmv2Uri + $"app/payslip-confirm?id={payslip.Id}",
-                SendToUser = payslip.Employee.Email.Split("@")[0],
+                MezonUsername = payslip.Employee.Email.Split("@")[0],
                 ComplainDeadline = payslip.ComplainDeadline.HasValue
               ? payslip.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ")
               : "..."
@@ -889,36 +892,27 @@ namespace HRMv2.Manager.Notifications.Email
                 Result = result
             };
         }
-        public MezonPreviewInfoDto GenerateMezonContent<TDto, TEntity>(TDto data, TEntity dmMezonEntity) where TDto : class where TEntity : class
+        public MezonPreviewInfoDto ApplyDataToMezonDMTemplate<TData, TTemplate>(TData data, TTemplate template) where TData : class where TTemplate : class
         {
-            Type typeOfEntity = typeof(TEntity);
-            Type typeOfDto = typeof(TDto);
-            var templateId = typeOfEntity.GetProperty("Id").GetValue(dmMezonEntity) as long?;
+            Type typeOfTemplate = typeof(TTemplate);
+            Type typeOfData = typeof(TData);
 
-            var bodyMessage = typeOfEntity.GetProperty("BodyMessage").GetValue(dmMezonEntity) as string;
+            var bodyMessage = typeOfTemplate.GetProperty(nameof(MezonPreviewInfoDto.BodyMessage)).GetValue(template) as string;
+            var mezonUsername = typeOfData.GetProperty(nameof(MezonPreviewInfoDto.MezonUsername)).GetValue(data) as string;
 
-            var properties = typeOfDto.GetProperties().Select(s => s.Name).ToArray();
-            var subject = typeOfDto.GetProperty("Subject").GetValue(data) as string;
-            var sendToUser = typeOfDto.GetProperty("SendToUser").GetValue(data) as string;
+
+            var properties = typeOfData.GetProperties().Select(s => s.Name).ToArray();
 
             foreach (var property in properties)
             {
-                var a = typeOfDto.GetProperty(property).GetValue(data);
-                bodyMessage = bodyMessage.Replace("{{" + property + "}}", typeOfDto.GetProperty(property).GetValue(data) as string);
-                subject = subject.Replace("{{" + property + "}}", typeOfDto.GetProperty(property).GetValue(data) as string);
-
+                var a = typeOfData.GetProperty(property).GetValue(data);
+                bodyMessage = bodyMessage.Replace("{{" + property + "}}", typeOfData.GetProperty(property).GetValue(data) as string);
             }
-
-            var type = typeOfEntity.GetProperty("Type").GetValue(dmMezonEntity) as MailFuncEnum?;
-
 
             return new MezonPreviewInfoDto
             {
-                MailFuncType = type.HasValue ? type.Value : default,
                 BodyMessage = bodyMessage,
-                TemplateId = templateId.HasValue ? templateId.Value : 0,
-                Subject = subject,
-                SendToUser = sendToUser,
+                MezonUsername = mezonUsername,
             };
         }
 
@@ -946,7 +940,7 @@ namespace HRMv2.Manager.Notifications.Email
             var ccs = typeOfEntity.GetProperty("CCs").GetValue(mailEntity) as string;
             var listCCs = string.IsNullOrEmpty(ccs) ? new List<string>() : ccs.Split(",").ToList();
 
-            var type = typeOfEntity.GetProperty("Type").GetValue(mailEntity) as MailFuncEnum?;
+            var type = typeOfEntity.GetProperty("Type").GetValue(mailEntity) as NotifyTemplateEnum?;
 
             return new MailPreviewInfoDto
             {
@@ -965,8 +959,8 @@ namespace HRMv2.Manager.Notifications.Email
             var mails = WorkScope.GetAll<EmailTemplate>()
                 .Where(q => q.TenantId == tenantId).Select(x => x.Type).ToList();
 
-            Enum.GetValues(typeof(MailFuncEnum))
-           .Cast<MailFuncEnum>()
+            Enum.GetValues(typeof(NotifyTemplateEnum))
+           .Cast<NotifyTemplateEnum>()
            .ToList()
            .ForEach(e =>
            {

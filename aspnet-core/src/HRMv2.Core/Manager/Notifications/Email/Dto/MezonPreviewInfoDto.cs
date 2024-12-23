@@ -1,4 +1,6 @@
-﻿using HRMv2.Utils;
+﻿using HRMv2.Manager.Notifications.SendMezonDM.Dto;
+using HRMv2.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +12,12 @@ namespace HRMv2.Manager.Notifications.Email.Dto
 {
     public class MezonPreviewInfoDto
     {
-        public long TemplateId { get; set; }
         public string Name { get; set; }
-        public MailFuncEnum MailFuncType { get; set; }
         public string BodyMessage { get; set; }
-        public string Subject { get; set; }
-        public string[] PropertiesSupport { get; set; }
         public long? CurrentUserLoginId { get; set; }
-        public string SendToUser { get; set; }
+        public string MezonUsername { get; set; }
         public int? TenantId { get; set; }
-        public List<string> ListCC { get; set; }
-        public TemplateType TemplateType => CommonUtil.GetTemplateType(MailFuncType);
+        public InputMezonDM InputMezonDM => JsonConvert.DeserializeObject<InputMezonDM>(BodyMessage);
+
     }
 }

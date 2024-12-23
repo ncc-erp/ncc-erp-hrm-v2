@@ -48,10 +48,10 @@ using Abp.Json;
 using System.Web;
 using Abp.Configuration;
 using HRMv2.Configuration;
-using HRMv2.Manager.Notifications.SendDMToMezon;
+using HRMv2.Manager.Notifications.SendMezonDM;
 using DocumentFormat.OpenXml.VariantTypes;
-using HRMv2.Manager.Notifications.SendDMToMezon.Dto.HRMv2.Manager.Notifications.SendDMToMezon.Dto;
-using HRMv2.Manager.Notifications.SendDMToMezon.Dto;
+
+using HRMv2.Manager.Notifications.SendMezonDM.Dto;
 using System.Text.RegularExpressions;
 using Amazon.S3.Model;
 using System.Linq.Expressions;
@@ -72,7 +72,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
         private readonly SettingManager _settingManager;
-        private readonly SendDMService _sendDMService;
+        private readonly SendMezonDMService _sendDMService;
 
         public PayslipManager(TimesheetWebService timesheetService,
             EmailManager emailManager,
@@ -85,7 +85,7 @@ namespace HRMv2.Manager.Salaries.Payslips
               RoleManager roleManager,
               UserManager userManager,
               SettingManager settingManager,
-              SendDMService sendDMService,
+              SendMezonDMService sendDMService,
                IBackgroundJobManager ibackfoundJob
              ) : base(workScope)
         {
@@ -2199,7 +2199,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public string SendMailToAllEmployee(SendMailAllEmployeeDto input)
         {
-            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.Payslip);
+            var emailTemplate = _emailManager.GetEmailTemplateDto(NotifyTemplateEnum.Payslip);
             if (emailTemplate == default)
             {
                 throw new UserFriendlyException($"Not found email template for payslip");
@@ -2268,7 +2268,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public string SendMailToAllEmployeeLink(SendMailAllEmployeeDto input)
         {
-            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.LinkToPreviewPayslip);
+            var emailTemplate = _emailManager.GetEmailTemplateDto(NotifyTemplateEnum.LinkToPreviewPayslip);
             if (emailTemplate == default)
             {
                 throw new UserFriendlyException($"Not found email template for payslip");
@@ -2372,7 +2372,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .Where(x => x.Id == payslipId)
                 .Select(x => x.ComplainDeadline)
                 .FirstOrDefault();
-            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.Payslip, payslipId);
+            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(NotifyTemplateEnum.Payslip, payslipId);
             return new GetPayslipMailContentDto
             {
                 MailInfo = mailTemplate,
@@ -2429,7 +2429,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             }
 
-            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(IsLinkToPreviewPayslip ? MailFuncEnum.LinkToPreviewPayslip : MailFuncEnum.Payslip, payslipId);
+            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(IsLinkToPreviewPayslip ? NotifyTemplateEnum.LinkToPreviewPayslip : NotifyTemplateEnum.Payslip, payslipId);
             return new GetPayslipToConfirmDto
             {
                 CheckValidType = CheckValidType.Valid,
@@ -2448,7 +2448,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .Where(x => x.Id == payslipId)
                 .Select(x => x.ComplainDeadline)
                 .FirstOrDefault();
-            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(MailFuncEnum.LinkToPreviewPayslip, payslipId);
+            MailPreviewInfoDto mailTemplate = _emailManager.GetEmailContentById(NotifyTemplateEnum.LinkToPreviewPayslip, payslipId);
             return new GetPayslipMailContentDto
             {
                 MailInfo = mailTemplate,
@@ -3030,26 +3030,29 @@ namespace HRMv2.Manager.Salaries.Payslips
             
         }
 
-        public string SendDirectMessageAllUser(SendMailAllEmployeeDto input)
+        public string SendMezonDMAllUser(SendMailAllEmployeeDto input)
         {
-            var template = _emailManager.GetEmailTemplateDto(MailFuncEnum.MezonDM);
+            var template = _emailManager.GetEmailTemplateDto(NotifyTemplateEnum.MezonDMLinkToPreviewPayslip);
+
             if (template == default)
             {
-                throw new UserFriendlyException($"Not found email template for payslip");
+                throw new UserFriendlyException($"Not found [MezonDM]Payslip Mezon Direct Message Link");
             }
             var listPayslip = WorkScope.GetAll<Payslip>()
                 .Include(s => s.Employee)
                 .Include(s => s.Payroll)
                 .Where(s => s.PayrollId == input.PayrollId)
                 .ToList();
+
             if (listPayslip.IsEmpty())
             {
                 throw new UserFriendlyException($"There is no payslip in the payroll {input.PayrollId}");
             }
             UpdatePayslipComplainDeadLine(listPayslip, input.Deadline);
+
             var domain = HRMv2Consts.HRM_Uri;
 
-            List<ResultTemplateEmail<InputMezonDMTemplateDto>> mezonPayslip = listPayslip.Select(s => new ResultTemplateEmail<InputMezonDMTemplateDto>
+            List<ResultTemplateEmail<InputMezonDMTemplateDto>> payslips = listPayslip.Select(s => new ResultTemplateEmail<InputMezonDMTemplateDto>
             {
                 Result = new InputMezonDMTemplateDto
                 {
@@ -3057,7 +3060,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     PayrollMonth = s.Payroll.ApplyMonth.Month.ToString(),
                     PayrollYear = s.Payroll.ApplyMonth.Year.ToString(),
                     SalaryLink = domain + $"app/payslip-confirm?id={s.Id}",
-                    SendToUser = s.Employee.Email.Split("@")[0],
+                    MezonUsername = s.Employee.Email.Split("@")[0],
                     ComplainDeadline = s.ComplainDeadline.HasValue
               ? s.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ")
               : "..."
@@ -3066,19 +3069,20 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             var delaySendDM = 0;
 
-            foreach (var payslip in mezonPayslip)
+            foreach (var payslip in payslips)
             {
-                MezonPreviewInfoDto mailInput = _emailManager.GenerateMezonContent(payslip.Result, template);
-                _backgroundJobManager.Enqueue<SendDirectMessage, MezonPreviewInfoDto>(mailInput, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendDM));
+                MezonPreviewInfoDto mailInput = _emailManager.ApplyDataToMezonDMTemplate(payslip.Result, template);
+
+                _backgroundJobManager.Enqueue<SendDirectMessageBJob, MezonPreviewInfoDto>(mailInput, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendDM));
                 delaySendDM += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
             };
 
-            return $"Started sending {mezonPayslip.Count} Mezon direct message to {mezonPayslip.Count} user.";
+            return $"Started sending {payslips.Count} Mezon direct message to {payslips.Count} user.";
         }
 
         public void SendDirectMessageToUser(long payslipId)
         {
-            var dmContent = _emailManager.GetDMMezonContentById(MailFuncEnum.MezonDM, payslipId);
+            var dmContent = _emailManager.GetDMMezonContentById(NotifyTemplateEnum.MezonDMLinkToPreviewPayslip, payslipId);
 
             _sendDMService.SendDMToUser(dmContent);
 

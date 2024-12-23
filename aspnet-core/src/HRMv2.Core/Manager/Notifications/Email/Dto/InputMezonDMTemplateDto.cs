@@ -13,7 +13,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public string PayrollMonth { get; set; }
         public string SalaryLink { get; set; }
         public string ComplainDeadline { get; set; }
-        public string SendToUser { get; set; }
-        public string Subject => $"[NCC][{EmployeeFullName}] THÔNG BÁO CHI TIẾT LƯƠNG THÁNG {PayrollMonth}/{PayrollYear}";
+        public string MezonUsername { get; set; }
+        //public string Subject => $"[NCC][{EmployeeFullName}] THÔNG BÁO CHI TIẾT LƯƠNG THÁNG {PayrollMonth}/{PayrollYear}";
     }
 }

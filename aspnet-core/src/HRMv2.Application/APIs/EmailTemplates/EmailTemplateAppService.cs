@@ -36,9 +36,9 @@ namespace HRMv2.APIs.EmailTemplates
         }
 
         [HttpGet]
-        public GetMezonPreviewInfoDto PreviewTemplateMezon(long id)
+        public PreviewUpdateMezonDMTemplateDto PreviewTemplateMezon(long id)
         {
-            return _emailManager.PreviewTemplateMezon(id);
+            return _emailManager.PreviewTemplateMezonDM(id);
         }
 
         [HttpGet]
@@ -47,9 +47,9 @@ namespace HRMv2.APIs.EmailTemplates
             return _emailManager.GetTemplateById(id);
         }
         [HttpGet]
-        public GetMezonPreviewInfoDto GetTemplateMezonById(long id)
+        public PreviewUpdateMezonDMTemplateDto GetTemplateMezonById(long id)
         {
-            return _emailManager.GetTemplateMezonById(id);
+            return _emailManager.GetMezonDMTemplateById(id);
         }
 
         [HttpPost]
@@ -57,6 +57,12 @@ namespace HRMv2.APIs.EmailTemplates
         public async Task<UpdateTemplateDto> UpdateTemplate(UpdateTemplateDto input)
         {
             return await _emailManager.UpdateTemplate(input);
+        }
+
+        [HttpPost]
+        public async Task<PreviewUpdateMezonDMTemplateDto> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
+        {
+            return await _emailManager.UpdateMezonDMTemplate(input);
         }
 
         [HttpPost]

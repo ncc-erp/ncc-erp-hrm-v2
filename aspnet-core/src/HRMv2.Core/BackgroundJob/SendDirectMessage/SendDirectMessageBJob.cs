@@ -4,7 +4,7 @@ using Abp.Domain.Uow;
 using Abp.Runtime.Session;
 using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.Email.Dto;
-using HRMv2.Manager.Notifications.SendDMToMezon;
+using HRMv2.Manager.Notifications.SendMezonDM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 
 namespace HRMv2.BackgroundJob.SendDirectMessage
 {
-    public class SendDirectMessage : BackgroundJob<MezonPreviewInfoDto>, ITransientDependency
+    public class SendDirectMessageBJob : BackgroundJob<MezonPreviewInfoDto>, ITransientDependency
     {
         private readonly IAbpSession _abpSession;
         private readonly IUnitOfWorkManager _unitOfWork;
-        private readonly SendDMService _sendDMService;
+        private readonly SendMezonDMService _sendMezonDMService;
 
-        public SendDirectMessage(IAbpSession abpSession, IUnitOfWorkManager unitOfWork, SendDMService sendDMService)
+        public SendDirectMessageBJob(IAbpSession abpSession, IUnitOfWorkManager unitOfWork, SendMezonDMService sendDMService)
         {
             _abpSession = abpSession;
             _unitOfWork = unitOfWork;
-            _sendDMService = sendDMService;
+            _sendMezonDMService = sendDMService;
         }
 
         [UnitOfWork]
@@ -34,7 +34,7 @@ namespace HRMv2.BackgroundJob.SendDirectMessage
 
             using (uow.SetTenantId(args.TenantId))
             {
-                _sendDMService.SendDMToUser(args);
+                _sendMezonDMService.SendDMToUser(args);
             }
 
         }

@@ -1,10 +1,13 @@
+
+import { property } from 'lodash-es';
+import { AddBenefitEmployeeDialogComponent } from './../../../benefits/benefit-detail/benefit-employee/add-benefit-employee-dialog/add-benefit-employee-dialog.component';
 import { Component, OnInit, Injector } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EmailTemplateService } from '@app/service/api/email-template/email-template.service';
 import { MailService } from '@app/service/api/mail/mail.service';
-import { MailPreviewInfo, UpdateEmailTemplate } from '@app/service/model/mail/mail.dto';
+import { MailPreviewInfo, PreviewUpdateMezonDMTemplateDto, UpdateEmailTemplate } from '@app/service/model/mail/mail.dto';
 import { AppConsts } from '@shared/AppConsts';
-import {  EmailFunc, TemplateType } from '@shared/AppEnums';
+import {  APP_ENUMS, EmailFunc, TemplateType } from '@shared/AppEnums';
 import { DialogComponentBase } from '@shared/dialog-component-base';
 import { appendFileSync } from 'fs';
 @Component({
@@ -38,10 +41,10 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
   }
 
   isNotMezonDM(): boolean {
-    return this.TemplateTypes[this.type]?.name !== 'MezonDM';
+    return this.TemplateTypes[this.type].name !== AppConsts.MezonDM;
 }
   getTemplateById() {
-    if(this.TemplateTypes[this.type].name == "MezonDM"){
+    if(this.TemplateTypes[this.type].name == AppConsts.MezonDM){
       this.subscription.push(
         this.emailTemplateService.getTemplateMezonById(this.templateId).subscribe(rs => {
           this.mailInfo = rs.result
@@ -58,7 +61,11 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
 
   save() {
     if (this.templateId) {
-      this.handleSaveTemplate();
+      if(this.isNotMezonDM()){
+        this.handleSaveTemplate();
+      }else{
+        this.handleSaveMezonDMTemplate();
+      }   
       return;
     }
     else this.dialogRef.close(this.mailInfo);
@@ -84,6 +91,19 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
     }
     this.dialogRef.close(this.mailInfo)
   }
+ 
+handleSaveMezonDMTemplate(){
+   const updateDto: PreviewUpdateMezonDMTemplateDto = {
+     bodyMessage: this.mailInfo.bodyMessage,
+     id : this.templateId,
+     name: this.mailInfo.name,
+     
+   }
+   this.emailTemplateService.updateMezonDMTemplate(updateDto).subscribe(rs => {
+    abp.notify.success("Update Successful")
+   })
+   this.dialogRef.close(this.mailInfo)
+}
   isShowHeaderSendMail(){
     return this.mailInfo.templateType == TemplateType.Mail;
   }

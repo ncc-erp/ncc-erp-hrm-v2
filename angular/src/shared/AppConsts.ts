@@ -211,6 +211,7 @@ export class AppConsts {
             class: "badge badge-dark"
         }
     }
+    static readonly MezonDM ='MezonDM'
     static readonly PlanQuitEmployeeStatus = {
         "Confirm quit": "badge badge-pill badge-secondary",
         "Confirm pause": "badge badge-pill badge-warning",

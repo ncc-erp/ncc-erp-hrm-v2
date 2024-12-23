@@ -41,7 +41,7 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
   }
 
   isNotMezonDM(): boolean {
-    return this.TemplateTypes[this.type]?.name !== 'MezonDM';
+    return this.TemplateTypes[this.type].name !== AppConsts.MezonDM;
 }
   editTemplate() {
     const dialogData: EditEmailDialogData = {
@@ -63,7 +63,7 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
   }
 
   getFakeData() {
-    if(this.TemplateTypes[this.type].name == "MezonDM"){
+    if(this.TemplateTypes[this.type].name == AppConsts.MezonDM){
       this.subscription.push(
         this.emailTemplateService.previewTemplateMezon(this.templateId).subscribe(rs => {
           this.mailInfo = rs.result

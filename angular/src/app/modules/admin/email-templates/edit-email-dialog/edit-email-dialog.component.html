@@ -56,14 +56,15 @@
                                         }" [(ngModel)]="mailInfo.bodyMessage">
                                     </editor>
                                     </div>
-                                <div class="col-12" #mezonTemplate >
+                            <ng-template #mezonTemplate>
+                                <div class="col-12"  >
                                         <textarea 
                                                     class="w-100" 
                                                     style="height: 500px; width: 500px;" 
                                                     [(ngModel)]="mailInfo.bodyMessage">
                                          </textarea>
                                     </div>
-                            </div>
+                          </ng-template>  </div>
                         </td>
                         <td style="max-width: 200px" *ngIf="mailInfo?.propertiesSupport?.length">
                             <div class="property-support">
@@ -85,7 +86,7 @@
         (click)="dialogRef.close()">
         Close
     </button>
-    <button (click)="handleSaveTemplate()" type="button" class="btn btn-primary btn-action" [disabled]="saveDisabled">
+    <button (click)="save()" type="button" class="btn btn-primary btn-action" [disabled]="saveDisabled">
         Save
     </button>
 </div>

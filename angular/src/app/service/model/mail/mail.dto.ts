@@ -24,15 +24,11 @@ export class MailPreviewInfo {
     templateType: number;
 }
 
-export class MezonPreviewInfo{
-    templateId: string;
+export class PreviewUpdateMezonDMTemplateDto{
+    id: number;
     name: string;
-    type?: string;
     bodyMessage: string;
-    subject: string;
-    propertiesSupport: string[];
-    templateType: number;
-    mailFuncType?: number;
+    propertiesSupport?: string[];
 }
 
 export class MailDialogConfig {

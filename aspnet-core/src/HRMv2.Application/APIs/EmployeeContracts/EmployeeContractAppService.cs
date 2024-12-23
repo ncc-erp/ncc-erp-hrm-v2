@@ -78,7 +78,7 @@ namespace HRMv2.APIs.EmployeeContracts
         }
 
         [HttpGet]
-        public MailPreviewInfoDto GetContractTemplate(long contractId, MailFuncEnum type)
+        public MailPreviewInfoDto GetContractTemplate(long contractId, NotifyTemplateEnum type)
         {
             return _contracManager.GetContractTemplate(contractId, type);
         }

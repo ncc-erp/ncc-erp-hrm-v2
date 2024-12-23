@@ -18,10 +18,10 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
     public class NotificationService: DomainService
     {
         private readonly KomuService _komuService;
-        private readonly MezonService _mezonService;
+        private readonly MezonWebService _mezonService;
         private readonly string _platform;
         private readonly ISettingManager _settingManager;
-        public NotificationService(IWorkScope workScope, KomuService komuService, MezonService mezonService, ISettingManager settingManager) 
+        public NotificationService(IWorkScope workScope, KomuService komuService, MezonWebService mezonService, ISettingManager settingManager) 
         {
             _komuService = komuService;
             _mezonService = mezonService;

@@ -16,10 +16,10 @@ namespace HRMv2.Constants.Dictionary
                 {"IMAGE", new string[] { "jpeg", "png", "svg", "jpg"} }
             };
 
-        public static readonly Dictionary<MailFuncEnum, MailInfoDto> SeedMailDic = new Dictionary<MailFuncEnum, MailInfoDto>()
+        public static readonly Dictionary<NotifyTemplateEnum, MailInfoDto> SeedMailDic = new Dictionary<NotifyTemplateEnum, MailInfoDto>()
         {
             {
-                MailFuncEnum.Payslip,
+                NotifyTemplateEnum.Payslip,
                 new MailInfoDto
                 {
                     Name = "Payslip",
@@ -28,7 +28,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.ContractBM,
+                NotifyTemplateEnum.ContractBM,
                 new MailInfoDto
                 {
                     Name = "Hợp đồng bảo mật",
@@ -37,7 +37,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.ContractDT,
+                NotifyTemplateEnum.ContractDT,
                 new MailInfoDto
                 {
                     Name = "Hợp đồng đào tạo",
@@ -46,7 +46,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.ContractTV,
+                NotifyTemplateEnum.ContractTV,
                 new MailInfoDto
                 {
                     Name = "Hợp đồng thử việc",
@@ -55,7 +55,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.ContractCTV,
+                NotifyTemplateEnum.ContractCTV,
                 new MailInfoDto
                 {
                     Name = "Hợp đồng cộng tác viên",
@@ -64,7 +64,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.ContractLD,
+                NotifyTemplateEnum.ContractLD,
                 new MailInfoDto
                 {
                     Name = "Hợp đồng lao động",
@@ -73,7 +73,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
              {
-                MailFuncEnum.Debt,
+                NotifyTemplateEnum.Debt,
                 new MailInfoDto
                 {
                     Name = "Debt",
@@ -82,7 +82,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.Bonus,
+                NotifyTemplateEnum.Bonus,
                 new MailInfoDto
                 {
                     Name = "Bonus Checkpoint",
@@ -91,7 +91,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.Checkpoint,
+                NotifyTemplateEnum.Checkpoint,
                 new MailInfoDto
                 {
                     Name = "Checkpoint Result",
@@ -100,7 +100,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.PayrollPendingCEO,
+                NotifyTemplateEnum.PayrollPendingCEO,
                 new MailInfoDto
                 {
                     Name = "Payroll PendingCEO",
@@ -109,7 +109,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.PayrollApprovedByCEO,
+                NotifyTemplateEnum.PayrollApprovedByCEO,
                 new MailInfoDto
                 {
                     Name = "Payroll ApprovedByCEO",
@@ -118,7 +118,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
              {
-                MailFuncEnum.PayrollRejectedByCEO,
+                NotifyTemplateEnum.PayrollRejectedByCEO,
                 new MailInfoDto
                 {
                     Name = "Payroll RejectedByCEO",
@@ -127,7 +127,7 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.PayrollExecuted,
+                NotifyTemplateEnum.PayrollExecuted,
                 new MailInfoDto
                 {
                     Name = "Payroll Executed",
@@ -136,19 +136,19 @@ namespace HRMv2.Constants.Dictionary
                 }
             },
             {
-                MailFuncEnum.LinkToPreviewPayslip,
+                NotifyTemplateEnum.LinkToPreviewPayslip,
                 new MailInfoDto
                 {
-                    Name = "Payslip Email Link ",
+                    Name = "Payslip Email Link",
                     Description = "",
                     Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }
             },
             {
-                MailFuncEnum.MezonDM,
+                NotifyTemplateEnum.MezonDMLinkToPreviewPayslip,
                 new MailInfoDto
                 {
-                    Name = "Payslip Mezon Direct Message Link ",
+                    Name = "Payslip Mezon Direct Message Link",
                     Description = "",
                     Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }
