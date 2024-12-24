@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using HRMv2.Utils;
+using HRMv2.Validation;
 using Newtonsoft.Json;
 namespace HRMv2.Manager.Notifications.SendMezonDM.Dto
 {
@@ -6,6 +8,7 @@ namespace HRMv2.Manager.Notifications.SendMezonDM.Dto
     public class InputMezonDM
     {
         [JsonProperty(PropertyName = "content")]
+        [JsonConverter(typeof(ContentJsonConverter))]
         public ContentMezonDM Content { get; set; }
 
         [JsonProperty(PropertyName = "attachments")]
@@ -18,7 +21,7 @@ namespace HRMv2.Manager.Notifications.SendMezonDM.Dto
         [JsonProperty(PropertyName = "t")]
         public string Text { get; set; }
         [JsonProperty(PropertyName = "lk")]
-        public List<StartEnd> Link => InputMezonHelper.CalStartAndEndLinkInString(Text);
+        public List<StartEnd> Link => MezonDMUtil.GetListIndexOfLinks(Text);
     }
 
     public class StartEnd

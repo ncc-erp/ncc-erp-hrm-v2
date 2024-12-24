@@ -20,11 +20,11 @@ namespace HRMv2.Manager.Notifications.SendMezonDM
 {
     public class SendMezonDMService : DomainService
     {
-        private readonly MezonWebService _mezonService;
+        private readonly MezonWebService _mezonWebService;
         private readonly ISettingManager _settingManager;
         public SendMezonDMService(MezonWebService mezonService, ISettingManager settingManager)
         {
-            _mezonService = mezonService;
+            _mezonWebService = mezonService;
             _settingManager = settingManager;
         }
 
@@ -35,7 +35,7 @@ namespace HRMv2.Manager.Notifications.SendMezonDM
 
             var message = input.BodyMessage;
             InputMezonDM inputMezonDM = JsonConvert.DeserializeObject<InputMezonDM>(message);            
-            _mezonService.SendDirectMessageToUser(inputMezonDM,url,input.MezonUsername);
+            _mezonWebService.SendDirectMessageToUser(inputMezonDM,url,input.MezonUsername);
         }
 
         

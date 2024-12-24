@@ -64,13 +64,13 @@ export class SendDirectMessageToUserComponent extends AppComponentBase {
   }
 
 
- sendDirectMessageToUser() {
+async sendDirectMessageToUser() {
     let input = {
       deadline: this.formatDateYMDHm(this.deadline),
       payslipId: this.payslipId,
     } as UpdatePayslipDeadLineDto;
 
-    this.payslipService.updatePayslipDeadline(input);
+    await this.payslipService.updatePayslipDeadline(input).toPromise().then();
     this.subscription.push(
            this.payslipService.sendDirectMessageToUser(this.payslipId).subscribe(rs =>{        
                 abp.message.success(

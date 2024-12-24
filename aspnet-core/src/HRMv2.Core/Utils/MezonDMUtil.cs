@@ -1,19 +1,20 @@
-﻿using System;
+﻿using HRMv2.Manager.Notifications.SendMezonDM.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace HRMv2.Manager.Notifications.SendMezonDM.Dto
+namespace HRMv2.Utils
 {
-    public class InputMezonHelper
+    public class MezonDMUtil
     {
-        public static List<StartEnd> CalStartAndEndLinkInString(string input)
+        public static List<StartEnd> GetListIndexOfLinks(string message)
         {
             string pattern = @"https?://[^\s]+";
-            List<StartEnd> links  = new List<StartEnd>();
-            MatchCollection matches = Regex.Matches(input, pattern);
+            List<StartEnd> links = new List<StartEnd>();
+            MatchCollection matches = Regex.Matches(message, pattern);
             foreach (Match match in matches)
             {
                 links.Add(new StartEnd

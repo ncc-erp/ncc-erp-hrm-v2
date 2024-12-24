@@ -50,14 +50,8 @@ namespace HRMv2.WebServices.Mezon
                 Logger.Error("channelUrlToSend null or empty");
                 return;
             }
-            var inputSend = new
-            {
-                content = JsonConvert.SerializeObject(input.Content),
-                attachments = input.Attachments
-            };
-
             var url = $"{mezonUrl}/{userName}";
-            Post(url, inputSend);
+            Post(url, input);
            
         }
 

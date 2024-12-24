@@ -13,6 +13,7 @@ using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Salaries.Payslips.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
+using HRMv2.Validation;
 using HRMv2.WebServices.Timesheet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -152,7 +153,7 @@ namespace HRMv2.Manager.Notifications.Email
 
             MezonPreviewInfoDto previewData = ApplyDataToMezonDMTemplate(data.Result, template);
 
-          
+
 
             var strMessage = previewData.InputMezonDM.Content.Text;
 
@@ -174,15 +175,15 @@ namespace HRMv2.Manager.Notifications.Email
             {
                 throw new UserFriendlyException($"Can't find template with id {templateId}");
             }
-           
+
             var data = GetDataForTemplate(template.Type, null);
             return new PreviewUpdateMezonDMTemplateDto
-            {        
+            {
                 Id = templateId,
                 Name = template.Name,
                 BodyMessage = template.BodyMessage,
                 PropertiesSupport = data.PropertiesSupport,
-                Type = template.Type,             
+                Type = template.Type,
             };
         }
         public GetMailPreviewInfoDto GetTemplateById(long templateId)
@@ -214,22 +215,27 @@ namespace HRMv2.Manager.Notifications.Email
         }
 
         public async Task<UpdateTemplateDto> UpdateTemplate(UpdateTemplateDto input)
-        {        
+        {
             var entity = ObjectMapper.Map<EmailTemplate>(input);
             entity.CCs = string.Join(",", input.ListCC);
             await WorkScope.UpdateAsync(entity);
             return input;
         }
 
-        public async Task<PreviewUpdateMezonDMTemplateDto> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
+        public async Task<bool> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
         {
-            var template = WorkScope.GetAll<EmailTemplate>()
-                .Where(s => s.Id == input.Id).FirstOrDefault();
+            if (JsonValidation.IsValidJson(input.BodyMessage))
+            {
+                var template = WorkScope.GetAll<EmailTemplate>()
+               .Where(s => s.Id == input.Id).FirstOrDefault();
 
-            template.BodyMessage = input.BodyMessage;
-           // template.PropertiesSupport = input.PropertiesSupport;
-           await WorkScope.UpdateAsync(template);
-           return input;
+                template.BodyMessage = input.BodyMessage;
+                // template.PropertiesSupport = input.PropertiesSupport;
+                await WorkScope.UpdateAsync(template);
+                return true;
+            }
+            return false;
+
         }
 
         public MailPreviewInfoDto GetEmailContentById(NotifyTemplateEnum mailType, long id)
@@ -439,8 +445,8 @@ namespace HRMv2.Manager.Notifications.Email
                 };
             }
             var data = WorkScope.GetAll<BonusEmployee>()
-                .Where(x=> x.Id == bonusEmployeeId)
-                .Select(x=> new GetBonusEmployeeForSendMailDto
+                .Where(x => x.Id == bonusEmployeeId)
+                .Select(x => new GetBonusEmployeeForSendMailDto
                 {
                     EmployeeFullName = x.Employee.FullName,
                     EmployeeEmail = x.Employee.Email,
@@ -866,8 +872,8 @@ namespace HRMv2.Manager.Notifications.Email
                 .FirstOrDefault();
 
             var listDebtPaymentPlans = WorkScope.GetAll<DebtPaymentPlan>()
-                .Where(x=> x.DebtId == debtId)
-                .Select(x=> new PaidPlanDto
+                .Where(x => x.DebtId == debtId)
+                .Select(x => new PaidPlanDto
                 {
                     Date = x.Date,
                     Money = x.Money,

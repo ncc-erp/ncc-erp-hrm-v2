@@ -60,7 +60,7 @@ namespace HRMv2.APIs.EmailTemplates
         }
 
         [HttpPost]
-        public async Task<PreviewUpdateMezonDMTemplateDto> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
+        public async Task<bool> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
         {
             return await _emailManager.UpdateMezonDMTemplate(input);
         }

@@ -100,7 +100,15 @@ handleSaveMezonDMTemplate(){
      
    }
    this.emailTemplateService.updateMezonDMTemplate(updateDto).subscribe(rs => {
-    abp.notify.success("Update Successful")
+    if(rs.result){
+      abp.notify.success("Update Successful")
+    }else{
+      abp.message.error(
+        `Edit template error format Please again `
+      );
+    this.dialogRef.close(true);
+    }
+    
    })
    this.dialogRef.close(this.mailInfo)
 }
