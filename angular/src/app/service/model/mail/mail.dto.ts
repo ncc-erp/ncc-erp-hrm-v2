@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 export class EmailDto {
     id: number;
     type: number;
@@ -21,6 +22,13 @@ export class MailPreviewInfo {
     propertiesSupport: string[];
     sendToEmail: string;
     templateType: number;
+}
+
+export class PreviewUpdateMezonDMTemplateDto{
+    id: number;
+    name: string;
+    bodyMessage: string;
+    propertiesSupport?: string[];
 }
 
 export class MailDialogConfig {

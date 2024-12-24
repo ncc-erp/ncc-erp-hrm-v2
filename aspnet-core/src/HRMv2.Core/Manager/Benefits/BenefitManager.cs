@@ -510,5 +510,51 @@ namespace HRMv2.Manager.Categories.Benefits
                 }).ToList();
             return query;
         }
+
+        public List<GetEmployeeBenefitsDto> GetAllBenefitsByEmployeeIds(List<long> ids)
+        {
+            var employees = WorkScope.GetAll<Employee>()
+                .Where(e => ids.Contains(e.Id))
+                .Select(x => new GetEmployeeBenefitsDto
+                {
+                    Id = x.Id,
+                    FullName = x.FullName,
+                    Sex = x.Sex,
+                    Email = x.Email,
+                    AvatarFullPath = x.Avatar,
+                    UserType = x.UserType,
+                    BranchInfo = new BadgeInfoDto
+                    {
+                        Name = x.Branch.Name,
+                        Color = x.Branch.Color
+                    },
+                    LevelInfo = new BadgeInfoDto
+                    {
+                        Name = x.Level.Name,
+                        Color = x.Level.Color
+                    },
+                    JobPositionInfo = new BadgeInfoDto
+                    {
+                        Name = x.JobPosition.Name,
+                        Color = x.JobPosition.Color
+                    },
+                    benefits = x.BenefitEmployees.Where(x => x.Benefit.IsActive)
+                                                 .OrderByDescending(x => x.CreationTime)
+                                                 .Select(x => new GetBenefitsOfEmployeeDto
+                                                 {
+                                                     Id = x.Id,
+                                                     BenefitId = x.Benefit.Id,
+                                                     BenefitName = x.Benefit.Name,
+                                                     BenefitType = x.Benefit.Type,
+                                                     Status = x.Benefit.IsActive,
+                                                     StartDate = x.StartDate,
+                                                     EndDate = x.EndDate,
+                                                     Money = x.Benefit.Money,
+                                                 })
+                                                 .ToList()
+                })
+                .ToList();
+            return employees;
+        }
     }
 }

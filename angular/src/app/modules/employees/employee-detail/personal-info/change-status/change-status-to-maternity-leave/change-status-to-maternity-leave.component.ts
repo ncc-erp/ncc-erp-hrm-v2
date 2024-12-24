@@ -47,7 +47,7 @@ export class ChangeStatusToMaternityLeaveComponent extends DialogComponentBase<a
 
   public onChangeApplyDateValue(value){
     this.benefitsOfEmployee.forEach((bf)=>{
-      bf.endDate = bf.endDate? this.formatDateYMD(value) : null;;
+      bf.endDate = value && !bf.endDate ? this.formatDateYMD(value) : bf.endDate;
     })
     this.inputForChange.backDate = moment(value).startOf('day').add(6, 'months').format("YYYY-MM-DD");
   }

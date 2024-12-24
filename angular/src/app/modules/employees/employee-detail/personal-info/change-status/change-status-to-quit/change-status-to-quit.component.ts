@@ -48,7 +48,7 @@ export class ChangeStatusToQuitComponent extends DialogComponentBase<any> implem
 
   public onChangeApplyDateValue(value){
     this.benefitsOfEmployee.forEach((bf)=>{
-      bf.endDate = value? this.formatDateYMD(value) : null;
+      bf.endDate = value && !bf.endDate? this.formatDateYMD(value) : bf.endDate;
     })
   }
 

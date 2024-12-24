@@ -248,7 +248,7 @@ namespace HRMv2.Manager.Debts
 
         public string SendMailToAllEmployee(GetDebtEmployeeInputDto input)
         {
-            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.Debt);
+            var emailTemplate = _emailManager.GetEmailTemplateDto(NotifyTemplateEnum.Debt);
             if (emailTemplate == default)
             {
                 throw new UserFriendlyException($"Not found email template for debt");
@@ -307,7 +307,7 @@ namespace HRMv2.Manager.Debts
         //TODO: refactor for unit test
         public MailPreviewInfoDto GetDebtTemplate(long debtId)
         {
-            MailPreviewInfoDto template = _emailManager.GetEmailContentById(MailFuncEnum.Debt, debtId);
+            MailPreviewInfoDto template = _emailManager.GetEmailContentById(NotifyTemplateEnum.Debt, debtId);
             return template;
         }
 

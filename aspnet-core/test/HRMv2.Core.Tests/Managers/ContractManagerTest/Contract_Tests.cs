@@ -569,7 +569,7 @@ namespace HRMv2.Application.Tests.APIs.ContractManagerTest
             {
                 long ContractId = 57373;
 
-                var type = MailFuncEnum.Payslip;
+                var type = NotifyTemplateEnum.Payslip;
 
                 var template = _Contract.GetContractTemplate(ContractId, type);
 
@@ -579,7 +579,7 @@ namespace HRMv2.Application.Tests.APIs.ContractManagerTest
                 Assert.Empty(template.CCs);
                 Assert.NotNull(template.BodyMessage);
 
-                Assert.Equal(MailFuncEnum.Payslip, template.MailFuncType);
+                Assert.Equal(NotifyTemplateEnum.Payslip, template.MailFuncType);
                 Assert.Equal("[NCC][Nguyễn Bá Thông] THÔNG BÁO CHI TIẾT LƯƠNG THÁNG 2/2023", template.Subject);
                 Assert.Equal(417, template.TemplateId);
 
@@ -595,7 +595,7 @@ namespace HRMv2.Application.Tests.APIs.ContractManagerTest
             {
                 long ContractId = 11350;
 
-                var type = MailFuncEnum.Payslip;
+                var type = NotifyTemplateEnum.Payslip;
 
                 Assert.ThrowsAsync<NullReferenceException>(() =>
                 {

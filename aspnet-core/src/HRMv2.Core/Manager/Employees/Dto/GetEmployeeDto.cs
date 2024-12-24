@@ -35,7 +35,14 @@ namespace HRMv2.Manager.Employees.Dto
         public string Bank { get; set; }
         public string BankAccountNumber { get; set; }
         public long? BankId { get; set; }
+        /// <summary>
+        /// Salary is BasicSalary. RealSalary = BasicSalary * ProbationPercentage
+        /// </summary>
         public double Salary { get; set; }
+
+        /// <summary>
+        /// RealSalary = BasicSalary * ProbationPercentage
+        /// </summary>
         public double RealSalary { get; set; }
         public float RemainLeaveDay { get; set; }
         public double ProbationPercentage { get; set; }

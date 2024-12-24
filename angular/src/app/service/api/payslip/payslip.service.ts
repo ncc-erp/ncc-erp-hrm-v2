@@ -9,7 +9,7 @@ import { CollectPayslipDto } from '@app/service/model/payslip/CollectPayslipDto'
 import { CreatePayslipDetailDto, CreatePayslipBonusDto, GetPayslipEmployeeDto, ReCalculateDto, UpdatePayslipDeadLineDto, UpdatePayslipDetailDto, UpdatePayslipInfo, InputcomplainPayslipDto } from '@app/service/model/payslip/payslip.dto';
 import { MailPreviewInfo } from '@app/service/model/mail/mail.dto';
 import { GetInputFilterDto } from '@app/service/model/employee/GetEmployeeExcept.dto';
-import { SendMailAllEmployeeDto, SendMailOneemployeeDto } from '@app/service/model/mail/sendMail.dto';
+import { SendDirectMessageToUserDto, SendMailAllEmployeeDto, SendMailOneemployeeDto } from '@app/service/model/mail/sendMail.dto';
 @Injectable({
   providedIn: 'root'
 })
@@ -109,9 +109,14 @@ export class PayslipService extends BaseApiService {
   public sendMailToOneEmployee(input: SendMailOneemployeeDto): Observable<ApiResponseDto<any>> {
     return this.processPost(`SendMailToOneEmployee`, input)
   }
-
+  public sendDirectMessageToUser(payslipId: number): Observable<ApiResponseDto<any>>{
+    return this.processPost(`SendDMConfirmSalary?payslipId=${payslipId}`,null)
+  }
   public sendMailToAllEmployee(input: SendMailAllEmployeeDto): Observable<ApiResponseDto<any>> {
     return this.processPost(`SendMailToAllEmployee`, input)
+  }
+  public sendDirectMessageToAllUser(input: SendMailAllEmployeeDto):Observable<ApiResponseDto<any>>{
+    return this.processPost(`SendDirectMessageToAllEmployee`,input)
   }
 
   public updatePayslipDeadline(input: UpdatePayslipDeadLineDto): Observable<ApiResponseDto<UpdatePayslipDeadLineDto>> {

@@ -17,7 +17,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public string BodyMessage { get; set; }
         public string Subject { get; set; }
         public string Description { get; set; }
-        public MailFuncEnum Type { get; set; }
+        public NotifyTemplateEnum Type { get; set; }
         public List<string> ListCC { get; set; }
         public string SendToEmail { get; set; }
     }

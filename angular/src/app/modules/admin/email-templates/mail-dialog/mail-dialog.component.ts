@@ -7,13 +7,14 @@ import { EditEmailDialogComponent, EditEmailDialogData } from '../edit-email-dia
 import { EmailTemplateService } from '@app/service/api/email-template/email-template.service';
 import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { EmailFunc, TemplateType } from '@shared/AppEnums';
+import { AppConsts } from '@shared/AppConsts';
 @Component({
   selector: 'app-mail-dialog',
   templateUrl: './mail-dialog.component.html',
   styleUrls: ['./mail-dialog.component.css'],
 })
 export class MailDialogComponent extends DialogComponentBase<any> implements OnInit {
-  public mailInfo = new MailPreviewInfo();
+  public mailInfo :any;
   public saving: boolean = false;
   public content: SafeHtml = '';
   public cancelDisabled: boolean = false;
@@ -24,6 +25,8 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
   public showSendMailHeader: boolean = true;
   public templateId: number;
   public EmailTypes = EmailFunc;
+  public TemplateTypes = AppConsts.TemplateType;
+  public type: number;
   constructor(injector: Injector, public sanitizer: DomSanitizer, private dialog: MatDialog, private emailTemplateService: EmailTemplateService) {
     super(injector)
   }
@@ -37,7 +40,9 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
     }
   }
 
-
+  isNotMezonDM(): boolean {
+    return this.TemplateTypes[this.type].name !== AppConsts.MezonDM;
+}
   editTemplate() {
     const dialogData: EditEmailDialogData = {
       mailInfo: { ...this.mailInfo },
@@ -58,11 +63,20 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
   }
 
   getFakeData() {
-    this.subscription.push(
+    if(this.TemplateTypes[this.type].name == AppConsts.MezonDM){
+      this.subscription.push(
+        this.emailTemplateService.previewTemplateMezon(this.templateId).subscribe(rs => {
+          this.mailInfo = rs.result
+        })
+      )
+    }else{
+       this.subscription.push(
       this.emailTemplateService.previewTemplate(this.templateId).subscribe(rs => {
         this.mailInfo = rs.result
       })
     )
+    }
+   
   }
 
   sendMail() {

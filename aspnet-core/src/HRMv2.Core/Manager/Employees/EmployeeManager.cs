@@ -244,8 +244,8 @@ namespace HRMv2.Manager.Employees
                     IssuedBy = x.IssuedBy,
                     IssuedOn = x.IssuedOn != null ? x.IssuedOn.Value : null,
                     Phone = x.Phone,
-                    ProbationPercentage = x.ProbationPercentage,
-                    Salary = x.Salary,
+                    ProbationPercentage = contract != null ? contract.ProbationPercentage : x.ProbationPercentage,
+                    Salary = contract != null ? contract.BasicSalary : x.Salary,
                     RealSalary = x.RealSalary,
                     TaxCode = x.TaxCode,
                     PlaceOfPermanent = x.PlaceOfPermanent,
@@ -2023,7 +2023,9 @@ namespace HRMv2.Manager.Employees
 
         public List<EmployeePublicDto> GetAllEmployeePublic()
         {
-            var employees = WorkScope.GetAll<Employee>()
+            using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
+            {
+                var employees = WorkScope.GetAll<Employee>()
                 .Select(x => new EmployeePublicDto
                 {
                     Email = x.Email,
@@ -2034,9 +2036,10 @@ namespace HRMv2.Manager.Employees
                     BranchCode = x.Branch.Code,
                     UserType = x.UserType,
                     Status = x.Status,
-                    JobPositionCode = x.JobPosition.Code,   
+                    JobPositionCode = x.JobPosition.Code,
                 }).ToList();
-            return employees;
+                return employees;
+            }
         }
         public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
         {

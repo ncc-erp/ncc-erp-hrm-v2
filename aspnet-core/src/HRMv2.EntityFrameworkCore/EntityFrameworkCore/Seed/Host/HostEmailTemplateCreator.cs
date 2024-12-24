@@ -30,8 +30,8 @@ namespace HRMv2.EntityFrameworkCore.Seed.Host
                 .Select(x => x.Type)
                 .ToList();
 
-            Enum.GetValues(typeof(MailFuncEnum))
-                .Cast<MailFuncEnum>()
+            Enum.GetValues(typeof(NotifyTemplateEnum))
+                .Cast<NotifyTemplateEnum>()
                 .ToList()
                 .ForEach(e =>
                 {

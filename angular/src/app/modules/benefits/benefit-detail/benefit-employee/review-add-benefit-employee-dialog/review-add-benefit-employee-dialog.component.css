@@ -1,0 +1,42 @@
+.dialog-container {
+    max-height: 85vh;    
+}
+
+.table-responsive .table {
+    font-size: 16px;
+}
+
+.expansion-header {
+    min-height: 100px;
+}
+
+.expansion-header ::ng-deep.mat-content {
+    display: block;
+}
+
+.col-date {
+    width: 120px;
+}
+
+.isActive-column {
+    width: 90px;
+}
+
+.dialogTitle{
+    font-size: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.dialog-header{
+    cursor: move;
+}
+.out-line{
+    border-bottom: 0.2px solid rgba(204, 204, 204, 0.35);
+}
+.close-btn{
+    background: none;
+    border: none;
+    width: 30px;
+    height: 30px;
+}

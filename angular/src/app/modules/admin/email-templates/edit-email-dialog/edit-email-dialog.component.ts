@@ -1,10 +1,15 @@
+
+import { property } from 'lodash-es';
+import { AddBenefitEmployeeDialogComponent } from './../../../benefits/benefit-detail/benefit-employee/add-benefit-employee-dialog/add-benefit-employee-dialog.component';
 import { Component, OnInit, Injector } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EmailTemplateService } from '@app/service/api/email-template/email-template.service';
 import { MailService } from '@app/service/api/mail/mail.service';
-import { MailPreviewInfo, UpdateEmailTemplate } from '@app/service/model/mail/mail.dto';
-import {  EmailFunc, TemplateType } from '@shared/AppEnums';
+import { MailPreviewInfo, PreviewUpdateMezonDMTemplateDto, UpdateEmailTemplate } from '@app/service/model/mail/mail.dto';
+import { AppConsts } from '@shared/AppConsts';
+import {  APP_ENUMS, EmailFunc, TemplateType } from '@shared/AppEnums';
 import { DialogComponentBase } from '@shared/dialog-component-base';
+import { appendFileSync } from 'fs';
 @Component({
   selector: 'app-edit-email-dialog',
   templateUrl: './edit-email-dialog.component.html',
@@ -12,7 +17,7 @@ import { DialogComponentBase } from '@shared/dialog-component-base';
 })
 export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialogData> implements OnInit {
   public templateId: number;
-  public mailInfo: MailPreviewInfo = {} as MailPreviewInfo;
+  public mailInfo: any;
   public saving: boolean = false;
   public ccS = [];
   public showDialogHeader: boolean = true;
@@ -21,28 +26,46 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
   public temporarySave: boolean;
   public EmailTypes = EmailFunc;
   public showSendMailHeader: boolean = true;
+  public type :number;
+  public TemplateTypes = AppConsts.TemplateType;
   constructor(injector: Injector, private emailTemplateService: EmailTemplateService) {
     super(injector)
   }
 
   ngOnInit(): void {
     Object.assign(this, this.dialogData)
+    
     if (this.templateId) {
       this.getTemplateById()
     }
   }
 
+  isNotMezonDM(): boolean {
+    return this.TemplateTypes[this.type].name !== AppConsts.MezonDM;
+}
   getTemplateById() {
+    if(this.TemplateTypes[this.type].name == AppConsts.MezonDM){
+      this.subscription.push(
+        this.emailTemplateService.getTemplateMezonById(this.templateId).subscribe(rs => {
+          this.mailInfo = rs.result
+          return;
+        })
+      )
+    } else{
     this.subscription.push(
       this.emailTemplateService.getTemplateById(this.templateId).subscribe(rs => {
         this.mailInfo = rs.result
       })
     )
-  }
+  }}
 
   save() {
     if (this.templateId) {
-      this.handleSaveTemplate();
+      if(this.isNotMezonDM()){
+        this.handleSaveTemplate();
+      }else{
+        this.handleSaveMezonDMTemplate();
+      }   
       return;
     }
     else this.dialogRef.close(this.mailInfo);
@@ -68,6 +91,27 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
     }
     this.dialogRef.close(this.mailInfo)
   }
+ 
+handleSaveMezonDMTemplate(){
+   const updateDto: PreviewUpdateMezonDMTemplateDto = {
+     bodyMessage: this.mailInfo.bodyMessage,
+     id : this.templateId,
+     name: this.mailInfo.name,
+     
+   }
+   this.emailTemplateService.updateMezonDMTemplate(updateDto).subscribe(rs => {
+    if(rs.result){
+      abp.notify.success("Update Successful")
+    }else{
+      abp.message.error(
+        `Edit template error format Please again `
+      );
+    this.dialogRef.close(true);
+    }
+    
+   })
+   this.dialogRef.close(this.mailInfo)
+}
   isShowHeaderSendMail(){
     return this.mailInfo.templateType == TemplateType.Mail;
   }

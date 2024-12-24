@@ -46,8 +46,8 @@ export class ChangeStatusToPauseComponent extends DialogComponentBase<any> imple
   }
 
   public onChangeApplyDateValue(value){
-    this.benefitsOfEmployee.forEach((bf)=>{
-      bf.endDate = bf.endDate? this.formatDateYMD(value) : null;
+    this.benefitsOfEmployee.forEach((bf)=> {
+      bf.endDate = value && !bf.endDate ? this.formatDateYMD(value) : bf.endDate;
     })
   }
   
