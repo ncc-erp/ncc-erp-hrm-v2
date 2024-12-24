@@ -171,17 +171,17 @@ namespace HRMv2.Manager.Payrolls
             switch (status)
             {
                 case PayrollStatus.PendingCEO:
-                    return SendMail(payrollDate, payrollId, status, MailFuncEnum.PayrollPendingCEO);
+                    return SendMail(payrollDate, payrollId, status, NotifyTemplateEnum.PayrollPendingCEO);
                 case PayrollStatus.ApprovedByCEO:
-                    return SendMail(payrollDate, payrollId, status, MailFuncEnum.PayrollApprovedByCEO);
+                    return SendMail(payrollDate, payrollId, status, NotifyTemplateEnum.PayrollApprovedByCEO);
                 case PayrollStatus.RejectedByCEO:
-                    return SendMail(payrollDate, payrollId, status, MailFuncEnum.PayrollRejectedByCEO);
+                    return SendMail(payrollDate, payrollId, status, NotifyTemplateEnum.PayrollRejectedByCEO);
             }
             return "";
         }
 
         // TODO: ChangeStatus_Test1, SendMailChangeStatus_Test, SendMail_Test, ExecuatePayroll_Test1 [need to change FirstOfDefault() to LastOrDefault() in method GetEmailTemplateDto() of class EmailManager to run tests]
-        public string SendMail(DateTime payrollDate, long payrollId, PayrollStatus status, MailFuncEnum templateType)
+        public string SendMail(DateTime payrollDate, long payrollId, PayrollStatus status, NotifyTemplateEnum templateType)
         {
             var emailTemplate = _emailManager.GetEmailTemplateDto(templateType);
             var hrmv2Uri = HRMv2Consts.HRM_Uri;
@@ -247,7 +247,7 @@ namespace HRMv2.Manager.Payrolls
             CurrentUnitOfWork.SaveChanges();
             UpdatePunishmentFund(payroll.ApplyMonth, payroll.Id);
             NotifyChangeStatus(payroll.Status, payroll.ApplyMonth);
-            return SendMail(payroll.ApplyMonth, payrollId, payroll.Status, MailFuncEnum.PayrollExecuted);
+            return SendMail(payroll.ApplyMonth, payrollId, payroll.Status, NotifyTemplateEnum.PayrollExecuted);
         }
 
         public void UpdatePunishmentFund(DateTime payrollApplyDate, long payrollId)

@@ -36,6 +36,7 @@ namespace HRMv2.Configuration
                 new SettingDefinition(AppSettingNames.ITMezonChannel,"ITMezonChannel",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.PayrollMezonChannel,"",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.NotifyToPlatform,"mezon",scopes:SettingScopes.Application|SettingScopes.Tenant),
+                new SettingDefinition(AppSettingNames.MezonClanWebhookURL,"MezonClanWebhookURL",scopes:SettingScopes.Application|SettingScopes.Tenant),
             };
         }
     }

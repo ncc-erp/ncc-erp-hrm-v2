@@ -661,7 +661,7 @@ namespace HRMv2.Manager.Categories.Bonuss
         }
         public MailPreviewInfoDto GetBonusTemplate(long bonusEmployeeId)
         {
-            MailPreviewInfoDto template = _emailManager.GetEmailContentById(MailFuncEnum.Bonus, bonusEmployeeId);
+            MailPreviewInfoDto template = _emailManager.GetEmailContentById(NotifyTemplateEnum.Bonus, bonusEmployeeId);
             return template;
         }
 
@@ -679,7 +679,7 @@ namespace HRMv2.Manager.Categories.Bonuss
 
         public string SendMailToAllEmployee(long id, GetBonusEmployeeInputDto input)
         {
-            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.Bonus);
+            var emailTemplate = _emailManager.GetEmailTemplateDto(NotifyTemplateEnum.Bonus);
             if(emailTemplate == default)
             {
                 throw new UserFriendlyException($"Not found email template for bonus");

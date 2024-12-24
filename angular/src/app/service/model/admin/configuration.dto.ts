@@ -51,7 +51,8 @@ export interface EmailSettingDto {
 export interface NotifyChannelDto {
     notifyPlatform: string,
     itChannel: string,
-    payrollChannel: string    
+    payrollChannel: string,
+    clanWebhookURL: string,  
 }
 export interface GetConnectResultDto {
     isConnected: boolean,

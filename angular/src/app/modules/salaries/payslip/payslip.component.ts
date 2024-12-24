@@ -38,6 +38,7 @@ import * as FileSaver from 'file-saver';
 import { ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent } from './import-employee-remain-leave-days-after-calculating-salary/import-employee-remain-leave-days-after-calculating-salary.component';
 import { of } from 'rxjs';
 import { PenaltyUserDialogComponent } from './penalty-user-dialog/penalty-user-dialog.component';
+import { SendDirectMessageToUserComponent } from './send-DirectMessage-toUser/send-direct-message-touser.component';
 
 @Component({
   selector: 'app-payslip',
@@ -403,9 +404,27 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
         }
       })
   }
-
+onSendDirectMessage(payslip: PaySlipDto){
+  this.dialog.open(SendDirectMessageToUserComponent,
+    {
+      width: "600px",
+      data: {
+        payslipId: payslip.id,
+        email: payslip.email
+      }
+    })
+}
   onSendMailAll() {
     this.dialog.open(ConfirmMailDialogComponent, {
+      width: "600px",
+      disableClose: true,
+      data: {
+        payrollId: this.payrollId
+      }
+    })
+  }
+  onSendDirectMessageToAllUer(){
+    this.dialog.open(SendDirectMessageToUserComponent,{
       width: "600px",
       disableClose: true,
       data: {
