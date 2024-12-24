@@ -30,7 +30,7 @@
         public const string ITMezonChannel = "App.ITMezonChannel";
         public const string PayrollMezonChannel = "App.PayrollMezonChannel";
         public const string NotifyToPlatform = "App.NotifyToPlatform";
-
+        public const string MezonClanWebhookURL = "App.MezonClanWebhookURL";
         public static string FaceUri { get; internal set; }
     }
 

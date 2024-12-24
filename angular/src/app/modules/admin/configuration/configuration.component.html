@@ -414,6 +414,14 @@
                 </mat-form-field>
               </div>
             </div>
+            <div class="row">
+              <div class="col col-12 col-md-12 mt-2">
+                <mat-form-field class="w-100 ml-1 mt-2">
+                  <input [disabled]="!isEditNotifySetting" name="channelId" class="w-100" type="text" matInput [placeholder]="'Clan webhook URL (for direct message)'"
+                    [(ngModel)]="notifyChannels.clanWebhookURL" #clanWebhookURL />
+                </mat-form-field>
+              </div>
+            </div>
           </div>
         </div>
       </div>    

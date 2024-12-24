@@ -1,3 +1,4 @@
+import { SendDirectMessageToUserComponent } from './payslip/send-DirectMessage-toUser/send-direct-message-touser.component';
 import { popperVariation, TippyModule, tooltipVariation } from '@ngneat/helipopper';
 import { SharedModule } from './../../../shared/shared.module';
 import { NgModule } from '@angular/core';
@@ -48,6 +49,7 @@ export const customeTooltipVariation: Partial<TippyProps> = {
     ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent,
     EditPayslipDetailDialogComponent,
     PenaltyUserDialogComponent,
+    SendDirectMessageToUserComponent
   ],
   imports: [
     CommonModule,

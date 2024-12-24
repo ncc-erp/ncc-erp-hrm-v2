@@ -139,7 +139,7 @@ namespace HRMv2.Constants.Enum
             Update = 1,
         }
 
-        public enum MailFuncEnum
+        public enum NotifyTemplateEnum
         {
             Payslip = 1,
             ContractBM = 2,
@@ -155,13 +155,14 @@ namespace HRMv2.Constants.Enum
             PayrollRejectedByCEO= 12,
             PayrollExecuted = 13,
             LinkToPreviewPayslip = 14,
-
+            MezonDMLinkToPreviewPayslip = 15,
         }
 
         public enum TemplateType
         {
             Mail = 1,
-            Print = 2
+            Print = 2,
+            MezonDM = 3
         }
         
         public enum PayslipConfirmStatus

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMv2.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,14 +8,13 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Notifications.Email.Dto
 {
-    public class EmailTemplateDto
+    public class PreviewUpdateMezonDMTemplateDto
     {
-        public long Id { get; set; }
+        public long Id {  get; set; }
         public string Name { get; set; }
         public string BodyMessage { get; set; }
-        public string Subject { get; set; }
+        public string[] PropertiesSupport { get; set; }
         public NotifyTemplateEnum Type { get; set; }
-        public string CCs { get; set; }
-        public string SendToEmail { get; set; }
+        public TemplateType TemplateType => CommonUtil.GetTemplateType(Type);
     }
 }
