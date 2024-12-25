@@ -74,7 +74,7 @@ async sendDirectMessageToUser() {
     this.subscription.push(
            this.payslipService.sendDirectMessageToUser(this.payslipId).subscribe(rs =>{        
                 abp.message.success(
-                    `Mezon direct message sent do ${this.userName}!`
+                    `Mezon direct message sent to ${this.userName}!`
                   );
                 this.dialogRef.close(true);         
            })
