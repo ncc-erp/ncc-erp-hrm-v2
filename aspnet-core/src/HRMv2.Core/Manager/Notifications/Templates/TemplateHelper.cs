@@ -13,11 +13,7 @@ namespace HRMv2.Manager.Notifications.Templates
 {
     public static class TemplateHelper
     {
-        private static InputMezonDM inputMezonDM = new InputMezonDM { Content = new ContentMezonDM { Text = "Chào anh/chị {{EmployeeFullName}}," +
-            "Bộ phận kế toán gửi anh chị bảng lương tháng {{PayrollMonth}}/{{PayrollYear}}:" +
-            "{{SalaryLink}}" +
-            "Anh/chị vui lòng xác nhận bảng lương trước {{ComplainDeadline}}" +
-            "Sau thời điểm trên, mọi trường hợp thiếu lương sẽ không được giải quyết." } };
+        private static InputMezonDM inputMezonDM = new InputMezonDM { Content = new ContentMezonDM { Text = "Chào anh/chị {{EmployeeFullName}}, bộ phận kế toán gửi anh chị bảng lương tháng {{PayrollMonth}}/{{PayrollYear}}:\r\n{{SalaryLink}} .\r\nAnh/chị vui lòng xác nhận bảng lương trước {{ComplainDeadline}}Sau thời điểm trên, mọi trường hợp thiếu lương sẽ không được giải quyết." } };
         public static string ContentEmailTemplate(NotifyTemplateEnum type) =>
             type switch
             {
