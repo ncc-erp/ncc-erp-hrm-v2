@@ -1,0 +1,72 @@
+<div class="dialog-container">    
+    <div class="dialog-header" cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
+        <div class="out-line w-100 d-flex justify-content-between align-items-center">
+            <div class="dialogTitle mr-2" [innerHTML]="headerTitle">
+            </div>
+            <div class="pt-2 d-flex align-items-center">                
+                <div class="text-right p-0 mr-3">
+                    <button class="mb-1 fs-16" mat-icon-button [matMenuTriggerFor]="menu">
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                    <mat-menu #menu="matMenu" xPosition="before" yPosition="below">
+                        <button mat-menu-item (click)="accordion.openAll()">
+                            Expand All
+                        </button>
+                        <button mat-menu-item (click)="accordion.closeAll()">
+                            Collapse All
+                        </button>
+                    </mat-menu>
+                </div>
+                <button class="close-btn p-0">
+                    <i class="fas fa-times" mat-dialog-close></i>
+                </button>
+            </div>
+        </div>
+    </div>    
+    <div class="dialog-body pt-3">
+        <mat-accordion class="example-headers-align" multi>
+            <mat-expansion-panel *ngFor="let employee of employeesInfo">
+                <mat-expansion-panel-header class="expansion-header">
+                    <app-user-info [userData]="employee"></app-user-info>
+                </mat-expansion-panel-header>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" [busy]="isLoading">
+                        <thead>
+                            <th class="col-stt">#</th>
+                            <th>Name</th>
+                            <th>Money</th>
+                            <!-- <th class="type-column">Type</th> -->
+                            <th class="col-date">Start date</th>
+                            <th class="col-date">End date</th>
+                            <th class="isActive-column">Is active</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let benefit of employee.benefits; let i = index">
+                                <td class="text-center">{{ (i+1) }}</td>
+                                <td class="align-middle">
+                                    <div class="d-flex align-items-center">
+                                        <span class="mr-1"><strong>{{ benefit.benefitName }}</strong></span>
+                                        <span class="badge rounded-pill bg-danger p-1"
+                                            *ngIf="benefit.benefitId == newBenefitId">New</span>
+                                    </div>
+                                </td>
+                                <td class="text-right align-middle"><strong>{{benefit.money |number:"1.0"}}</strong>
+                                </td>
+                                <td class="text-center">
+                                    {{ benefit.startDate |date:'dd/MM/yyyy' }}
+                                </td>
+                                <td class="text-center">
+                                    {{ benefit.endDate |date:'dd/MM/yyyy'}}
+                                </td>
+                                <td class="text-center align-middle">
+                                    <i class="fa-solid fa-check text-success fa-lg" *ngIf="benefit.status"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+
+</div>

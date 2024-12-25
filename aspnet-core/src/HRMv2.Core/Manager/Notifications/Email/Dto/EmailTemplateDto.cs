@@ -13,7 +13,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public string Name { get; set; }
         public string BodyMessage { get; set; }
         public string Subject { get; set; }
-        public MailFuncEnum Type { get; set; }
+        public NotifyTemplateEnum Type { get; set; }
         public string CCs { get; set; }
         public string SendToEmail { get; set; }
     }

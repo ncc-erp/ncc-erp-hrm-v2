@@ -12,6 +12,7 @@ import { AddBenefitEmployeeDialogComponent } from './benefit-detail/benefit-empl
 import { UpdateBenefitDateDialogComponent } from './benefit-detail/benefit-employee/update-benefit-date-dialog/update-benefit-date-dialog.component';
 import { IConfig, NgxMaskModule } from 'ngx-mask';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReviewAddBenefitEmployeeDialogComponent } from './benefit-detail/benefit-employee/review-add-benefit-employee-dialog/review-add-benefit-employee-dialog.component';
 
 export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
 
@@ -24,6 +25,7 @@ export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
     BenefitEmployeeComponent,
     AddBenefitEmployeeDialogComponent,
     UpdateBenefitDateDialogComponent,
+    ReviewAddBenefitEmployeeDialogComponent,
   ],
   imports: [
     CommonModule,

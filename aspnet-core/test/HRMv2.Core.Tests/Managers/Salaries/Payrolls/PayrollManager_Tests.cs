@@ -512,7 +512,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payrolls
             var payrollDate = new DateTime(2023, 3, 1);
             var payrollId = 150;
             var payrollStatus = PayrollStatus.New;
-            var templateType = MailFuncEnum.PayrollApprovedByCEO;
+            var templateType = NotifyTemplateEnum.PayrollApprovedByCEO;
 
             WithUnitOfWork(() =>
             {
@@ -528,7 +528,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payrolls
             var payrollDate = new DateTime(2023, 3, 1);
             var payrollId = 150;
             var payrollStatus = PayrollStatus.New;
-            var templateType = MailFuncEnum.Checkpoint;
+            var templateType = NotifyTemplateEnum.Checkpoint;
 
             var expectedMessage = $"Can not send mail because mail receiver is not set in template:&nbsp;Payroll&nbsp;{payrollStatus.ToString()}"; ;
 

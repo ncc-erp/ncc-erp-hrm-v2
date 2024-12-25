@@ -4,7 +4,7 @@
     <div class="pt-3">
         <label>Payslip confirm deadline:</label>
         <div>
-            <mat-form-field appearance="outline" class="dealine-picker">
+            <mat-form-field appearance="outline" class="dealine-picker" class="w-100">
                 <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" name="datetime" [(ngModel)]="deadline">
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <ngx-mat-datetime-picker #picker>
