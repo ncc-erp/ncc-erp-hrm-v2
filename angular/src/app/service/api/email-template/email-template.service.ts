@@ -35,7 +35,7 @@ export class EmailTemplateService extends BaseApiService {
         return this.processPost(`UpdateTemplate`, payload)
     }
 
-    updateMezonDMTemplate(payload:PreviewUpdateMezonDMTemplateDto):Observable<ApiResponseDto<PreviewUpdateMezonDMTemplateDto>>{
+    updateMezonDMTemplate(payload:PreviewUpdateMezonDMTemplateDto):Observable<ApiResponseDto<any>>{
         return this.processPost(`UpdateMezonDMTemplate`,payload);
     }
     public sendMail(input : MailPreviewInfo):Observable<ApiResponseDto<any>> {

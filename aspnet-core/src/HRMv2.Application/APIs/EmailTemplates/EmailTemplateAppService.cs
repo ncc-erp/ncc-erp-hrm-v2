@@ -2,6 +2,7 @@
 using HRMv2.Authorization;
 using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.Email.Dto;
+using HRMv2.Validation;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace HRMv2.APIs.EmailTemplates
         }
 
         [HttpPost]
-        public async Task<bool> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
+        public async Task<ResultCheckJson> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
         {
             return await _emailManager.UpdateMezonDMTemplate(input);
         }
