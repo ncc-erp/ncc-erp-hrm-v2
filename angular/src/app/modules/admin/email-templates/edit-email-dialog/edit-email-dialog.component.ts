@@ -63,6 +63,7 @@ export class EditEmailDialogComponent extends DialogComponentBase<EditEmailDialo
     if (this.templateId) {
       if(this.isNotMezonDM()){
         this.handleSaveTemplate();
+        
       }else{
         this.handleSaveMezonDMTemplate();
       }   
@@ -100,17 +101,16 @@ handleSaveMezonDMTemplate(){
      
    }
    this.emailTemplateService.updateMezonDMTemplate(updateDto).subscribe(rs => {
-    if(rs.result){
+    if(rs.result.isValid){
       abp.notify.success("Update Successful")
+      this.dialogRef.close(this.mailInfo)
     }else{
       abp.message.error(
-        `Edit template error format Please again `
+        `Json format is invalid: ${rs.result.errorMessage} `
       );
-    this.dialogRef.close(true);
-    }
-    
+    }  
    })
-   this.dialogRef.close(this.mailInfo)
+  
 }
   isShowHeaderSendMail(){
     return this.mailInfo.templateType == TemplateType.Mail;
