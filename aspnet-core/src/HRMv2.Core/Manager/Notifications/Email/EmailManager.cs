@@ -222,19 +222,20 @@ namespace HRMv2.Manager.Notifications.Email
             return input;
         }
 
-        public async Task<bool> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
+        public async Task<ResultCheckJson> UpdateMezonDMTemplate(PreviewUpdateMezonDMTemplateDto input)
         {
-            if (JsonValidation.IsValidJson(input.BodyMessage))
+            var checkValid = JsonValidation.IsValidJson(input.BodyMessage);
+            if (checkValid.IsValid)
             {
                 var template = WorkScope.GetAll<EmailTemplate>()
                .Where(s => s.Id == input.Id).FirstOrDefault();
 
                 template.BodyMessage = input.BodyMessage;
-                // template.PropertiesSupport = input.PropertiesSupport;
                 await WorkScope.UpdateAsync(template);
-                return true;
+                return checkValid;
+               
             }
-            return false;
+            return checkValid;
 
         }
 
