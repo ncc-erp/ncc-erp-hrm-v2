@@ -93,7 +93,7 @@ namespace HRMv2.APIs.SalaryChangeRequests
         {
             return _salaryRequestManager.Create(input);
         }
-        [HttpPost]
+        [HttpPut]
         [AbpAuthorize(PermissionNames.SalaryChangeRequest_Edit)]
 
         public async Task UpdateRequestStatus(UpdateChangeRequestDto input)
