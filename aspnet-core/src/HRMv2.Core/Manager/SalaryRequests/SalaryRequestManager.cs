@@ -336,9 +336,9 @@ namespace HRMv2.Manager.SalaryRequests
 
                 foreach (var dto in employeesInRequest)
                 {
-                    if (!dicEmployee.ContainsKey(dto.Id))
+                    if (!dicEmployee.ContainsKey(dto.EmployeeId))
                     {
-                        Logger.Error("dicEmployee not containkey employeeId " + dto.Id);
+                        Logger.Error("dicEmployee not containkey employeeId " + dto.EmployeeId);
                         continue;
                     }
 
