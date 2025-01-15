@@ -10,7 +10,6 @@ namespace HRMv2.Entities
     public class EmployeeSalaryInfo
     {
         public string Email { get; set; }
-        [JsonIgnore]
         public SalaryInfo SalaryInfo { get; set; }
         public double Salary => Math.Max(SalaryInfo.ToSalary,SalaryInfo.ContractRealSalary);
     }
