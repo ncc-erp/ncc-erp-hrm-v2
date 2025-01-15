@@ -181,7 +181,7 @@ namespace HRMv2.APIs.SalaryChangeRequests
           return  await _salaryRequestManager.CreateSalaryChangeRequestFromCheckpointTool(input);
         }
 
-        [HttpPost]
+        [HttpGet]
         [NccAuthentication]
         public async Task<List<EmployeeSalaryInfo>> GetEmployeeSalaryInfo(List<string> employeeEmails)
         {
