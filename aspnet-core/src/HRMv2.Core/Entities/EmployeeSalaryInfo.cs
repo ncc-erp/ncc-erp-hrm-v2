@@ -11,6 +11,6 @@ namespace HRMv2.Entities
     {
         public string Email { get; set; }
         public SalaryInfo SalaryInfo { get; set; }
-        public double Salary => Math.Max(SalaryInfo.ToSalary,SalaryInfo.ContractRealSalary);
+        public double Salary => Math.Max(SalaryInfo.ToSalary,SalaryInfo.ContractBasicSalary);
     }
 }
