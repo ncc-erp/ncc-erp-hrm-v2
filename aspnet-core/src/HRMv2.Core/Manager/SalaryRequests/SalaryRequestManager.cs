@@ -849,8 +849,8 @@ namespace HRMv2.Manager.SalaryRequests
                      {
                          ToSalary = x.ToSalary, 
                          ToUserType= x.ToUserType,
-                         ContractBasicSalary = x.Contract.BasicSalary != default ? x.Contract.BasicSalary : 0,
-                         ContractRealSalary = x.Contract.RealSalary != default ? x.Contract.RealSalary : 0,
+                         ContractBasicSalary = x.Contract != default ? x.Contract.BasicSalary : 0,
+                         ContractRealSalary = x.Contract != default ? x.Contract.RealSalary : 0,
 
                      }).FirstOrDefault(),
                  }).ToList();
