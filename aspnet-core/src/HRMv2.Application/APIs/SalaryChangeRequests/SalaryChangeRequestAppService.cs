@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using HRMv2.Authorization;
+using HRMv2.Entities;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Notifications.Email.Dto;
 using HRMv2.Manager.SalaryRequestEmployees.Dto;
@@ -180,5 +181,11 @@ namespace HRMv2.APIs.SalaryChangeRequests
           return  await _salaryRequestManager.CreateSalaryChangeRequestFromCheckpointTool(input);
         }
 
+        [HttpPost]
+        [NccAuthentication]
+        public async Task<List<EmployeeSalaryInfo>> GetEmployeeSalaryInfo(List<string> employeeEmails)
+        {
+            return await _salaryRequestManager.GetEmployeeSalaryInfo(employeeEmails);
+        }
     }
 }

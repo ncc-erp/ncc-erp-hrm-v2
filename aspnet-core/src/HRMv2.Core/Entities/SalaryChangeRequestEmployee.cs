@@ -30,5 +30,7 @@ namespace HRMv2.Entities
         public string Note { get; set; }
         public SalaryRequestType Type { get; set; }
         public bool HasContract { get; set; }
+
+        public ICollection<EmployeeContract> Contracts { get; set; }
     }
 }

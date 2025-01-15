@@ -24,6 +24,7 @@ using NccCore.Paging;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Formats.Asn1;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -813,6 +814,47 @@ namespace HRMv2.Manager.SalaryRequests
                     }
                 }
             }
+        }
+
+        public async Task<List<EmployeeSalaryInfo>> GetEmployeeSalaryInfo(List<string> employeeEmails)
+        {
+            var salaryInfos = WorkScope.GetAll<SalaryChangeRequestEmployee>()
+                 .Select(s => new
+                 {
+                     s.EmployeeId,
+                     s.Employee.Email,
+                     s.SalaryChangeRequest.ApplyMonth,
+                     s.SalaryChangeRequest.Status,
+                     s.ToSalary,
+                     s.ToUserType,
+                     Contract = s.Contracts.Select( x => new
+                     {
+                         x.StartDate,
+                         x.BasicSalary,
+                         x.RealSalary,
+                         x.ProbationPercentage,
+                     }).OrderByDescending(x => x.StartDate).FirstOrDefault(),
+                 })
+                 .Where(s => employeeEmails.Contains(s.Email))
+                 .Where( s => s.Status == SalaryRequestStatus.Executed ).ToList()
+                 .GroupBy(s => new
+                 {
+                     s.EmployeeId, s.Email
+                 })
+                 .Select(s => new EmployeeSalaryInfo
+                 {
+                     Email =  s.Key.Email,
+                     SalaryInfo = s.OrderByDescending(x => x.ApplyMonth)
+                     .Select(x => new SalaryInfo
+                     {
+                         ToSalary = x.ToSalary, 
+                         ToUserType= x.ToUserType,
+                         ContractBasicSalary = x.Contract.BasicSalary != default ? x.Contract.BasicSalary : 0,
+                         ContractRealSalary = x.Contract.RealSalary != default ? x.Contract.RealSalary : 0,
+
+                     }).FirstOrDefault(),
+                 }).ToList();
+            return salaryInfos;
         }
     }
 }
