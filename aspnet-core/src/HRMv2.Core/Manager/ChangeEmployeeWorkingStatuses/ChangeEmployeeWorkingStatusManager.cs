@@ -173,12 +173,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                    
                 }
             };
-            var inputMezonMessage = new InputMezonMessage()
-            {
-                type = "HRM",
-                message = mezonMessage,
-            };
-            _notificationService.NotifyToPayrollChannel(inputMezonMessage);
+            _notificationService.NotifyToPayrollChannel(mezonMessage);
             }
         }
 

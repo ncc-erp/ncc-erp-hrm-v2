@@ -23,7 +23,7 @@ namespace HRMv2.WebServices.Mezon
             _isNotifyToMezon = configuration.GetValue<string>($"{serviceName}:EnableKomuNotification", "true");
         }
 
-        public void NotifyToChannel(InputMezonMessage mezonMessage, string mezonUrl)
+        public void NotifyToChannel(MezonMessage mezonMessage, string mezonUrl)
         {
             if (_isNotifyToMezon != "true")
             {
@@ -36,7 +36,7 @@ namespace HRMv2.WebServices.Mezon
                 Logger.Error("mezonUrl null or empty");
                 return;
             }
-            Post(mezonUrl, mezonMessage );
+            Post(mezonUrl, new { type = "hook", message = mezonMessage });
         }
 
         public void SendDirectMessageToUser(InputMezonDM input, string mezonUrl, string userName)

@@ -29,7 +29,7 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             _platform = _settingManager.GetSettingValueForApplication(AppSettingNames.NotifyToPlatform);
         }
 
-        public void NotifyToITChannel(InputMezonMessage mezonMessage)
+        public void NotifyToITChannel(MezonMessage mezonMessage)
         {
             if (_platform == AppConsts.NotifyToMezon)
             {
@@ -39,11 +39,11 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             else if (_platform == AppConsts.NotifyToKomu) 
             {
                 var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.KomuITChannelId);
-                _komuService.NotifyToChannel(mezonMessage.message.t, channelId);
+                _komuService.NotifyToChannel(mezonMessage.t, channelId);
             }
         }
 
-        public void NotifyToPayrollChannel(InputMezonMessage mezonMessage)
+        public void NotifyToPayrollChannel(MezonMessage mezonMessage)
         {
             if (_platform == AppConsts.NotifyToMezon)
             {
@@ -53,7 +53,7 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             else if ( _platform == AppConsts.NotifyToKomu)
             {
                 var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.PayrollChannelId);
-                _komuService.NotifyToChannel(mezonMessage.message.t, channelId);
+                _komuService.NotifyToChannel(mezonMessage.t, channelId);
             }
         }
 

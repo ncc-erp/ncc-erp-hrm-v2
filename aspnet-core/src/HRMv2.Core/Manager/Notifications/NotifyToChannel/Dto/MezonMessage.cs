@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace HRMv2.Manager.Notifications.NotifyToChannel.Dto
 {
-    public class InputMezonMessage
-    {
-        public string type { get; set; }
-        public MezonMessage message { get; set; }
-    }
     public class MezonMessage
     {
         public string username { get; set; }

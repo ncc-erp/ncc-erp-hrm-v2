@@ -337,29 +337,29 @@ namespace HRMv2.Manager.Payrolls
             }
             var userNameLogin = CommonUtil.GetUserNameByEmail(loginUserEmail);
             var userNamecc = CommonUtil.GetUserNameByEmail(ccEmail);
+            var listMezonMessageMention = new List<MezonMessageMention>
+            {
+                new MezonMessageMention
+                {
+                     username = userNameLogin,
+                     s = message.IndexOf(userNameLogin) - 1
+                }
+            };
+
+            if (status != PayrollStatus.Executed )
+            {
+                listMezonMessageMention.Add(new MezonMessageMention
+                {
+                    username = userNamecc,
+                    s = message.IndexOf(userNamecc) - 1
+                });
+            }
             var mezonMessage = new MezonMessage
             {   username = "HRM",
                 t = message,
-                mentions = new List<MezonMessageMention>
-                {
-                    new MezonMessageMention
-                    {
-                        username = userNameLogin,
-                        s = message.IndexOf(userNameLogin) - 1
-                    },
-                    new MezonMessageMention
-                    {
-                         username = userNamecc,
-                        s = message.IndexOf(userNamecc) - 1
-                    }
-                }
+                mentions = listMezonMessageMention,
             };
-            var input = new InputMezonMessage()
-            {
-                type = "HRM",
-                message = mezonMessage,
-            };
-            _notificationService.NotifyToPayrollChannel(input);
+            _notificationService.NotifyToPayrollChannel(mezonMessage);
         }
 
         private string GetFirstUserEmailHasRole(string roleName)
