@@ -355,7 +355,7 @@ namespace HRMv2.Manager.Payrolls
                 });
             }
             var mezonMessage = new MezonMessage
-            {   username = "HRM",
+            {  
                 t = message,
                 mentions = listMezonMessageMention,
             };

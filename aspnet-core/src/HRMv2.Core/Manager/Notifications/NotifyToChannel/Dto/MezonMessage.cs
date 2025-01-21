@@ -8,7 +8,6 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel.Dto
 {
     public class MezonMessage
     {
-        public string username { get; set; }
         public string t { set; get; }
         public List<MezonMessageMention> mentions { set; get; }
     }

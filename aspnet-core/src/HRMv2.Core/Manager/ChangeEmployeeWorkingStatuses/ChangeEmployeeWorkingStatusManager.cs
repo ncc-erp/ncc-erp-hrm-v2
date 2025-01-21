@@ -156,7 +156,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                 var userNameCEO = CommonUtil.GetUserNameByEmail(CEOUserName);
                 var userNameHR = CommonUtil.GetUserNameByEmail(HRUserName);
                 var mezonMessage = new MezonMessage
-            {   username = "HRM",
+            {  
                 t = message,
                 mentions = new List<MezonMessageMention>
                 {
