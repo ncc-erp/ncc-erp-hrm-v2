@@ -29,31 +29,31 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             _platform = _settingManager.GetSettingValueForApplication(AppSettingNames.NotifyToPlatform);
         }
 
-        public void NotifyToITChannel(string message)
+        public void NotifyToITChannel(MezonMessage mezonMessage)
         {
             if (_platform == AppConsts.NotifyToMezon)
             {
                 var channelUrl = _settingManager.GetSettingValueForApplication(AppSettingNames.ITMezonChannel);
-                _mezonService.NotifyToChannel(message, channelUrl);
+                _mezonService.NotifyToChannel(mezonMessage, channelUrl);
             } 
             else if (_platform == AppConsts.NotifyToKomu) 
             {
                 var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.KomuITChannelId);
-                _komuService.NotifyToChannel(message, channelId);
+                _komuService.NotifyToChannel(mezonMessage.t, channelId);
             }
         }
 
-        public void NotifyToPayrollChannel(string message)
+        public void NotifyToPayrollChannel(MezonMessage mezonMessage)
         {
             if (_platform == AppConsts.NotifyToMezon)
             {
                 var channelUrl = _settingManager.GetSettingValueForApplication(AppSettingNames.PayrollMezonChannel); 
-                _mezonService.NotifyToChannel(message, channelUrl);
+                _mezonService.NotifyToChannel(mezonMessage, channelUrl);
             }
             else if ( _platform == AppConsts.NotifyToKomu)
             {
                 var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.PayrollChannelId);
-                _komuService.NotifyToChannel(message, channelId);
+                _komuService.NotifyToChannel(mezonMessage.t, channelId);
             }
         }
 

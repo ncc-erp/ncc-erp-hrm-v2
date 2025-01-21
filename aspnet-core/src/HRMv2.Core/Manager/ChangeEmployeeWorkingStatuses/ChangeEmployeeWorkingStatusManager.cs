@@ -16,6 +16,7 @@ using HRMv2.Manager.Categories.Benefits;
 using HRMv2.Manager.ChangeEmployeeWorkingStatuses.Dto;
 using HRMv2.Manager.EmployeeContracts;
 using HRMv2.Manager.Notifications.NotifyToChannel;
+using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.SalaryRequests.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
@@ -152,7 +153,27 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                 var message = $"{tagCEO}{tagHR}HRM plan **{employeeInfo.Email}** {employeeInfo.BranchName} {CommonUtil.GetUserTypeNameVN(employeeInfo.UserType)}" +
                     $" {employeeInfo.PositionName} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
-                _notificationService.NotifyToITChannel(message);
+                var userNameCEO = CommonUtil.GetUserNameByEmail(CEOUserName);
+                var userNameHR = CommonUtil.GetUserNameByEmail(HRUserName);
+                var mezonMessage = new MezonMessage
+            {  
+                t = message,
+                mentions = new List<MezonMessageMention>
+                {
+                    new MezonMessageMention
+                    {
+                        username = userNameCEO,
+                        s = message.IndexOf(userNameCEO) - 1
+                    },
+                    new MezonMessageMention
+                    {
+                         username = userNameHR,
+                        s = message.LastIndexOf(userNameHR) - 1
+                    }
+                   
+                }
+            };
+            _notificationService.NotifyToPayrollChannel(mezonMessage);
             }
         }
 
@@ -215,7 +236,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             var message = $"{tagCEO}{tagHR}HRM confirm **{employee.Email}** {employee.Branch.Name} {CommonUtil.GetUserTypeNameVN(employee.UserType)}" +
                     $" {employee.JobPosition.Name} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
-            _notificationService.NotifyToITChannel(message);
+         //   _notificationService.NotifyToITChannel(message);
             _userManager.UpdateUserActiveAsync(employee.Email, false).GetAwaiter().GetResult(); ;
         }
         public void ChangeStatusToPause(ToPauseDto input)

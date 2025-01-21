@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Runtime.Session;
+using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.Notifications.SendMezonDM.Dto;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ namespace HRMv2.WebServices.Mezon
             _isNotifyToMezon = configuration.GetValue<string>($"{serviceName}:EnableKomuNotification", "true");
         }
 
-        public void NotifyToChannel(string mezonMessage, string mezonUrl)
+        public void NotifyToChannel(MezonMessage mezonMessage, string mezonUrl)
         {
             if (_isNotifyToMezon != "true")
             {
@@ -35,7 +36,7 @@ namespace HRMv2.WebServices.Mezon
                 Logger.Error("mezonUrl null or empty");
                 return;
             }
-            Post(mezonUrl, new { type = "HRM", message = new { username = "HRM", t = mezonMessage } });
+            Post(mezonUrl, new { type = "hook", message = mezonMessage });
         }
 
         public void SendDirectMessageToUser(InputMezonDM input, string mezonUrl, string userName)
