@@ -41,6 +41,8 @@ export class MailDialogComponent extends DialogComponentBase<any> implements OnI
   }
 
   isNotMezonDM(): boolean {
+    if(this.type == undefined) return true;
+    if(this.TemplateTypes[this.type] == undefined) return true;
     return this.TemplateTypes[this.type].name !== AppConsts.MezonDM;
 }
   editTemplate() {
