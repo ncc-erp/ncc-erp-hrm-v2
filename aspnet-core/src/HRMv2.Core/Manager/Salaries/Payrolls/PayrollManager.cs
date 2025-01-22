@@ -308,27 +308,27 @@ namespace HRMv2.Manager.Payrolls
             {
                 case PayrollStatus.PendingCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.CEO.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
                     message = $"{tagLoginUser} submited **{payrollName}** [PendingCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.PendingKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
                     message = $"{tagLoginUser} submited **{payrollName}** [PendingKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.SubKT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
                     message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
                     message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.ApprovedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
                     message = $"{tagLoginUser} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.Executed:
@@ -345,8 +345,8 @@ namespace HRMv2.Manager.Payrolls
                      s = message.IndexOf(userNameLogin) - 1
                 }
             };
-
-            if (status != PayrollStatus.Executed )
+            
+            if (status != PayrollStatus.Executed)
             {
                 listMezonMessageMention.Add(new MezonMessageMention
                 {
