@@ -1,6 +1,8 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Configuration;
 using Abp.UI;
+using DocumentFormat.OpenXml.Office2019.Excel.ThreadedComments;
+using DocumentFormat.OpenXml.Spreadsheet;
 using HRMv2.Authorization.Roles;
 using HRMv2.Authorization.Users;
 using HRMv2.Configuration;
@@ -10,6 +12,7 @@ using HRMv2.Manager.Debts;
 using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.Email.Dto;
 using HRMv2.Manager.Notifications.NotifyToChannel;
+using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Timesheet;
@@ -332,7 +335,31 @@ namespace HRMv2.Manager.Payrolls
                     message = $"{tagLoginUser} executed **{payrollName}** [Executed]";
                     break;
             }
-            _notificationService.NotifyToPayrollChannel(message);
+            var userNameLogin = CommonUtil.GetUserNameByEmail(loginUserEmail);
+            var userNamecc = CommonUtil.GetUserNameByEmail(ccEmail);
+            var listMezonMessageMention = new List<MezonMessageMention>
+            {
+                new MezonMessageMention
+                {
+                     username = userNameLogin,
+                     s = message.IndexOf(userNameLogin) - 1
+                }
+            };
+
+            if (status != PayrollStatus.Executed )
+            {
+                listMezonMessageMention.Add(new MezonMessageMention
+                {
+                    username = userNamecc,
+                    s = message.IndexOf(userNamecc) - 1
+                });
+            }
+            var mezonMessage = new MezonMessage
+            {  
+                t = message,
+                mentions = listMezonMessageMention,
+            };
+            _notificationService.NotifyToPayrollChannel(mezonMessage);
         }
 
         private string GetFirstUserEmailHasRole(string roleName)

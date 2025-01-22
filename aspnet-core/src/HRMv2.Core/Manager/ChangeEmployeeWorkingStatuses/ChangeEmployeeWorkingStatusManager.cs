@@ -16,6 +16,7 @@ using HRMv2.Manager.Categories.Benefits;
 using HRMv2.Manager.ChangeEmployeeWorkingStatuses.Dto;
 using HRMv2.Manager.EmployeeContracts;
 using HRMv2.Manager.Notifications.NotifyToChannel;
+using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.SalaryRequests.Dto;
 using HRMv2.NccCore;
 using HRMv2.Utils;
@@ -100,7 +101,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             _notificationService = notificationService;
             _userManager = userManager;
         }
-
+        
         public void ChangeStatusToQuit(ToQuitDto input)
         {
             DeleteOldRequestInBackgroundJob(input.EmployeeId);
@@ -123,8 +124,14 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                 _backgroundJobManager.Enqueue<ChangeWorkingStatusToQuit, ToQuitDto>(
                     input, BackgroundJobPriority.High, TimeSpan.FromHours(delayHour));
 
-                var employeeInfo = WorkScope.GetAll<Employee>()
-                    .Where(x => x.Id == input.EmployeeId)
+                ChangeStatusToQuitNotify(input.EmployeeId, input.ApplyDate);
+            }
+        }
+
+        private void ChangeStatusToQuitNotify(long employeeId,DateTime applyDate)
+        {
+            var employeeInfo = WorkScope.GetAll<Employee>()
+                    .Where(x => x.Id == employeeId)
                     .Select(x => new
                     {
                         Email = x.Email,
@@ -135,27 +142,43 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
                         HRId = x.Branch.HRId
                     }).FirstOrDefault();
 
-                var CEOUserName = WorkScope.GetAll<Employee>()
-                    .Where(x => x.Id == employeeInfo.CEOId)
-                    .Select(x => x.Email)
-                    .FirstOrDefault();
+            var CEOEmail = WorkScope.GetAll<Employee>()
+                .Where(x => x.Id == employeeInfo.CEOId)
+                .Select(x => x.Email)
+                .FirstOrDefault();
 
-                var HRUserName = WorkScope.GetAll<Employee>()
-                    .Where(x => x.Id == employeeInfo.HRId)
-                    .Select(x => x.Email)
-                    .FirstOrDefault();
+            var HREmail = WorkScope.GetAll<Employee>()
+                .Where(x => x.Id == employeeInfo.HRId)
+                .Select(x => x.Email)
+                .FirstOrDefault();
+            var userNameCEO = CommonUtil.GetUserNameByEmail(CEOEmail);
+            var userNameHR = CommonUtil.GetUserNameByEmail(HREmail);
 
 
-                var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notificationService.GetTagUser(CEOUserName)}, " : "";
-                var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notificationService.GetTagUser(HRUserName)}, " : "";
+            var message = $"{userNameCEO}{userNameHR}HRM plan **{employeeInfo.Email}** {employeeInfo.BranchName} {CommonUtil.GetUserTypeNameVN(employeeInfo.UserType)}" +
+                $" {employeeInfo.PositionName} **Quit job** on {DateTimeUtils.ToString(applyDate)}";
 
-                var message = $"{tagCEO}{tagHR}HRM plan **{employeeInfo.Email}** {employeeInfo.BranchName} {CommonUtil.GetUserTypeNameVN(employeeInfo.UserType)}" +
-                    $" {employeeInfo.PositionName} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
 
-                _notificationService.NotifyToITChannel(message);
-            }
+            var mezonMessage = new MezonMessage
+            {
+                t = message,
+                mentions = new List<MezonMessageMention>
+                {
+                    new MezonMessageMention
+                    {
+                        username = userNameCEO,
+                        s = message.IndexOf(userNameCEO) - 1
+                    },
+                    new MezonMessageMention
+                    {
+                         username = userNameHR,
+                        s = message.LastIndexOf(userNameHR) - 1
+                    }
+
+                }
+            };
+            _notificationService.NotifyToPayrollChannel(mezonMessage);
         }
-
 
         public void ToQuit(ToQuitDto input)
         {
@@ -199,24 +222,48 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             };
 
             ConfirmUserQuit(inputChangeUserWorkingStatusToOtherTool);
+            ToQuitNotify(employee, input.ApplyDate);
+            
+            _userManager.UpdateUserActiveAsync(employee.Email, false).GetAwaiter().GetResult(); 
+        }
 
-            var CEOUserName = WorkScope.GetAll<Employee>()
+        private void ToQuitNotify(Employee employee, DateTime applyDate)
+        {
+            var CEOEmail = WorkScope.GetAll<Employee>()
                 .Where(x => x.Id == employee.Branch.CEOId)
                 .Select(x => x.Email)
                 .FirstOrDefault();
 
-            var HRUserName = WorkScope.GetAll<Employee>()
+            var HREmail = WorkScope.GetAll<Employee>()
                 .Where(x => x.Id == employee.Branch.HRId)
                 .Select(x => x.Email)
                 .FirstOrDefault();
 
-            var tagCEO = !string.IsNullOrEmpty(CEOUserName) ? $"{_notificationService.GetTagUser(CEOUserName)}, " : "";
-            var tagHR = !string.IsNullOrEmpty(HRUserName) ? $"{_notificationService.GetTagUser(HRUserName)}, " : "";
-            var message = $"{tagCEO}{tagHR}HRM confirm **{employee.Email}** {employee.Branch.Name} {CommonUtil.GetUserTypeNameVN(employee.UserType)}" +
-                    $" {employee.JobPosition.Name} **Quit job** on {DateTimeUtils.ToString(input.ApplyDate)}";
+            var userNameCEO = CommonUtil.GetUserNameByEmail(CEOEmail);
+            var userNameHR = CommonUtil.GetUserNameByEmail(HREmail);
 
-            _notificationService.NotifyToITChannel(message);
-            _userManager.UpdateUserActiveAsync(employee.Email, false).GetAwaiter().GetResult(); ;
+            var message = $"{userNameCEO}{userNameHR}HRM confirm **{employee.Email}** {employee.Branch.Name} {CommonUtil.GetUserTypeNameVN(employee.UserType)}" +
+                    $" {employee.JobPosition.Name} **Quit job** on {DateTimeUtils.ToString(applyDate)}";
+
+            var mezonMessage = new MezonMessage
+            {
+                t = message,
+                mentions = new List<MezonMessageMention>
+                {
+                  new MezonMessageMention
+                  {
+                     username = userNameCEO,
+                     s = message.IndexOf(userNameCEO) - 1
+                  },
+                  new MezonMessageMention
+                  {
+                     username = userNameHR,
+                     s = message.LastIndexOf(userNameHR) - 1
+                  }
+
+                }
+            };
+            _notificationService.NotifyToITChannel(mezonMessage);
         }
         public void ChangeStatusToPause(ToPauseDto input)
         {
