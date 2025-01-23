@@ -156,6 +156,7 @@ export class PersonalInfoComponent
         this.formGroup.controls['realSalary'].patchValue((this.tempEmployeetalentInfo.salary * this.tempEmployeetalentInfo.probationPercentage) / 100);
         this.formGroup.controls['sex'].setValue(this.tempEmployeetalentInfo.sex);
         this.formGroup.controls['birthday'].setValue(this.tempEmployeetalentInfo.dateOfBirth);
+        this.formGroup.controls['seniority'].setValue(this.tempEmployeetalentInfo.startWorkingDate);
         this.formGroup.controls['skills'].setValue(this.skillList.filter(x =>this.tempEmployeetalentInfo.skillStr.toLowerCase().includes(x.key.toLowerCase())));
         this.formGroup.controls['contractStartDate'].setValue(this.tempEmployeetalentInfo.onboardDate);
         this.formGroup.controls['personalEmail'].setValue(this.tempEmployeetalentInfo.email);
@@ -370,6 +371,7 @@ export class PersonalInfoComponent
       issuedBy: "",
       insuranceStatus: this.APP_ENUM.InsuranceStatus.NONE,
       birthday: null,
+      seniority: null,
       sex: this.APP_ENUM.Gender.Male,
       placeOfOrigin: "",
       placeOfResidence: "",
@@ -481,6 +483,7 @@ export class PersonalInfoComponent
       issuedBy: info.issuedBy,
       insuranceStatus: info.insuranceStatus,
       birthday: info.birthday,
+      seniority: info.startWorkingDate,
       sex: info.sex,
       placeOfOrigin: info.placeOfPermanent,
       placeOfResidence: info.address,
@@ -551,7 +554,7 @@ export class PersonalInfoComponent
   onSave() {
     var inputStartWorkingDate = "";
     if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
-      inputStartWorkingDate = this.formatDateYMD(this.formGroup.value.startWorkingDate)
+      inputStartWorkingDate = this.formatDateYMD(this.formGroup.controls.seniority.value);
     }
     if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
       inputStartWorkingDate = this.personalInfo.startWorkingDate;

@@ -193,6 +193,22 @@
                             <span class="view-text" *ngIf="!isEdit && !isUpdateRequestMode">{{personalInfo.birthday | DMYDateFormat}}</span>
                         </div>
                     </div>
+                    <div class="form-group row" [ngClass]="{'update-request-mode': isUpdateRequestMode}">
+                        <label class="col-form-label col-lg-3 col-md-5">
+                            Seniority count from date:
+                        </label>
+                        <div class="col-lg-9 col-md-7">
+                            <mat-form-field *ngIf="isEdit || isUpdateRequestMode" class="example-full-width" appearance="outline">
+                                <input  matInput formControlName="seniority" [matDatepicker]="pickerSeniority">
+                                <mat-datepicker-toggle matSuffix [for]="pickerSeniority"></mat-datepicker-toggle>
+                                <mat-datepicker [dateClass]="dateClass" #pickerSeniority></mat-datepicker>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.startWorkingDate"
+                                [controlEl]="dateOfSeniorityEl">
+                            </abp-validation-summary>
+                            <span class="view-text" *ngIf="!isEdit && !isUpdateRequestMode">{{personalInfo.startWorkingDate | DMYDateFormat}}</span>
+                        </div>
+                    </div>
                     <div class="row old-info" *ngIf="isUpdateRequestMode" [ngClass]="{'text-danger': !requestUpdateInfoDetail.isChangeBirthday}">
                         <div class="col-form-label col-lg-3 col-md-5">
                             <span>Old value</span>
