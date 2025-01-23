@@ -553,7 +553,7 @@ export class PersonalInfoComponent
 
   onSave() {
     var inputStartWorkingDate = "";
-    if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
+    if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff)){
       inputStartWorkingDate = this.formatDateYMD(this.formGroup.controls.seniority.value);
     }
     if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
