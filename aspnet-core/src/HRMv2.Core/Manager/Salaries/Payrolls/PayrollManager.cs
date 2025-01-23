@@ -296,7 +296,7 @@ namespace HRMv2.Manager.Payrolls
                 .Where(x => x.Id == AbpSession.UserId)
                 .Select(x => x.EmailAddress)
                 .FirstOrDefault();
-            var tagLoginUser = _notificationService.GetTagUser(loginUserEmail);
+            var loginUserName = CommonUtil.GetUserNameByEmail(loginUserEmail);
 
 
             var message = "";
@@ -309,40 +309,39 @@ namespace HRMv2.Manager.Payrolls
                 case PayrollStatus.PendingCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.CEO.ToUpper());
                     ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
-                    message = $"{tagLoginUser} submited **{payrollName}** [PendingCEO] - cc: {ccAccount}";
+                    message = $"{loginUserName} submited **{payrollName}** [PendingCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.PendingKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
                     ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
-                    message = $"{tagLoginUser} submited **{payrollName}** [PendingKT] - cc: {ccAccount}";
+                    message = $"{loginUserName} submited **{payrollName}** [PendingKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.SubKT.ToUpper());
                     ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
-                    message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccount}";
+                    message = $"{loginUserName} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
                     ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
-                    message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccount}";
+                    message = $"{loginUserName} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.ApprovedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
                     ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
-                    message = $"{tagLoginUser} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccount}";
+                    message = $"{loginUserName} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.Executed:
-                    message = $"{tagLoginUser} executed **{payrollName}** [Executed]";
+                    message = $"{loginUserName} executed **{payrollName}** [Executed]";
                     break;
             }
-            var userNameLogin = CommonUtil.GetUserNameByEmail(loginUserEmail);
             var userNamecc = CommonUtil.GetUserNameByEmail(ccEmail);
             var listMezonMessageMention = new List<MezonMessageMention>
             {
                 new MezonMessageMention
                 {
-                     username = userNameLogin,
-                     s = message.IndexOf(userNameLogin) - 1
+                     username = loginUserName,
+                     s = message.IndexOf(loginUserName) - 1
                 }
             };
             

@@ -155,7 +155,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             var userNameHR = CommonUtil.GetUserNameByEmail(HREmail);
 
 
-            var message = $"{userNameCEO} , {userNameHR} HRM plan **{employeeInfo.Email}** {employeeInfo.BranchName} {CommonUtil.GetUserTypeNameVN(employeeInfo.UserType)}" +
+            var message = $"{userNameCEO}, {userNameHR} HRM plan **{employeeInfo.Email}** {employeeInfo.BranchName} {CommonUtil.GetUserTypeNameVN(employeeInfo.UserType)}" +
                 $" {employeeInfo.PositionName} **Quit job** on {DateTimeUtils.ToString(applyDate)}";
 
 
@@ -242,7 +242,7 @@ namespace HRMv2.Manager.ChangeEmployeeWorkingStatuses
             var userNameCEO = CommonUtil.GetUserNameByEmail(CEOEmail);
             var userNameHR = CommonUtil.GetUserNameByEmail(HREmail);
 
-            var message = $"{userNameCEO} , {userNameHR} HRM confirm **{employee.Email}** {employee.Branch.Name} {CommonUtil.GetUserTypeNameVN(employee.UserType)}" +
+            var message = $"{userNameCEO}, {userNameHR} HRM confirm **{employee.Email}** {employee.Branch.Name} {CommonUtil.GetUserTypeNameVN(employee.UserType)}" +
                     $" {employee.JobPosition.Name} **Quit job** on {DateTimeUtils.ToString(applyDate)}";
 
             var mezonMessage = new MezonMessage
