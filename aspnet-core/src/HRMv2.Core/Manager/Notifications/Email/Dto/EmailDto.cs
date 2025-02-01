@@ -11,7 +11,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
     public class EmailDto
     {
         public long Id { get; set; }
-        public MailFuncEnum Type { get; set; }
+        public NotifyTemplateEnum Type { get; set; }
         public string Name { get; set; }
         public string CCs { get; set; }
         public string[] ArrCCs { get => string.IsNullOrEmpty(CCs) ? new string[0] : CCs.Split(",").ToArray(); }
@@ -27,7 +27,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public long TemplateId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public MailFuncEnum MailFuncType { get; set; }
+        public NotifyTemplateEnum MailFuncType { get; set; }
         public string Subject { get; set; }
         public string BodyMessage { get; set; }
         public string SendToEmail { get; set; }

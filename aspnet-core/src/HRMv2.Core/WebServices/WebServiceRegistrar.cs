@@ -54,7 +54,7 @@ namespace HRMv2.WebServices
                 option.DefaultRequestHeaders.Add("X-Secret-Key", _appConfiguration.GetValue<string>("KomuService:SecurityCode", "SecurityCode"));
             });
 
-            services.AddHttpClient<MezonService>(option => {});
+            services.AddHttpClient<MezonWebService>(option => {});
 
             return services;
         }

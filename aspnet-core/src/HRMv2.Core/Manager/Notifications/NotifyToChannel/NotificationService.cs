@@ -18,10 +18,10 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
     public class NotificationService: DomainService
     {
         private readonly KomuService _komuService;
-        private readonly MezonService _mezonService;
+        private readonly MezonWebService _mezonService;
         private readonly string _platform;
         private readonly ISettingManager _settingManager;
-        public NotificationService(IWorkScope workScope, KomuService komuService, MezonService mezonService, ISettingManager settingManager) 
+        public NotificationService(IWorkScope workScope, KomuService komuService, MezonWebService mezonService, ISettingManager settingManager) 
         {
             _komuService = komuService;
             _mezonService = mezonService;
@@ -29,31 +29,31 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             _platform = _settingManager.GetSettingValueForApplication(AppSettingNames.NotifyToPlatform);
         }
 
-        public void NotifyToITChannel(string message)
+        public void NotifyToITChannel(MezonMessage mezonMessage)
         {
             if (_platform == AppConsts.NotifyToMezon)
             {
                 var channelUrl = _settingManager.GetSettingValueForApplication(AppSettingNames.ITMezonChannel);
-                _mezonService.NotifyToChannel(message, channelUrl);
+                _mezonService.NotifyToChannel(mezonMessage, channelUrl);
             } 
             else if (_platform == AppConsts.NotifyToKomu) 
             {
                 var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.KomuITChannelId);
-                _komuService.NotifyToChannel(message, channelId);
+                _komuService.NotifyToChannel(mezonMessage.t, channelId);
             }
         }
 
-        public void NotifyToPayrollChannel(string message)
+        public void NotifyToPayrollChannel(MezonMessage mezonMessage)
         {
             if (_platform == AppConsts.NotifyToMezon)
             {
                 var channelUrl = _settingManager.GetSettingValueForApplication(AppSettingNames.PayrollMezonChannel); 
-                _mezonService.NotifyToChannel(message, channelUrl);
+                _mezonService.NotifyToChannel(mezonMessage, channelUrl);
             }
             else if ( _platform == AppConsts.NotifyToKomu)
             {
                 var channelId = _settingManager.GetSettingValueForApplication(AppSettingNames.PayrollChannelId);
-                _komuService.NotifyToChannel(message, channelId);
+                _komuService.NotifyToChannel(mezonMessage.t, channelId);
             }
         }
 
@@ -64,11 +64,13 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             {
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.ITMezonChannel, input.ITChannel);
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.PayrollMezonChannel, input.PayrollChannel);
+                await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.MezonClanWebhookURL, input.ClanWebhookURL);
             } 
             else if (input.NotifyPlatform == AppConsts.NotifyToKomu)
             {
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.KomuITChannelId, input.ITChannel);
                 await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.PayrollChannelId, input.PayrollChannel);
+                await _settingManager.ChangeSettingForApplicationAsync(AppSettingNames.MezonClanWebhookURL, input.ClanWebhookURL);
             }
         }
 
@@ -81,12 +83,14 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel
             {
                 setting.ITChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.ITMezonChannel);
                 setting.PayrollChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.PayrollMezonChannel);
+                setting.ClanWebhookURL = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.MezonClanWebhookURL);
             }
             else if (platform == AppConsts.NotifyToKomu)
             {
 
                 setting.ITChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.KomuITChannelId);
                 setting.PayrollChannel = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.PayrollChannelId);
+                setting.ClanWebhookURL = await _settingManager.GetSettingValueForApplicationAsync(AppSettingNames.MezonClanWebhookURL);
             }
             return setting;
         }

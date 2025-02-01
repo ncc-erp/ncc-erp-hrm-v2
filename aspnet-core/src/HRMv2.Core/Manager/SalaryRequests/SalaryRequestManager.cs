@@ -24,6 +24,7 @@ using NccCore.Paging;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Formats.Asn1;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -336,13 +337,13 @@ namespace HRMv2.Manager.SalaryRequests
 
                 foreach (var dto in employeesInRequest)
                 {
-                    if (!dicEmployee.ContainsKey(dto.Id))
+                    if (!dicEmployee.ContainsKey(dto.EmployeeId))
                     {
-                        Logger.Error("dicEmployee not containkey employeeId " + dto.Id);
+                        Logger.Error("dicEmployee not containkey employeeId " + dto.EmployeeId);
                         continue;
                     }
 
-                    var employee = dicEmployee[dto.Id];
+                    var employee = dicEmployee[dto.EmployeeId];
 
                     employee.RealSalary = dto.ToSalary;
                     employee.UserType = dto.ToUserType;
@@ -716,7 +717,7 @@ namespace HRMv2.Manager.SalaryRequests
 
         public MailPreviewInfoDto GetCheckpointTemplate(long requestId)
         {
-            MailPreviewInfoDto template = _emailManager.GetEmailContentById(MailFuncEnum.Checkpoint, requestId);
+            MailPreviewInfoDto template = _emailManager.GetEmailContentById(NotifyTemplateEnum.Checkpoint, requestId);
             return template;
         }
 
@@ -735,7 +736,7 @@ namespace HRMv2.Manager.SalaryRequests
 
         public string SendMailToAllEmployee(long id, InputGetEmployeeInSalaryRequestDto input)
         {
-            var emailTemplate = _emailManager.GetEmailTemplateDto(MailFuncEnum.Checkpoint);
+            var emailTemplate = _emailManager.GetEmailTemplateDto(NotifyTemplateEnum.Checkpoint);
             if (emailTemplate == default)
             {
                 throw new UserFriendlyException($"Not found email template for checkpoint");
@@ -808,6 +809,47 @@ namespace HRMv2.Manager.SalaryRequests
                     }
                 }
             }
+        }
+
+        public async Task<List<EmployeeSalaryInfo>> GetEmployeeSalaryInfo(List<string> employeeEmails)
+        {
+            var salaryInfos = WorkScope.GetAll<SalaryChangeRequestEmployee>()
+                 .Select(s => new
+                 {
+                     s.EmployeeId,
+                     s.Employee.Email,
+                     s.SalaryChangeRequest.ApplyMonth,
+                     s.SalaryChangeRequest.Status,
+                     s.ToSalary,
+                     s.ToUserType,
+                     Contract = s.Contracts.Select( x => new
+                     {
+                         x.StartDate,
+                         x.BasicSalary,
+                         x.RealSalary,
+                         x.ProbationPercentage,
+                     }).OrderByDescending(x => x.StartDate).FirstOrDefault(),
+                 })
+                 .Where(s => employeeEmails.Contains(s.Email))
+                 .Where( s => s.Status == SalaryRequestStatus.Executed ).ToList()
+                 .GroupBy(s => new
+                 {
+                     s.EmployeeId, s.Email
+                 })
+                 .Select(s => new EmployeeSalaryInfo
+                 {
+                     Email =  s.Key.Email,
+                     SalaryInfo = s.OrderByDescending(x => x.ApplyMonth)
+                     .Select(x => new SalaryInfo
+                     {
+                         ToSalary = x.ToSalary, 
+                         ToUserType= x.ToUserType,
+                         ContractBasicSalary = x.Contract != default ? x.Contract.BasicSalary : 0,
+                         ContractRealSalary = x.Contract != default ? x.Contract.RealSalary : 0,
+
+                     }).FirstOrDefault(),
+                 }).ToList();
+            return salaryInfos;
         }
     }
 }

@@ -278,7 +278,7 @@ namespace HRMv2.Manager.EmployeeContracts
             await WorkScope.UpdateAsync(entity);
             return input;
         }
-        public MailPreviewInfoDto GetContractTemplate(long contractId, MailFuncEnum type)
+        public MailPreviewInfoDto GetContractTemplate(long contractId, NotifyTemplateEnum type)
         {
             MailPreviewInfoDto template = _emailManager.GetContractContentById(type, contractId);
             return template;

@@ -17,7 +17,7 @@ namespace HRMv2.Entities
         public string Subject { get; set; }
         [MaxLength(1000)]
         public string Description { get; set; }
-        public MailFuncEnum Type { get; set; }
+        public NotifyTemplateEnum Type { get; set; }
         [MaxLength(200)]
         public string CCs { get; set; }
         public string SendToEmail { get; set; }

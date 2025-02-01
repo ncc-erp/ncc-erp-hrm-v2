@@ -456,30 +456,32 @@ namespace HRMv2.Utils
         }
                 
 
-        public static TemplateType GetTemplateType(MailFuncEnum type)
+        public static TemplateType GetTemplateType(NotifyTemplateEnum type)
         {
             switch (type)
             {
-                case MailFuncEnum.Payslip:
-                case MailFuncEnum.Debt:
-                case MailFuncEnum.Bonus:
-                case MailFuncEnum.Checkpoint:
+                case NotifyTemplateEnum.Payslip:
+                case NotifyTemplateEnum.Debt:
+                case NotifyTemplateEnum.Bonus:
+                case NotifyTemplateEnum.Checkpoint:
                     return TemplateType.Mail;
-                case MailFuncEnum.ContractDT:
-                case MailFuncEnum.ContractCTV:
-                case MailFuncEnum.ContractBM:
-                case MailFuncEnum.ContractLD:
-                case MailFuncEnum.ContractTV:
+                case NotifyTemplateEnum.ContractDT:
+                case NotifyTemplateEnum.ContractCTV:
+                case NotifyTemplateEnum.ContractBM:
+                case NotifyTemplateEnum.ContractLD:
+                case NotifyTemplateEnum.ContractTV:
                     return TemplateType.Print;
+                case NotifyTemplateEnum.MezonDMLinkToPreviewPayslip:
+                    return TemplateType.MezonDM;
             }
             return TemplateType.Mail;
         }
         public static string GetMailType(string jobAgr)
         {
-            var mailFuncTypePayslip = $"\"MailFuncType\":{(int)MailFuncEnum.Payslip}";
-            var mailFuncTypeDebt = $"\"MailFuncType\":{(int)MailFuncEnum.Debt}";
-            var mailFuncTypeBonus = $"\"MailFuncType\":{(int)MailFuncEnum.Bonus}";
-            var mailFuncTypeCheckpoint = $"\"MailFuncType\":{(int)MailFuncEnum.Checkpoint}";
+            var mailFuncTypePayslip = $"\"MailFuncType\":{(int)NotifyTemplateEnum.Payslip}";
+            var mailFuncTypeDebt = $"\"MailFuncType\":{(int)NotifyTemplateEnum.Debt}";
+            var mailFuncTypeBonus = $"\"MailFuncType\":{(int)NotifyTemplateEnum.Bonus}";
+            var mailFuncTypeCheckpoint = $"\"MailFuncType\":{(int)NotifyTemplateEnum.Checkpoint}";
             if (jobAgr.Contains(mailFuncTypePayslip))
             {
                 return "Gửi mail bảng lương";

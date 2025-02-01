@@ -1935,7 +1935,7 @@ namespace HRMv2.Core.Tests.Managers.Salaries.Payslips
                 Assert.True(result.MailInfo.Subject.Length > 1);
                 Assert.Equal("an.phamthien@ncc.asia", mailInforReceived.SendToEmail);
                 Assert.Equal(TemplateType.Mail, mailInforReceived.TemplateType);
-                Assert.Equal(MailFuncEnum.Payslip, mailInforReceived.MailFuncType);
+                Assert.Equal(NotifyTemplateEnum.Payslip, mailInforReceived.MailFuncType);
             });
         }
 

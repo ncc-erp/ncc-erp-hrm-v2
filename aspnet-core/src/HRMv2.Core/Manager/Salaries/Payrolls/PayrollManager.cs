@@ -1,6 +1,8 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Configuration;
 using Abp.UI;
+using DocumentFormat.OpenXml.Office2019.Excel.ThreadedComments;
+using DocumentFormat.OpenXml.Spreadsheet;
 using HRMv2.Authorization.Roles;
 using HRMv2.Authorization.Users;
 using HRMv2.Configuration;
@@ -10,6 +12,7 @@ using HRMv2.Manager.Debts;
 using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.Email.Dto;
 using HRMv2.Manager.Notifications.NotifyToChannel;
+using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Timesheet;
@@ -171,17 +174,17 @@ namespace HRMv2.Manager.Payrolls
             switch (status)
             {
                 case PayrollStatus.PendingCEO:
-                    return SendMail(payrollDate, payrollId, status, MailFuncEnum.PayrollPendingCEO);
+                    return SendMail(payrollDate, payrollId, status, NotifyTemplateEnum.PayrollPendingCEO);
                 case PayrollStatus.ApprovedByCEO:
-                    return SendMail(payrollDate, payrollId, status, MailFuncEnum.PayrollApprovedByCEO);
+                    return SendMail(payrollDate, payrollId, status, NotifyTemplateEnum.PayrollApprovedByCEO);
                 case PayrollStatus.RejectedByCEO:
-                    return SendMail(payrollDate, payrollId, status, MailFuncEnum.PayrollRejectedByCEO);
+                    return SendMail(payrollDate, payrollId, status, NotifyTemplateEnum.PayrollRejectedByCEO);
             }
             return "";
         }
 
         // TODO: ChangeStatus_Test1, SendMailChangeStatus_Test, SendMail_Test, ExecuatePayroll_Test1 [need to change FirstOfDefault() to LastOrDefault() in method GetEmailTemplateDto() of class EmailManager to run tests]
-        public string SendMail(DateTime payrollDate, long payrollId, PayrollStatus status, MailFuncEnum templateType)
+        public string SendMail(DateTime payrollDate, long payrollId, PayrollStatus status, NotifyTemplateEnum templateType)
         {
             var emailTemplate = _emailManager.GetEmailTemplateDto(templateType);
             var hrmv2Uri = HRMv2Consts.HRM_Uri;
@@ -247,7 +250,7 @@ namespace HRMv2.Manager.Payrolls
             CurrentUnitOfWork.SaveChanges();
             UpdatePunishmentFund(payroll.ApplyMonth, payroll.Id);
             NotifyChangeStatus(payroll.Status, payroll.ApplyMonth);
-            return SendMail(payroll.ApplyMonth, payrollId, payroll.Status, MailFuncEnum.PayrollExecuted);
+            return SendMail(payroll.ApplyMonth, payrollId, payroll.Status, NotifyTemplateEnum.PayrollExecuted);
         }
 
         public void UpdatePunishmentFund(DateTime payrollApplyDate, long payrollId)
@@ -293,7 +296,7 @@ namespace HRMv2.Manager.Payrolls
                 .Where(x => x.Id == AbpSession.UserId)
                 .Select(x => x.EmailAddress)
                 .FirstOrDefault();
-            var tagLoginUser = _notificationService.GetTagUser(loginUserEmail);
+            var loginUserName = CommonUtil.GetUserNameByEmail(loginUserEmail);
 
 
             var message = "";
@@ -305,34 +308,57 @@ namespace HRMv2.Manager.Payrolls
             {
                 case PayrollStatus.PendingCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.CEO.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
-                    message = $"{tagLoginUser} submited **{payrollName}** [PendingCEO] - cc: {ccAccount}";
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
+                    message = $"{loginUserName} submited **{payrollName}** [PendingCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.PendingKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
-                    message = $"{tagLoginUser} submited **{payrollName}** [PendingKT] - cc: {ccAccount}";
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
+                    message = $"{loginUserName} submited **{payrollName}** [PendingKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByKT:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.SubKT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
-                    message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccount}";
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
+                    message = $"{loginUserName} rejected **{payrollName}** [RejectedByKT] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.RejectedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
-                    message = $"{tagLoginUser} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccount}";
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
+                    message = $"{loginUserName} rejected **{payrollName}** [RejectedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.ApprovedByCEO:
                     ccEmail = GetFirstUserEmailHasRole(Tenants.KT.ToUpper());
-                    ccAccount = _notificationService.GetTagUser(ccEmail);
-                    message = $"{tagLoginUser} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccount}";
+                    ccAccount = CommonUtil.GetUserNameByEmail(ccEmail);
+                    message = $"{loginUserName} approved **{payrollName}** [ApprovedByCEO] - cc: {ccAccount}";
                     break;
                 case PayrollStatus.Executed:
-                    message = $"{tagLoginUser} executed **{payrollName}** [Executed]";
+                    message = $"{loginUserName} executed **{payrollName}** [Executed]";
                     break;
             }
-            _notificationService.NotifyToPayrollChannel(message);
+            var userNamecc = CommonUtil.GetUserNameByEmail(ccEmail);
+            var listMezonMessageMention = new List<MezonMessageMention>
+            {
+                new MezonMessageMention
+                {
+                     username = loginUserName,
+                     s = message.IndexOf(loginUserName) - 1
+                }
+            };
+            
+            if (status != PayrollStatus.Executed)
+            {
+                listMezonMessageMention.Add(new MezonMessageMention
+                {
+                    username = userNamecc,
+                    s = message.IndexOf(userNamecc) - 1
+                });
+            }
+            var mezonMessage = new MezonMessage
+            {  
+                t = message,
+                mentions = listMezonMessageMention,
+            };
+            _notificationService.NotifyToPayrollChannel(mezonMessage);
         }
 
         private string GetFirstUserEmailHasRole(string roleName)

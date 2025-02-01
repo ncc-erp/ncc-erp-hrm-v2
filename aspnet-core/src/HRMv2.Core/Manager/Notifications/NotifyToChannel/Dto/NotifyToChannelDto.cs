@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amazon.S3.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace HRMv2.Manager.Notifications.NotifyToChannel.Dto
         public string NotifyPlatform { get; set; }
         public string ITChannel { get; set; }
         public string PayrollChannel { get; set; }
+        public string ClanWebhookURL { get; set; }
     }
 
     public class NotifyToPlatformDto

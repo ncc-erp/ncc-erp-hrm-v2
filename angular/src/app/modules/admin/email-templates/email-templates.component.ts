@@ -41,9 +41,10 @@ export class EmailTemplatesComponent extends AppComponentBase implements OnInit 
   }
   preview(mailData: EmailDto) {
     this.isShowSendMail(mailData.type)
-    const previewDialogData: MailDialogData = {
+    const previewDialogData = {
       templateId: mailData.id,
       title: `Preview ${mailData.name}`,
+      type: mailData.templateType
     }
     const dialogRef = this.matDialog.open(MailDialogComponent, {
       data: previewDialogData,
@@ -67,7 +68,8 @@ export class EmailTemplatesComponent extends AppComponentBase implements OnInit 
       data: {
         templateId: mailData.id,
         title: `Edit ${mailData.name}`,
-        showSendMailHeader: this.showSendMailHeader
+        showSendMailHeader: this.showSendMailHeader,
+        type: mailData.templateType,
 
       },
       width: '85%',
