@@ -3,6 +3,7 @@ using Abp.Runtime.Session;
 using Castle.Core.Logging;
 using HRMv2.MultiTenancy;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
@@ -14,14 +15,14 @@ namespace HRMv2.WebServices
     public abstract class BaseWebService
     {
         private readonly HttpClient httpClient;
-        protected readonly ILogger Logger;
+        protected readonly ILogger<BaseWebService> Logger;
         private readonly IAbpSession _abpSession;
         private readonly TenantManager _tenantManager;
 
         public BaseWebService(HttpClient httpClient, IAbpSession abpSession, IIocResolver iocResovler)
         {
             this.httpClient = httpClient;
-            Logger = NullLogger.Instance;
+            Logger = IocManager.Instance.Resolve<ILogger<BaseWebService>>();
             this._abpSession = abpSession;
             _tenantManager = iocResovler.Resolve<TenantManager>();
             AddTenantNameToHeader();
@@ -32,16 +33,16 @@ namespace HRMv2.WebServices
             var logInfo = $"Get: BaseAddress [{httpClient.BaseAddress}], url: {url}";
             try
             {
-                Logger.Info(logInfo);
+                Logger.LogInformation(logInfo);
                 var response = await httpClient.GetAsync(url);
 
                 var responseContent = await response.Content.ReadAsStringAsync();                
-                Logger.Info($"{logInfo} response: {responseContent}");
+                Logger.LogInformation($"{logInfo} response: {responseContent}");
                 return JsonConvert.DeserializeObject<T>(responseContent);
             }
             catch (Exception ex)
             {
-                Logger.Error($"{logInfo} error: {ex.Message}");
+                Logger.LogError($"{logInfo} error: {ex.Message}");
             }
             return default;
 
@@ -54,18 +55,18 @@ namespace HRMv2.WebServices
 
             try
             {
-                Logger.Info(logInfo);
+                Logger.LogInformation(logInfo);
                 var response = await httpClient.PostAsync(url, contentString);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    Logger.Info($"{logInfo} response: {responseContent}");
+                    Logger.LogInformation($"{logInfo} response: {responseContent}");
                     return JsonConvert.DeserializeObject<T>(responseContent);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Error($"{logInfo} error: {ex.Message}");
+                Logger.LogError($"{logInfo} error: {ex.Message}");
             }
             return default;
         }
@@ -78,13 +79,13 @@ namespace HRMv2.WebServices
             {
                 var contentString = new StringContent(strInput, Encoding.UTF8, "application/json");
 
-                Logger.Info(logInfo);
+                Logger.LogInformation(logInfo);
 
                 httpClient.PostAsync(url, contentString);
             }
             catch (Exception e)
             {
-                Logger.Error($"{logInfo} Error: {e.Message}");
+                Logger.LogError($"{logInfo} Error: {e.Message}");
             }
 
         }

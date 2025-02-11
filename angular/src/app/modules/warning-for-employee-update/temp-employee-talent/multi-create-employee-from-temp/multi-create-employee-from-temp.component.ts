@@ -103,7 +103,8 @@ export class MultiCreateEmployeeFromTempComponent
       avatar: "",
       insuranceStatus: this.APP_ENUM.InsuranceStatus.NONE,
       placeOfPermanent: "",
-      startWorkingDate: this.formatDateYMD(employee.onboardDate),
+      beStaffDate: this.formatDateYMD(employee.onboardDate),
+      beTViecDate: this.formatDateYMD(employee.onboardDate),
       taxCode: "",
       teams: [],
       skills: this.skillList

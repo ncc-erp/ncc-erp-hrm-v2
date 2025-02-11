@@ -108,7 +108,8 @@ namespace HRMv2.Manager.Employees
                     Avatar = x.Avatar,
                     Sex = x.Sex,
                     Email = x.Email,
-                    StartWorkingDate = x.StartWorkingDate,
+                    BeStaffDate = x.BeStaffDate,
+                    BeTViecDate = x.BeTViecDate,
                     JobPositionId = x.JobPositionId,
                     BranchId = x.BranchId,
                     LevelId = x.LevelId,
@@ -182,7 +183,8 @@ namespace HRMv2.Manager.Employees
                             Avatar = x.Avatar,
                             Sex = x.Sex,
                             Email = x.Email,
-                            StartWorkingDate = x.StartWorkingDate,
+                            BeStaffDate = x.BeStaffDate,
+                            BeTViecDate = x.BeTViecDate,
                             UserType = x.UserType,
                             Status = x.Status,
                             JobPositionId = x.JobPositionId,
@@ -253,7 +255,8 @@ namespace HRMv2.Manager.Employees
                     Avatar = x.Avatar,
                     Sex = x.Sex,
                     Email = x.Email,
-                    StartWorkingDate = x.StartWorkingDate,
+                    BeStaffDate = x.BeStaffDate,
+                    BeTViecDate = x.BeTViecDate,
                     JobPositionId = x.JobPositionId,
                     BranchId = x.BranchId,
                     LevelId = x.LevelId,
@@ -414,48 +417,48 @@ namespace HRMv2.Manager.Employees
 
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority == x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority == x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority == x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority == x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.year)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority == x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority == x.BeStaffDate.Date);
                         break;
 
                     case SeniorityComparision.LessThanOrEqual:
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
                             query = query
-                                .Where(x => x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority <= x.StartWorkingDate.Date || x.UserType != UserType.Staff);
+                                .Where(x => x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority <= x.BeStaffDate.Date || x.UserType != UserType.Staff);
 
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
                             query = query
-                                .Where(x => x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority <= x.StartWorkingDate.Date || x.UserType != UserType.Staff);
+                                .Where(x => x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority <= x.BeStaffDate.Date || x.UserType != UserType.Staff);
 
                         if (input.Seniority.SeniorityType == SeniorityFilterType.year)
                             query = query
-                                .Where(x => x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority <= x.StartWorkingDate.Date || x.UserType != UserType.Staff);
+                                .Where(x => x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority <= x.BeStaffDate.Date || x.UserType != UserType.Staff);
                         break;
 
                     case SeniorityComparision.GreaterThanOrEqual:
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority >= x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority >= x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority >= x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority >= x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.year)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != null && x.StartWorkingDate != default)
-                                .Where(x => seniority >= x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
+                                .Where(x => seniority >= x.BeStaffDate.Date);
                         break;
                 }
             }
@@ -523,48 +526,48 @@ namespace HRMv2.Manager.Employees
 
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != default)
-                                .Where(x => seniority == x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
+                                .Where(x => seniority == x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != default)
-                                .Where(x => seniority == x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
+                                .Where(x => seniority == x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.year)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != default)
-                                .Where(x => seniority == x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
+                                .Where(x => seniority == x.BeStaffDate.Date);
                         break;
 
                     case SeniorityComparision.LessThanOrEqual:
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
                             query = query
-                                .Where(x => x.StartWorkingDate != default)
-                                .Where(x => seniority <= x.StartWorkingDate.Date || x.UserType != UserType.Staff);
+                                .Where(x => x.BeStaffDate != default)
+                                .Where(x => seniority <= x.BeStaffDate.Date || x.UserType != UserType.Staff);
 
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
                             query = query
-                                .Where(x => x.StartWorkingDate != default)
-                                .Where(x => seniority <= x.StartWorkingDate.Date || x.UserType != UserType.Staff);
+                                .Where(x => x.BeStaffDate != default)
+                                .Where(x => seniority <= x.BeStaffDate.Date || x.UserType != UserType.Staff);
 
                         if (input.Seniority.SeniorityType == SeniorityFilterType.year)
                             query = query
-                                .Where(x => x.StartWorkingDate != default)
-                                .Where(x => seniority <= x.StartWorkingDate.Date || x.UserType != UserType.Staff);
+                                .Where(x => x.BeStaffDate != default)
+                                .Where(x => seniority <= x.BeStaffDate.Date || x.UserType != UserType.Staff);
                         break;
 
                     case SeniorityComparision.GreaterThanOrEqual:
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != default)
-                                .Where(x => seniority >= x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
+                                .Where(x => seniority >= x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != default)
-                                .Where(x => seniority >= x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
+                                .Where(x => seniority >= x.BeStaffDate.Date);
                         if (input.Seniority.SeniorityType == SeniorityFilterType.year)
                             query = query
-                                .Where(x => x.UserType == UserType.Staff && x.StartWorkingDate != default)
-                                .Where(x => seniority >= x.StartWorkingDate.Date);
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
+                                .Where(x => seniority >= x.BeStaffDate.Date);
                         break;
                 }
             }
@@ -612,7 +615,7 @@ namespace HRMv2.Manager.Employees
             }
 
             var entity = ObjectMapper.Map<Employee>(input);
-            entity.StartWorkingDate = input.ContractStartDate;
+            entity.BeStaffDate = input.ContractStartDate;
             long employeeId = await WorkScope.InsertAndGetIdAsync(entity);
             input.Id = employeeId;
 
@@ -624,7 +627,7 @@ namespace HRMv2.Manager.Employees
 
             InitBranchHistory(input);
 
-            AddToBenefits(employeeId, entity.StartWorkingDate);
+            AddToBenefits(employeeId, entity.BeStaffDate);
 
             await InitSalaryChangeRequestAndContract(input);
 
@@ -1207,7 +1210,7 @@ namespace HRMv2.Manager.Employees
                 Type = input.UserType,
                 PositionCode = jobPosition,
                 SkillNames = listSkillName,
-                WorkingStartDate = input.StartWorkingDate,
+                WorkingStartDate = input.BeStaffDate,
                 CurrentAddress = input.CurrentAddress,
                 EmergencyContactName = input.EmergencyContactName,
                 EmergencyContactPhone = input.EmergencyContactPhone
@@ -1511,15 +1514,17 @@ namespace HRMv2.Manager.Employees
                         data.Phone = data.Phone.ToLower() == "null" ? "" : data.Phone;
                         if (data.Phone != "" && !data.Phone.StartsWith("0") && !data.Phone.StartsWith("84")) { data.Phone = "0" + data.Phone; }
                         data.Birthday = worksheet.Cells[row, 3].GetValue<DateTime?>() ?? null;
-                        data.BankCode = worksheet.Cells[row, 4].GetCellValue<string>() ?? "";
-                        data.BankAccountNumber = worksheet.Cells[row, 5].GetCellValue<string>() ?? "";
-                        data.TaxCode = worksheet.Cells[row, 6].GetCellValue<string>() ?? "";
-                        data.InsuranceStatusCode = worksheet.Cells[row, 7].GetCellValue<string>() ?? "";
-                        data.IdCard = worksheet.Cells[row, 8].GetCellValue<string>() ?? "";
-                        data.PlaceOfPermanent = worksheet.Cells[row, 9].GetCellValue<string>() ?? "";
-                        data.Address = worksheet.Cells[row, 10].GetCellValue<string>() ?? "";
-                        data.IssuedOn = worksheet.Cells[row, 11].GetCellValue<DateTime?>() ?? null;
-                        data.IssuedBy = worksheet.Cells[row, 12].GetCellValue<string>() ?? "";
+                        data.BeStaffDate = worksheet.Cells[row, 4].GetCellValue<DateTime>();
+                        data.BeTViecDate = worksheet.Cells[row, 5].GetCellValue<DateTime>();
+                        data.BankCode = worksheet.Cells[row, 6].GetCellValue<string>() ?? "";
+                        data.BankAccountNumber = worksheet.Cells[row, 7].GetCellValue<string>() ?? "";
+                        data.TaxCode = worksheet.Cells[row, 8].GetCellValue<string>() ?? "";
+                        data.InsuranceStatusCode = worksheet.Cells[row, 9].GetCellValue<string>() ?? "";
+                        data.IdCard = worksheet.Cells[row, 10].GetCellValue<string>() ?? "";
+                        data.PlaceOfPermanent = worksheet.Cells[row, 11].GetCellValue<string>() ?? "";
+                        data.Address = worksheet.Cells[row, 12].GetCellValue<string>() ?? "";
+                        data.IssuedOn = worksheet.Cells[row, 13].GetCellValue<DateTime?>() ?? null;
+                        data.IssuedBy = worksheet.Cells[row, 14].GetCellValue<string>() ?? "";
                         data.Row = row;
 
                         datas.Add(data);
@@ -1839,7 +1844,8 @@ namespace HRMv2.Manager.Employees
                 employee.PlaceOfPermanent = string.IsNullOrEmpty(data.PlaceOfPermanent) ? employee.PlaceOfPermanent : data.PlaceOfPermanent;
                 employee.IssuedOn = data.IssuedOn ?? employee.IssuedOn;
                 employee.IssuedBy = string.IsNullOrEmpty(data.IssuedBy) ? employee.IssuedBy : data.IssuedBy;
-
+                employee.BeStaffDate = data.BeStaffDate;
+                employee.BeTViecDate = data.BeTViecDate;
                 successList.Add(data.Email);
 
             }
@@ -2069,7 +2075,7 @@ namespace HRMv2.Manager.Employees
                     Sex = x.Sex,
                     Type = x.UserType,
                     PositionCode = x.JobPosition.Code,
-                    WorkingStartDate = x.StartWorkingDate,
+                    WorkingStartDate = x.BeStaffDate,
                     CurrentAddress = x.CurrentAddress,
                     EmergencyContactName = x.EmergencyContactName,
                     EmergencyContactPhone = x.EmergencyContactPhone

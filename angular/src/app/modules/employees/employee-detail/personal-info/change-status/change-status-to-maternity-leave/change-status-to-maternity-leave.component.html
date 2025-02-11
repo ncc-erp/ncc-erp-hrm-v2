@@ -93,7 +93,7 @@
                                         <mat-label>Choose a apply date</mat-label>
                                         <input name="applyDate" matInput [matDatepicker]="picker"
                                             (dateChange)="onChangeApplyDateValue(inputForChange.applyDate)"
-                                            [min]="employeeInfo.startWorkingDate"
+                                            [min]="employeeInfo.beStaffDate"
                                             [(ngModel)]="inputForChange.applyDate" required>
                                         <mat-datepicker-toggle matSuffix [for]="picker" required></mat-datepicker-toggle>
                                         <mat-datepicker #picker></mat-datepicker>

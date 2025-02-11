@@ -152,7 +152,7 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
   }
 
   private GetStartWorkingTimeStr(employee: GetEmployeeDto): string {
-    return employee.startWorkingDate ?
+    return employee.beStaffDate ?
       `<div>
         ${employee.seniority?.years > 0 ? employee.seniority?.years + 'y' : ''}
         ${employee.seniority?.months > 0 ? employee.seniority?.months + 'm' : ''}

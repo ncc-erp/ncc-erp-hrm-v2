@@ -861,7 +861,7 @@ namespace HRMv2.Core.Tests.Managers.SalaryRequests
                 UserType = UserType.ProbationaryStaff,
                 LevelId = 315,
                 JobPositionId = 47,
-                StartWorkingDate = new DateTime(2022, 12, 15)
+                BeStaffDate = new DateTime(2022, 12, 15)
             };
 
             await WithUnitOfWorkAsync(async () =>
@@ -879,7 +879,7 @@ namespace HRMv2.Core.Tests.Managers.SalaryRequests
                 employee.UserType.ShouldBe(expectedEmployee.UserType);
                 employee.LevelId.ShouldBe(expectedEmployee.LevelId);
                 employee.JobPositionId.ShouldBe(expectedEmployee.JobPositionId);
-                employee.StartWorkingDate.ShouldBe(expectedEmployee.StartWorkingDate);
+                employee.BeStaffDate.ShouldBe(expectedEmployee.BeStaffDate);
             });
         }
 

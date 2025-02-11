@@ -377,7 +377,8 @@ export class PersonalInfoComponent
       contractEndDate: "",
       remainLeaveDay: 0,
       contractCode: "",
-      startWorkingDate: [this.formatDateYMD(new Date), [Validators.required]],
+      beStaffDate: [this.formatDateYMD(new Date), [Validators.required]],
+      beTViecDate: [this.formatDateYMD(new Date), [Validators.required]],
       personalEmail: ["", [Validators.email]],
       currentAddress: "",
       emergencyContactName: "",
@@ -488,7 +489,8 @@ export class PersonalInfoComponent
       contractEndDate: info.contractEndDate,
       remainLeaveDay: info.remainLeaveDay,
       contractCode: info.contractCode,
-      startWorkingDate: info.startWorkingDate,
+      beStaffDate: info.beStaffDate,
+      beTViecDate: info.beTViecDate,
       personalEmail: info.personalEmail,
       currentAddress: info.currentAddress,
       emergencyContactName: info.emergencyContactName,
@@ -501,6 +503,8 @@ export class PersonalInfoComponent
       id: newInfo.id,
       phone : newInfo.phone,
       birthday : newInfo.birthday,
+      beStaffDate: newInfo.beStaffDate,
+      beTViecDate: newInfo.beTViecDate,
       bankId: newInfo.bankId,
       bankAccountNumber: newInfo.bankAccountNumber,
       idCard: newInfo.idCard,
@@ -551,10 +555,10 @@ export class PersonalInfoComponent
   onSave() {
     var inputStartWorkingDate = "";
     if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
-      inputStartWorkingDate = this.formatDateYMD(this.formGroup.value.startWorkingDate)
+      inputStartWorkingDate = this.formatDateYMD(this.formGroup.value.beStaffDate);
     }
     if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
-      inputStartWorkingDate = this.personalInfo.startWorkingDate;
+      inputStartWorkingDate = this.personalInfo.beStaffDate;
 
     }
     if(!this.userId){
@@ -584,7 +588,8 @@ export class PersonalInfoComponent
       avatar: this.personalInfo.avatar || "",
       insuranceStatus: this.formGroup.value.insuranceStatus ? this.formGroup.value.insuranceStatus : this.APP_ENUM.InsuranceStatus.NONE,
       placeOfPermanent: this.formGroup.value.placeOfOrigin,
-      startWorkingDate: inputStartWorkingDate,
+      beStaffDate: inputStartWorkingDate,
+      beTViecDate: this.formatDateYMD(this.formGroup.value.beTViecDate),
       taxCode: this.formGroup.value.taxCode,
       teams: this.formGroup.value.teams?.map(team => team.value) || [],
       skills: this.formGroup.value.skills?.map(skill => skill.value) || [],
@@ -904,7 +909,8 @@ interface PersonalInfo extends BaseEmployeeDto {
   contractStartDate: string;
   contractEndDate: string;
   address: string;
-  startWorkingDate: string;
+  beStaffDate: string;
+  beTViecDate: string;
   taxCode: string;
   bankId: number;
   bankAccountNumber: string;

@@ -123,7 +123,7 @@ namespace HRMv2.Manager.Categories.Benefits
                 {
                     DateTime employeeWorkingDate = WorkScope.GetAll<Employee>()
                         .Where(x => x.Id == employeeId)
-                        .Select(x => x.StartWorkingDate.Date)
+                        .Select(x => x.BeStaffDate.Date)
                         .FirstOrDefault();
 
                     var entity = new BenefitEmployee
@@ -186,7 +186,7 @@ namespace HRMv2.Manager.Categories.Benefits
 
             DateTime employeeWorkingDate = WorkScope.GetAll<Employee>()
                        .Where(x => x.Id == input.EmployeeId)
-                       .Select(x => x.StartWorkingDate.Date)
+                       .Select(x => x.BeStaffDate.Date)
                        .FirstOrDefault();
 
             var entity = new BenefitEmployee

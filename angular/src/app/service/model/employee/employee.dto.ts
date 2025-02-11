@@ -21,7 +21,8 @@ export interface GetEmployeeDto extends BaseEmployeeDto {
     updatedTime: string;
     updatedUserId:number;
     seniority: StartWorkingDto;
-    startWorkingDate: string;
+    beStaffDate: string;
+    beTViecDate: string;
     countSeniority: string;
     bankId: number;
     levelId: number;
@@ -52,7 +53,8 @@ export interface CreateUpdateEmployeeDto {
     realSalary: number;
     taxCode: string;
     insuranceStatus: number;
-    startWorkingDate: string;
+    beStaffDate: string;
+    beTViecDate: string;
     userType: number,
     jobPositionId: number,
     branchId: number,

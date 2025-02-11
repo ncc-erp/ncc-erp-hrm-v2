@@ -23,7 +23,8 @@ namespace HRMv2.Manager.Employees.Dto
     public class GetEmployeeDto : BaseEmployeeDto
     {
         public string UpdatedUser { get; set; }
-        public DateTime StartWorkingDate { get; set; }
+        public DateTime BeStaffDate { get; set; }
+        public DateTime BeTViecDate { get; set; }
         public DateTime? UpdatedTime { get; set; }
         public string Phone { get; set; }
         public DateTime? Birthday { get; set; }
@@ -57,9 +58,9 @@ namespace HRMv2.Manager.Employees.Dto
         {
             get
             {
-                if (StartWorkingDate != default && UserType == UserType.Staff)
+                if (BeStaffDate != default && UserType == UserType.Staff)
                 {
-                    Period diff = DateTimeUtils.CalRangeBetweenDate(StartWorkingDate);
+                    Period diff = DateTimeUtils.CalRangeBetweenDate(BeStaffDate);
                     return new DateBetweenDto
                     {
                         Days = diff.Days,
@@ -85,9 +86,9 @@ namespace HRMv2.Manager.Employees.Dto
         {
             get
             {
-                if (StartWorkingDate != default && UserType == UserType.Staff && StartWorkingDate < CommonUtil.GetNow())
+                if (BeStaffDate != default && UserType == UserType.Staff && BeStaffDate < CommonUtil.GetNow())
                 {
-                    return (CommonUtil.GetNow().Date - StartWorkingDate.Date).TotalDays.ToString() + "d";
+                    return (CommonUtil.GetNow().Date - BeStaffDate.Date).TotalDays.ToString() + "d";
                 }
                 return null;
             }

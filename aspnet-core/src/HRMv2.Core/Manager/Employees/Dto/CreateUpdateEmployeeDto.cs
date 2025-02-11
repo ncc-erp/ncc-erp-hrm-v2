@@ -52,7 +52,8 @@ namespace HRMv2.Manager.Employees.Dto
         public string TaxCode { get; set; }
         public string ContractCode { get; set; }
         public InsuranceStatus InsuranceStatus { get; set; }
-        public DateTime StartWorkingDate { get; set; }
+        public DateTime BeStaffDate { get; set; }
+        public DateTime BeTViecDate { get; set; }
         public DateTime ContractStartDate { get; set; }
         public DateTime? ContractEndDate { get; set; }
         public string PersonalEmail { get; set; }

@@ -3,6 +3,7 @@ using System;
 using HRMv2.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    partial class HRMv2DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250211073338_add_column_BeTViecDate_and_rename_BeStaffDate")]
+    partial class add_column_BeTViecDate_and_rename_BeStaffDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4325,7 +4327,7 @@ namespace HRMv2.Migrations
                         .HasForeignKey("CreatorUserId");
 
                     b.HasOne("HRMv2.Entities.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("BenefitEmployees")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4623,7 +4625,7 @@ namespace HRMv2.Migrations
                         .IsRequired();
 
                     b.HasOne("HRMv2.Entities.SalaryChangeRequestEmployee", "SalaryChangeRequestEmployee")
-                        .WithMany()
+                        .WithMany("Contracts")
                         .HasForeignKey("SalaryRequestEmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -5229,6 +5231,8 @@ namespace HRMv2.Migrations
 
             modelBuilder.Entity("HRMv2.Entities.Employee", b =>
                 {
+                    b.Navigation("BenefitEmployees");
+
                     b.Navigation("BranchHistories");
 
                     b.Navigation("EmployeeSkills");
@@ -5243,6 +5247,11 @@ namespace HRMv2.Migrations
                     b.Navigation("PayslipDetails");
 
                     b.Navigation("PayslipTeams");
+                });
+
+            modelBuilder.Entity("HRMv2.Entities.SalaryChangeRequestEmployee", b =>
+                {
+                    b.Navigation("Contracts");
                 });
 #pragma warning restore 612, 618
         }
