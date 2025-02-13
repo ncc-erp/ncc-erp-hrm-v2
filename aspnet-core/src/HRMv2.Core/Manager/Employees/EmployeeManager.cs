@@ -1514,8 +1514,8 @@ namespace HRMv2.Manager.Employees
                         data.Phone = data.Phone.ToLower() == "null" ? "" : data.Phone;
                         if (data.Phone != "" && !data.Phone.StartsWith("0") && !data.Phone.StartsWith("84")) { data.Phone = "0" + data.Phone; }
                         data.Birthday = worksheet.Cells[row, 3].GetValue<DateTime?>() ?? null;
-                        data.BeStaffDate = worksheet.Cells[row, 4].GetCellValue<DateTime>();
-                        data.BeTViecDate = worksheet.Cells[row, 5].GetCellValue<DateTime>();
+                        data.BeStaffDate = worksheet.Cells[row, 4].GetCellValue<DateTime?>() ?? null;
+                        data.BeTViecDate = worksheet.Cells[row, 5].GetCellValue<DateTime?>() ?? null;
                         data.BankCode = worksheet.Cells[row, 6].GetCellValue<string>() ?? "";
                         data.BankAccountNumber = worksheet.Cells[row, 7].GetCellValue<string>() ?? "";
                         data.TaxCode = worksheet.Cells[row, 8].GetCellValue<string>() ?? "";
@@ -1679,15 +1679,7 @@ namespace HRMv2.Manager.Employees
         }
 
         public bool ValidDataToUpdate(UpdateEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList)
-        {
-            var dictBank = WorkScope.GetAll<Bank>()
-                                    .Select(s => new { Key = s.Code.ToLower(), s.Id })
-                                    .ToDictionary(s => s.Key, s => s.Id);
-            if (!string.IsNullOrEmpty(data.BankCode) && !dictBank.ContainsKey(data.BankCode.ToLower()))
-            {
-                failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = " Can not found Bank" });
-                return false;
-            }
+        {      
             if (!string.IsNullOrEmpty(data.InsuranceStatusCode) && CommonUtil.GetValueOfInsuranceStatus(data.InsuranceStatusCode) == -1)
             {
                 failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = " Can not found Insurance Status" });
@@ -1807,46 +1799,49 @@ namespace HRMv2.Manager.Employees
             var successList = new List<string>();
 
             var dictBank = WorkScope.GetAll<Bank>()
-                                   .Select(s => new { Key = s.Code.ToLower(), s.Id })
-                                   .ToDictionary(s => s.Key, s => s.Id);
+                                   .Select(s => new {  s.Code, s.Id })
+                                   .ToList()
+                                   .GroupBy(s => s.Code.ToLower())
+                                   .ToDictionary(s => s.Key, s => s.Select(x => x.Id).FirstOrDefault());
+
             var importEmails = datas.Select(s => s.Email).ToList();
 
             var dictEmployee = WorkScope.GetAll<Employee>()
                             .Select(employeeInfo => new { Key = employeeInfo.Email.ToLower(), employeeInfo })
                                       .ToDictionary(x => x.Key, employeeInfo => employeeInfo);
 
-            foreach (var data in datas)
+            foreach (var dto in datas)
             {
 
 
-                if (string.IsNullOrEmpty(data.Email) || !dictEmployee.ContainsKey(data.Email.ToLower()))
+                if (string.IsNullOrEmpty(dto.Email) || !dictEmployee.ContainsKey(dto.Email.ToLower()))
                 {
-                    failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = " Can not found employee" });
+                    failedList.Add(new ResponseFailImportEmployeeDto { Row = dto.Row, Email = dto.Email, ReasonFail = " Can not found employee" });
                     continue;
                 }
-                var employee = dictEmployee[data.Email.ToLower()].employeeInfo;
+                var employee = dictEmployee[dto.Email.ToLower()].employeeInfo;
 
-                if (!ValidDataToUpdate(data, failedList))
+                if (!ValidDataToUpdate(dto, failedList))
                 {
                     continue;
                 }
 
 
-                data.BankId = dictBank.ContainsKey(data.BankCode.ToLower()) ? dictBank[data.BankCode.ToLower()] : null;
-                employee.Phone = string.IsNullOrEmpty(data?.Phone) ? employee.Phone : data?.Phone;
-                employee.Birthday = data.Birthday ?? employee.Birthday;
-                employee.BankId = data.BankId ?? employee.BankId;
-                employee.BankAccountNumber = string.IsNullOrEmpty(data.BankAccountNumber) ? employee.BankAccountNumber : data.BankAccountNumber;
-                employee.TaxCode = string.IsNullOrEmpty(data.TaxCode) ? employee.TaxCode : data.TaxCode;
-                employee.InsuranceStatus = !string.IsNullOrEmpty(data.InsuranceStatusCode) ? data.InsuranceStatus : employee.InsuranceStatus;
-                employee.IdCard = string.IsNullOrEmpty(data.IdCard) ? employee.IdCard : data.IdCard;
-                employee.Address = string.IsNullOrEmpty(data.Address) ? employee.Address : data.Address;
-                employee.PlaceOfPermanent = string.IsNullOrEmpty(data.PlaceOfPermanent) ? employee.PlaceOfPermanent : data.PlaceOfPermanent;
-                employee.IssuedOn = data.IssuedOn ?? employee.IssuedOn;
-                employee.IssuedBy = string.IsNullOrEmpty(data.IssuedBy) ? employee.IssuedBy : data.IssuedBy;
-                employee.BeStaffDate = data.BeStaffDate;
-                employee.BeTViecDate = data.BeTViecDate;
-                successList.Add(data.Email);
+                dto.BankId = dictBank.ContainsKey(dto.BankCodeLower) ? dictBank[dto.BankCodeLower] : null;
+                employee.Phone = string.IsNullOrEmpty(dto?.Phone) ? employee.Phone : dto?.Phone;
+                employee.Birthday = dto.Birthday ?? employee.Birthday;
+                employee.BankId = dto.BankId ?? employee.BankId;
+                employee.BankAccountNumber = string.IsNullOrEmpty(dto.BankAccountNumber) ? employee.BankAccountNumber : dto.BankAccountNumber;
+                employee.TaxCode = string.IsNullOrEmpty(dto.TaxCode) ? employee.TaxCode : dto.TaxCode;
+                employee.InsuranceStatus = !string.IsNullOrEmpty(dto.InsuranceStatusCode) ? dto.InsuranceStatus : employee.InsuranceStatus;
+                employee.IdCard = string.IsNullOrEmpty(dto.IdCard) ? employee.IdCard : dto.IdCard;
+                employee.Address = string.IsNullOrEmpty(dto.Address) ? employee.Address : dto.Address;
+                employee.PlaceOfPermanent = string.IsNullOrEmpty(dto.PlaceOfPermanent) ? employee.PlaceOfPermanent : dto.PlaceOfPermanent;
+                employee.IssuedOn = dto.IssuedOn ?? employee.IssuedOn;
+                employee.IssuedBy = string.IsNullOrEmpty(dto.IssuedBy) ? employee.IssuedBy : dto.IssuedBy;
+                employee.BeStaffDate = dto.BeStaffDate ?? employee.BeStaffDate;
+                employee.BeTViecDate = dto.BeTViecDate ?? employee.BeTViecDate;
+                successList.Add(dto.Email);
 
             }
 
