@@ -351,7 +351,7 @@ namespace HRMv2.Manager.SalaryRequests
                     employee.JobPositionId = dto.ToJobPositionId;
 
                     if (dto.FromUserType != UserType.Staff && dto.ToUserType == UserType.Staff) employee.BeStaffDate = dto.ApplyDate;
-                    if (dto.ToUserType == UserType.ProbationaryStaff) employee.BeTViecDate = dto.ApplyDate;  
+                    if (dto.FromUserType != UserType.ProbationaryStaff && dto.ToUserType == UserType.ProbationaryStaff) employee.BeTViecDate = dto.ApplyDate;  
 
                     await WorkScope.UpdateAsync(employee);
 
