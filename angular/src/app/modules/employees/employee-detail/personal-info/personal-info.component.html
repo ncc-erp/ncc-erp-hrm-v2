@@ -528,23 +528,41 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-group row required" *ngIf="isStaff && userId">
+                <div class="form-group row " *ngIf="isStaff && userId">
                     <label class="col-form-label col-5">
-                        Is Staff Date:
+                        Be staff from date:
                     </label>
                     <div class="col-7">
                         <mat-form-field *ngIf="isEdit" class="example-full-width" appearance="outline">
-                            <input matInput formControlName="startWorkingDate" [matDatepicker]="pickerIsStaffDate">
-                            <mat-datepicker-toggle matSuffix [for]="pickerIsStaffDate"></mat-datepicker-toggle>
-                            <mat-datepicker [dateClass]="dateClass" #pickerIsStaffDate></mat-datepicker>
+                            <input matInput formControlName="beStaffDate" [matDatepicker]="pickerBeStaffDate">
+                            <mat-datepicker-toggle matSuffix [for]="pickerBeStaffDate"></mat-datepicker-toggle>
+                            <mat-datepicker [dateClass]="dateClass" #pickerBeStaffDate></mat-datepicker>
                         </mat-form-field>
-                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.startWorkingDate"
-                                [controlEl]="startWorkingDateEl">
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.beStaffDate"
+                                [controlEl]="beStaffDateEl">
                             </abp-validation-summary>
-                        <span class="view-text" *ngIf="!isEdit">{{personalInfo.startWorkingDate |
+                        <span class="view-text" *ngIf="!isEdit">{{personalInfo.beStaffDate |
                             DMYDateFormat}}</span>
                     </div>
                 </div>
+                <div class="form-group row " *ngIf="isProbationaryStaff && userId">
+                    <label class="col-form-label col-5">
+                        Be T.Viec from date:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit" class="example-full-width" appearance="outline">
+                            <input matInput formControlName="beTViecDate" [matDatepicker]="pickerBeTViecDate">
+                            <mat-datepicker-toggle matSuffix [for]="pickerBeTViecDate"></mat-datepicker-toggle>
+                            <mat-datepicker [dateClass]="dateClass" #pickerBeTViecDate></mat-datepicker>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.beTViecDate"
+                                [controlEl]="beTViecDateEl">
+                            </abp-validation-summary>
+                        <span class="view-text" *ngIf="!isEdit">{{personalInfo.beTViecDate |
+                            DMYDateFormat}}</span>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>

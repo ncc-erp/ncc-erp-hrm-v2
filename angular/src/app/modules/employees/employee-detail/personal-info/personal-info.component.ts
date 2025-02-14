@@ -377,7 +377,8 @@ export class PersonalInfoComponent
       contractEndDate: "",
       remainLeaveDay: 0,
       contractCode: "",
-      startWorkingDate: [this.formatDateYMD(new Date), [Validators.required]],
+      beStaffDate: [this.formatDateYMD(new Date)],
+      beTViecDate: [this.formatDateYMD(new Date)],
       personalEmail: ["", [Validators.email]],
       currentAddress: "",
       emergencyContactName: "",
@@ -488,7 +489,8 @@ export class PersonalInfoComponent
       contractEndDate: info.contractEndDate,
       remainLeaveDay: info.remainLeaveDay,
       contractCode: info.contractCode,
-      startWorkingDate: info.startWorkingDate,
+      beTViecDate: info.beTViecDate,
+      beStaffDate: info.beStaffDate,
       personalEmail: info.personalEmail,
       currentAddress: info.currentAddress,
       emergencyContactName: info.emergencyContactName,
@@ -549,16 +551,21 @@ export class PersonalInfoComponent
   }
 
   onSave() {
-    var inputStartWorkingDate = "";
+    var inputBeStaffDate = "";
+    var inputBeTViecDate = "";
+    var   inputStartWorkingDate = "";
     if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
-      inputStartWorkingDate = this.formatDateYMD(this.formGroup.value.startWorkingDate)
+      inputBeStaffDate = this.formGroup.value.beStaffDate ? this.formatDateYMD(this.formGroup.value.beStaffDate) : "";
     }
     if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
-      inputStartWorkingDate = this.personalInfo.startWorkingDate;
-
+      inputBeStaffDate = this.personalInfo.beStaffDate ? this.personalInfo.beStaffDate : "";
     }
-    if(!this.userId){
-      inputStartWorkingDate = this.formatDateYMD(this.formGroup.value.contractStartDate);
+
+    if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff)){
+      inputBeTViecDate = this.formGroup.value.beTViecDate ? this.formatDateYMD(this.formGroup.value.beTViecDate) : "";
+    }
+    if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.ProbationaryStaff)){
+      inputBeTViecDate = this.personalInfo.beTViecDate ? this.personalInfo.beTViecDate : "";
     }
 
     const employee: CreateUpdateEmployeeDto = {
@@ -584,7 +591,9 @@ export class PersonalInfoComponent
       avatar: this.personalInfo.avatar || "",
       insuranceStatus: this.formGroup.value.insuranceStatus ? this.formGroup.value.insuranceStatus : this.APP_ENUM.InsuranceStatus.NONE,
       placeOfPermanent: this.formGroup.value.placeOfOrigin,
-      startWorkingDate: inputStartWorkingDate,
+      startWorkingDate: this.personalInfo.startWorkingDate,
+      beStaffDate: inputBeStaffDate ,
+      beTViecDate: inputBeTViecDate,
       taxCode: this.formGroup.value.taxCode,
       teams: this.formGroup.value.teams?.map(team => team.value) || [],
       skills: this.formGroup.value.skills?.map(skill => skill.value) || [],
@@ -905,6 +914,8 @@ interface PersonalInfo extends BaseEmployeeDto {
   contractEndDate: string;
   address: string;
   startWorkingDate: string;
+  beStaffDate?: string;
+  beTViecDate?: string;
   taxCode: string;
   bankId: number;
   bankAccountNumber: string;
