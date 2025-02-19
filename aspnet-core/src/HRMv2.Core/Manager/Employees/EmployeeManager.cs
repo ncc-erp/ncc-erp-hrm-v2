@@ -1511,17 +1511,18 @@ namespace HRMv2.Manager.Employees
                         data.Phone = data.Phone.ToLower() == "null" ? "" : data.Phone;
                         if (data.Phone != "" && !data.Phone.StartsWith("0") && !data.Phone.StartsWith("84")) { data.Phone = "0" + data.Phone; }
                         data.Birthday = worksheet.Cells[row, 3].GetValue<DateTime?>() ?? null;
-                        data.BeStaffDate = worksheet.Cells[row, 4].GetValue<DateTime?>() ?? null;
-                        data.BeTViecDate = worksheet.Cells[row ,5].GetValue<DateTime?>() ?? null;
-                        data.BankCode = worksheet.Cells[row, 6].GetCellValue<string>() ?? "";
-                        data.BankAccountNumber = worksheet.Cells[row, 7].GetCellValue<string>() ?? "";
-                        data.TaxCode = worksheet.Cells[row, 8].GetCellValue<string>() ?? "";
-                        data.InsuranceStatusCode = worksheet.Cells[row, 9].GetCellValue<string>() ?? "";
-                        data.IdCard = worksheet.Cells[row, 10].GetCellValue<string>() ?? "";
-                        data.PlaceOfPermanent = worksheet.Cells[row, 11].GetCellValue<string>() ?? "";
-                        data.Address = worksheet.Cells[row, 12].GetCellValue<string>() ?? "";
-                        data.IssuedOn = worksheet.Cells[row, 13].GetCellValue<DateTime?>() ?? null;
-                        data.IssuedBy = worksheet.Cells[row, 14].GetCellValue<string>() ?? "";
+                        data.StartWorkingDate = worksheet.Cells[row, 4].GetValue<DateTime?>() ?? null;
+                        data.BeStaffDate = worksheet.Cells[row, 5].GetValue<DateTime?>() ?? null;
+                        data.BeTViecDate = worksheet.Cells[row ,6].GetValue<DateTime?>() ?? null;
+                        data.BankCode = worksheet.Cells[row, 7].GetCellValue<string>() ?? "";
+                        data.BankAccountNumber = worksheet.Cells[row, 8].GetCellValue<string>() ?? "";
+                        data.TaxCode = worksheet.Cells[row, 9].GetCellValue<string>() ?? "";
+                        data.InsuranceStatusCode = worksheet.Cells[row, 10].GetCellValue<string>() ?? "";
+                        data.IdCard = worksheet.Cells[row, 11].GetCellValue<string>() ?? "";
+                        data.PlaceOfPermanent = worksheet.Cells[row, 12].GetCellValue<string>() ?? "";
+                        data.Address = worksheet.Cells[row, 13].GetCellValue<string>() ?? "";
+                        data.IssuedOn = worksheet.Cells[row, 14].GetCellValue<DateTime?>() ?? null;
+                        data.IssuedBy = worksheet.Cells[row, 15].GetCellValue<string>() ?? "";
                         data.Row = row;
 
                         datas.Add(data);
@@ -1832,6 +1833,7 @@ namespace HRMv2.Manager.Employees
                 data.BankId = dictBank.ContainsKey(data.BankCode.ToLower()) ? dictBank[data.BankCode.ToLower()] : null;
                 employee.Phone = string.IsNullOrEmpty(data?.Phone) ? employee.Phone : data?.Phone;
                 employee.Birthday = data.Birthday ?? employee.Birthday;
+                employee.StartWorkingDate = data.StartWorkingDate ?? employee.StartWorkingDate;
                 employee.BeTViecDate = data.BeTViecDate ?? employee.BeTViecDate;
                 employee.BeStaffDate = data.BeStaffDate ?? employee.BeStaffDate;
                 employee.BankId = data.BankId ?? employee.BankId;

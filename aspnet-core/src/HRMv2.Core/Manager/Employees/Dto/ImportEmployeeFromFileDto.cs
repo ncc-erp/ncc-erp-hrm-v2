@@ -55,6 +55,7 @@ namespace HRMv2.Manager.Employees.Dto
         public int Row { get; set; }
         public DateTime? BeStaffDate { get; set; }
         public DateTime? BeTViecDate { get; set; }
+        public DateTime? StartWorkingDate { get; set; }
 
     }
     public class InputFileDto

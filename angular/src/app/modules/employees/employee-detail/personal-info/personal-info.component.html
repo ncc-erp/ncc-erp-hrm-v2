@@ -528,7 +528,24 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-group row " *ngIf="isStaff && userId">
+                <div class="form-group row " >
+                    <label class="col-form-label col-5">
+                        Start working date:
+                    </label>
+                    <div class="col-7">
+                        <mat-form-field *ngIf="isEdit" class="example-full-width" appearance="outline">
+                            <input matInput formControlName="startWorkingDate" [matDatepicker]="pickerStartWorkingDate">
+                            <mat-datepicker-toggle matSuffix [for]="pickerStartWorkingDate"></mat-datepicker-toggle>
+                            <mat-datepicker [dateClass]="dateClass" #pickerStartWorkingDate></mat-datepicker>
+                        </mat-form-field>
+                        <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.startWorkingDate"
+                                [controlEl]="startWorkingDateEl">
+                            </abp-validation-summary>
+                        <span class="view-text" *ngIf="!isEdit">{{personalInfo.startWorkingDate |
+                            DMYDateFormat}}</span>
+                    </div>
+                </div>
+                <div class="form-group row " >
                     <label class="col-form-label col-5">
                         Be staff from date:
                     </label>
@@ -545,7 +562,7 @@
                             DMYDateFormat}}</span>
                     </div>
                 </div>
-                <div class="form-group row " *ngIf="isProbationaryStaff && userId">
+                <div class="form-group row " >
                     <label class="col-form-label col-5">
                         Be T.Viec from date:
                     </label>
