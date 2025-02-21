@@ -106,6 +106,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         public IQueryable<GetPayslipDto> QueryAllPayslip()
         {
             return WorkScope.GetAll<Payslip>()
+                .Where(s => s.Payroll.Status == PayrollStatus.Executed)
                 .Select(x => new GetPayslipDto
                 {
                     Id = x.Id,
@@ -114,6 +115,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     Email = x.Employee.Email,
                     Avatar = x.Employee.Avatar,
                     Sex = x.Employee.Sex,
+                    Salary = x.Employee.Salary,
                     Skills = x.Employee.EmployeeSkills.Select(s => new EmployeeSkillDto
                     {
                         SkillId = s.Skill.Id,
@@ -139,6 +141,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Name = x.Employee.JobPosition.Name,
                         Color = x.Employee.JobPosition.Color
                     },
+                    UserType = x.UserType,
                     ToBranchId = x.BranchId,
                     ToLevelId = x.LevelId,
                     ToJobPositionId = x.JobPositionId,

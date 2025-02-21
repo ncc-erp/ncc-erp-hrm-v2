@@ -1,0 +1,212 @@
+import { ReportService } from './../../../service/api/report/report.service';
+import { TeamService } from '@app/service/api/categories/team.service';
+import { GetEmployeeBasicInfo } from './../../../service/model/employee/employee.dto';
+import { Component, OnInit, Output, EventEmitter} from '@angular/core';
+import { GetEmployeeDto } from '@app/service/model/employee/employee.dto';
+import { PagedListingComponentBase,PagedRequestDto } from '@shared/paged-listing-component-base';
+import { EmployeeService } from '@app/service/api/employee/employee.service';
+import { Injector } from '@angular/core';
+import { BreadCrumbComponent } from '@shared/components/common/bread-crumb/bread-crumb.component';
+import { PayRollService } from '@app/service/api/pay-roll/pay-roll.service';
+import { BranchService } from '@app/service/api/categories/branch.service';
+import { validEvents } from '@node_modules/@tinymce/tinymce-angular/editor/Events';
+import { APP_ENUMS } from '@shared/AppEnums';
+import { JobPositionService } from '@app/service/api/categories/jobPosition.service';
+import { TeamsFilterInputDto} from '@shared/paged-listing-component-base';
+import { finalize } from 'rxjs/operators';
+import { ReportSalaryDto } from '@app/service/model/report/reportSalary.dto';
+import * as FileSaver from 'file-saver';
+
+@Component({
+  selector: 'app-report-salary',
+  templateUrl: './report-salary.component.html',
+  styleUrls: ['./report-salary.component.css']
+})
+export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployeeDto> implements OnInit {
+   
+
+    constructor(injector: Injector,private employeeService:EmployeeService,
+      private payrollService:PayRollService,
+      private branchService:BranchService,
+      private positionService:JobPositionService,
+      private teamService: TeamService,
+      private reportService: ReportService,
+      ) { 
+      super(injector);
+
+    }
+  public listPayrollWihStatusExecute: any;
+  public listEmailEmployee: GetEmployeeBasicInfo[];
+  public listUserType: any = [];
+  public listBranch: any = [];
+  public listPosition: any = [];
+
+  // public branchIds: number[];
+   public userTypeIds: number[] = [];
+   public jobPositionsId: number[];
+  public payrollIds: number[];
+  public employeeIds: number[];
+  public requestItem: any;
+  public listTeam: any = [];
+  public defaultValue = {} as DefaulEmployeeFilterDto
+  public resultList: ReportSalaryDto []= [];
+  public dropdownFilterValue: number
+  public dropdownMultiValueFilter: number[] = []
+  public applyDates : any;
+  public listApplyDate: any[] = [];
+  public salaryByApplyDate: any;
+
+  @Output() onMultiFilterWithCondition? = new EventEmitter()
+  public filterTypeEnum = APP_ENUMS.FilterTypeEnum;
+  ngOnInit(): void {
+    this.listBreadCrumb = [
+      {name: '<i class="fa-solid fa-house fa-sm"></i>',url:''},
+      {name: ' <i class="fa-solid fa-chevron-right"></i> '},
+      {name:'Report Salary'}];
+      
+      this.getPayrollWithStatusExecute();
+      this.getAllEmployeeToSelect();
+      this.getAllBranch();
+      this.getAllPosition();
+      this.getAllUserType();
+      this.getAllTeam();
+  }
+  
+ protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void {
+
+    let input = {
+      teamIds: this.teamIds,
+      isAndCondition: this.isAndCondition,
+      branchIds: this.branchIds,
+      userTypes: this.userTypeIds,
+      jobPositionIds: this.jobPositionsId,
+      payrollIds: this.payrollIds,
+      employeeIds: this.employeeIds,
+      gridParam: request
+    } as any;
+   this.requestItem = input;
+    this.subscription.push(
+      this.reportService.GetAllReport(input)
+        .subscribe(rs => {
+            this.resultList = rs.result;
+            this.applyDates =[...new Set (rs.result.flatMap(employee => 
+              employee.resultReports.map(report => report.applyDate)
+          ))] ;
+
+        this.salaryByApplyDate = rs.result.reduce((acc, employee) => {
+
+        employee.resultReports.forEach(report => {
+          acc[report.applyDate] = acc[report.applyDate] || {};
+          acc[report.applyDate][employee.infoEmployee.employeeId] = report.salary;
+        });
+        return acc;
+      }, {});
+
+        })
+    )
+  }
+
+  public getPayrollWithStatusExecute(){
+    this.payrollService.GetPayrollWithStatusExecute().subscribe(res=>{
+      this.listPayrollWihStatusExecute = res.result;
+    })
+  }
+
+  public getAllEmployeeToSelect(){
+    this.employeeService.getAllEmployeeToSelect().subscribe(res=>{
+      this.listEmailEmployee = res.result;
+    })
+  }
+
+  private getAllBranch(){
+    this.subscription.push(this.branchService.getAll().subscribe(res=>{
+      this.listBranch = this.mapToFilter(res.result,true).map(item =>({
+        name :  item.key,
+        value: item.value,
+        hidden: false
+      }));
+    }));
+  }
+
+  private getAllPosition(){
+    this.subscription.push(this.positionService.getAll().subscribe(res=>{
+      this.listPosition = this.mapToFilter(res.result,true).map(item =>({
+        name :  item.key,
+        value: item.value,
+        hidden: false
+      }));
+    }));
+  }
+
+  private getAllUserType(){
+    const listUserType = this.getListFormEnum(APP_ENUMS.UserType).filter(item => item.key != 'All');
+    this.listUserType = listUserType.map(item =>({  
+      name :  item.key,
+      value: item.value,
+      hidden: false
+    }));
+  }
+
+  private getAllTeam(){
+    this.subscription.push(this.teamService.getAll().subscribe(rs => {
+      this.listTeam = this.mapToFilter(rs.result,true);
+    }))
+  }
+  onPayrollIdSelect(ids: number[]) {
+    this.payrollIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+  onBranchSelect(ids: number[]) {
+    this.branchIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+   
+  onEmployeeSelect(ids: number[]) {
+    this.employeeIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+  onUserTypeSelect(ids: number[]) {
+    this.userTypeIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+  
+  onJobPositionSelect(ids: number[]) {
+    this.jobPositionsId = ids;
+    this.onSearchEnter(this.searchText)
+  }
+  
+  onPayrollSelect(ids: number[]) {
+    this.payrollIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+  onTableMultiSelectWithConditionFilter(teamsFilterInput:TeamsFilterInputDto){
+    this.teamIds = teamsFilterInput.teamIds;
+    this.isAndCondition = teamsFilterInput.isAndCondition;
+    this.onSearchEnter(this.searchText)
+  }
+
+   public onExport() {
+      this.requestItem.gridParam.maxResultCount = 50000;
+      this.subscription.push(
+        this.reportService.ExportReportSalary(this.requestItem).subscribe((rs) => {
+          console.log(rs.result)
+          const file = new Blob([this.convertFile(atob(rs.result.base64))], {
+            type: "application/vnd.ms-excel;charset=utf-8"
+          });
+          FileSaver.saveAs(file, `Export-ReportSalary.xlsx`)
+        })
+  
+      )
+    }
+}
+
+export interface DefaulEmployeeFilterDto {
+  userType: any;
+  userLevel: any;
+  status: any;
+  jobPosition: any;
+  team: any;
+  branch: any;
+  gender: any;
+  birthday: any;
+}
