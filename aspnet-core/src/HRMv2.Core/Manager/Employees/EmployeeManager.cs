@@ -610,9 +610,12 @@ namespace HRMv2.Manager.Employees
             }
 
             var entity = ObjectMapper.Map<Employee>(input);
+            if(input.BeStaffDate < input.BeTViecDate || input.BeTViecDate < input.StartWorkingDate || input.BeStaffDate < input.StartWorkingDate)
+            {
+                throw new UserFriendlyException("BeStaffDate, StartWorkingDate, and BeTViecDate are invalid");
+            }
+            
             entity.StartWorkingDate = input.ContractStartDate;
-            if (input.UserType == UserType.Staff) entity.BeStaffDate = input.ContractStartDate;
-            if (input.UserType == UserType.ProbationaryStaff) entity.BeTViecDate = input.ContractStartDate;
             long employeeId = await WorkScope.InsertAndGetIdAsync(entity);
             input.Id = employeeId;
 
@@ -681,6 +684,10 @@ namespace HRMv2.Manager.Employees
         public async Task<CreateUpdateEmployeeDto> Update(CreateUpdateEmployeeDto input)
         {
             ValidUpdate(input);
+            if (input.BeStaffDate < input.BeTViecDate || input.BeTViecDate < input.StartWorkingDate || input.BeStaffDate < input.StartWorkingDate)
+            {
+                throw new UserFriendlyException("BeStaffDate, StartWorkingDate, and BeTViecDate are invalid");
+            }
             //them validate, kiem tra nhung truong co thay doi
             var entity = await WorkScope.GetAsync<Employee>(input.Id);
             ObjectMapper.Map(input, entity);

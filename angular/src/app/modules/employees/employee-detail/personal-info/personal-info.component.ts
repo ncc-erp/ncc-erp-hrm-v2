@@ -37,6 +37,7 @@ import { WarningEmployeeService } from "@app/service/api/warning-employee/warnin
 import { TempEmployeeTalentDto } from "@app/service/model/warning-employee/WarningEmployeeDto";
 import { GetRequestDetailDto, RejectChangeInfoDto, UpdateRequestDetailDto } from "@app/service/model/warning-employee/WarningEmployeeDto";
 import { IssuedByService } from "@app/service/api/categories/issuedBy.service";
+import { MatDatepicker, MatDatepickerInputEvent } from "@node_modules/@angular/material/datepicker";
 
 @Component({
   selector: "app-personal-info",
@@ -64,6 +65,7 @@ export class PersonalInfoComponent
   public isAllowBranchStatus: boolean = true;
   public listIssuedBys : SelectOptionDto[] = [];
 
+  public employeeId : number
   public workingStatusList: SelectOptionDto[] = Object.entries(this.APP_ENUM.UserStatus).map(
     (x) => ({ key: x[0], value: x[1] })
   );
@@ -224,6 +226,35 @@ export class PersonalInfoComponent
     pageNumber: number,
     finishedCallback: Function
   ): void { }
+
+  dateChangeCurrentContract(event: MatDatepickerInputEvent<Date>) {
+    this.employeeId = Number(this.activatedRoute.snapshot.queryParamMap.get('id'));
+    if(  !this.employeeId ){
+    const selectCurrentContractDate = event.value;    
+    this.formGroup.controls['startWorkingDate'].setValue(selectCurrentContractDate);
+    var userType = this.formGroup.controls['userType'].value;
+    if(userType == APP_ENUMS.UserType.Staff){
+      this.formGroup.controls['beStaffDate'].setValue(selectCurrentContractDate);
+      this.formGroup.controls['beTViecDate'].setValue("");
+    }else if(userType == APP_ENUMS.UserType.ProbationaryStaff){
+      this.formGroup.controls['beTViecDate'].setValue(selectCurrentContractDate);
+      this.formGroup.controls['beStaffDate'].setValue("");
+    }
+    }
+    
+  }
+  onUserTypeChange(selectUserType: any) {
+    this.employeeId = Number(this.activatedRoute.snapshot.queryParamMap.get('id'));
+    if(  !this.employeeId ){
+    if (selectUserType.value == APP_ENUMS.UserType.Staff) {
+        this.formGroup.controls['beStaffDate'].setValue(this.formGroup.controls['contractStartDate'].value);
+        this.formGroup.controls['beTViecDate'].setValue("");
+    } else if (selectUserType.value == APP_ENUMS.UserType.ProbationaryStaff) {
+        this.formGroup.controls['beTViecDate'].setValue(this.formGroup.controls['contractStartDate'].value);
+        this.formGroup.controls['beStaffDate'].setValue("");
+    }
+    }
+}
 
   public getAllIssuedBy(){
     this.subscription.push(
@@ -553,22 +584,22 @@ export class PersonalInfoComponent
   }
 
   onSave() {
-    var inputBeStaffDate = "";
-    var inputBeTViecDate = "";
-    var   inputStartWorkingDate = "";
-    if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
-      inputBeStaffDate = this.formGroup.value.beStaffDate ? this.formatDateYMD(this.formGroup.value.beStaffDate) : "";
-    }
-    if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
-      inputBeStaffDate = this.personalInfo.beStaffDate ? this.personalInfo.beStaffDate : "";
-    }
+    // var inputBeStaffDate = "";
+    // var inputBeTViecDate = "";
+    // var   inputStartWorkingDate = "";
+    // if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
+    //   inputBeStaffDate = this.formGroup.value.beStaffDate ? this.formatDateYMD(this.formGroup.value.beStaffDate) : "";
+    // }
+    // if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
+    //   inputBeStaffDate = this.personalInfo.beStaffDate ? this.personalInfo.beStaffDate : "";
+    // }
 
-    if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff)){
-      inputBeTViecDate = this.formGroup.value.beTViecDate ? this.formatDateYMD(this.formGroup.value.beTViecDate) : "";
-    }
-    if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.ProbationaryStaff)){
-      inputBeTViecDate = this.personalInfo.beTViecDate ? this.personalInfo.beTViecDate : "";
-    }
+    // if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff)){
+    //   inputBeTViecDate = this.formGroup.value.beTViecDate ? this.formatDateYMD(this.formGroup.value.beTViecDate) : "";
+    // }
+    // if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.ProbationaryStaff)){
+    //   inputBeTViecDate = this.personalInfo.beTViecDate ? this.personalInfo.beTViecDate : "";
+    // }
 
     const employee: CreateUpdateEmployeeDto = {
       id: this.userId,
@@ -593,9 +624,9 @@ export class PersonalInfoComponent
       avatar: this.personalInfo.avatar || "",
       insuranceStatus: this.formGroup.value.insuranceStatus ? this.formGroup.value.insuranceStatus : this.APP_ENUM.InsuranceStatus.NONE,
       placeOfPermanent: this.formGroup.value.placeOfOrigin,
-      startWorkingDate: this.personalInfo.startWorkingDate,
-      beStaffDate: inputBeStaffDate ,
-      beTViecDate: inputBeTViecDate,
+      startWorkingDate: this.formatDateYMD(this.formGroup.value.startWorkingDate),
+      beStaffDate: this.formGroup.value.beStaffDate ? this.formatDateYMD(this.formGroup.value.beStaffDate) : "",
+      beTViecDate: this.formGroup.value.beTViecDate ? this.formatDateYMD(this.formGroup.value.beTViecDate) : "",
       taxCode: this.formGroup.value.taxCode,
       teams: this.formGroup.value.teams?.map(team => team.value) || [],
       skills: this.formGroup.value.skills?.map(skill => skill.value) || [],
