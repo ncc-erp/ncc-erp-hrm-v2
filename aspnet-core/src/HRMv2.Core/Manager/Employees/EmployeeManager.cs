@@ -609,12 +609,22 @@ namespace HRMv2.Manager.Employees
                 await ValidCreate(input);
             }
 
-            var entity = ObjectMapper.Map<Employee>(input);
-            if(input.BeStaffDate < input.BeTViecDate || input.BeTViecDate < input.StartWorkingDate || input.BeStaffDate < input.StartWorkingDate)
+           
+            if (input.BeStaffDate < input.BeTViecDate)
             {
-                throw new UserFriendlyException("BeStaffDate, StartWorkingDate, and BeTViecDate are invalid");
+                throw new UserFriendlyException("Be Staff Date must >= Be TViec Date");
             }
-            
+            if (input.BeStaffDate < input.StartWorkingDate)
+            {
+                throw new UserFriendlyException("Be Staff Date must >= Start Working Date");
+            }
+            if (input.BeTViecDate < input.StartWorkingDate)
+            {
+                throw new UserFriendlyException("Be TViec Date must >= Start Working Date");
+            }
+
+            var entity = ObjectMapper.Map<Employee>(input); 
+
             entity.StartWorkingDate = input.ContractStartDate;
             long employeeId = await WorkScope.InsertAndGetIdAsync(entity);
             input.Id = employeeId;
@@ -684,9 +694,17 @@ namespace HRMv2.Manager.Employees
         public async Task<CreateUpdateEmployeeDto> Update(CreateUpdateEmployeeDto input)
         {
             ValidUpdate(input);
-            if (input.BeStaffDate < input.BeTViecDate || input.BeTViecDate < input.StartWorkingDate || input.BeStaffDate < input.StartWorkingDate)
+            if (input.BeStaffDate < input.BeTViecDate )
             {
-                throw new UserFriendlyException("BeStaffDate, StartWorkingDate, and BeTViecDate are invalid");
+                throw new UserFriendlyException("Be Staff Date must >= Be TViec Date");
+            }
+            if (input.BeStaffDate < input.StartWorkingDate)
+            {
+                throw new UserFriendlyException("Be Staff Date must >= Start Working Date");
+            }
+            if (input.BeTViecDate < input.StartWorkingDate)
+            {
+                throw new UserFriendlyException("Be TViec Date must >= Start Working Date");
             }
             //them validate, kiem tra nhung truong co thay doi
             var entity = await WorkScope.GetAsync<Employee>(input.Id);
