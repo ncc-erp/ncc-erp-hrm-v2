@@ -584,23 +584,6 @@ export class PersonalInfoComponent
   }
 
   onSave() {
-    // var inputBeStaffDate = "";
-    // var inputBeTViecDate = "";
-    // var   inputStartWorkingDate = "";
-    // if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
-    //   inputBeStaffDate = this.formGroup.value.beStaffDate ? this.formatDateYMD(this.formGroup.value.beStaffDate) : "";
-    // }
-    // if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
-    //   inputBeStaffDate = this.personalInfo.beStaffDate ? this.personalInfo.beStaffDate : "";
-    // }
-
-    // if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff)){
-    //   inputBeTViecDate = this.formGroup.value.beTViecDate ? this.formatDateYMD(this.formGroup.value.beTViecDate) : "";
-    // }
-    // if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.ProbationaryStaff)){
-    //   inputBeTViecDate = this.personalInfo.beTViecDate ? this.personalInfo.beTViecDate : "";
-    // }
-
     const employee: CreateUpdateEmployeeDto = {
       id: this.userId,
       address: this.formGroup.value.placeOfResidence,
