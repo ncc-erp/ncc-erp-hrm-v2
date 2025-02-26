@@ -387,91 +387,8 @@ namespace HRMv2.Manager.Employees
             var query = QueryAllEmployee()
                 .WhereIf(input.AddedEmployeeIds != null && !input.AddedEmployeeIds.IsEmpty(), x => !input.AddedEmployeeIds.Contains(x.Id));
 
-            if (input.StatusIds != null && input.StatusIds.Count == 1) query = query.Where(x => input.StatusIds[0] == x.Status);
-            else if (input.StatusIds != null && input.StatusIds.Count > 1) query = query.Where(x => input.StatusIds.Contains(x.Status));
+            query = ApplyCommonFilter(query, input, isViewAll);
 
-            if (!isViewAll)
-            {
-                var sessionUserBranchId = GetSessionUserBranchId();
-                query = query.Where(x => x.BranchId == sessionUserBranchId);
-            }
-
-            else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
-            else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
-
-            if (input.Usertypes != null && input.Usertypes.Count == 1) query = query.Where(x => input.Usertypes[0] == x.UserType);
-            else if (input.Usertypes != null && input.Usertypes.Count > 1) query = query.Where(x => input.Usertypes.Contains(x.UserType));
-
-            if (input.LevelIds != null && input.LevelIds.Count == 1) query = query.Where(x => input.LevelIds[0] == x.LevelId);
-            else if (input.LevelIds != null && input.LevelIds.Count > 1) query = query.Where(x => input.LevelIds.Contains(x.LevelId));
-
-            if (input.JobPositionIds != null && input.JobPositionIds.Count == 1) query = query.Where(x => input.JobPositionIds[0] == x.JobPositionId);
-            else if (input.JobPositionIds != null && input.JobPositionIds.Count > 1) query = query.Where(x => input.JobPositionIds.Contains(x.JobPositionId));
-
-            if (input.Seniority != null)
-            {
-                var seniority = input.Seniority.GetDate();
-
-                switch (input.Seniority.Comparison)
-                {
-                    case SeniorityComparision.Equal:
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        break;
-
-                    case SeniorityComparision.LessThanOrEqual:
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x => seniority <= x.BeStaffDate.Value.Date || x.UserType != UserType.Staff);
-                            
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => seniority <= x.BeStaffDate.Value.Date || x.UserType != UserType.Staff);
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
-                            query = query
-                                .Where(x => seniority <= x.BeStaffDate.Value.Date || x.UserType != UserType.Staff);
-                        break;
-
-                    case SeniorityComparision.GreaterThanOrEqual:
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != null && x.BeStaffDate != default)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        break;
-                }
-            }
-
-            if(input.BirthdayFromDate.HasValue && input.BirthdayToDate.HasValue)
-            {
-                var fromDate = input.BirthdayFromDate.Value;
-                var toDate = input.BirthdayToDate.Value;
-
-                query = query.Where(x => x.Birthday.HasValue)
-                    .Where(x => x.Birthday.Value.Month > input.BirthdayFromDate.Value.Month
-                    || (x.Birthday.Value.Month == fromDate.Month && x.Birthday.Value.Day >= fromDate.Day))
-                    .Where(x => x.Birthday.Value.Month < toDate.Month
-                    || (x.Birthday.Value.Month == toDate.Month && x.Birthday.Value.Day <= toDate.Day));
-            }
             if (input.TeamIds == null || input.TeamIds.Count == 0)
             {
                 return await query.GetGridResult(query, input.GridParam);
@@ -499,85 +416,8 @@ namespace HRMv2.Manager.Employees
             var query = QueryAllEmployeeDetail()
                 .WhereIf(input.AddedEmployeeIds != null && !input.AddedEmployeeIds.IsEmpty(), x => !input.AddedEmployeeIds.Contains(x.Id));
 
-            if (input.StatusIds != null && input.StatusIds.Count == 1) query = query.Where(x => input.StatusIds[0] == x.Status);
-            else if (input.StatusIds != null && input.StatusIds.Count > 1) query = query.Where(x => input.StatusIds.Contains(x.Status));
-
-            if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
-            else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
-
-            if (input.Usertypes != null && input.Usertypes.Count == 1) query = query.Where(x => input.Usertypes[0] == x.UserType);
-            else if (input.Usertypes != null && input.Usertypes.Count > 1) query = query.Where(x => input.Usertypes.Contains(x.UserType));
-
-            if (input.LevelIds != null && input.LevelIds.Count == 1) query = query.Where(x => input.LevelIds[0] == x.LevelId);
-            else if (input.LevelIds != null && input.LevelIds.Count > 1) query = query.Where(x => input.LevelIds.Contains(x.LevelId));
-
-            if (input.JobPositionIds != null && input.JobPositionIds.Count == 1) query = query.Where(x => input.JobPositionIds[0] == x.JobPositionId);
-            else if (input.JobPositionIds != null && input.JobPositionIds.Count > 1) query = query.Where(x => input.JobPositionIds.Contains(x.JobPositionId));
-
-            if (input.Seniority != null)
-            {
-                var seniority = input.Seniority.GetDate();
-
-                switch (input.Seniority.Comparison)
-                {
-                    case SeniorityComparision.Equal:
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        break;
-
-                    case SeniorityComparision.LessThanOrEqual:
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query                             
-                                .Where(x => seniority <= x.BeStaffDate.Value.Date || x.UserType != UserType.Staff);
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => seniority <= x.BeStaffDate.Value.Date || x.UserType != UserType.Staff);
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
-                            query = query
-                                .Where(x => seniority <= x.BeStaffDate.Value.Date || x.UserType != UserType.Staff);
-                        break;
-
-                    case SeniorityComparision.GreaterThanOrEqual:
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate != default)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        break;
-                }
-            }
-
-            if (input.BirthdayFromDate.HasValue && input.BirthdayToDate.HasValue)
-            {
-                var fromDate = input.BirthdayFromDate.Value;
-                var toDate = input.BirthdayToDate.Value;
-
-                query = query.Where(x => x.Birthday.HasValue)
-                    .Where(x => x.Birthday.Value.Month > input.BirthdayFromDate.Value.Month
-                    || (x.Birthday.Value.Month == fromDate.Month && x.Birthday.Value.Day >= fromDate.Day))
-                    .Where(x => x.Birthday.Value.Month < toDate.Month
-                    || (x.Birthday.Value.Month == toDate.Month && x.Birthday.Value.Day <= toDate.Day));
-            }
+            query = ApplyCommonFilter(query, input);
+           
 
             if (input.TeamIds == null || input.TeamIds.Count == 0)
             {
@@ -599,6 +439,97 @@ namespace HRMv2.Manager.Employees
             query = query.Where(s => employeeIds.Contains(s.Id));
             return await query.GetGridResult(query, input.GridParam);
 
+        }
+
+        private IQueryable<T> ApplyCommonFilter<T>(IQueryable<T> query,GetEmployeeToAddDto input, bool isViewAll = true) where T : GetEmployeeDto
+        {
+
+            if (input.StatusIds != null && input.StatusIds.Count == 1) query = query.Where(x => input.StatusIds[0] == x.Status);
+            else if (input.StatusIds != null && input.StatusIds.Count > 1) query = query.Where(x => input.StatusIds.Contains(x.Status));
+
+            if (!isViewAll)
+            {
+                var sessionUserBranchId = GetSessionUserBranchId();
+                query = query.Where(x => x.BranchId == sessionUserBranchId);
+            }
+            else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
+            else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
+
+            if (input.Usertypes != null && input.Usertypes.Count == 1) query = query.Where(x => input.Usertypes[0] == x.UserType);
+            else if (input.Usertypes != null && input.Usertypes.Count > 1) query = query.Where(x => input.Usertypes.Contains(x.UserType));
+
+            if (input.LevelIds != null && input.LevelIds.Count == 1) query = query.Where(x => input.LevelIds[0] == x.LevelId);
+            else if (input.LevelIds != null && input.LevelIds.Count > 1) query = query.Where(x => input.LevelIds.Contains(x.LevelId));
+
+            if (input.JobPositionIds != null && input.JobPositionIds.Count == 1) query = query.Where(x => input.JobPositionIds[0] == x.JobPositionId);
+            else if (input.JobPositionIds != null && input.JobPositionIds.Count > 1) query = query.Where(x => input.JobPositionIds.Contains(x.JobPositionId));
+
+            if (input.Seniority != null )
+            {
+                var seniority = input.Seniority.GetDate();
+
+                switch (input.Seniority.Comparison)
+                {
+                    case SeniorityComparision.Equal:
+
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
+                            query = query
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
+                                .Where(x => seniority == x.BeStaffDate.Value.Date);
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
+                            query = query
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
+                                .Where(x => seniority == x.BeStaffDate.Value.Date);
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
+                            query = query
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
+                                .Where(x => seniority == x.BeStaffDate.Value.Date);
+                        break;
+
+                    case SeniorityComparision.LessThanOrEqual:
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
+                            query = query
+                                .Where(x =>( x.BeStaffDate.HasValue && seniority <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
+
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
+                            query = query
+                                .Where(x => (x.BeStaffDate.HasValue && seniority <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
+
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
+                            query = query
+                                .Where(x => (x.BeStaffDate.HasValue && seniority <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
+                        break;
+
+                    case SeniorityComparision.GreaterThanOrEqual:
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
+                            query = query
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
+                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
+                            query = query
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
+                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
+                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
+                            query = query
+                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
+                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
+                        break;
+                }
+            }
+
+            if (input.BirthdayFromDate.HasValue && input.BirthdayToDate.HasValue)
+            {
+                var fromDate = input.BirthdayFromDate.Value;
+                var toDate = input.BirthdayToDate.Value;
+
+                query = query.Where(x => x.Birthday.HasValue)
+                    .Where(x => x.Birthday.Value.Month > input.BirthdayFromDate.Value.Month
+                    || (x.Birthday.Value.Month == fromDate.Month && x.Birthday.Value.Day >= fromDate.Day))
+                    .Where(x => x.Birthday.Value.Month < toDate.Month
+                    || (x.Birthday.Value.Month == toDate.Month && x.Birthday.Value.Day <= toDate.Day));
+            }
+
+            return query;
         }
 
 
