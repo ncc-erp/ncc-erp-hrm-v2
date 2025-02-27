@@ -24,6 +24,8 @@ namespace HRMv2.Manager.Employees.Dto
     {
         public string UpdatedUser { get; set; }
         public DateTime StartWorkingDate { get; set; }
+        public DateTime? BeTViecDate { get; set; }
+        public DateTime? BeStaffDate { get; set; }
         public DateTime? UpdatedTime { get; set; }
         public string Phone { get; set; }
         public DateTime? Birthday { get; set; }

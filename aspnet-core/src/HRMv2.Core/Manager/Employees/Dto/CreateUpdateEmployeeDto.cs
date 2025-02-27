@@ -59,5 +59,7 @@ namespace HRMv2.Manager.Employees.Dto
         public string CurrentAddress { get; set; }
         public string EmergencyContactName { get; set; }
         public string EmergencyContactPhone { get; set; }
+        public DateTime? BeStaffDate { get; set; }
+        public DateTime? BeTViecDate { get; set; }
     }
 }

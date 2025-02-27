@@ -65,7 +65,7 @@ export abstract class PagedListingComponentBase<TEntityDto> extends AppComponent
     public toJobPositionIds: number[] = [];
     public toLevelIds: number[] = [];
     public toUserTypeIds: number[] = [];
-    public seniorityFilterInput = {} as SeniorityFilterDto;
+    public seniorityFilterInput : any ;
     public filterParamType = APP_ENUMS.FilterMultipleTypeParamEnum;
     public request:PagedRequestDto;
     constructor(injector: Injector) {
