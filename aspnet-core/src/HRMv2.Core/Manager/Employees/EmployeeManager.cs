@@ -145,19 +145,19 @@ namespace HRMv2.Manager.Employees
                     Bank = x.BankId.HasValue ? x.Bank.Name : "",
                     BankAccountNumber = x.BankAccountNumber,
                     BankId = x.BankId,
-                    Birthday = x.Birthday != null ? x.Birthday.Value : null,
+                    Birthday = x.Birthday,
                     IdCard = x.IdCard,
                     InsuranceStatus = x.InsuranceStatus,
                     IssuedBy = x.IssuedBy,
-                    IssuedOn = x.IssuedOn != null ? x.IssuedOn.Value : null,
+                    IssuedOn = x.IssuedOn,
                     RealSalary = x.RealSalary,
                     Salary = x.Salary,
                     ProbationPercentage = x.ProbationPercentage,
                     RemainLeaveDay = x.RemainLeaveDay,
                     UpdatedTime = x.LastModificationTime,
                     UpdatedUser = x.LastModifierUser.FullName,
-                    BeTViecDate = x.BeTViecDate != null ? x.BeTViecDate.Value : null,
-                    BeStaffDate = x.BeStaffDate != null ? x.BeStaffDate.Value : null,
+                    BeTViecDate =  x.BeTViecDate,
+                    BeStaffDate =  x.BeStaffDate,
                 });
         }
 
@@ -200,11 +200,11 @@ namespace HRMv2.Manager.Employees
                             BankAccountNumber = x.BankAccountNumber,
                             BankId = x.BankId,
                             TaxCode = x.TaxCode,
-                            Birthday = x.Birthday != null ? x.Birthday.Value : null,
+                            Birthday = x.Birthday ,
                             IdCard = x.IdCard,
                             InsuranceStatus = x.InsuranceStatus,
                             IssuedBy = x.IssuedBy,
-                            IssuedOn = x.IssuedOn != null ? x.IssuedOn.Value : null,
+                            IssuedOn = x.IssuedOn ,
                             RealSalary = x.RealSalary,
                             Salary = x.Salary,
                             ProbationPercentage = x.ProbationPercentage,
@@ -240,11 +240,11 @@ namespace HRMv2.Manager.Employees
                     Bank = x.BankId.HasValue ? x.Bank.Name : "",
                     BankAccountNumber = x.BankAccountNumber,
                     BankId = x.BankId,
-                    Birthday = x.Birthday != null ? x.Birthday.Value : null,
+                    Birthday = x.Birthday ,
                     IdCard = x.IdCard,
                     InsuranceStatus = x.InsuranceStatus,
                     IssuedBy = x.IssuedBy,
-                    IssuedOn = x.IssuedOn != null ? x.IssuedOn.Value : null,
+                    IssuedOn = x.IssuedOn ,
                     Phone = x.Phone,
                     ProbationPercentage = contract != null ? contract.ProbationPercentage : x.ProbationPercentage,
                     Salary = contract != null ? contract.BasicSalary : x.Salary,
@@ -389,25 +389,8 @@ namespace HRMv2.Manager.Employees
 
             query = ApplyCommonFilter(query, input, isViewAll);
 
-            if (input.TeamIds == null || input.TeamIds.Count == 0)
-            {
-                return await query.GetGridResult(query, input.GridParam);
-            }
-            if (input.TeamIds.Count == 1 || !input.IsAndCondition)
-            {
-                var employeeHaveAnyTeams = QueryEmployeeHaveAnyTeams(input.TeamIds).Distinct();
-
-                query = from employee in query
-                        join employeeId in employeeHaveAnyTeams on employee.Id equals employeeId
-                        select employee;
-
-                return await query.GetGridResult(query, input.GridParam);
-
-            }
-
-            var employeeIds = QueryEmployeeHaveAllTeams(input.TeamIds).Result;
-            query = query.Where(s => employeeIds.Contains(s.Id));
-            return await query.GetGridResult(query, input.GridParam);
+            var result = await ApplyFilterTeams(query, input);
+            return result;
 
         }
 
@@ -417,8 +400,14 @@ namespace HRMv2.Manager.Employees
                 .WhereIf(input.AddedEmployeeIds != null && !input.AddedEmployeeIds.IsEmpty(), x => !input.AddedEmployeeIds.Contains(x.Id));
 
             query = ApplyCommonFilter(query, input);
-           
+          
+            var result = await ApplyFilterTeams(query, input);
+            return result;
 
+        }
+
+        private async Task<GridResult<T>> ApplyFilterTeams<T>(IQueryable<T> query, GetEmployeeToAddDto input) where T : GetEmployeeDto
+        {
             if (input.TeamIds == null || input.TeamIds.Count == 0)
             {
                 return await query.GetGridResult(query, input.GridParam);
@@ -438,9 +427,7 @@ namespace HRMv2.Manager.Employees
             var employeeIds = QueryEmployeeHaveAllTeams(input.TeamIds).Result;
             query = query.Where(s => employeeIds.Contains(s.Id));
             return await query.GetGridResult(query, input.GridParam);
-
         }
-
         private IQueryable<T> ApplyCommonFilter<T>(IQueryable<T> query,GetEmployeeToAddDto input, bool isViewAll = true) where T : GetEmployeeDto
         {
 
@@ -470,46 +457,18 @@ namespace HRMv2.Manager.Employees
 
                 switch (input.Seniority.Comparison)
                 {
-                    case SeniorityComparision.Equal:
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
+                    case SeniorityComparision.Equal:                     
                             query = query
                                 .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
                                 .Where(x => seniority == x.BeStaffDate.Value.Date);
                         break;
 
-                    case SeniorityComparision.LessThanOrEqual:
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x =>( x.BeStaffDate.HasValue && seniority <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => (x.BeStaffDate.HasValue && seniority <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
-
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
+                    case SeniorityComparision.LessThanOrEqual:                    
                             query = query
                                 .Where(x => (x.BeStaffDate.HasValue && seniority <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
                         break;
 
                     case SeniorityComparision.GreaterThanOrEqual:
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Day)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.Month)
-                            query = query
-                                .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
-                        if (input.Seniority.SeniorityType == SeniorityFilterType.year)
                             query = query
                                 .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
                                 .Where(x => seniority >= x.BeStaffDate.Value.Date);
