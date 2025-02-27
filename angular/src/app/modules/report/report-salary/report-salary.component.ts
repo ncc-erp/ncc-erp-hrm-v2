@@ -16,7 +16,7 @@ import { TeamsFilterInputDto} from '@shared/paged-listing-component-base';
 import { finalize } from 'rxjs/operators';
 import { ReportSalaryDto } from '@app/service/model/report/reportSalary.dto';
 import * as FileSaver from 'file-saver';
-
+import { LevelService } from '@app/service/api/categories/level.service';
 @Component({
   selector: 'app-report-salary',
   templateUrl: './report-salary.component.html',
@@ -31,6 +31,7 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       private positionService:JobPositionService,
       private teamService: TeamService,
       private reportService: ReportService,
+      private levelService: LevelService,
       ) { 
       super(injector);
 
@@ -40,7 +41,7 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public listUserType: any = [];
   public listBranch: any = [];
   public listPosition: any = [];
-
+  public userLevelList: any = [];
   // public branchIds: number[];
    public userTypeIds: number[] = [];
    public jobPositionsId: number[];
@@ -48,6 +49,12 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public employeeIds: number[];
   public requestItem: any;
   public listTeam: any = [];
+  public levelIds: number[]=[];
+  public levelEmployeePayslipId :number[]= [];
+  public jobPositionEmployeePayslipId : number[]=[];
+  public branchEmployeePayslipId : number[] =[];
+  public teamPayslipEmployeeIds: number[] = [];
+
   public defaultValue = {} as DefaulEmployeeFilterDto
   public resultList: ReportSalaryDto []= [];
   public dropdownFilterValue: number
@@ -70,18 +77,23 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       this.getAllPosition();
       this.getAllUserType();
       this.getAllTeam();
+      this.getAllLevel();
   }
   
  protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void {
 
     let input = {
       teamIds: this.teamIds,
-      isAndCondition: this.isAndCondition,
+      teamPayslipEmployeeIds: this.teamPayslipEmployeeIds,
       branchIds: this.branchIds,
       userTypes: this.userTypeIds,
       jobPositionIds: this.jobPositionsId,
       payrollIds: this.payrollIds,
       employeeIds: this.employeeIds,
+      levelIds: this.levelIds,
+      levelEmployeePayslipId : this.levelEmployeePayslipId,
+      jobPositionEmployeePayslipId: this.jobPositionEmployeePayslipId,
+      branchEmployeePayslipId: this.branchEmployeePayslipId,
       gridParam: request
     } as any;
    this.requestItem = input;
@@ -91,7 +103,7 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
             this.resultList = rs.result;
             this.applyDates =[...new Set (rs.result.flatMap(employee => 
               employee.resultReports.map(report => report.applyDate)
-          ))] ;
+          ))].sort();
 
         this.salaryByApplyDate = rs.result.reduce((acc, employee) => {
 
@@ -117,7 +129,11 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       this.listEmailEmployee = res.result;
     })
   }
-
+ public getAllLevel() {
+    this.subscription.push(this.levelService.getAll().subscribe(rs => {
+      this.userLevelList = this.mapToFilter(rs.result, true)
+    }))
+  }
   private getAllBranch(){
     this.subscription.push(this.branchService.getAll().subscribe(res=>{
       this.listBranch = this.mapToFilter(res.result,true).map(item =>({
@@ -149,7 +165,11 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
 
   private getAllTeam(){
     this.subscription.push(this.teamService.getAll().subscribe(rs => {
-      this.listTeam = this.mapToFilter(rs.result,true);
+      this.listTeam = this.mapToFilter(rs.result,true).map(item =>({  
+        name :  item.key,
+        value: item.value,
+
+      }));  
     }))
   }
   onPayrollIdSelect(ids: number[]) {
@@ -169,22 +189,39 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
     this.userTypeIds = ids;
     this.onSearchEnter(this.searchText)
   }
-  
-  onJobPositionSelect(ids: number[]) {
+ onJobPositionSelect(ids: number[]) {
     this.jobPositionsId = ids;
     this.onSearchEnter(this.searchText)
   }
-  
+  onTableMultiSelectLevelIdFilter(ids: number[]) {
+    this.levelIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+  onMultiSelectPayslipEmployeeLevelFilter(ids: number[]) {
+    this.levelEmployeePayslipId = ids;
+    this.onSearchEnter(this.searchText)
+  }
+ 
+  onBranchPayslipEmplyeeSelect(ids: number[]) {
+    this.branchEmployeePayslipId = ids;
+    this.onSearchEnter(this.searchText)
+  }
+  onJobPositionPayslipEmplyeeSelect(ids: number[]) {
+    this.jobPositionEmployeePayslipId = ids;
+    this.onSearchEnter(this.searchText)
+  }
   onPayrollSelect(ids: number[]) {
     this.payrollIds = ids;
     this.onSearchEnter(this.searchText)
   }
-  onTableMultiSelectWithConditionFilter(teamsFilterInput:TeamsFilterInputDto){
-    this.teamIds = teamsFilterInput.teamIds;
-    this.isAndCondition = teamsFilterInput.isAndCondition;
+  onTeamSelect(ids: number[]) {
+    this.teamIds = ids;
     this.onSearchEnter(this.searchText)
   }
-
+  onTeamSelectForPaySlipEmployee(ids: number[]){
+    this.teamPayslipEmployeeIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
    public onExport() {
       this.requestItem.gridParam.maxResultCount = 50000;
       this.subscription.push(

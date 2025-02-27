@@ -115,12 +115,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     Email = x.Employee.Email,
                     Avatar = x.Employee.Avatar,
                     Sex = x.Employee.Sex,
-                    Salary = x.Employee.Salary,
-                    Skills = x.Employee.EmployeeSkills.Select(s => new EmployeeSkillDto
-                    {
-                        SkillId = s.Skill.Id,
-                        SkillName = s.Skill.Name
-                    }).ToList(),
+                    Salary = x.Salary,
                     Teams = x.Employee.EmployeeTeams.Select(s => new EmployeeTeamDto
                     {
                         TeamId = s.Team.Id,
@@ -141,20 +136,17 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Name = x.Employee.JobPosition.Name,
                         Color = x.Employee.JobPosition.Color
                     },
-                    UserType = x.UserType,
-                    ToBranchId = x.BranchId,
-                    ToLevelId = x.LevelId,
-                    ToJobPositionId = x.JobPositionId,
-                    ToUserType = x.UserType,
-                    CreationTime = x.CreationTime,
-                    PayrollId = x.PayrollId,
-                    NormalHour = x.NormalDay,
-                    OffDay = x.OffDay,
-                    OpentalkCount = x.OpentalkCount,
-                    OTHour = x.OTHour,
-                    RealOffsetDay = x.RefundLeaveDay,
-                    RemainLeaveDayBefore = x.RemainLeaveDayBefore,
-                    WorkAtOfficeOrOnsiteDay = x.WorkAtOfficeOrOnsiteDay,
+                   UserType = x.Employee.UserType,
+                   JobPositionEmployeePayslipId = x.JobPositionId,
+                   LevelEmployeePayslipId = x.LevelId  ,
+                   BranchEmployeePayslipId = x.BranchId,
+                   JobPositionId = x.Employee.JobPositionId ,
+                   LevelId =x.Employee.LevelId ,
+                   BranchId = x.Employee.BranchId ,
+                   PayrollId = x.PayrollId,
+                   PayslipTeams = x.PayslipTeams.Select( s => s.TeamId ).ToList(),
+
+                   
                 });
         }
 

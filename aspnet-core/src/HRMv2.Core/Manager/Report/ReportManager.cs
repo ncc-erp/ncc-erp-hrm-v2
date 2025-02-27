@@ -64,6 +64,7 @@ namespace HRMv2.Manager.Report
                        BranchInfo = s.BranchInfo,
                        JobPositionInfo = s.JobPositionInfo,
                        UserTypeInfo = s.UserTypeInfo,
+                       LevelInfo = s.LevelInfo,
                        EmployeeId = s.EmployeeId,
                        FullName = s.FullName,
                        Sex = s.Sex,
@@ -89,35 +90,32 @@ namespace HRMv2.Manager.Report
             else if (input.EmployeeIds != null && input.EmployeeIds.Count == 1) query = query.Where(x => input.EmployeeIds[0] == x.EmployeeId);
 
 
-            if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.ToBranchId);
-            else if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.ToBranchId));
+            if (input.BranchEmployeePayslipId != null && input.BranchEmployeePayslipId.Count == 1) query = query.Where(x => input.BranchEmployeePayslipId[0] == x.BranchEmployeePayslipId);
+            else if (input.BranchEmployeePayslipId != null && input.BranchEmployeePayslipId.Count > 1) query = query.Where(x => input.BranchEmployeePayslipId.Contains(x.BranchEmployeePayslipId));
 
-            if (input.JobPositionIds != null && input.JobPositionIds.Count == 1) query = query.Where(x => input.JobPositionIds[0] == x.ToJobPositionId);
-            else if (input.JobPositionIds != null && input.JobPositionIds.Count > 1) query = query.Where(x => input.JobPositionIds.Contains(x.ToJobPositionId));
+            if (input.JobPositionEmployeePayslipId != null && input.JobPositionEmployeePayslipId.Count == 1) query = query.Where(x => input.JobPositionEmployeePayslipId[0] == x.JobPositionEmployeePayslipId);
+            else if (input.JobPositionEmployeePayslipId != null && input.JobPositionEmployeePayslipId.Count > 1) query = query.Where(x => input.JobPositionEmployeePayslipId.Contains(x.JobPositionEmployeePayslipId));
 
-            if (input.UserTypes != null && input.UserTypes.Count == 1) query = query.Where(x => input.UserTypes[0] == x.ToUserType);
-            else if (input.UserTypes != null && input.UserTypes.Count > 1) query = query.Where(x => input.UserTypes.Contains(x.ToUserType));
+            if (input.UserTypes != null && input.UserTypes.Count == 1) query = query.Where(x => input.UserTypes[0] == x.UserType);
+            else if (input.UserTypes != null && input.UserTypes.Count > 1) query = query.Where(x => input.UserTypes.Contains(x.UserType));
 
-            if (input.TeamIds == null || input.TeamIds.Count == 0)
-            {
-                var res = GetReportSalary(query);
-                return res;
-            }
-            if (input.TeamIds.Count == 1 || !input.IsAndCondition)
-            {
-                var employeeHaveAnyTeams = QueryEmployeeHaveAnyTeams(input.TeamIds).Distinct();
+            if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
+            else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
 
-                query = from employee in query
-                        join employeeId in employeeHaveAnyTeams
-                        on employee.EmployeeId equals employeeId
-                        select employee;
-                var res = GetReportSalary(query);
-                return res;
-            }
-            
-            var employeeIds = employeeManager.QueryEmployeeHaveAllTeams(input.TeamIds).Result;
-            query = query.Where(x => employeeIds.Contains(x.Id));
+            if (input.JobPositionIds!= null && input.JobPositionIds.Count == 1) query = query.Where(x => input.JobPositionIds[0] == x.JobPositionId);
+            else if (input.JobPositionIds != null && input.JobPositionIds.Count > 1) query = query.Where(x => input.JobPositionIds.Contains(x.JobPositionId));
 
+            if (input.LevelIds != null && input.LevelIds.Count == 1) query = query.Where(x => input.LevelIds[0] == x.LevelId);
+            else if (input.LevelIds != null && input.LevelIds.Count > 1) query = query.Where(x => input.LevelIds.Contains(x.LevelId));
+
+            if (input.LevelEmployeePayslipId != null && input.LevelEmployeePayslipId.Count == 1) query = query.Where(x => input.LevelEmployeePayslipId[0] == x.LevelEmployeePayslipId);
+            else if (input.LevelEmployeePayslipId != null && input.LevelEmployeePayslipId.Count > 1) query = query.Where(x => input.LevelEmployeePayslipId.Contains(x.LevelEmployeePayslipId));
+
+            if (input.TeamIds != null && input.TeamIds.Count == 1) query = query.Where(x => x.Teams.Select(s => s.TeamId).Contains(input.TeamIds[0]));
+            else if (input.TeamIds != null && input.TeamIds.Count > 1) query = query.Where(x => x.Teams.Select(s => s.TeamId).Any(x => input.TeamIds.Contains(x)));
+
+            if (input.TeamPayslipEmployeeIds != null && input.TeamPayslipEmployeeIds.Count == 1) query = query.Where(x => x.PayslipTeams.Contains(input.TeamPayslipEmployeeIds[0]));
+            else if (input.TeamPayslipEmployeeIds != null && input.TeamPayslipEmployeeIds.Count > 1) query = query.Where(x => x.PayslipTeams.Any(x => input.TeamPayslipEmployeeIds.Contains(x)));
 
             var result = GetReportSalary(query);
             return result;

@@ -9,141 +9,174 @@
         </div>
     </div>
     <div class="card " style="padding: 5px !important;">    
-        <div class="card-header">
-            <div class="d-flex row justify-content-between">
-              <div >
+      <div class="card-header">
+        <div class="d-flex flex-wrap justify-content-start gap-2">
 
-                <chart-select className="w-100"
-                      (onSelect)="onPayrollIdSelect($event)"
-                      [label]="'Payroll'"
-                      [defaultValue]=""
-                      [placeholder]="'Payroll'"
-                      [dropdownData]="listPayrollWihStatusExecute"
-                      ></chart-select>
-              </div>
-              <div class="col-2 p-0 status-filter">
-                <chart-select className="w-100"
-                      (onSelect)="onEmployeeSelect($event)"
-                      [label]="'Employee'"
-                      [defaultValue]=""
-                      [placeholder]="'Employee'"
-                      [dropdownData]="listEmailEmployee"
-                      ></chart-select>
-              </div>
-              <div class="col-2 p-0">
-                <div class="filter-checkpoint-detail"> 
-                    <div class="pl-0">
-                      <chart-select className="w-100"
-                      (onSelect)="onUserTypeSelect($event)"
-                      [label]="'User Type'"
-                      [defaultValue]=""
-                      [placeholder]="'User Type'"
-                      [dropdownData]="listUserType"
-                      ></chart-select>
-                    </div>         
-                </div> 
-              </div>
-              <div class="col-2 p-0">
-                <div class="filter-checkpoint-detail">
-                    <div class="pr-0">
-                      <chart-select className="w-100"
-                      (onSelect)="onBranchSelect($event)"
-                      [label]="'Branch'"
-                      [defaultValue]=""
-                      [placeholder]="'Branch'"
-                      [dropdownData]="listBranch"
-                      ></chart-select>
-                    </div>
-                </div> 
-            </div>
-            <div class="col-2 p-0">
-              <div class="filter-checkpoint-detail"> 
-                  <div class="pl-0">
-                    <chart-select className="w-100"
-                    (onSelect)="onJobPositionSelect($event)"
-                    [label]="'Position'"
-                    [defaultValue]=""
-                    [placeholder]="'Position'"
-                    [dropdownData]="listPosition"
-                    ></chart-select>
-                  </div>         
-              </div> 
-            </div>
-            <div >
-              <div class="filter-checkpoint-detai l"> 
-                <table-filter [searchable]="true" [filterType]="filterTypeEnum.MultiSelectWithCondition" [dropdownData]="listTeam"
-                [placeholder]="'Team'" [defaultValue]="defaultValue.team" 
-                (onTableMultiSelectWithConditionFilter)="onTableMultiSelectWithConditionFilter($event);">
-                </table-filter>
-              </div> 
-            </div>
-             </div> 
+          <div class="col-2 d-flex flex-column ">
+            <chart-select class="w-100"
+              (onSelect)="onPayrollSelect($event)"
+              [label]="'Payroll'"
+              [defaultValue]=""
+              [placeholder]="'Payroll'"
+              [dropdownData]="listPayrollWihStatusExecute">
+            </chart-select>
+      
+            <chart-select class="w-100"
+              (onSelect)="onEmployeeSelect($event)"
+              [label]="'Employee'"
+              [defaultValue]=""
+              [placeholder]="'Employee'"
+              [dropdownData]="listEmailEmployee">
+            </chart-select>
+      
+            <chart-select class="w-100"
+              (onSelect)="onUserTypeSelect($event)"
+              [label]="'User Type'"
+              [defaultValue]=""
+              [placeholder]="'User Type'"
+              [dropdownData]="listUserType">
+            </chart-select>
           </div>
+      
+          <div class="col-10">
+            <div class="row w-100 mb-4" style="align-items: center;">
+              <span class="fw-bold text-start d-block fw-bold" style="margin-right: 55px; " >Filter Theo Employee   </span>
+              <div class="col-md-2 w-100" >
+                <chart-select 
+                  (onSelect)="onBranchSelect($event)"
+                  [label]="'Branch'"
+                  [defaultValue]=""
+                  [placeholder]="'Branch'"
+                  [dropdownData]="listBranch">
+                </chart-select>
+              </div>
           
-          <div class = "card-body" style="padding: 10px !important;">
-          <div class="table-responsive  pool-table">
-            <div class="fixTableHead">
-              <div style="overflow-x: auto;">
-                <table
-                  style="border-collapse: collapse; width: 100%;"
-                  class="table table-hover text-nowrap"
-                >
-                  <thead>
-                    <tr>
-                      <th class="pointer"(click)="onSortChange('email')"
-                      style="width: 400px;"
-                      >
-                        Employee
-                      </th>
-                      <th   style="width: 250x;">
-                        Tổng
-                      </th>
-                      <ng-container *ngFor="let month of applyDates">
-                        <th>{{ month }}</th>
-                      </ng-container>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      *ngFor="let item of resultList | paginate: {
-                        id: 'report',
-                        itemsPerPage: pageSize,
-                        currentPage: pageNumber,
-                        totalItems: totalItems
-                      }; let i = index">
-
-                     
-                      <td *ngIf="item.infoEmployee ">    
-                        <app-user-info   
-                        [link]="['/app/employees/list-employee/employee-detail/personal-info']" 
-                        [queryParams]="{id:item.infoEmployee.employeeId}" 
-                        [userData]="{
-                          id: item.infoEmployee.employeeId,
-                          fullName: item.infoEmployee.fullName,
-                          sex: item.infoEmployee.sex,
-                          avatarFullPath: item.infoEmployee.avatarFullPath,
-                          email: item.infoEmployee.email,
-                          branchInfo: item.infoEmployee.branchInfo,
-                          jobPositionInfo: item.infoEmployee.jobPositionInfo,
-                          userTypeInfo: item.infoEmployee.userTypeInfo
-
-
-                        }">
-                    </app-user-info>
-                      </td>
-                      <td style="text-align: right;">
-                        {{ item.totalSalary }}
-                      </td>
-                      <ng-container *ngFor="let month of applyDates">
-                        <td style="text-align: right;">{{ salaryByApplyDate[month][item.infoEmployee.employeeId]  }}</td>
-                      </ng-container>
-                    </tr>
-                  </tbody>
-                </table>
+              <div class="col-md-2 ">
+                <table-filter [searchable]="true"
+                  [filterType]="filterTypeEnum.MultiSelect"
+                  [dropdownData]="userLevelList"
+                  [placeholder]="'User Level'"
+                  (onTableMultiSelectFilter)="onTableMultiSelectLevelIdFilter($event)">
+                </table-filter>
               </div>
-              
+          
+              <div class="col-md-2" >
+                <chart-select 
+                  (onSelect)="onJobPositionSelect($event)"
+                  [label]="'Position'"
+                  [defaultValue]=""
+                  [placeholder]="'Position'"
+                  [dropdownData]="listPosition">
+                </chart-select>
+              </div>
+          
+              <div class="col-md-2">
+                <chart-select 
+                  (onSelect)="onTeamSelect($event)"
+                  [label]="'Team'"
+                  [defaultValue]=""
+                  [placeholder]="'Team'"
+                  [dropdownData]="listTeam">
+                </chart-select>
+              </div>
+            </div>
+          
+            <div class="row w-100 mb-4" style="align-items: center;">
+              <span class="fw-bold text-start d-block fw-bold" style=" margin-right: 10px;">Filter Theo PayslipEmployee</span>
+          
+              <div class="col-md-2 " >
+                <chart-select 
+                  (onSelect)="onBranchPayslipEmplyeeSelect($event)"
+                  [label]="'Branch'"
+                  [defaultValue]=""
+                  [placeholder]="'Branch'"
+                  [dropdownData]="listBranch">
+                </chart-select>
+              </div>
+          
+              <div class="col-md-2 ">
+                <table-filter [searchable]="true"
+                  [filterType]="filterTypeEnum.MultiSelect"
+                  [dropdownData]="userLevelList"
+                  [placeholder]="'User Level'"
+                  (onTableMultiSelectFilter)="onMultiSelectPayslipEmployeeLevelFilter($event)">
+                </table-filter>
+              </div>
+          
+              <div class="col-md-2" >
+                <chart-select 
+                  (onSelect)="onJobPositionPayslipEmplyeeSelect($event)"
+                  [label]="'Position'"
+                  [defaultValue]=""
+                  [placeholder]="'Position'"
+                  [dropdownData]="listPosition">
+                </chart-select>
+              </div>
+          
+              <div class="col-md-2">
+                <chart-select 
+                  (onSelect)="onTeamSelectForPaySlipEmployee($event)"
+                  [label]="'Team'"
+                  [defaultValue]=""
+                  [placeholder]="'Team'"
+                  [dropdownData]="listTeam">
+                </chart-select>
+              </div>
             </div>
           </div>
+
+      
+          
+          <div class = "card-body" style="padding: 10px !important; overflow-x: auto; width: 100%;">
+            <div class="table-responsive">
+              <div class="fixTableHead">
+                <div class="table-wrapper"> 
+                  <div>
+                    <table class="table table-hover text-nowrap">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th class="pointer" (click)="onSortChange('email')" style="width: 400px;">Employee</th>
+                          <th style="width: 250px;">Tổng</th>
+                          <ng-container *ngFor="let month of applyDates">
+                            <th style="min-width: 120px;">{{ month }}</th>
+                          </ng-container>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of resultList | paginate: { id: 'report', itemsPerPage: pageSize, currentPage: pageNumber, totalItems: totalItems }; let i = index">
+                          <td class="text-center">{{ i + 1 }}</td>
+                          <td *ngIf="item.infoEmployee">    
+                            <app-user-info   
+                              [link]="['/app/employees/list-employee/employee-detail/personal-info']" 
+                              [queryParams]="{id:item.infoEmployee.employeeId}" 
+                              [userData]="{
+                                id: item.infoEmployee.employeeId,
+                                fullName: item.infoEmployee.fullName,
+                                sex: item.infoEmployee.sex,
+                                avatarFullPath: item.infoEmployee.avatarFullPath,
+                                email: item.infoEmployee.email,
+                                branchInfo: item.infoEmployee.branchInfo,
+                                jobPositionInfo: item.infoEmployee.jobPositionInfo,
+                                userTypeInfo: item.infoEmployee.userTypeInfo,
+                                levelInfo: item.infoEmployee.levelInfo
+                              }">
+                            </app-user-info>
+                          </td>
+                          <td style="text-align: right;">
+                            {{ item.totalSalary }}
+                          </td>
+                          <ng-container *ngFor="let month of applyDates">
+                            <td style="text-align: right; min-width: 120px;">{{ salaryByApplyDate[month][item.infoEmployee.employeeId] }}</td>
+                          </ng-container>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
           </div>
     </div>
 </div>
