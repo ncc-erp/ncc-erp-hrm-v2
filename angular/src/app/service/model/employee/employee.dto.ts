@@ -53,6 +53,8 @@ export interface CreateUpdateEmployeeDto {
     taxCode: string;
     insuranceStatus: number;
     startWorkingDate: string;
+    beStaffDate?: string;
+    beTViecDate?: string;
     userType: number,
     jobPositionId: number,
     branchId: number,

@@ -53,6 +53,9 @@ namespace HRMv2.Manager.Employees.Dto
         public InsuranceStatus InsuranceStatus => string.IsNullOrEmpty(InsuranceStatusCode) ? InsuranceStatus.NONE : (InsuranceStatus)CommonUtil.GetValueOfInsuranceStatus(InsuranceStatusCode);
         public string BankCode { get; set; }
         public int Row { get; set; }
+        public DateTime? BeStaffDate { get; set; }
+        public DateTime? BeTViecDate { get; set; }
+        public DateTime? StartWorkingDate { get; set; }
 
     }
     public class InputFileDto

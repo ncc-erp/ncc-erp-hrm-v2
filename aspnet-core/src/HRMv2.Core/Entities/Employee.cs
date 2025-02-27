@@ -65,6 +65,8 @@ namespace HRMv2.Entities
         /// Khi UserType = Staff => Không update StartWorkingDate nữa
         /// </summary>
         public DateTime StartWorkingDate { get; set; }
+        public DateTime? BeTViecDate { get; set; }
+        public DateTime? BeStaffDate { get; set; }
         [StringLength(1000)]
         public string CurrentAddress { get; set; }
         [StringLength(256)]
