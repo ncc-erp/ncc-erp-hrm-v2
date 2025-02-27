@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnInit ,Output,SimpleChanges, ViewChild,EventEmitter } from '@angular/core';
 import { AbstractControl, FormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
+import { values } from '@node_modules/@types/lodash';
 import { ReplaySubject, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 
@@ -59,7 +60,7 @@ export class SelectSearchComponent implements OnInit, OnChanges {
     );
   }
   changeValue(value){
-    this.selectionValue.emit(value.value);
+    this.selectionValue.emit(value);
   }
 
 }

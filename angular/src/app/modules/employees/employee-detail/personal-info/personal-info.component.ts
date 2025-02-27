@@ -37,6 +37,7 @@ import { WarningEmployeeService } from "@app/service/api/warning-employee/warnin
 import { TempEmployeeTalentDto } from "@app/service/model/warning-employee/WarningEmployeeDto";
 import { GetRequestDetailDto, RejectChangeInfoDto, UpdateRequestDetailDto } from "@app/service/model/warning-employee/WarningEmployeeDto";
 import { IssuedByService } from "@app/service/api/categories/issuedBy.service";
+import { MatDatepicker, MatDatepickerInputEvent } from "@node_modules/@angular/material/datepicker";
 
 @Component({
   selector: "app-personal-info",
@@ -64,6 +65,7 @@ export class PersonalInfoComponent
   public isAllowBranchStatus: boolean = true;
   public listIssuedBys : SelectOptionDto[] = [];
 
+  public employeeId : number
   public workingStatusList: SelectOptionDto[] = Object.entries(this.APP_ENUM.UserStatus).map(
     (x) => ({ key: x[0], value: x[1] })
   );
@@ -225,6 +227,35 @@ export class PersonalInfoComponent
     finishedCallback: Function
   ): void { }
 
+  dateChangeCurrentContract(event: MatDatepickerInputEvent<Date>) {
+    this.employeeId = Number(this.activatedRoute.snapshot.queryParamMap.get('id'));
+    if(  !this.employeeId ){
+    const selectCurrentContractDate = event.value;    
+    this.formGroup.controls['startWorkingDate'].setValue(selectCurrentContractDate);
+    var userType = this.formGroup.controls['userType'].value;
+    if(userType == APP_ENUMS.UserType.Staff){
+      this.formGroup.controls['beStaffDate'].setValue(selectCurrentContractDate);
+      this.formGroup.controls['beTViecDate'].setValue("");
+    }else if(userType == APP_ENUMS.UserType.ProbationaryStaff){
+      this.formGroup.controls['beTViecDate'].setValue(selectCurrentContractDate);
+      this.formGroup.controls['beStaffDate'].setValue("");
+    }
+    }
+    
+  }
+  onUserTypeChange(selectUserType: any) {
+    this.employeeId = Number(this.activatedRoute.snapshot.queryParamMap.get('id'));
+    if(  !this.employeeId ){
+    if (selectUserType.value == APP_ENUMS.UserType.Staff) {
+        this.formGroup.controls['beStaffDate'].setValue(this.formGroup.controls['contractStartDate'].value);
+        this.formGroup.controls['beTViecDate'].setValue("");
+    } else if (selectUserType.value == APP_ENUMS.UserType.ProbationaryStaff) {
+        this.formGroup.controls['beTViecDate'].setValue(this.formGroup.controls['contractStartDate'].value);
+        this.formGroup.controls['beStaffDate'].setValue("");
+    }
+    }
+}
+
   public getAllIssuedBy(){
     this.subscription.push(
       this.issuedByService.getAll().subscribe((rs)=>{
@@ -378,6 +409,8 @@ export class PersonalInfoComponent
       remainLeaveDay: 0,
       contractCode: "",
       startWorkingDate: [this.formatDateYMD(new Date), [Validators.required]],
+      beStaffDate: "",
+      beTViecDate: "",
       personalEmail: ["", [Validators.email]],
       currentAddress: "",
       emergencyContactName: "",
@@ -489,6 +522,8 @@ export class PersonalInfoComponent
       remainLeaveDay: info.remainLeaveDay,
       contractCode: info.contractCode,
       startWorkingDate: info.startWorkingDate,
+      beTViecDate: info.beTViecDate,
+      beStaffDate: info.beStaffDate,
       personalEmail: info.personalEmail,
       currentAddress: info.currentAddress,
       emergencyContactName: info.emergencyContactName,
@@ -549,18 +584,6 @@ export class PersonalInfoComponent
   }
 
   onSave() {
-    var inputStartWorkingDate = "";
-    if(this.userId && (this.formGroup.value.userType == APP_ENUMS.UserType.Staff)){
-      inputStartWorkingDate = this.formatDateYMD(this.formGroup.value.startWorkingDate)
-    }
-    if(this.userId && (this.formGroup.value.userType != APP_ENUMS.UserType.Staff)){
-      inputStartWorkingDate = this.personalInfo.startWorkingDate;
-
-    }
-    if(!this.userId){
-      inputStartWorkingDate = this.formatDateYMD(this.formGroup.value.contractStartDate);
-    }
-
     const employee: CreateUpdateEmployeeDto = {
       id: this.userId,
       address: this.formGroup.value.placeOfResidence,
@@ -584,7 +607,9 @@ export class PersonalInfoComponent
       avatar: this.personalInfo.avatar || "",
       insuranceStatus: this.formGroup.value.insuranceStatus ? this.formGroup.value.insuranceStatus : this.APP_ENUM.InsuranceStatus.NONE,
       placeOfPermanent: this.formGroup.value.placeOfOrigin,
-      startWorkingDate: inputStartWorkingDate,
+      startWorkingDate: this.formatDateYMD(this.formGroup.value.startWorkingDate),
+      beStaffDate: this.formGroup.value.beStaffDate ? this.formatDateYMD(this.formGroup.value.beStaffDate) : "",
+      beTViecDate: this.formGroup.value.beTViecDate ? this.formatDateYMD(this.formGroup.value.beTViecDate) : "",
       taxCode: this.formGroup.value.taxCode,
       teams: this.formGroup.value.teams?.map(team => team.value) || [],
       skills: this.formGroup.value.skills?.map(skill => skill.value) || [],
@@ -905,6 +930,8 @@ interface PersonalInfo extends BaseEmployeeDto {
   contractEndDate: string;
   address: string;
   startWorkingDate: string;
+  beStaffDate?: string;
+  beTViecDate?: string;
   taxCode: string;
   bankId: number;
   bankAccountNumber: string;
