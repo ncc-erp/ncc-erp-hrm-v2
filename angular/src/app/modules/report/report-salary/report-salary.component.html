@@ -13,7 +13,7 @@
         <div class="d-flex flex-wrap justify-content-start gap-2">
 
           <div class="col-2 d-flex flex-column ">
-            <chart-select class="w-100"
+            <chart-select class="w-100" style="margin-top: 8px; margin-bottom:18px;"
               (onSelect)="onPayrollSelect($event)"
               [label]="'Payroll'"
               [defaultValue]=""
@@ -29,18 +29,12 @@
               [dropdownData]="listEmailEmployee">
             </chart-select>
       
-            <chart-select class="w-100"
-              (onSelect)="onUserTypeSelect($event)"
-              [label]="'User Type'"
-              [defaultValue]=""
-              [placeholder]="'User Type'"
-              [dropdownData]="listUserType">
-            </chart-select>
+            
           </div>
       
           <div class="col-10">
             <div class="row w-100 mb-4" style="align-items: center;">
-              <span class="fw-bold text-start d-block fw-bold" style="margin-right: 55px; " >Filter Theo Employee   </span>
+              <span class="fw-bold text-start d-block "  style="font-weight: bold;" >Employee</span>
               <div class="col-md-2 w-100" >
                 <chart-select 
                   (onSelect)="onBranchSelect($event)"
@@ -69,7 +63,15 @@
                   [dropdownData]="listPosition">
                 </chart-select>
               </div>
-          
+              <div class="col-md-2" >
+                <chart-select class="w-100"
+              (onSelect)="onUserTypeSelect($event)"
+              [label]="'User Type'"
+              [defaultValue]=""
+              [placeholder]="'User Type'"
+              [dropdownData]="listUserType">
+            </chart-select>
+              </div>
               <div class="col-md-2">
                 <chart-select 
                   (onSelect)="onTeamSelect($event)"
@@ -82,7 +84,7 @@
             </div>
           
             <div class="row w-100 mb-4" style="align-items: center;">
-              <span class="fw-bold text-start d-block fw-bold" style=" margin-right: 10px;">Filter Theo PayslipEmployee</span>
+              <span class="fw-bold text-start d-block" style=" margin-right: 17px;font-weight: bold;">Payslip</span>
           
               <div class="col-md-2 " >
                 <chart-select 
@@ -112,7 +114,15 @@
                   [dropdownData]="listPosition">
                 </chart-select>
               </div>
-          
+              <div class="col-md-2" >
+                <chart-select class="w-100"
+              (onSelect)="onUserTypeEmployeePayslipSelect($event)"
+              [label]="'User Type'"
+              [defaultValue]=""
+              [placeholder]="'User Type'"
+              [dropdownData]="listUserType">
+            </chart-select>
+              </div>
               <div class="col-md-2">
                 <chart-select 
                   (onSelect)="onTeamSelectForPaySlipEmployee($event)"
@@ -135,9 +145,9 @@
                     <table class="table table-hover text-nowrap">
                       <thead>
                         <tr>
-                          <th>#</th>
-                          <th class="pointer" (click)="onSortChange('email')" style="width: 400px;">Employee</th>
-                          <th style="width: 250px;">Tổng</th>
+                          <th style="width: 50px;">#</th>
+                          <th class="pointer" (click)="onSortChange('email')" style="min-width: 500px;">Employee</th>
+                          <th style="min-width: 200px;">Tổng</th>
                           <ng-container *ngFor="let month of applyDates">
                             <th style="min-width: 120px;">{{ month }}</th>
                           </ng-container>
@@ -163,11 +173,11 @@
                               }">
                             </app-user-info>
                           </td>
-                          <td style="text-align: right;">
-                            {{ item.totalSalary }}
+                          <td style="text-align: right ;font-weight: bold;" >
+                            {{ item.totalSalary | moneyFormat}}
                           </td>
                           <ng-container *ngFor="let month of applyDates">
-                            <td style="text-align: right; min-width: 120px;">{{ salaryByApplyDate[month][item.infoEmployee.employeeId] }}</td>
+                            <td style="text-align: right; min-width: 120px;">{{ salaryByApplyDate[month][item.infoEmployee.employeeId] | moneyFormat}}</td>
                           </ng-container>
                         </tr>
                       </tbody>

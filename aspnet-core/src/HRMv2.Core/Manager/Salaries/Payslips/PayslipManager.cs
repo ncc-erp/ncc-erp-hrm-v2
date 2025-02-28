@@ -137,6 +137,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Color = x.Employee.JobPosition.Color
                     },
                    UserType = x.Employee.UserType,
+                   UserTypeEmployeePayslip = x.UserType,
                    JobPositionEmployeePayslipId = x.JobPositionId,
                    LevelEmployeePayslipId = x.LevelId  ,
                    BranchEmployeePayslipId = x.BranchId,
@@ -145,7 +146,6 @@ namespace HRMv2.Manager.Salaries.Payslips
                    BranchId = x.Employee.BranchId ,
                    PayrollId = x.PayrollId,
                    PayslipTeams = x.PayslipTeams.Select( s => s.TeamId ).ToList(),
-
                    
                 });
         }

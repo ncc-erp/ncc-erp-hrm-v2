@@ -29,6 +29,7 @@ namespace HRMv2.Manager.Report.Dto
         public List<long> TeamIds { get; set; }
         public List<long> TeamPayslipEmployeeIds { get; set; }
         public List<UserType> UserTypes { get; set; }
+        public List<UserType> UserTypePayslips { get; set; }
         public List<long> BranchIds { get; set; }
         public List<long> JobPositionIds { get; set; }
         public List<long> LevelIds {  get; set; }

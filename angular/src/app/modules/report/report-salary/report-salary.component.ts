@@ -54,6 +54,7 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public jobPositionEmployeePayslipId : number[]=[];
   public branchEmployeePayslipId : number[] =[];
   public teamPayslipEmployeeIds: number[] = [];
+  public userTypePayslipIds: number[] = [];
 
   public defaultValue = {} as DefaulEmployeeFilterDto
   public resultList: ReportSalaryDto []= [];
@@ -87,6 +88,7 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       teamPayslipEmployeeIds: this.teamPayslipEmployeeIds,
       branchIds: this.branchIds,
       userTypes: this.userTypeIds,
+      userTypePayslips: this.userTypePayslipIds,
       jobPositionIds: this.jobPositionsId,
       payrollIds: this.payrollIds,
       employeeIds: this.employeeIds,
@@ -188,6 +190,10 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   onUserTypeSelect(ids: number[]) {
     this.userTypeIds = ids;
     this.onSearchEnter(this.searchText)
+  }
+  onUserTypeEmployeePayslipSelect(ids: number[]) {  
+   this.userTypePayslipIds = ids;
+   this.onSearchEnter(this.searchText)
   }
  onJobPositionSelect(ids: number[]) {
     this.jobPositionsId = ids;

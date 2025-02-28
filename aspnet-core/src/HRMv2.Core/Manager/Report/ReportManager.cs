@@ -85,7 +85,6 @@ namespace HRMv2.Manager.Report
             if (input.PayrollIds != null && input.PayrollIds.Count > 1) query = query.Where(x => input.PayrollIds.Contains(x.PayrollId));
             else if (input.PayrollIds != null && input.PayrollIds.Count == 1) query = query.Where(x => input.PayrollIds[0] == x.PayrollId);
 
-
             if (input.EmployeeIds != null && input.EmployeeIds.Count > 1) query = query.Where(x => input.EmployeeIds.Contains(x.EmployeeId));
             else if (input.EmployeeIds != null && input.EmployeeIds.Count == 1) query = query.Where(x => input.EmployeeIds[0] == x.EmployeeId);
 
@@ -98,6 +97,9 @@ namespace HRMv2.Manager.Report
 
             if (input.UserTypes != null && input.UserTypes.Count == 1) query = query.Where(x => input.UserTypes[0] == x.UserType);
             else if (input.UserTypes != null && input.UserTypes.Count > 1) query = query.Where(x => input.UserTypes.Contains(x.UserType));
+
+            if (input.UserTypePayslips != null && input.UserTypePayslips.Count == 1) query = query.Where(x => input.UserTypePayslips[0] == x.UserTypeEmployeePayslip);
+            else if (input.UserTypePayslips != null && input.UserTypePayslips.Count > 1) query = query.Where(x => input.UserTypePayslips.Contains(x.UserTypeEmployeePayslip));
 
             if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
             else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
@@ -163,13 +165,11 @@ namespace HRMv2.Manager.Report
                 columnIndex++;
             }
 
-
             foreach (var report in reportSalarys)
             {
                 worksheet.Cells[rowIndex, 1].Value = rowIndex - 1;
                 worksheet.Cells[rowIndex, 2].Value = report.InfoEmployee.Email;
                 worksheet.Cells[rowIndex, 3].Value = report.TotalSalary;
-                worksheet.Cells[rowIndex, 3].Style.Numberformat.Format = "0";
                 var salaryMap = report.ResultReports.ToDictionary(r => r.ApplyDate, r => r.Salary);
 
 
@@ -178,9 +178,7 @@ namespace HRMv2.Manager.Report
                     if (salaryMap.ContainsKey(date))
                     {
                         worksheet.Cells[rowIndex, columnMappings[date]].Value = salaryMap[date];
-                        worksheet.Cells[rowIndex, columnMappings[date]].Style.Numberformat.Format = "0";
                     }
-
                 }
                 rowIndex++;
             }
