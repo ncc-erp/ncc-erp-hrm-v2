@@ -172,7 +172,6 @@ namespace HRMv2.Manager.Report
                 worksheet.Cells[rowIndex, 3].Value = report.TotalSalary;
                 var salaryMap = report.ResultReports.ToDictionary(r => r.ApplyDate, r => r.Salary);
 
-
                 foreach (var date in columns)
                 {
                     if (salaryMap.ContainsKey(date))
