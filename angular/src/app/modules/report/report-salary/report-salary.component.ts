@@ -17,6 +17,8 @@ import { finalize } from 'rxjs/operators';
 import { ReportSalaryDto } from '@app/service/model/report/reportSalary.dto';
 import * as FileSaver from 'file-saver';
 import { LevelService } from '@app/service/api/categories/level.service';
+
+import { startWithTap } from '@shared/helpers/observerHelper';
 @Component({
   selector: 'app-report-salary',
   templateUrl: './report-salary.component.html',
@@ -81,8 +83,9 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       this.getAllLevel();
   }
   
- protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void {
-
+  protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void {
+    this.isLoading = true; // Bắt đầu hiển thị loading khi request bắt đầu
+  
     let input = {
       teamIds: this.teamIds,
       teamPayslipEmployeeIds: this.teamPayslipEmployeeIds,
@@ -93,32 +96,44 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       payrollIds: this.payrollIds,
       employeeIds: this.employeeIds,
       levelIds: this.levelIds,
-      levelEmployeePayslipId : this.levelEmployeePayslipId,
+      levelEmployeePayslipId: this.levelEmployeePayslipId,
       jobPositionEmployeePayslipId: this.jobPositionEmployeePayslipId,
       branchEmployeePayslipId: this.branchEmployeePayslipId,
       gridParam: request
     } as any;
-   this.requestItem = input;
+  
+    this.requestItem = input;
+  
     this.subscription.push(
       this.reportService.GetAllReport(input)
-        .subscribe(rs => {
+        .pipe(
+          finalize(() => {
+            this.isLoading = false; 
+            finishedCallback();
+          })
+        )
+        .subscribe({
+          next: (rs) => {
             this.resultList = rs.result;
-            this.applyDates =[...new Set (rs.result.flatMap(employee => 
+            this.applyDates = [...new Set(rs.result.flatMap(employee =>
               employee.resultReports.map(report => report.applyDate)
-          ))].sort();
-
-        this.salaryByApplyDate = rs.result.reduce((acc, employee) => {
-
-        employee.resultReports.forEach(report => {
-          acc[report.applyDate] = acc[report.applyDate] || {};
-          acc[report.applyDate][employee.infoEmployee.employeeId] = report.salary;
-        });
-        return acc;
-      }, {});
-
+            ))].sort();
+  
+            this.salaryByApplyDate = rs.result.reduce((acc, employee) => {
+              employee.resultReports.forEach(report => {
+                acc[report.applyDate] = acc[report.applyDate] || {};
+                acc[report.applyDate][employee.infoEmployee.employeeId] = report.salary;
+              });
+              return acc;
+            }, {});
+          },
+          error: (err) => {
+            console.error('Lỗi khi gọi API:', err);
+          }
         })
-    )
+    );
   }
+  
 
   public getPayrollWithStatusExecute(){
     this.payrollService.GetPayrollWithStatusExecute().subscribe(res=>{
