@@ -17,8 +17,8 @@ export class ReportService extends BaseApiService {
     super(injector);    
    }              
    
-  public GetAllReport(input: any): Observable<ApiResponseDto<any>> {
-     return this.processPost(`GetAllReport`,input);
+  public GetListReportSalary(input: any): Observable<ApiResponseDto<any>> {
+     return this.processPost(`GetListReportSalary`,input);
    }
 
    public ExportReportSalary(input: any): Observable<ApiResponseDto<any>> {

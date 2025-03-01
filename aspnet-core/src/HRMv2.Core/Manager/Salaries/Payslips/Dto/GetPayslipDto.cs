@@ -27,10 +27,11 @@ namespace HRMv2.Manager.Salaries.Payslips.Dto
         public double WorkAtOfficeOrOnsiteDay { get; set; }
         public double OffsetHour { get; set; }
         public DateTime CreationTime { get; set; }
-        public long BranchEmployeePayslipId { get; set; }
-        public UserType UserTypeEmployeePayslip { get; set; }
-        public long LevelEmployeePayslipId { get; set; }
-        public long JobPositionEmployeePayslipId { get; set; }
-        public List<long> PayslipTeams { get; set; }
+        public long BranchPayslipId { get; set; }
+        public UserType UserTypePayslip { get; set; }
+        public long LevelPayslipId { get; set; }
+        public long JobPositionPayslipId { get; set; }
+        public List<long> PayslipTeamIds { get; set; }
+        public List<long> TeamIds { get; set; }
     }
 }

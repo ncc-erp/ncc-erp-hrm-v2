@@ -24,9 +24,9 @@ namespace HRMv2.APIs.Report
         }
 
         [HttpPost]
-        public async  Task<List<ReportSalaryDto>> GetAllReport(InputMultiFilterReportSalaryPagingDto input)
+        public async  Task<List<ReportSalaryDto>> GetListReportSalary(InputMultiFilterReportSalaryPagingDto input)
         {
-            return await _reportManager.GetAllReport(input);
+            return await _reportManager.GetListReportSalary(input);
         }
 
         [HttpPost]

@@ -17,7 +17,7 @@ import { finalize } from 'rxjs/operators';
 import { ReportSalaryDto } from '@app/service/model/report/reportSalary.dto';
 import * as FileSaver from 'file-saver';
 import { LevelService } from '@app/service/api/categories/level.service';
-
+import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { startWithTap } from '@shared/helpers/observerHelper';
 @Component({
   selector: 'app-report-salary',
@@ -52,10 +52,10 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public requestItem: any;
   public listTeam: any = [];
   public levelIds: number[]=[];
-  public levelEmployeePayslipId :number[]= [];
-  public jobPositionEmployeePayslipId : number[]=[];
-  public branchEmployeePayslipId : number[] =[];
-  public teamPayslipEmployeeIds: number[] = [];
+  public levelPayslipId :number[]= [];
+  public jobPositionPayslipId : number[]=[];
+  public branchPayslipId : number[] =[];
+  public teamPayslipIds: number[] = [];
   public userTypePayslipIds: number[] = [];
 
   public defaultValue = {} as DefaulEmployeeFilterDto
@@ -84,11 +84,11 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   }
   
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void {
-    this.isLoading = true; // Bắt đầu hiển thị loading khi request bắt đầu
+    this.isLoading = true;
   
     let input = {
       teamIds: this.teamIds,
-      teamPayslipEmployeeIds: this.teamPayslipEmployeeIds,
+      teamPayslipIds: this.teamPayslipIds,
       branchIds: this.branchIds,
       userTypes: this.userTypeIds,
       userTypePayslips: this.userTypePayslipIds,
@@ -96,16 +96,16 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       payrollIds: this.payrollIds,
       employeeIds: this.employeeIds,
       levelIds: this.levelIds,
-      levelEmployeePayslipId: this.levelEmployeePayslipId,
-      jobPositionEmployeePayslipId: this.jobPositionEmployeePayslipId,
-      branchEmployeePayslipId: this.branchEmployeePayslipId,
+      levelPayslipId: this.levelPayslipId,
+      jobPositionPayslipId: this.jobPositionPayslipId,
+      branchPayslipId: this.branchPayslipId,
       gridParam: request
     } as any;
   
     this.requestItem = input;
   
     this.subscription.push(
-      this.reportService.GetAllReport(input)
+      this.reportService.GetListReportSalary(input)
         .pipe(
           finalize(() => {
             this.isLoading = false; 
@@ -116,24 +116,26 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
           next: (rs) => {
             this.resultList = rs.result;
             this.applyDates = [...new Set(rs.result.flatMap(employee =>
-              employee.resultReports.map(report => report.applyDate)
+              employee.resultReports.map(report => report.payrollName)
             ))].sort();
   
             this.salaryByApplyDate = rs.result.reduce((acc, employee) => {
               employee.resultReports.forEach(report => {
-                acc[report.applyDate] = acc[report.applyDate] || {};
-                acc[report.applyDate][employee.infoEmployee.employeeId] = report.salary;
+                acc[report.payrollName] = acc[report.payrollName] || {};
+                acc[report.payrollName][employee.infoEmployee.employeeId] = report.salary;
               });
               return acc;
             }, {});
           },
           error: (err) => {
-            console.error('Lỗi khi gọi API:', err);
+            console.error('Error:', err);
           }
         })
     );
   }
-  
+    isAllowRoutingDetail(){
+      return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail);
+    }
 
   public getPayrollWithStatusExecute(){
     this.payrollService.GetPayrollWithStatusExecute().subscribe(res=>{
@@ -219,16 +221,16 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
     this.onSearchEnter(this.searchText)
   }
   onMultiSelectPayslipEmployeeLevelFilter(ids: number[]) {
-    this.levelEmployeePayslipId = ids;
+    this.levelPayslipId = ids;
     this.onSearchEnter(this.searchText)
   }
  
   onBranchPayslipEmplyeeSelect(ids: number[]) {
-    this.branchEmployeePayslipId = ids;
+    this.branchPayslipId = ids;
     this.onSearchEnter(this.searchText)
   }
   onJobPositionPayslipEmplyeeSelect(ids: number[]) {
-    this.jobPositionEmployeePayslipId = ids;
+    this.jobPositionPayslipId = ids;
     this.onSearchEnter(this.searchText)
   }
   onPayrollSelect(ids: number[]) {
@@ -240,7 +242,7 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
     this.onSearchEnter(this.searchText)
   }
   onTeamSelectForPaySlipEmployee(ids: number[]){
-    this.teamPayslipEmployeeIds = ids;
+    this.teamPayslipIds = ids;
     this.onSearchEnter(this.searchText)
   }
    public onExport() {

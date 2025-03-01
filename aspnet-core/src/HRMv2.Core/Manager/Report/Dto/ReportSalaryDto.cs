@@ -20,14 +20,14 @@ namespace HRMv2.Manager.Report.Dto
 
     public class ResultReport
     {
-        public string ApplyDate { get; set; }
+        public string PayrollName { get; set; }
         public double Salary { get; set; }
     }
     public class InputMultiFilterReportSalaryPagingDto
     {
         public GridParam GridParam { get; set; }
         public List<long> TeamIds { get; set; }
-        public List<long> TeamPayslipEmployeeIds { get; set; }
+        public List<long> TeamPayslipIds { get; set; }
         public List<UserType> UserTypes { get; set; }
         public List<UserType> UserTypePayslips { get; set; }
         public List<long> BranchIds { get; set; }
@@ -35,9 +35,9 @@ namespace HRMv2.Manager.Report.Dto
         public List<long> LevelIds {  get; set; }
         public List<long> PayrollIds { get; set; }
         public List<long> EmployeeIds { get; set; }
-        public List<long> BranchEmployeePayslipId { get; set; }
-        public List<long> JobPositionEmployeePayslipId { get; set; }
-        public List<long> LevelEmployeePayslipId { get; set; }
+        public List<long> BranchPayslipIds { get; set; }
+        public List<long> JobPositionPayslipIds { get; set; }
+        public List<long> LevelPayslipIds { get; set; }
     }
 
     public class InfoEmployeeDto

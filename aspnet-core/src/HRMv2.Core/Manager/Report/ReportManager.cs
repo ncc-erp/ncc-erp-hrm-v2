@@ -10,6 +10,7 @@ using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Salaries.Payslips.Dto;
 using HRMv2.NccCore;
 using HRMv2.Net.MimeTypes;
+using HRMv2.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using NccCore.Extension;
@@ -39,7 +40,7 @@ namespace HRMv2.Manager.Report
             this.employeeManager = employeeManager;
         }
 
-        public Dictionary<long, string> GetApplyDatePayroll()
+        public Dictionary<long, string> GetDicPayrollIdToName()
         {
             var dic = WorkScope.GetAll<Payroll>()
                 .Where(x => x.Status == PayrollStatus.Executed)              
@@ -47,19 +48,20 @@ namespace HRMv2.Manager.Report
                 {
                     ApplyDate = x.ApplyMonth,
                     Value = x.Id
-                })
+                }).ToList()
                 .ToDictionary(x => x.Value, x => x.Name);
             return dic;
         }
         private List<ReportSalaryDto> GetReportSalary(IQueryable<GetPayslipDto> query)
         {
-            var dic = GetApplyDatePayroll();
-            var queryResult = query.GroupBy(x => x.EmployeeId)
+            var dicPayrollIdToName = GetDicPayrollIdToName();
+            var queryResult = query.ToList()
+                .GroupBy(x => x.EmployeeId)
                .Select(x => new ReportSalaryDto
                {
                    InfoEmployee = x.Select(s => new InfoEmployeeDto
                    {
-                       AvatarFullPath = s.Avatar,
+                       AvatarFullPath = FileUtil.FullFilePath(s.Avatar),
                        Email = s.Email,
                        BranchInfo = s.BranchInfo,
                        JobPositionInfo = s.JobPositionInfo,
@@ -71,13 +73,54 @@ namespace HRMv2.Manager.Report
                    }).First(),
                    ResultReports = x.Select(r => new ResultReport
                    {
-                       ApplyDate = dic[r.PayrollId],
+                       PayrollName = dicPayrollIdToName[r.PayrollId],
                        Salary = r.Salary,
                    }).ToList()
                }).ToList();
             return queryResult;
         }
-        public async Task<List<ReportSalaryDto>> GetAllReport(InputMultiFilterReportSalaryPagingDto input)
+
+        private IQueryable<GetPayslipDto> ApplyFilterEmployee(IQueryable<GetPayslipDto> query,InputMultiFilterReportSalaryPagingDto input)
+        {
+            if (input.UserTypes != null && input.UserTypes.Count == 1) query = query.Where(x => input.UserTypes[0] == x.UserType);
+            else if (input.UserTypes != null && input.UserTypes.Count > 1) query = query.Where(x => input.UserTypes.Contains(x.UserType));
+
+            if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
+            else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
+
+            if (input.JobPositionIds != null && input.JobPositionIds.Count == 1) query = query.Where(x => input.JobPositionIds[0] == x.JobPositionId);
+            else if (input.JobPositionIds != null && input.JobPositionIds.Count > 1) query = query.Where(x => input.JobPositionIds.Contains(x.JobPositionId));
+
+            if (input.LevelIds != null && input.LevelIds.Count == 1) query = query.Where(x => input.LevelIds[0] == x.LevelId);
+            else if (input.LevelIds != null && input.LevelIds.Count > 1) query = query.Where(x => input.LevelIds.Contains(x.LevelId));
+
+            if (input.TeamIds != null && input.TeamIds.Count == 1) query = query.Where(x => x.TeamIds.Contains(input.TeamIds[0]));
+            else if (input.TeamIds != null && input.TeamIds.Count > 1) query = query.Where(x => x.TeamIds.Any(s => input.TeamIds.Contains(s)));
+            return query;
+           
+        }
+
+        private IQueryable<GetPayslipDto> ApplyFilterPaySlip(IQueryable<GetPayslipDto> query,InputMultiFilterReportSalaryPagingDto input)
+        {
+            if (input.BranchPayslipIds != null && input.BranchPayslipIds.Count == 1) query = query.Where(x => input.BranchPayslipIds[0] == x.BranchPayslipId);
+            else if (input.BranchPayslipIds != null && input.BranchPayslipIds.Count > 1) query = query.Where(x => input.BranchPayslipIds.Contains(x.BranchPayslipId));
+
+            if (input.JobPositionPayslipIds != null && input.JobPositionPayslipIds.Count == 1) query = query.Where(x => input.JobPositionPayslipIds[0] == x.JobPositionPayslipId);
+            else if (input.JobPositionPayslipIds != null && input.JobPositionPayslipIds.Count > 1) query = query.Where(x => input.JobPositionPayslipIds.Contains(x.JobPositionPayslipId));
+
+            if (input.UserTypePayslips != null && input.UserTypePayslips.Count == 1) query = query.Where(x => input.UserTypePayslips[0] == x.UserTypePayslip);
+            else if (input.UserTypePayslips != null && input.UserTypePayslips.Count > 1) query = query.Where(x => input.UserTypePayslips.Contains(x.UserTypePayslip));
+
+            if (input.LevelPayslipIds != null && input.LevelPayslipIds.Count == 1) query = query.Where(x => input.LevelPayslipIds[0] == x.LevelPayslipId);
+            else if (input.LevelPayslipIds != null && input.LevelPayslipIds.Count > 1) query = query.Where(x => input.LevelPayslipIds.Contains(x.LevelPayslipId));
+
+            if (input.TeamPayslipIds != null && input.TeamPayslipIds.Count == 1) query = query.Where(x => x.PayslipTeamIds.Contains(input.TeamPayslipIds[0]));
+            else if (input.TeamPayslipIds != null && input.TeamPayslipIds.Count > 1) query = query.Where(x => x.PayslipTeamIds.Any(x => input.TeamPayslipIds.Contains(x)));
+
+            return query;
+    
+        }
+        public async Task<List<ReportSalaryDto>> GetListReportSalary(InputMultiFilterReportSalaryPagingDto input)
         {
             var query = payslipManager.QueryAllPayslip();
 
@@ -88,37 +131,10 @@ namespace HRMv2.Manager.Report
             if (input.EmployeeIds != null && input.EmployeeIds.Count > 1) query = query.Where(x => input.EmployeeIds.Contains(x.EmployeeId));
             else if (input.EmployeeIds != null && input.EmployeeIds.Count == 1) query = query.Where(x => input.EmployeeIds[0] == x.EmployeeId);
 
+            query = ApplyFilterEmployee(query,input);
 
-            if (input.BranchEmployeePayslipId != null && input.BranchEmployeePayslipId.Count == 1) query = query.Where(x => input.BranchEmployeePayslipId[0] == x.BranchEmployeePayslipId);
-            else if (input.BranchEmployeePayslipId != null && input.BranchEmployeePayslipId.Count > 1) query = query.Where(x => input.BranchEmployeePayslipId.Contains(x.BranchEmployeePayslipId));
-
-            if (input.JobPositionEmployeePayslipId != null && input.JobPositionEmployeePayslipId.Count == 1) query = query.Where(x => input.JobPositionEmployeePayslipId[0] == x.JobPositionEmployeePayslipId);
-            else if (input.JobPositionEmployeePayslipId != null && input.JobPositionEmployeePayslipId.Count > 1) query = query.Where(x => input.JobPositionEmployeePayslipId.Contains(x.JobPositionEmployeePayslipId));
-
-            if (input.UserTypes != null && input.UserTypes.Count == 1) query = query.Where(x => input.UserTypes[0] == x.UserType);
-            else if (input.UserTypes != null && input.UserTypes.Count > 1) query = query.Where(x => input.UserTypes.Contains(x.UserType));
-
-            if (input.UserTypePayslips != null && input.UserTypePayslips.Count == 1) query = query.Where(x => input.UserTypePayslips[0] == x.UserTypeEmployeePayslip);
-            else if (input.UserTypePayslips != null && input.UserTypePayslips.Count > 1) query = query.Where(x => input.UserTypePayslips.Contains(x.UserTypeEmployeePayslip));
-
-            if (input.BranchIds != null && input.BranchIds.Count > 1) query = query.Where(x => input.BranchIds.Contains(x.BranchId));
-            else if (input.BranchIds != null && input.BranchIds.Count == 1) query = query.Where(x => input.BranchIds[0] == x.BranchId);
-
-            if (input.JobPositionIds!= null && input.JobPositionIds.Count == 1) query = query.Where(x => input.JobPositionIds[0] == x.JobPositionId);
-            else if (input.JobPositionIds != null && input.JobPositionIds.Count > 1) query = query.Where(x => input.JobPositionIds.Contains(x.JobPositionId));
-
-            if (input.LevelIds != null && input.LevelIds.Count == 1) query = query.Where(x => input.LevelIds[0] == x.LevelId);
-            else if (input.LevelIds != null && input.LevelIds.Count > 1) query = query.Where(x => input.LevelIds.Contains(x.LevelId));
-
-            if (input.LevelEmployeePayslipId != null && input.LevelEmployeePayslipId.Count == 1) query = query.Where(x => input.LevelEmployeePayslipId[0] == x.LevelEmployeePayslipId);
-            else if (input.LevelEmployeePayslipId != null && input.LevelEmployeePayslipId.Count > 1) query = query.Where(x => input.LevelEmployeePayslipId.Contains(x.LevelEmployeePayslipId));
-
-            if (input.TeamIds != null && input.TeamIds.Count == 1) query = query.Where(x => x.Teams.Select(s => s.TeamId).Contains(input.TeamIds[0]));
-            else if (input.TeamIds != null && input.TeamIds.Count > 1) query = query.Where(x => x.Teams.Select(s => s.TeamId).Any(x => input.TeamIds.Contains(x)));
-
-            if (input.TeamPayslipEmployeeIds != null && input.TeamPayslipEmployeeIds.Count == 1) query = query.Where(x => x.PayslipTeams.Contains(input.TeamPayslipEmployeeIds[0]));
-            else if (input.TeamPayslipEmployeeIds != null && input.TeamPayslipEmployeeIds.Count > 1) query = query.Where(x => x.PayslipTeams.Any(x => input.TeamPayslipEmployeeIds.Contains(x)));
-
+            query =  ApplyFilterPaySlip(query,input);
+            
             var result = GetReportSalary(query);
             return result;
 
@@ -146,13 +162,13 @@ namespace HRMv2.Manager.Report
        
         public async Task FillDataToExport(ExcelPackage package, InputMultiFilterReportSalaryPagingDto input)
         {
-            var reportSalarys = await GetAllReport(input);
+            var reportSalarys = await GetListReportSalary(input);
             var worksheet = package.Workbook.Worksheets[0];
             var rowIndex = 2;
             var columnIndex = 4;
 
             var columns = reportSalarys
-                .SelectMany(x => x.ResultReports.Select(s => s.ApplyDate))
+                .SelectMany(x => x.ResultReports.Select(s => s.PayrollName))
                 .Distinct()
                 .OrderBy(date => date) 
                 .ToList();
@@ -170,7 +186,7 @@ namespace HRMv2.Manager.Report
                 worksheet.Cells[rowIndex, 1].Value = rowIndex - 1;
                 worksheet.Cells[rowIndex, 2].Value = report.InfoEmployee.Email;
                 worksheet.Cells[rowIndex, 3].Value = report.TotalSalary;
-                var salaryMap = report.ResultReports.ToDictionary(r => r.ApplyDate, r => r.Salary);
+                var salaryMap = report.ResultReports.ToDictionary(r => r.PayrollName, r => r.Salary);
 
                 foreach (var date in columns)
                 {

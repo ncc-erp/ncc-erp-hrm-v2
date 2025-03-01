@@ -116,11 +116,6 @@ namespace HRMv2.Manager.Salaries.Payslips
                     Avatar = x.Employee.Avatar,
                     Sex = x.Employee.Sex,
                     Salary = x.Salary,
-                    Teams = x.Employee.EmployeeTeams.Select(s => new EmployeeTeamDto
-                    {
-                        TeamId = s.Team.Id,
-                        TeamName = s.Team.Name
-                    }).ToList(),
                     BranchInfo = new BadgeInfoDto
                     {
                         Name = x.Employee.Branch.Name,
@@ -136,17 +131,17 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Name = x.Employee.JobPosition.Name,
                         Color = x.Employee.JobPosition.Color
                     },
-                   UserType = x.Employee.UserType,
-                   UserTypeEmployeePayslip = x.UserType,
-                   JobPositionEmployeePayslipId = x.JobPositionId,
-                   LevelEmployeePayslipId = x.LevelId  ,
-                   BranchEmployeePayslipId = x.BranchId,
+                   UserType = x.Employee.UserType,     
                    JobPositionId = x.Employee.JobPositionId ,
                    LevelId =x.Employee.LevelId ,
                    BranchId = x.Employee.BranchId ,
                    PayrollId = x.PayrollId,
-                   PayslipTeams = x.PayslipTeams.Select( s => s.TeamId ).ToList(),
-                   
+                   TeamIds = x.Employee.EmployeeTeams.Select(x => x.TeamId).ToList(),
+                   PayslipTeamIds = x.PayslipTeams.Select( s => s.TeamId ).ToList(),
+                   UserTypePayslip = x.UserType,
+                   JobPositionPayslipId = x.JobPositionId,
+                   LevelPayslipId = x.LevelId  ,
+                   BranchPayslipId = x.BranchId,
                 });
         }
 

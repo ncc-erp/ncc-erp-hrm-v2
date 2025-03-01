@@ -157,14 +157,13 @@
                         <tr *ngFor="let item of resultList | paginate: { id: 'report', itemsPerPage: pageSize, currentPage: pageNumber, totalItems: totalItems }; let i = index">
                           <td class="text-center sticky-col ">{{ i + 1 }}</td>
                           <td *ngIf="item.infoEmployee" class="sticky-col">    
-                            <app-user-info   
-                              [link]="['/app/employees/list-employee/employee-detail/personal-info']" 
-                              [queryParams]="{id:item.infoEmployee.employeeId}" 
+                            <app-user-info     
                               [userData]="{
                                 id: item.infoEmployee.employeeId,
+                                 avatarFullPath: item.infoEmployee.avatarFullPath,
                                 fullName: item.infoEmployee.fullName,
                                 sex: item.infoEmployee.sex,
-                                avatarFullPath: item.infoEmployee.avatarFullPath,
+                             
                                 email: item.infoEmployee.email,
                                 branchInfo: item.infoEmployee.branchInfo,
                                 jobPositionInfo: item.infoEmployee.jobPositionInfo,
