@@ -24,12 +24,14 @@ using static HRMv2.Constants.Enum.HRMEnum;
 using System.Collections.Generic;
 using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.Extensions.Configuration;
+using HRMv2.WebServices;
+using Microsoft.Extensions.Logging;
 
 namespace HRMv2.Authorization
 {
     public class LogInManager : AbpLogInManager<Tenant, Role, User>
     {
-        private ILogger Logger { get; set; }
+        private ILogger<BaseWebService> Logger;
         private readonly EmployeeManager _employeeManager;
         private readonly UserManager _userManager;
         private readonly IConfiguration _configuration;
@@ -61,7 +63,7 @@ namespace HRMv2.Authorization
                   claimsPrincipalFactory)
 
         {
-            Logger = NullLogger.Instance;
+            Logger = IocManager.Instance.Resolve<ILogger<BaseWebService>>();
             _employeeManager = employeeManager;
             _userManager = userManager;
             _configuration = configuration;
@@ -69,7 +71,7 @@ namespace HRMv2.Authorization
         [UnitOfWork]
         public async Task<AbpLoginResult<Tenant, User>> LoginAsyncNoPass(string token, string tenancyName = null, bool shouldLockout = true)
         {
-            Logger.Info("LoginAsyncNoPass");
+            Logger.LogInformation("LoginAsyncNoPass");
             var result = await LoginAsyncInternalNoPass(TypeLoginOuth2.Google,token, tenancyName, shouldLockout,null);
             var user = result.User;
             SaveLoginAttempt(result, tenancyName, user == null ? null : user.EmailAddress);
@@ -78,7 +80,7 @@ namespace HRMv2.Authorization
         [UnitOfWork]
         public async Task<AbpLoginResult<Tenant,User>> LoginAsyncNoPassWithMezon(AuthOauth2Mezon input,string tenancyName = null , bool shouldLockout = true)
         {
-            Logger.Info("LoginAsyncNoPassWithMezon");
+            Logger.LogInformation("LoginAsyncNoPassWithMezon");
             var result = await LoginAsyncInternalNoPass(TypeLoginOuth2.Mezon,null,tenancyName, shouldLockout,input);
             var user = result.User;
             SaveLoginAttempt(result,tenancyName,user == null ? null : user.EmailAddress);
@@ -87,7 +89,7 @@ namespace HRMv2.Authorization
 
         public async Task<AbpLoginResult<Tenant, User>> LoginAsyncInternalNoPass(TypeLoginOuth2 type,string token, string tenancyName, bool shouldLockout,AuthOauth2Mezon input)
         {
-            Logger.Info("LoginAsyncInternalNoPass");
+            Logger.LogInformation("LoginAsyncInternalNoPass");
             try
             {
                 var emailAddress = "";
@@ -104,10 +106,10 @@ namespace HRMv2.Authorization
                     }
                     GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(token);
                      emailAddress = payload.Email;
-                    Logger.Info("Payload: " + JsonConvert.SerializeObject(payload));
+                    Logger.LogInformation("Payload: " + JsonConvert.SerializeObject(payload));
                     // checking
                      clientAppId = await SettingManager.GetSettingValueAsync(AppSettingNames.GoogleClientId);//get clientAppId from setting
-                     Logger.Info("ClientAppId: " + clientAppId);
+                     Logger.LogInformation("ClientAppId: " + clientAppId);
                      correctAudience = payload.AudienceAsList.Any(s => s == clientAppId);
                      correctIssuer = payload.Issuer == "accounts.google.com" || payload.Issuer == "https://accounts.google.com";
                      correctExpriryTime = payload.ExpirationTimeSeconds != null || payload.ExpirationTimeSeconds > 0;
@@ -122,7 +124,7 @@ namespace HRMv2.Authorization
                 
                 Tenant tenant = null;
 
-                Logger.Info("correctAudience: " + correctAudience + ", correctIssuer: " + correctIssuer + ", correctExpriryTime: " + correctExpriryTime);
+                Logger.LogInformation("correctAudience: " + correctAudience + ", correctIssuer: " + correctIssuer + ", correctExpriryTime: " + correctExpriryTime);
                 if (correctAudience && correctIssuer && correctExpriryTime)
                 {
                     //Get and check tenant
