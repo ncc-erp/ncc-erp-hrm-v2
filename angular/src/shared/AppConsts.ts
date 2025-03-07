@@ -7,6 +7,7 @@ export class AppConsts {
     static appBaseUrl: string;
     static appBaseHref: string; // returns angular's base-href parameter value if used during the publish
     static googleClientId: string;
+    static mezonClientId: string;
     static localeMappings: any = [];
     static enableNormalLogin: boolean;
     static calSalaryProcess =  new BehaviorSubject<any>({})
@@ -300,7 +301,6 @@ export enum DateSelectorHomeEnum {
   export const Oauth2Mezon =
   {
     OAUTH2_AUTHORIZE_URL:"https://oauth2.mezon.ai/oauth2/auth",
-    CLIENT_ID:"",
     REDIRECT_URI:AppConsts.appBaseUrl+"/account/login",
   }
 

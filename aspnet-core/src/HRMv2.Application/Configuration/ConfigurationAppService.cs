@@ -70,6 +70,7 @@ namespace HRMv2.Configuration
             {
                 GoogleClientId = await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.GoogleClientId),
                 EnableNormalLogin = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableNormalLogin)),
+                MezonClientId = _appConfiguration.GetValue<string>("Oauth2Mezon:Client_Id")
             };
         }
         [AbpAuthorize(PermissionNames.Admin_Configuration_View)]

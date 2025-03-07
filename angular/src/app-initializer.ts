@@ -179,6 +179,7 @@ export class AppInitializer {
     this._httpClient.get<any>(baseUrl + '/api/services/app/Configuration/GetLoginSetting').subscribe(rs => {
       AppConsts.googleClientId = rs.result.googleClientId
       AppConsts.enableNormalLogin = rs.result.enableNormalLogin
+      AppConsts.mezonClientId = rs.result.mezonClientId
     })
   }
 

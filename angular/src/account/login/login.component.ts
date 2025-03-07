@@ -62,7 +62,7 @@ export class LoginComponent extends AppComponentBase {
   }
   signInWithMezon() {
     const OAUTH2_AUTHORIZE_URL = Oauth2Mezon.OAUTH2_AUTHORIZE_URL;
-    const CLIENT_ID = Oauth2Mezon.CLIENT_ID;
+    const CLIENT_ID = AppConsts.mezonClientId;
     const REDIRECT_URI = AppConsts.appBaseUrl+"/account/login";
      const RESPONSE_TYPE = 'code';
      const SCOPE = 'openid+offline';
