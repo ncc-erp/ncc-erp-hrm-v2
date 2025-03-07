@@ -19,6 +19,12 @@ using HRMv2.Models.TokenAuth;
 using HRMv2.MultiTenancy;
 using HRMv2.Controllers.Dto;
 using HRMv2.Constants;
+using HRMv2.Configuration;
+using HRMv2.WebServices.Mezon;
+using Amazon.S3;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.Extensions.Configuration;
+using HRMv2.WebServices.Mezon.Dto;
 
 namespace HRMv2.Controllers
 {
@@ -32,7 +38,8 @@ namespace HRMv2.Controllers
         private readonly IExternalAuthConfiguration _externalAuthConfiguration;
         private readonly IExternalAuthManager _externalAuthManager;
         private readonly UserRegistrationManager _userRegistrationManager;
-
+        private readonly IConfiguration _configurationSetting;
+        private readonly MezonWebService _mezonWebService;
         public TokenAuthController(
             LogInManager logInManager,
             ITenantCache tenantCache,
@@ -40,7 +47,9 @@ namespace HRMv2.Controllers
             TokenAuthConfiguration configuration,
             IExternalAuthConfiguration externalAuthConfiguration,
             IExternalAuthManager externalAuthManager,
-            UserRegistrationManager userRegistrationManager)
+            UserRegistrationManager userRegistrationManager,
+            IConfiguration configurationSetting,
+            MezonWebService mezonWebService)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -49,6 +58,8 @@ namespace HRMv2.Controllers
             _externalAuthConfiguration = externalAuthConfiguration;
             _externalAuthManager = externalAuthManager;
             _userRegistrationManager = userRegistrationManager;
+           _configurationSetting = configurationSetting;
+            _mezonWebService = mezonWebService;
         }
 
         [HttpPost]
@@ -93,6 +104,25 @@ namespace HRMv2.Controllers
                 UserId = loginResult.User.Id
             };
         }
+        [HttpPost]
+        public async Task<AuthenticateResultModel> MezonAuthenticate(string codeOauth2Mezon)
+        {
+            var userInfo = await _mezonWebService.GetTokenForOauth2Mezon(codeOauth2Mezon);
+            var loginResult = await GetLoginResultMezonAsync(userInfo,GetTenancyNameOrNull());
+
+            Logger.Info("MezonAuthentication");
+
+            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
+
+            return new AuthenticateResultModel
+            {
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
+                UserId = loginResult.User.Id
+            };
+        }
+
         private string GetEncryptedAccessToken(string accessToken)
         {
             return SimpleStringCipher.Instance.Encrypt(accessToken, AppConsts.DefaultPassPhrase);
@@ -130,6 +160,19 @@ namespace HRMv2.Controllers
             var loginResult = await _logInManager.LoginAsyncNoPass(token, tenancyName, false);
 
             switch (loginResult.Result)
+            {
+                case AbpLoginResultType.Success:
+                    return loginResult;
+                default:
+                    throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result, null, tenancyName);
+            }
+        }
+
+        private async Task<AbpLoginResult<Tenant, User>> GetLoginResultMezonAsync(AuthOauth2Mezon input, string tenancyName)
+        {
+            Logger.Info("GetLoginResultMezonAsync");
+            var loginResult = await _logInManager.LoginAsyncNoPassWithMezon(input,tenancyName, false);
+            switch(loginResult.Result)
             {
                 case AbpLoginResultType.Success:
                     return loginResult;
@@ -255,6 +298,7 @@ namespace HRMv2.Controllers
                     throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result, usernameOrEmailAddress, tenancyName);
             }
         }
+
 
 
         private static List<Claim> CreateJwtClaims(ClaimsIdentity identity)

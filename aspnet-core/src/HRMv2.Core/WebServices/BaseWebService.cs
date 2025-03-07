@@ -5,6 +5,7 @@ using HRMv2.MultiTenancy;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,13 @@ namespace HRMv2.WebServices
             _tenantManager = iocResovler.Resolve<TenantManager>();
             AddTenantNameToHeader();
         }
-
+        public void SetAuthorizationToken(string token)
+        {
+            if (!string.IsNullOrEmpty(token))
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            }
+        }
         protected virtual async Task<T> GetAsync<T>(string url)
         {
             var logInfo = $"Get: BaseAddress [{httpClient.BaseAddress}], url: {url}";
@@ -66,6 +73,26 @@ namespace HRMv2.WebServices
             catch (Exception ex)
             {
                 Logger.Error($"{logInfo} error: {ex.Message}");
+            }
+            return default;
+        }
+
+        protected virtual async Task<T> PostFormUrlEncodedAsync<T>(string url, Dictionary<string, string> formData)
+        {
+            var content = new FormUrlEncodedContent(formData);
+
+            try
+            {
+                var response = await httpClient.PostAsync(url, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<T>(responseContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
             }
             return default;
         }

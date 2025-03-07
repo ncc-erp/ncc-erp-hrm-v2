@@ -1,3 +1,4 @@
+import { O } from '@node_modules/@angular/cdk/keycodes';
 import { BehaviorSubject } from "rxjs";
 
 export class AppConsts {
@@ -295,3 +296,11 @@ export enum DateSelectorHomeEnum {
     YEAR = "Year",
     CUSTOM = "Custom",
   }
+
+  export const Oauth2Mezon =
+  {
+    OAUTH2_AUTHORIZE_URL:"https://oauth2.mezon.ai/oauth2/auth",
+    CLIENT_ID:"",
+    REDIRECT_URI:AppConsts.appBaseUrl+"/account/login",
+  }
+
