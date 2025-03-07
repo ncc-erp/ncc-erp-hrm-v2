@@ -217,5 +217,10 @@ namespace HRMv2.Constants.Enum
             Month = 0,
             Year = 1,
         }
+        public enum TypeLoginOuth2
+        {
+            Mezon = 0,
+            Google = 1,
+        }
     }
 }

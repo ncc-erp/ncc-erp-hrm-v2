@@ -1,3 +1,4 @@
+import { Oauth2Mezon } from './../../../../shared/AppConsts';
 
 
 export interface ConfigurationDto {
@@ -8,7 +9,16 @@ export interface ConfigurationDto {
     hrmV2Service: string,
     finfastService: SettingDto,
     komuService:KomuSettingDto,
-    hrmService: SettingDto
+    hrmService: SettingDto,
+    oauth2Mezon: Oauth2Mezon,
+}
+export interface Oauth2Mezon{
+    client_Id: string,
+    client_Secret: string,
+    redirect_URI: string,
+    grant_Type: string,
+    url_Oauth2Mezon: string,
+    url_UserInfo: string,
 }
 export interface SettingDto {
     baseAddress: string;
