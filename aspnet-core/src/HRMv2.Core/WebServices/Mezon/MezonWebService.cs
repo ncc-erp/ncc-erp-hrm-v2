@@ -8,6 +8,7 @@ using HRMv2.Manager.Notifications.SendMezonDM.Dto;
 using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -35,13 +36,13 @@ namespace HRMv2.WebServices.Mezon
         {
             if (_isNotifyToMezon != "true")
             {
-                Logger.Info("_isNotifyToMezon=" + _isNotifyToMezon + " => stop");
+                Logger.LogInformation("_isNotifyToMezon=" + _isNotifyToMezon + " => stop");
                 return;
             }
 
             if (string.IsNullOrEmpty(mezonUrl))
             {
-                Logger.Error("mezonUrl null or empty");
+                Logger.LogInformation("mezonUrl null or empty");
                 return;
             }
             Post(mezonUrl, new { type = "hook", message = mezonMessage });
@@ -51,12 +52,12 @@ namespace HRMv2.WebServices.Mezon
         {
             if (_isNotifyToMezon != "true")
             {
-                Logger.Info("_isNotifyToMezon=" + _isNotifyToMezon + " => stop");
+                Logger.LogInformation("_isNotifyToMezon=" + _isNotifyToMezon + " => stop");
                 return;
             }
             if (string.IsNullOrEmpty(mezonUrl))
             {
-                Logger.Error("channelUrlToSend null or empty");
+                Logger.LogInformation("channelUrlToSend null or empty");
                 return;
             }
             var url = $"{mezonUrl}/{userName}";

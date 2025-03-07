@@ -33,13 +33,13 @@ namespace HRMv2.WebServices.Komu
         {
             if (_isNotifyToKomu != "true")
             {
-                Logger.Error("_isNotifyToKomu=" + _isNotifyToKomu + " => stop");
+                Logger.LogError("_isNotifyToKomu=" + _isNotifyToKomu + " => stop");
                 return;
             }
             var channelIdToSend = string.IsNullOrEmpty(_channelIdDevMode) ? channelId : _channelIdDevMode;
             if (string.IsNullOrEmpty(channelIdToSend))
             {
-                Logger.Error("channelIdToSend null or empty");
+                Logger.LogError("channelIdToSend null or empty");
                 return;
             }
             Post(KomuUrlConstant.KOMU_CHANNELID, new { message = komuMessage, channelid = channelIdToSend });
