@@ -10,5 +10,6 @@ namespace HRMv2.Configuration.Dto
     {
         public string GoogleClientId { get; set; }
         public bool EnableNormalLogin { get; set; }
+        public string MezonClientId {  get; set; }
     }
 }

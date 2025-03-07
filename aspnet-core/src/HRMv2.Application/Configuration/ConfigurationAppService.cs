@@ -70,6 +70,7 @@ namespace HRMv2.Configuration
             {
                 GoogleClientId = await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.GoogleClientId),
                 EnableNormalLogin = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableNormalLogin)),
+                MezonClientId = _appConfiguration.GetValue<string>("Oauth2Mezon:Client_Id")
             };
         }
         [AbpAuthorize(PermissionNames.Admin_Configuration_View)]
@@ -109,7 +110,7 @@ namespace HRMv2.Configuration
                     SecurityCode = _appConfiguration.GetValue<string>("KomuService:SecurityCode"),
                     EnableNoticeKomu = _appConfiguration.GetValue<string>("KomuService:EnableKomuNotification"),
                     ChannelIdDevMode = _appConfiguration.GetValue<string>("KomuService:ChannelIdDevMode"),
-                },                
+                },
                 HRMService = new SettingDto
                 {
                     SecurityCode = _appConfiguration.GetValue<string>("App:SecurityCode")
@@ -119,6 +120,15 @@ namespace HRMv2.Configuration
                     DevModeUrl = _appConfiguration.GetValue<string>("MezonService:DevModeUrl"),
                     EnableMezonNotification = _appConfiguration.GetValue<string>("MezonService:EnableMezonNotification")
                 },
+                Oauth2Mezon = new Oauth2Mezon
+                {
+                    Client_Id = _appConfiguration.GetValue<string>("Oauth2Mezon:Client_Id"),
+                    Client_Secret = _appConfiguration.GetValue<string>("Oauth2Mezon:Client_Secret"),
+                    Grant_Type = _appConfiguration.GetValue<string>("Oauth2Mezon:Grant_Type"),
+                    Redirect_URI = _appConfiguration.GetValue<string>("Oauth2Mezon:Redirect_URI"),
+                    Url_Oauth2Mezon = _appConfiguration.GetValue<string>("Oauth2Mezon:Url_Oauth2Mezon"),
+                    Url_UserInfo = _appConfiguration.GetValue<string>("Oauth2Mezon:Url_UserInfo"),
+                }
             };
         }        
 

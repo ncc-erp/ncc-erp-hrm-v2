@@ -88,7 +88,9 @@ export class EmployeeService extends BaseApiService {
   public createEmployee(data:any, tempemployeeId?:number): Observable<ApiResponseDto<any>>{
     return this.processPost(`Create?tempemployeeId=${tempemployeeId}`, data);
   }
-
+ public getAllEmployeeToSelect(): Observable<ApiResponseDto<any>>{
+    return this.processGet(`GetAllEmployeeToSelect`);
+  }
   public ExportEmployeeStatistic(startDate:string, endDate:string): Observable<ApiResponseDto<any>>{
     var dto = {
       startDate:startDate,

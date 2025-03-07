@@ -326,6 +326,16 @@ namespace HRMv2.Manager.Employees
             return query.ToList();
         }
 
+        public List<GetEmployeeToSelect> GetAllEmployeeToSelect()
+        {
+            return WorkScope.GetAll<Employee>()
+                .Select(x => new GetEmployeeToSelect
+                {
+                    Email = x.Email,
+                    Value = x.Id 
+                })
+                .ToList();
+        }
         public GetEmployeeBasicInfoForBreadcrumbDto GetEmployeeBasicInfoForBreadcrumb(long employeeId)
         {
             var query = WorkScope.GetAll<Employee>().Where(x => x.Id == employeeId)
