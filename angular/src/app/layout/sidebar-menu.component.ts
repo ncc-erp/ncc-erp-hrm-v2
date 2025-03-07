@@ -248,6 +248,20 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                 'SalaryChangeRequest.View'
             ),
             new MenuItem(
+                this.l('Report'),
+                '',
+                'fas fa-file-alt',
+                '',[
+                    new MenuItem(
+                        this.l("Salary"),
+                        '/app/report/list-salary',
+                        'fas fa-id-card-clip',
+                        'WarningEmployee.BackToWork.View',
+                    ),
+                ]
+            ),
+
+            new MenuItem(
                 this.l('Guideline'),
                 'https://docs.google.com/document/d/1b--62hwvelkzwa1hcybwOfyPH7WKRbIHSodXTYysaxM/edit#heading=h.2x6675vns67e',
                 'fa-solid fa-book',

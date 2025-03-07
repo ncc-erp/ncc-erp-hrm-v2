@@ -1,3 +1,4 @@
+import { ReportModule } from './modules/report/report.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -90,6 +91,7 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
     PunishmentsModule,
     DebtModule,
     RefundsModule,
+    ReportModule,
     
   ],
   providers: [
