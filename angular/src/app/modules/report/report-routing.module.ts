@@ -9,7 +9,7 @@ const routes: Routes = [
         path: "list-salary",
         component: ReportSalaryComponent,
         data: {
-            permission: PERMISSIONS_CONSTANT.SalaryChangeRequest_View,
+            permission: PERMISSIONS_CONSTANT.Payrol_View,
             preload: true
         },
         canActivate: [AppRouteGuard],
