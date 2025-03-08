@@ -34,4 +34,8 @@ export class PayRollService extends BaseApiService{
   public ValidFinfastBranch(payrollId: number):Observable<ApiResponseDto<any>>{
     return this.processGet(`ValidFinfastBranch?payrollId=${payrollId}`);
   }
+
+  public GetPayrollWithStatusExecute():Observable<ApiResponseDto<any>>{
+    return this.processGet('GetPayrollWithStatusExecute');
+  }
 }

@@ -2325,6 +2325,12 @@ namespace HRMv2.Migrations
                     b.Property<long?>("BankId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime?>("BeStaffDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("BeTViecDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("timestamp without time zone");
 
@@ -4322,7 +4328,7 @@ namespace HRMv2.Migrations
                         .HasForeignKey("CreatorUserId");
 
                     b.HasOne("HRMv2.Entities.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("BenefitEmployees")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4620,7 +4626,7 @@ namespace HRMv2.Migrations
                         .IsRequired();
 
                     b.HasOne("HRMv2.Entities.SalaryChangeRequestEmployee", "SalaryChangeRequestEmployee")
-                        .WithMany()
+                        .WithMany("Contracts")
                         .HasForeignKey("SalaryRequestEmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -5226,6 +5232,8 @@ namespace HRMv2.Migrations
 
             modelBuilder.Entity("HRMv2.Entities.Employee", b =>
                 {
+                    b.Navigation("BenefitEmployees");
+
                     b.Navigation("BranchHistories");
 
                     b.Navigation("EmployeeSkills");
@@ -5240,6 +5248,11 @@ namespace HRMv2.Migrations
                     b.Navigation("PayslipDetails");
 
                     b.Navigation("PayslipTeams");
+                });
+
+            modelBuilder.Entity("HRMv2.Entities.SalaryChangeRequestEmployee", b =>
+                {
+                    b.Navigation("Contracts");
                 });
 #pragma warning restore 612, 618
         }

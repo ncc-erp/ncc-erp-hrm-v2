@@ -20,8 +20,18 @@ namespace HRMv2.Configuration.Dto
         public KomuSettingDto KomuService { get; set; }
         public SettingDto HRMService { get; set; }
         public MezonSettingDto MezonService { get; set; }
+        public Oauth2Mezon Oauth2Mezon { get; set; }
     }
 
+    public class Oauth2Mezon
+    {
+        public string Client_Id { set; get; }
+        public string Client_Secret { set; get; }
+        public string Grant_Type { get; set; }
+        public string Redirect_URI { get; set; }
+        public string Url_Oauth2Mezon { get; set; }
+        public string Url_UserInfo { get; set; }
+    }
     public class KomuSettingDto
     {
         public string BaseAddress { get; set; }

@@ -106,6 +106,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         public IQueryable<GetPayslipDto> QueryAllPayslip()
         {
             return WorkScope.GetAll<Payslip>()
+                .Where(s => s.Payroll.Status == PayrollStatus.Executed)
                 .Select(x => new GetPayslipDto
                 {
                     Id = x.Id,
@@ -114,16 +115,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     Email = x.Employee.Email,
                     Avatar = x.Employee.Avatar,
                     Sex = x.Employee.Sex,
-                    Skills = x.Employee.EmployeeSkills.Select(s => new EmployeeSkillDto
-                    {
-                        SkillId = s.Skill.Id,
-                        SkillName = s.Skill.Name
-                    }).ToList(),
-                    Teams = x.Employee.EmployeeTeams.Select(s => new EmployeeTeamDto
-                    {
-                        TeamId = s.Team.Id,
-                        TeamName = s.Team.Name
-                    }).ToList(),
+                    Salary = x.Salary,
                     BranchInfo = new BadgeInfoDto
                     {
                         Name = x.Employee.Branch.Name,
@@ -139,19 +131,17 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Name = x.Employee.JobPosition.Name,
                         Color = x.Employee.JobPosition.Color
                     },
-                    ToBranchId = x.BranchId,
-                    ToLevelId = x.LevelId,
-                    ToJobPositionId = x.JobPositionId,
-                    ToUserType = x.UserType,
-                    CreationTime = x.CreationTime,
-                    PayrollId = x.PayrollId,
-                    NormalHour = x.NormalDay,
-                    OffDay = x.OffDay,
-                    OpentalkCount = x.OpentalkCount,
-                    OTHour = x.OTHour,
-                    RealOffsetDay = x.RefundLeaveDay,
-                    RemainLeaveDayBefore = x.RemainLeaveDayBefore,
-                    WorkAtOfficeOrOnsiteDay = x.WorkAtOfficeOrOnsiteDay,
+                   UserType = x.Employee.UserType,     
+                   JobPositionId = x.Employee.JobPositionId ,
+                   LevelId =x.Employee.LevelId ,
+                   BranchId = x.Employee.BranchId ,
+                   PayrollId = x.PayrollId,
+                   TeamIds = x.Employee.EmployeeTeams.Select(x => x.TeamId).ToList(),
+                   PayslipTeamIds = x.PayslipTeams.Select( s => s.TeamId ).ToList(),
+                   UserTypePayslip = x.UserType,
+                   JobPositionPayslipId = x.JobPositionId,
+                   LevelPayslipId = x.LevelId  ,
+                   BranchPayslipId = x.BranchId,
                 });
         }
 

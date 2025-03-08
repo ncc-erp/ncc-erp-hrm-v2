@@ -2,6 +2,7 @@
 using HRMv2.Authorization;
 using HRMv2.Manager.Payrolls;
 using HRMv2.Manager.Payrolls.Dto;
+using HRMv2.Manager.Salaries.Payrolls.Dto;
 using Microsoft.AspNetCore.Mvc;
 using NccCore.Paging;
 using System;
@@ -93,6 +94,12 @@ namespace HRMv2.APIs.Payrolls
         public object ValidFinfastBranch(long payrollId)
         {
            return _payrollManager.ValidCreateFinfastOutcomeEntry(payrollId);
+        }
+
+        [HttpGet]
+        public List<PayrollWithStatusExecute> GetPayrollWithStatusExecute()
+        {
+            return _payrollManager.GetPayrollWithStatusExecute();
         }
     }
 }

@@ -14,6 +14,7 @@ using HRMv2.Manager.Notifications.Email.Dto;
 using HRMv2.Manager.Notifications.NotifyToChannel;
 using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.Payrolls.Dto;
+using HRMv2.Manager.Salaries.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Timesheet;
 using HRMv2.NccCore;
@@ -557,6 +558,19 @@ namespace HRMv2.Manager.Payrolls
                     }
                 }
             }
+        }
+
+        public List<PayrollWithStatusExecute> GetPayrollWithStatusExecute()
+        {
+            return  WorkScope.GetAll<Payroll>()
+                .Where(x => x.Status == PayrollStatus.Executed)
+                .Select(x => new PayrollWithStatusExecute
+                {
+                    ApplyDate = x.ApplyMonth,
+                    Value = x.Id
+                })
+                .OrderByDescending(x => x.ApplyDate)
+                .ToList();
         }
     }
 }

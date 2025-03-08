@@ -157,6 +157,10 @@ namespace HRMv2.APIs.Employees
         {
             _employeeManager.UpdateAllWorkingEmployeeInfoToOtherTools();
         }
-       
+        [HttpGet]
+        public List<GetEmployeeToSelect> GetAllEmployeeToSelect()
+        {
+            return _employeeManager.GetAllEmployeeToSelect();
+        }
     }
 }

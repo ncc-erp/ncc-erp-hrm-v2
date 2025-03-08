@@ -113,6 +113,16 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
                             preload: true
                         },
                         canActivate: [AppRouteGuard]
+                    }
+                    ,
+                    {
+                        path: "report",
+                        loadChildren: () => import('app/modules/report/report.module').then(m => m.ReportModule),
+                        data: {
+                            permission: PERMISSIONS_CONSTANT.Payrol_View,
+                            preload: true
+                        },
+                        canActivate: [AppRouteGuard]
                     },
                     {
                         path: "warning-for-employee",
