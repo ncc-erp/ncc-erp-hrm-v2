@@ -42,6 +42,8 @@ export interface AutoCreateUpdateDto {
 export interface LoginConfigDto {
     googleClientId: string
     enableNormalLogin: boolean
+    enableLoginMezon: boolean
+    enableLoginGoogle: boolean
 }
 export interface WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto {
     runAtHour : string

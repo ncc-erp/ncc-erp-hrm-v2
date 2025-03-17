@@ -3,6 +3,54 @@
     <app-bread-crumb [listBreadCrumb]="listBreadCrumb"></app-bread-crumb>
   </div>
   <div class="row">
+    <div class="col-lg-6 col-xs-12" *ngIf="isShowLoginSettingView()">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div class="align-middle title">Login Setting</div>
+            <div class="ml-3" *ngIf="isAllowLoginSettingEdit()">
+              <button class="btn bg-blue mr-3"
+                (click)="isEditSettingLogin = !isEditSettingLogin; clientId.focus();$event.stopPropagation()"
+                [hidden]="isEditSettingLogin">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn bg-primary"
+                (click)="isEditSettingLogin = !isEditSettingLogin;changeLoginSetting() ;$event.stopPropagation()"
+                [hidden]="!isEditSettingLogin">
+                <i class="fas fa-check"></i>
+              </button>
+              <button class="btn btn-secondary btn-action ml-3"
+                (click)="getLoginSetting(); isEditSettingLogin = !isEditSettingLogin;$event.stopPropagation()"
+                [hidden]="!isEditSettingLogin">
+                <i class="fas fa-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col col-12 col-md-12 my-3">
+              <mat-checkbox class="example-margin" [disabled]="!isEditSettingLogin"
+                [checked]="loginSetting.enableNormalLogin" (change)="isEnableNormalLogin($event.checked)">
+                Enable normal login
+              </mat-checkbox>
+            </div>
+            <div class="col col-12 col-md-12 my-3">
+              <mat-checkbox class="example-margin" [disabled]="!isEditSettingLogin"
+                [checked]="loginSetting.enableLoginGoogle" (change)="isEnableLoginGoogle($event.checked)">
+                Login with Google
+              </mat-checkbox>
+            </div>
+            <div class="col col-12 col-md-12 my-3">
+              <mat-checkbox class="example-margin" [disabled]="!isEditSettingLogin"
+                [checked]="loginSetting.enableLoginMezon" (change)="isEnableLoginMezon($event.checked)">
+                Login with Mezon
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="col-lg-6 col-xs-12" *ngIf="isShowHRMSettingView()">
       <div class="card">
         <div class="card-header">
@@ -280,12 +328,6 @@
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col col-12 col-md-12 my-3">
-              <mat-checkbox class="example-margin" [disabled]="!isEditLoginSetting"
-                [checked]="loginSetting.enableNormalLogin" (change)="isEnableNormalLogin($event.checked)">
-                Enable normal login
-              </mat-checkbox>
-            </div>
             <div class="col col-12 col-md-12 mt-2">
               <mat-form-field class="w-100 ml-1 mt-2">
                 <input [disabled]="!isEditLoginSetting" class="w-100" type="text" matInput placeholder="Client App Id"

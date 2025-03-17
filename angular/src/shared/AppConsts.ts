@@ -9,6 +9,8 @@ export class AppConsts {
     static googleClientId: string;
     static mezonClientId: string;
     static localeMappings: any = [];
+    static enableLoginMezon: boolean;
+    static enableLoginGoogle: boolean
     static enableNormalLogin: boolean;
     static calSalaryProcess =  new BehaviorSubject<any>({})
     static readonly userManagement = {
