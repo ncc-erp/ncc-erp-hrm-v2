@@ -70,7 +70,9 @@ namespace HRMv2.Configuration
             {
                 GoogleClientId = await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.GoogleClientId),
                 EnableNormalLogin = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableNormalLogin)),
-                MezonClientId = _appConfiguration.GetValue<string>("Oauth2Mezon:Client_Id")
+                MezonClientId = _appConfiguration.GetValue<string>("Oauth2Mezon:Client_Id"),
+                EnableLoginGoogle = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableLoginGoogle)),
+                EnableLoginMezon = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableLoginMezon))
             };
         }
         [AbpAuthorize(PermissionNames.Admin_Configuration_View)]
@@ -136,10 +138,16 @@ namespace HRMv2.Configuration
         public async Task<LoginSettingDto> ChangeLoginSetting(LoginSettingDto input)
         {
             await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.GoogleClientId, input.GoogleClientId);
-            await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.EnableNormalLogin, input.EnableNormalLogin.ToString());
             return input;
 
 
+        }
+
+        public async Task SetLoginSetting(ConfigLoginSetting input)
+        {
+            await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.EnableLoginGoogle, input.EnableLoginGoogle.ToString());
+            await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.EnableLoginMezon, input.EnableLoginMezon.ToString());
+            await SettingManager.ChangeSettingForApplicationAsync(AppSettingNames.EnableNormalLogin, input.EnableNormalLogin.ToString());
         }
         [AbpAuthorize(PermissionNames.Admin_Configuration_WokerAutoUpdateAllEmployeeInfo_Edit)]
         public async Task<WorkerAutoUpdateAllEmployeeInfoToOtherToolSettingDto> ChangeWorkerAutoUpdateAllEmployeeInfoToOther(WorkerAutoUpdateAllEmployeeInfoToOtherToolSettingDto input)

@@ -24,8 +24,8 @@ export class ConfigurationService extends BaseApiService {
     return this.processGet("GetLoginSetting");
   }
 
-  public ChangeLoginSetting(input: LoginConfigDto): Observable<ApiResponseDto<string>> {
-    return this.processPost("ChangeLoginSetting", input);
+  public ChangeLoginSetting(input: any): Observable<any> {
+    return this.processPost("SetLoginSetting", input);
   }
   public ChangeWorkerAutoUpdateAllEmployeeInfoToOther(input: WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto ) : Observable<ApiResponseDto<string>>{
     return this.processPost("ChangeWorkerAutoUpdateAllEmployeeInfoToOther", input);
