@@ -1,3 +1,4 @@
+import { Oauth2Mezon } from './../../../service/model/admin/configuration.dto';
 import { ConfigurationDto, EmailSettingDto, GetConnectResultDto, LoginConfigDto, WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto, NotifyChannelDto } from './../../../service/model/admin/configuration.dto';
 import { ConfigurationService } from './../../../service/api/admin/configuration.service';
 import { AppComponentBase } from 'shared/app-component-base';
@@ -20,7 +21,10 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
   public loginSetting: LoginConfigDto = {} as LoginConfigDto;
   public WorkerAutoUpdateAllEmployeeInfoToOtherToolSetting: WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto = {} as WorkerAutoUpdateAllEmployeeInfoToOtherToolConfigDto;
   public emailSetting: EmailSettingDto = {} as EmailSettingDto;
+  public oauth2Mezon: Oauth2Mezon = {} as Oauth2Mezon;
   public isEditEmailSetting: boolean = false;
+  public isEditOauth2Mezon: boolean = false;
+  public isEditSettingLogin: boolean = false;
   public  timesheetConnectResult: GetConnectResultDto = {} as GetConnectResultDto;
   public  talentConnectResult: GetConnectResultDto = {} as GetConnectResultDto;
   public  imsConnectResult: GetConnectResultDto = {} as GetConnectResultDto;
@@ -194,10 +198,15 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
   }  
   
   changeLoginSetting(){
+    let input = {
+      enableNormalLogin : this.loginSetting.enableNormalLogin,
+      enableLoginGoogle : this.loginSetting.enableLoginGoogle,
+      enableLoginMezon : this.loginSetting.enableLoginMezon
+    }
     this.subscription.push(
-      this.configService.ChangeLoginSetting(this.loginSetting).subscribe(rs =>{
+      this.configService.ChangeLoginSetting(input).subscribe(rs =>{
         if(rs){
-          abp.notify.success("Change setting successful!");
+          abp.notify.success("Change login setting successful!");
         }
         this.getLoginSetting();
       })
@@ -207,7 +216,12 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
   isEnableNormalLogin(value){
     this.loginSetting.enableNormalLogin = value.toString();
   }
-
+  isEnableLoginGoogle(value){
+    this.loginSetting.enableLoginGoogle = value.toString();
+  }
+  isEnableLoginMezon(value){
+    this.loginSetting.enableLoginMezon = value.toString();
+  }
   
   getLoginSetting(){
     this.subscription.push(

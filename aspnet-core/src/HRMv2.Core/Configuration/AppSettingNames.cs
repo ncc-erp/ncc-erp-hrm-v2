@@ -32,6 +32,10 @@
         public const string NotifyToPlatform = "App.NotifyToPlatform";
         public const string MezonClanWebhookURL = "App.MezonClanWebhookURL";
         public static string FaceUri { get; internal set; }
+
+        public const string EnableLoginMezon = "App.EnableLoginMezon";
+        public const string EnableLoginGoogle = "App.EnableLoginGoogle";
+       
     }
 
 }
