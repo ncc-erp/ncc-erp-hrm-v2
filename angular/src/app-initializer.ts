@@ -182,6 +182,8 @@ export class AppInitializer {
       AppConsts.mezonClientId = rs.result.mezonClientId
       AppConsts.enableLoginMezon = rs.result.enableLoginMezon
       AppConsts.enableLoginGoogle = rs.result.enableLoginGoogle
+      AppConsts.mezonAppId = rs.result.mezonAppId
+     
     })
   }
 

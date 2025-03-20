@@ -8,6 +8,7 @@ export class AppConsts {
     static appBaseHref: string; // returns angular's base-href parameter value if used during the publish
     static googleClientId: string;
     static mezonClientId: string;
+    static mezonAppId: string;
     static localeMappings: any = [];
     static enableLoginMezon: boolean;
     static enableLoginGoogle: boolean

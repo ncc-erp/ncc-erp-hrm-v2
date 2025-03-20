@@ -13,6 +13,7 @@ namespace HRMv2.Configuration.Dto
         public string MezonClientId {  get; set; }
         public bool EnableLoginMezon {  get; set; }
         public bool EnableLoginGoogle {  get; set; }
+        public string MezonAppId { get; set; }
     }
    
     public class ConfigLoginSetting

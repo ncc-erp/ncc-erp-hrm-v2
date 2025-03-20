@@ -8,8 +8,8 @@ import { LoginService } from './login.service';
 import { GoogleLoginProvider, SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
 import { AppConsts } from '@shared/AppConsts';
 import { ActivatedRoute, Router } from '@angular/router';
-
-
+import { IHashMezonAuthModel,  IUserMezonDto } from '@app/service/model/employee/MezonUser.dto';
+import {Base64} from 'js-base64'
 @Component({
   templateUrl: './login.component.html',
   animations: [accountModuleAnimation()]
@@ -19,14 +19,20 @@ export class LoginComponent extends AppComponentBase {
   user: SocialUser
   tenancyName: string
   loggedIn: boolean;
+  hashData: string;
+  isAuthenticating: boolean = false;
+  isAuthenFailed: boolean = false;
+  isMezonApp: boolean = false;
   enableNormalLogin:boolean = AppConsts.enableNormalLogin
   enableLoginMezon:boolean = AppConsts.enableLoginMezon
   enableLoginGoogle:boolean = AppConsts.enableLoginGoogle
+
+  private googleAuthService: SocialAuthService
   constructor(
-    injector: Injector,
+    public injector: Injector,
     public authService: AppAuthService,
     private _sessionService: AbpSessionService,
-    private googleAuthService: SocialAuthService,
+    
     private loginService: LoginService,
     private route : ActivatedRoute,
 
@@ -34,6 +40,7 @@ export class LoginComponent extends AppComponentBase {
     super(injector);
   }
   ngOnInit(): void {
+    this.googleAuthService = this.injector.get(SocialAuthService);
     this.enableNormalLogin = AppConsts.enableNormalLogin
     this.route.queryParams.subscribe(params => {
       const authorizationCode = params['code'];
@@ -41,7 +48,21 @@ export class LoginComponent extends AppComponentBase {
         this.loginService.authenticateMezon(authorizationCode);
       }
     })
+
+    this.authService.isInMezon$.subscribe((status) => {
+      this.isMezonApp = status;
+    })
+
+    this.authService.userHashData$.subscribe((userHashData) => {
+       this.hashData = userHashData
+       this.loginWithHash(this.hashData);
+    })
   }
+ngOnDestroy(): void {
+  this.authService.removeEventListeners();
+}
+
+
   get multiTenancySideIsTeanant(): boolean {
     return this._sessionService.tenantId > 0;
   }
@@ -61,6 +82,27 @@ export class LoginComponent extends AppComponentBase {
     this.googleAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((rs: any) =>{
       this.loginService.authenticateGoogle(rs.idToken)
     })
+  }
+
+  loginWithHash(hashData: string): void {
+    if(hashData){
+      this.isAuthenticating = true;
+      const hashAuthData : IHashMezonAuthModel = {
+         hashData : Base64.encode(hashData),
+         tenancyName : this.tenancyName
+      }
+   
+    this.loginService.authenticateMezonHash(hashAuthData, (error) => {
+      this.isAuthenFailed = false;
+      this.message.error('Login failed');
+   
+  })}
+}
+
+retryHashLogin(){
+  this.isAuthenticating = false;
+  this.isAuthenFailed = false;
+  this.loginWithHash(this.hashData);
   }
   signInWithMezon() {
     const OAUTH2_AUTHORIZE_URL = Oauth2Mezon.OAUTH2_AUTHORIZE_URL;

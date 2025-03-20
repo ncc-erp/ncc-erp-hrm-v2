@@ -72,7 +72,8 @@ namespace HRMv2.Configuration
                 EnableNormalLogin = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableNormalLogin)),
                 MezonClientId = _appConfiguration.GetValue<string>("Oauth2Mezon:Client_Id"),
                 EnableLoginGoogle = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableLoginGoogle)),
-                EnableLoginMezon = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableLoginMezon))
+                EnableLoginMezon = bool.Parse(await SettingManager.GetSettingValueForApplicationAsync(AppSettingNames.EnableLoginMezon)),
+                MezonAppId = _appConfiguration.GetValue<string>("Oauth2Mezon:MezonAppId")
             };
         }
         [AbpAuthorize(PermissionNames.Admin_Configuration_View)]

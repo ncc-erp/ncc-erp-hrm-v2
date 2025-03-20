@@ -11,12 +11,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { AccountRoutingModule } from './account-routing.module';
 import { SharedModule } from '@shared/shared.module';
 import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module';
-import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 'angularx-social-login';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { AccountComponent } from './account.component';
 import { RegisterComponent } from './register/register.component';
 import { TenantChangeDialogComponent } from './tenant/tenant-change-dialog.component';
 import { AppConsts } from '@shared/AppConsts';
+import { AppAuthService } from '@shared/auth/app-auth.service';
 
 
 @NgModule({
@@ -43,11 +44,13 @@ import { AppConsts } from '@shared/AppConsts';
         TenantChangeDialogComponent,
     ],
     providers: [
+      AppAuthService,
         {
           provide: 'SocialAuthServiceConfig',
           useValue: {
             autoLogin: true,
             providers: [
+              
               {
                 id: GoogleLoginProvider.PROVIDER_ID,
                 provider: new GoogleLoginProvider(

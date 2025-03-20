@@ -25,6 +25,7 @@ using Amazon.S3;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
 using HRMv2.WebServices.Mezon.Dto;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace HRMv2.Controllers
 {
@@ -104,6 +105,22 @@ namespace HRMv2.Controllers
                 UserId = loginResult.User.Id
             };
         }
+
+        [HttpPost]
+        public async Task<AuthenticateResultModel> HashAuthenticatec([FromBody] MezonHashAuthDto model)
+        {
+            var loginResult = await GetLoginResultMezonHashAsync(model, GetTenancyNameOrNull());
+            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
+
+            return new AuthenticateResultModel
+            {
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
+                UserId = loginResult.User.Id
+            };
+        }
+
         [HttpPost]
         public async Task<AuthenticateResultModel> MezonAuthenticate(string codeOauth2Mezon)
         {
@@ -168,6 +185,19 @@ namespace HRMv2.Controllers
             }
         }
 
+        private async Task<AbpLoginResult<Tenant, User>> GetLoginResultMezonHashAsync(MezonHashAuthDto authDto, string tenancyName)
+        {
+            Logger.Info("GetLoginResultGoogleAsync");
+            var loginResult = await _logInManager.LoginHashMezonAsync(authDto, tenancyName);
+
+            switch (loginResult.Result)
+            {
+                case AbpLoginResultType.Success:
+                    return loginResult;
+                default:
+                    throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result, null, tenancyName);
+            }
+        }
         private async Task<AbpLoginResult<Tenant, User>> GetLoginResultMezonAsync(AuthOauth2Mezon input, string tenancyName)
         {
             Logger.Info("GetLoginResultMezonAsync");

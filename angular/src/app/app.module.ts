@@ -28,7 +28,7 @@ import { TestComponentComponent } from './modules/test-component/test-component.
 import { TestDialogComponent } from './modules/test-component/test-dialog/test-dialog.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
-import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider, SocialAuthServiceConfig } from 'angularx-social-login';
 import { AppConsts } from '@shared/AppConsts';
 import { DebtModule } from './modules/debt/debt.module';
 import { AdminModule } from './modules/admin/admin.module';
@@ -45,6 +45,8 @@ import { UserDataForChartDetailComponent } from './home/chart-detail-data/user-d
 import { PayslipDetailPreviewLinkComponent } from './modules/payslip-detail-preview-link/payslip-detail-preview-link.component';
 import { NotHaveAccessComponent } from './modules/not-have-access/not-have-access.component';
 import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-to-confirm-mail-or-complain-mail/payslip-to-confirm-mail-or-complain-mail.component';
+import { MatCommonModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 @NgModule({
   declarations: [
     AppComponent,
@@ -92,7 +94,8 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
     DebtModule,
     RefundsModule,
     ReportModule,
-    
+    MatCommonModule,
+    MatButtonModule
   ],
   providers: [
     {

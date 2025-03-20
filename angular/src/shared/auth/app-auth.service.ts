@@ -1,3 +1,5 @@
+
+
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
@@ -9,12 +11,22 @@ import {
     AuthenticateResultModel,
     TokenAuthServiceProxy,
 } from '@shared/service-proxies/service-proxies';
+import { MezonAppEvent, MezonWebViewEvent } from 'types/webview';
+import { Subject } from '@node_modules/rxjs';
+import { Observable } from '@node_modules/rxjs';
+import { HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class AppAuthService {
     authenticateModel: AuthenticateModel;
     authenticateResult: AuthenticateResultModel;
     rememberMe: boolean;
+    private userHashData = new Subject<string>();
+    private isInMezon = new Subject<boolean>();
+
+    userHashData$ = this.userHashData.asObservable();
+    isInMezon$ = this.isInMezon.asObservable();
+    
 
     constructor(
         private _tokenAuthService: TokenAuthServiceProxy,
@@ -75,6 +87,31 @@ export class AppAuthService {
         }
     }
 
+    ping() {
+        window.Mezon.WebView.postEvent("PING" as MezonWebViewEvent, { message: "PING" }, () => { })
+    }
+
+    listenToPong() {
+        window.Mezon.WebView.postEvent("PING" as MezonWebViewEvent, { message: "PING" }, () => { })
+    }
+
+    sendBotId() {
+        window.Mezon.WebView.postEvent("SEND_BOT_ID" as MezonWebViewEvent, { appId: AppConsts.mezonAppId }, () => { })
+    }
+    listenToUserHashInfo() {
+        window.Mezon.WebView.onEvent("USER_HASH_INFO" as MezonAppEvent, async (_,data: any) => {
+            this.userHashData.next(data.message.web_app_data);
+            
+        }
+        
+    )}
+
+
+    removeEventListeners() {
+        window.Mezon.WebView.offEvent("CURRENT_USER_INFO" as MezonAppEvent, () => { })
+        window.Mezon.WebView.offEvent("USER_HASH_INFO" as MezonAppEvent, () => { })
+    }
+
     private login(
         accessToken: string,
         encryptedAccessToken: string,
@@ -108,4 +145,5 @@ export class AppAuthService {
         this.authenticateResult = null;
         this.rememberMe = false;
     }
+
 }
