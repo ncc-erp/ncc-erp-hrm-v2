@@ -28,7 +28,7 @@ namespace HRMv2.Configuration
                 new SettingDefinition(AppSettingNames.TimeSheetSecretKey,"TimeSheetSecretKey",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.TalentUri,"TalentUri",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.TalentSecretKey,"TalentSecretKey",scopes:SettingScopes.Application|SettingScopes.Tenant),
-                new SettingDefinition(AppSettingNames.EnableNormalLogin,"True",scopes:SettingScopes.Application|SettingScopes.Tenant),
+                new SettingDefinition(AppSettingNames.EnableNormalLogin,"false",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.KomuITChannelId,"KomuITChannelId",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.PayrollChannelId,"PayrollChannelId",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.EnableWorkerAutoUpdateAllEmployeeInfoToOtherToolSetting,"True",scopes:SettingScopes.Application|SettingScopes.Tenant),
@@ -37,6 +37,9 @@ namespace HRMv2.Configuration
                 new SettingDefinition(AppSettingNames.PayrollMezonChannel,"",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.NotifyToPlatform,"mezon",scopes:SettingScopes.Application|SettingScopes.Tenant),
                 new SettingDefinition(AppSettingNames.MezonClanWebhookURL,"MezonClanWebhookURL",scopes:SettingScopes.Application|SettingScopes.Tenant),
+
+                new SettingDefinition(AppSettingNames.EnableLoginGoogle,"false",scopes:SettingScopes.Application|SettingScopes.Tenant),
+                new SettingDefinition(AppSettingNames.EnableLoginMezon,"True",scopes:SettingScopes.Application|SettingScopes.Tenant),
             };
         }
     }
