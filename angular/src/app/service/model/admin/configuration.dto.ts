@@ -19,6 +19,7 @@ export interface Oauth2Mezon{
     grant_Type: string,
     url_Oauth2Mezon: string,
     url_UserInfo: string,
+    mezonAppToken: string
 }
 export interface SettingDto {
     baseAddress: string;

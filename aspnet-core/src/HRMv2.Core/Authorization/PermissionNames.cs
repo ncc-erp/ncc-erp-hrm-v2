@@ -332,6 +332,10 @@ namespace HRMv2.Authorization
         public const string Refund_RefundDetail_Edit = "Refund.RefundDetai.Edit";
         public const string Refund_RefundDetail_Delete = "Refund.RefundDetai.Delete";
 
+        //
+        public const string Report = "Report";
+        public const string Report_Salary = "Report.Salary";
+
         //Benefit
         public const string Benefit = "Benefit";
         public const string Benefit_View = "Benefit.View";
@@ -760,6 +764,9 @@ namespace HRMv2.Authorization
                         PermissionNames.Refund_RefundDetail_Edit,
                         PermissionNames.Refund_RefundDetail_Delete,
 
+                        PermissionNames.Report,
+                        PermissionNames.Report_Salary,
+
                         PermissionNames.Bonus,
                         PermissionNames.Bonus_View,
                         PermissionNames.Bonus_Create,
@@ -1169,6 +1176,9 @@ namespace HRMv2.Authorization
                         PermissionNames.Refund_RefundDetail_AddEmployee,
                         PermissionNames.Refund_RefundDetail_Edit,
                         PermissionNames.Refund_RefundDetail_Delete,
+
+                        PermissionNames.Report,
+                        PermissionNames.Report_Salary,
 
                         PermissionNames.Bonus,
                         PermissionNames.Bonus_View,
@@ -1595,6 +1605,9 @@ namespace HRMv2.Authorization
                         PermissionNames.Refund_RefundDetail_Edit,
                         PermissionNames.Refund_RefundDetail_Delete,
 
+                        PermissionNames.Report,
+                        PermissionNames.Report_Salary,
+
                         PermissionNames.Benefit,
                         PermissionNames.Benefit_View,
                         PermissionNames.Benefit_Create,
@@ -1996,6 +2009,9 @@ namespace HRMv2.Authorization
                         PermissionNames.Refund_RefundDetail_AddEmployee,
                         PermissionNames.Refund_RefundDetail_Edit,
                         PermissionNames.Refund_RefundDetail_Delete,
+
+                        PermissionNames.Report,
+                        PermissionNames.Report_Salary,
 
                         PermissionNames.Benefit,
                         PermissionNames.Benefit_View,
@@ -2446,6 +2462,9 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.Refund_RefundDetail_AddEmployee ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Add"},
                   new SystemPermission{ Name =  PermissionNames.Refund_RefundDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                   new SystemPermission{ Name =  PermissionNames.Refund_RefundDetail_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
+
+                  new SystemPermission{ Name =  PermissionNames.Report ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report"},
+                  new SystemPermission{ Name =  PermissionNames.Report_Salary ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Salary"},
 
                   new SystemPermission{ Name =  PermissionNames.Payroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Payroll"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
@@ -3057,6 +3076,13 @@ namespace HRMv2.Authorization
 
                         }
                       },
+                    }
+                },
+                new SystemPermission{ Name =  PermissionNames.Report ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report",
+                    Childrens = new List<SystemPermission>()
+                    {
+                      new SystemPermission{ Name =  PermissionNames.Report_Salary ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Salary"},
+
                     }
                 },
                 new SystemPermission{ Name =  PermissionNames.Bonus ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Bonus",

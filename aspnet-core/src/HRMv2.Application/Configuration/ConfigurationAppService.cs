@@ -131,6 +131,7 @@ namespace HRMv2.Configuration
                     Redirect_URI = _appConfiguration.GetValue<string>("Oauth2Mezon:Redirect_URI"),
                     Url_Oauth2Mezon = _appConfiguration.GetValue<string>("Oauth2Mezon:Url_Oauth2Mezon"),
                     Url_UserInfo = _appConfiguration.GetValue<string>("Oauth2Mezon:Url_UserInfo"),
+                    MezonAppToken = _appConfiguration.GetValue<string>("Oauth2Mezon:MezonAppToken"),
                 }
             };
         }        

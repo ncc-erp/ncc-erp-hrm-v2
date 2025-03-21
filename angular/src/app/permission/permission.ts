@@ -343,6 +343,10 @@ export const PERMISSIONS_CONSTANT = {
     Benefit_BenefitDetail_TabEmployee_UpdateAllStartDate: 'Benefit.BenefitDetail.TabEmployee.UpdateAllStartDate',
     Benefit_BenefitDetail_TabEmployee_UpdateAllEndDate: 'Benefit.BenefitDetail.TabEmployee.UpdateAllEndDate',
 
+    //Report
+
+    Report: 'Report',
+    Report_Salary: 'Report.Salary',
     //Payroll
     Payroll: 'Payroll',
     Payrol_View: 'Payroll.View',

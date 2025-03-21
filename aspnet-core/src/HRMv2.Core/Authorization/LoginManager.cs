@@ -110,7 +110,7 @@ namespace HRMv2.Authorization
 
             try
             {
-                var appToken = _configuration.GetValue<string>("Oauth2Mezon:AppToken") ?? throw new ArgumentNullException("Invalid AppToken ");
+                var appToken = _configuration.GetValue<string>("Oauth2Mezon:MezonAppToken") ?? throw new ArgumentNullException("Invalid AppToken ");
 
                 var rawHashData = Hasher.DecodeBase64(hashAuthDto.HashData);
                 var hashData = HashParamsParser(rawHashData);

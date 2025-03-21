@@ -31,6 +31,7 @@ namespace HRMv2.Configuration.Dto
         public string Redirect_URI { get; set; }
         public string Url_Oauth2Mezon { get; set; }
         public string Url_UserInfo { get; set; }
+        public string MezonAppToken { get; set; }
     }
     public class KomuSettingDto
     {

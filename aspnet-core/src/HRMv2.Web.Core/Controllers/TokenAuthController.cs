@@ -107,7 +107,7 @@ namespace HRMv2.Controllers
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> HashAuthenticatec([FromBody] MezonHashAuthDto model)
+        public async Task<AuthenticateResultModel> HashAuthenticate([FromBody] MezonHashAuthDto model)
         {
             var loginResult = await GetLoginResultMezonHashAsync(model, GetTenancyNameOrNull());
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));

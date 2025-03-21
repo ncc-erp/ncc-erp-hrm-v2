@@ -83,6 +83,10 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       this.getAllLevel();
   }
   
+
+  isViewTabReportSalaryPreview() {
+    return this.isGranted(PERMISSIONS_CONSTANT.Report_Salary);
+  }
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void {
     this.isLoading = true;
   
