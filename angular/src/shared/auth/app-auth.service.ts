@@ -92,7 +92,9 @@ export class AppAuthService {
     }
 
     listenToPong() {
-        window.Mezon.WebView.postEvent("PING" as MezonWebViewEvent, { message: "PING" }, () => { })
+        window.Mezon.WebView.onEvent("PONG" as MezonAppEvent, () => {
+            
+        });
     }
 
     sendBotId() {
