@@ -432,7 +432,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     TokenMezon = mezonToken,
                     Status = StatusSendToken.Pending,
                     PayrollId = payrollId,
-                    Note = $"Tiền Token ăn trưa {mezonToken} token, tiền ăn trưa sau khi trừ {payslipDetail.Money} VND"
+                    Note = $"Tiền Token ăn trưa {mezonToken} token, tiền ăn trưa sau khi trừ là  {payslipDetail.Money} VND"
                 });
 
                 payslip.Salary = payslip.PayslipDetails.Sum(x => x.Money);

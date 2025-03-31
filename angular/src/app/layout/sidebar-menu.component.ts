@@ -258,12 +258,12 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                 this.l('Report'),
                 '',
                 'fas fa-file-alt',
-                'Report.View',[
+                'Payroll.View',[
                     new MenuItem(
                         this.l("Salary"),
                         '/app/report/list-salary',
                         'fas fa-file-invoice-dollar',
-                        'Report.View',
+                        'Payroll.View',
                     ),
                 ]
             ),
