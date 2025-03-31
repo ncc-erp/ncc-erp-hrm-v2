@@ -241,6 +241,13 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                 'fas fa-sack-dollar',
                 'Payroll.View'
             ),
+            new MenuItem(
+                this.l('Payroll Token'),
+                '/app/list-payroll-token/list-payroll-token',
+                'fas fa-sack-dollar',
+                'Payroll.Token.View'
+            )
+            ,
              new MenuItem(
                 this.l('Salary change request'),
                 '/app/salary-change-requests/list-request',
@@ -251,16 +258,16 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                 this.l('Report'),
                 '',
                 'fas fa-file-alt',
-                'Payroll.View',[
+                'Report.View',[
                     new MenuItem(
                         this.l("Salary"),
                         '/app/report/list-salary',
                         'fas fa-file-invoice-dollar',
-                        'Payroll.View',
+                        'Report.View',
                     ),
                 ]
             ),
-
+        
             new MenuItem(
                 this.l('Guideline'),
                 'https://docs.google.com/document/d/1b--62hwvelkzwa1hcybwOfyPH7WKRbIHSodXTYysaxM/edit#heading=h.2x6675vns67e',

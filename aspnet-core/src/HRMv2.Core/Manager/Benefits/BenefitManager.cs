@@ -556,5 +556,17 @@ namespace HRMv2.Manager.Categories.Benefits
                 .ToList();
             return employees;
         }
+
+        public async Task<List<BenefitDto>> GetBenefitActive()
+        {
+            return await WorkScope.GetAll<Benefit>().Where(x => x.IsActive)
+                .Select(x => new BenefitDto
+                {
+                    Id= x.Id,
+                    Name = x.Name,
+                    Type = x.Type,
+                })
+                .ToListAsync();
+        }
     }
 }

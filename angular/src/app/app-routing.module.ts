@@ -105,6 +105,7 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
                         },
                         canActivate: [AppRouteGuard],
                     },
+
                     {
                         path: "salary-change-requests",
                         loadChildren: () => import('app/modules/salary-change-requests/salary-change-requests.module').then(m => m.SalaryChangeRequestsModule),
@@ -124,6 +125,16 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
                         },
                         canActivate: [AppRouteGuard]
                     },
+                    {
+                        path: "list-payroll-token",
+                        loadChildren: () => import('app/modules/Token/payroll-token.module').then(m => m.PayrollTokenModule),
+                        data: {
+                            permission: PERMISSIONS_CONSTANT.Payrol_View,
+                            preload: true
+                        },
+                        canActivate: [AppRouteGuard]
+                    }
+                    ,
                     {
                         path: "warning-for-employee",
                         loadChildren: () => import('app/modules/warning-for-employee-update/warning-for-employee-update.module').then(m => m.BackToWorkModule),

@@ -58,6 +58,7 @@ using System.Linq.Expressions;
 using HRMv2.BackgroundJob.SendDirectMessage;
 
 
+
 namespace HRMv2.Manager.Salaries.Payslips
 {
     public class PayslipManager : BaseManager
@@ -401,6 +402,49 @@ namespace HRMv2.Manager.Salaries.Payslips
             return result;
         }
 
+        public async Task DetachPayslipWithToken(int mezonToken, long payrollId,long benefitId)
+        {
+            var payroll = await WorkScope.GetAll<Payroll>().FirstOrDefaultAsync(x => x.Id == payrollId);
+
+            var payslips = await WorkScope.GetAll<Payslip>()
+                .Include(x => x.Employee)
+                .Where(x => x.PayrollId == payrollId)
+                .ToListAsync();
+
+            var payslipIds = payslips.Select(p => p.Id).ToList();
+
+            var payslipDetails = await WorkScope.GetAll<PayslipDetail>()
+                .Where(x => payslipIds.Contains(x.PayslipId) && x.ReferenceId == benefitId)
+                .ToListAsync();
+
+            var payrollTokens = new List<PayrollToken>();
+
+            foreach (var payslipDetail in payslipDetails)
+            {
+                payslipDetail.Money -= mezonToken;
+
+                var payslip = payslips.FirstOrDefault(p => p.Id == payslipDetail.PayslipId);
+
+                payrollTokens.Add(new PayrollToken
+                {
+                    Month = payroll.ApplyMonth.ToString("MM/yyyy"),
+                    EmailAddress = payslip.Employee.Email,
+                    TokenMezon = mezonToken,
+                    Status = StatusSendToken.Pending,
+                    PayrollId = payrollId,
+                    Note = $"Tiền Token ăn trưa {mezonToken} token, tiền ăn trưa sau khi trừ {payslipDetail.Money} VND"
+                });
+
+                payslip.Salary = payslip.PayslipDetails.Sum(x => x.Money);
+            }
+
+
+
+            await WorkScope.UpdateRangeAsync(payslipDetails);
+            await WorkScope.InsertRangeAsync(payrollTokens);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+        }
 
         public List<ExportPayrollIncludeLastMonthDto> GetPayslipByPayrollId(long payrollId)
         {
@@ -1639,8 +1683,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             var debtPaids = new List<DebtPaid>();
             foreach (var dto in nccSalaryCaculator.OutputAllPayslipDetails)
             {
-                var entity = ObjectMapper.Map<PayslipDetail>(dto);
-                entity.Money = entity.Money;
+                var entity = ObjectMapper.Map<PayslipDetail>(dto);              
                 entity.PayslipId = payslipId;
                 payslipDetails.Add(entity);
                 entity.Id = WorkScope.InsertAndGetId(entity);
@@ -1885,7 +1928,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 || (x.StartDate.Date <= lastDayOfPayroll && (x.EndDate == null || x.EndDate >= firstDayOfPayroll)))
                  .Select(x => new CollectBenefitForPayslipDetailDto
                  {
-                     ReferenceId = x.Id,
+                     ReferenceId = x.BenefitId,
                      EmployeeId = x.EmployeeId,
                      Note = x.Benefit.Name,
                      Money = x.Benefit.Money,

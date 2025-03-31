@@ -1,3 +1,4 @@
+import { PayrollTokenModule } from './modules/Token/payroll-token.module';
 import { ReportModule } from './modules/report/report.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
@@ -92,7 +93,8 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
     DebtModule,
     RefundsModule,
     ReportModule,
-    
+    PayrollTokenModule
+
   ],
   providers: [
     {

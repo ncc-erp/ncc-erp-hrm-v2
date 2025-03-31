@@ -84,4 +84,8 @@ export class BenefitService extends BaseApiService {
   GetEmployeeBenefits(ids: number[]): Observable<ApiResponseDto<any>>{
     return this.processPost(`GetEmployeeBenefits`, ids)
   }
+
+  GetBenefitActive(): Observable<ApiResponseDto<benefitDto[]>>{
+    return this.processGet(`GetBenefitActive`)
+  }
 }

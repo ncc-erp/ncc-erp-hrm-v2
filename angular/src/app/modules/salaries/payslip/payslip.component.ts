@@ -39,6 +39,7 @@ import { ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent } from './
 import { of } from 'rxjs';
 import { PenaltyUserDialogComponent } from './penalty-user-dialog/penalty-user-dialog.component';
 import { SendDirectMessageToUserComponent } from './send-DirectMessage-toUser/send-direct-message-touser.component';
+import { ConfirmTokenDialogComponent } from '@app/modules/Token/confirm-token-dialog-component/confirm-token-dialog-component.component';
 
 @Component({
   selector: 'app-payslip',
@@ -393,6 +394,18 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
       )
     })
   }
+  detachToken(event: KeyboardEvent) {
+    this.dialog.open(ConfirmTokenDialogComponent, {
+      width: "400px",
+      data: {
+        payrollId: this.payrollId
+      }
+    }).afterClosed().subscribe((rs) => {
+      if (rs) {
+        this.refresh()
+      }
+    })
+  }
 
   onSendMail(payslip: PaySlipDto) {
     this.dialog.open(ConfirmMailDialogComponent,
@@ -617,6 +630,9 @@ onSendDirectMessage(payslip: PaySlipDto){
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_ExportTechcombank);
   }
 
+  isShowDetachBtn(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_Detach_Token);
+  }
   public columnList = [
     {
       name: "no",

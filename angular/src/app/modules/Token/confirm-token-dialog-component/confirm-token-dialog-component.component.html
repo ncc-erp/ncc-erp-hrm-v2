@@ -1,0 +1,31 @@
+<form class="form-horizontal #deadline-form" autocomplete="off" #confirmMail="ngForm" novalidate>
+    <app-dialog-header [dialogTitle]="title">
+    </app-dialog-header >
+    <div class="pt-3">
+        <label> Mezon Token</label>
+        <div>
+            <input type="text" class="form-control" name="deadline" [(ngModel)]="mezonToken" required>
+        </div>
+        <label style="margin-bottom: -10px;">Benefit</label>
+        <mat-form-field appearance="outline" class="w-100 mt-2">
+            <mat-label>Danh sách Benefit</mat-label>
+            <mat-select  (selectionChange)="onBenefitChange($event.value)">
+                <mat-option *ngFor="let item of listBenefit" [value]="item.id">
+                    <span>
+                      {{ item.name }}:
+                      <span [ngStyle]="{ color: APP_ENUM.BenefitTypeColor[item.type] }">
+                        {{ listTypeBenefit[item.type] }}
+                      </span>
+                    </span>
+                  </mat-option>
+                  
+            </mat-select>
+        </mat-form-field>
+        <div class="text-right mt-3"> 
+            <button class="btn btn-primary" [disabled]="!isCheck()"  (click)="send()">Submit
+
+            </button>
+        </div>
+    </div>
+
+</form>

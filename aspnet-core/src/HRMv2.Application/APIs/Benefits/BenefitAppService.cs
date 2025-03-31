@@ -168,5 +168,11 @@ namespace HRMv2.APIs.Benefits
             return _benefitManager.GetAllBenefitsByEmployeeIds(ids);
         }
 
+        [HttpGet]
+        public async Task<List<BenefitDto>> GetBenefitActive()
+        {
+            return await _benefitManager.GetBenefitActive();
+        }
+
     }
 }

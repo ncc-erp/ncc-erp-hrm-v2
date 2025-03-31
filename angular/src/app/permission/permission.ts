@@ -162,6 +162,15 @@ export const PERMISSIONS_CONSTANT = {
     PunishmentFund_Disburse : "PunishmentFund.Disburse",
     PunishmentFund_Edit : "PunishmentFund.Edit",
     PunishmentFund_Delete : "PunishmentFund.Delete",
+    //Payroll Token
+     Payroll_Token : "Payroll.Token",
+         Payroll_Token_View : "Payroll.Token.View",
+         Payroll_Token_Delete : "Payroll.Token.Delete",
+         Payroll_PaySlip_Token : "Payroll.Payslip.Token",
+         Payroll_PaySlip_Token_View : "Payroll.Payslip.Token.View",
+         Payroll_PaySlip_Token_Delete : "Payroll.Payslip.Token.Delete",
+         Payroll_PaySlip_Token_Send : "Payroll.Payslip.Token.Send",
+
 
     //Employee
     Employee: 'Employee',
@@ -358,6 +367,7 @@ export const PERMISSIONS_CONSTANT = {
     Payroll_Execute: 'Payroll.Execute',
     Payroll_Payslip: 'Payroll.Payslip',
     Payroll_Payslip_View: 'Payroll.Payslip.View',
+    Payroll_Payslip_Detach_Token: 'Payroll.Payslip.Detach.Token',
     Payroll_Payslip_CalculateSalary: 'Payroll.Payslip.CalculateSalary',
     Payroll_Payslip_SendMailAll: 'Payroll.Payslip.SendMailAll',
     Payroll_Payslip_Add: 'Payroll.Payslip.Add',
