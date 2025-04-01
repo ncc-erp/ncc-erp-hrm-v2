@@ -8,6 +8,7 @@ namespace HRMv2.Manager.PayrollTokens.Dto
 {
     public class PayrollTokenDto
     {
-        public string Month { get; set; }   
+        public long PayrollId {  get; set; }
+        public DateTime ApplyMonth { get; set; }   
     }
 }

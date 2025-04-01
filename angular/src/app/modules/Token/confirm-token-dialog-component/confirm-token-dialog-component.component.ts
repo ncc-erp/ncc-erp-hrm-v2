@@ -12,11 +12,13 @@ import { APP_ENUMS } from '@shared/AppEnums';
   styleUrls: ['./confirm-token-dialog-component.component.css']
 })
 export class ConfirmTokenDialogComponent extends AppComponentBase {
- public mezonToken : number;
+ public _mezonToken : number = 200000;
  public title : string;
- public selectedBenefit : number;
+ public selectedBenefit : number
+ public defaultBenefit : any = null
  public listBenefit : any[] = [];
  public listTypeBenefit: any
+
   constructor(injetor : Injector,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ConfirmTokenDialogComponent>,private payslipService : PayslipService,private benefitService: BenefitService
@@ -25,46 +27,78 @@ export class ConfirmTokenDialogComponent extends AppComponentBase {
   }
  
   ngOnInit(): void {
-       this.title = "Detach Token";
+       this.title = "Split Benefit by Token";
        this.getBenefitActive();
        this.getAllBenefitType();
+       
+       console.log(this.selectedBenefit)
   }
  isCheck(){
-  return this.mezonToken != null;
+  return this._mezonToken != null;
  }
 
  onBenefitChange(value: any) {
-  console.log('Benefit selected:', value);
-  this.selectedBenefit = value;
+  this.selectedBenefit = value.id;
 }
- public getBenefitActive(){
+public getBenefitActive() {
   this.subscription.push(
     this.benefitService.GetBenefitActive().subscribe((rs) => {  
-      if(rs.success){
-        this.listBenefit = rs.result;
+      if (rs.success) {
+        this.listBenefit = rs.result.map((item: any) => ({
+          ...item,
+          name: item.name.toLowerCase(),
+        }));
+
+        const found = this.listBenefit.find(item => item.name === 'ăn trưa');
+        this.defaultBenefit = found ? found : null;
+        this.selectedBenefit = this.defaultBenefit ? this.defaultBenefit.id : null;
       } 
-    } 
-  )
-   
-  )}  
+    })
+  );
+}
+
     private getAllBenefitType(){
       const listTypeBenefit = this.getListFormEnum(APP_ENUMS.BenefitType).filter(item => item.key != 'All');
       this.listTypeBenefit = listTypeBenefit.reduce((acc, item) => {
         acc[item.value as string] = item.key; 
         return acc;
       }, {});
+      
     }
   
-  public send(){
-        this.subscription.push(
-          this.payslipService.changePayslipWithToken(this.data.payrollId,this.mezonToken,this.selectedBenefit).subscribe((rs) => {
-            if(rs.success){
-            this.notify.success("Detach token success");
-              this.dialogRef.close(true);
-              this.isLoading = false;
-            }
+    public send() {
+      this.isLoading = true; 
+     this._mezonToken = Number(this._mezonToken) || 0;
+      this.subscription.push(
+        this.payslipService
+          .changePayslipWithToken(this.data.payrollId, this._mezonToken, this.selectedBenefit)
+          .subscribe({
+            next: (rs) => {
+              this.isLoading = false; 
+              if (rs.success) {
+                this.notify.success("Detach token success");
+                this.dialogRef.close(true);
+              }
+            },
+            error: (err) => {
+              this.isLoading = false; 
+              this.notify.error("An error occurred while processing.");
+              console.error(err);
+            },
           })
-        )
-  }
+      );
+    }
+
+    get mezonToken(): string {
+      return new Intl.NumberFormat('en-US').format(this._mezonToken);
+    }
+    
+    set mezonToken(value: string) {
+      this._mezonToken = Number(value.replace(/,/g, '')) || 0;
+    }
+    compareBenefit(o1: any, o2: any): boolean {
+      return o1 && o2 ? o1.id === o2.id : o1 === o2;
+    }
+    
 
 }

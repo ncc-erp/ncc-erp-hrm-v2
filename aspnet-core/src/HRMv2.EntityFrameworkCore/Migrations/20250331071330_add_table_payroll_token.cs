@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace HRMv2.Migrations
 {
-    public partial class add_table_payrollToken : Migration
+    public partial class add_table_payroll_token : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,12 +17,11 @@ namespace HRMv2.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TenantId = table.Column<int>(type: "integer", nullable: true),
-                    EmailAddress = table.Column<string>(type: "text", nullable: true),
+                    EmployeeId = table.Column<long>(type: "bigint", nullable: false),
                     Note = table.Column<string>(type: "text", nullable: true),
-                    TokenMezon = table.Column<int>(type: "integer", nullable: false),
+                    Amount = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    Month = table.Column<string>(type: "text", nullable: true),
-                    PayrollId = table.Column<long>(type: "bigint", nullable: false),
+                    ReferenceId = table.Column<long>(type: "bigint", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),

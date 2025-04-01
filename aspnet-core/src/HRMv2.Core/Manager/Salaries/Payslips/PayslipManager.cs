@@ -404,35 +404,47 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public async Task DetachPayslipWithToken(int mezonToken, long payrollId,long benefitId)
         {
-            var payroll = await WorkScope.GetAll<Payroll>().FirstOrDefaultAsync(x => x.Id == payrollId);
+            var payroll = WorkScope.GetAll<Payroll>()
+           .Where(x => x.Id == payrollId)
+           .Select(x => new PayrollDto
+           {
+               Id = x.Id,
+               ApplyMonth = x.ApplyMonth,
+               NormalWorkingDay = x.NormalWorkingDay,
+               OpenTalk = x.OpenTalk,
+               Status = x.Status
+           })
+           .FirstOrDefault();
+            CheckValidGeneratePayslips(payroll);
 
-            var payslips = await WorkScope.GetAll<Payslip>()
-                .Include(x => x.Employee)
+            var payslips =  WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId)
-                .ToListAsync();
+                .ToList();
 
             var payslipIds = payslips.Select(p => p.Id).ToList();
 
-            var payslipDetails = await WorkScope.GetAll<PayslipDetail>()
+            var payslipDetails =  WorkScope.GetAll<PayslipDetail>()
                 .Where(x => payslipIds.Contains(x.PayslipId) && x.ReferenceId == benefitId)
-                .ToListAsync();
+                .ToList();
 
             var payrollTokens = new List<PayrollToken>();
 
             foreach (var payslipDetail in payslipDetails)
             {
-                payslipDetail.Money -= mezonToken;
+                var newMoney = payslipDetail.Money - mezonToken;
+                var amount = newMoney < 0 ? payslipDetail.Money : mezonToken;
+
+                payslipDetail.Money = newMoney < 0 ? 0 : newMoney;
 
                 var payslip = payslips.FirstOrDefault(p => p.Id == payslipDetail.PayslipId);
-
+             
                 payrollTokens.Add(new PayrollToken
-                {
-                    Month = payroll.ApplyMonth.ToString("MM/yyyy"),
-                    EmailAddress = payslip.Employee.Email,
-                    TokenMezon = mezonToken,
+                {                
+                    EmployeeId = payslip.EmployeeId,
+                    Amount =(int)amount ,
                     Status = StatusSendToken.Pending,
-                    PayrollId = payrollId,
-                    Note = $"Tiền Token ăn trưa {mezonToken} token, tiền ăn trưa sau khi trừ là  {payslipDetail.Money} VND"
+                    ReferenceId = payslipDetail.Id,
+                    Note = $"Tiền Token ăn trưa {amount:N0} token, tiền ăn trưa sau khi trừ là  {payslipDetail.Money:N0} VND"
                 });
 
                 payslip.Salary = payslip.PayslipDetails.Sum(x => x.Money);
@@ -445,6 +457,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             await CurrentUnitOfWork.SaveChangesAsync();
 
         }
+
 
         public List<ExportPayrollIncludeLastMonthDto> GetPayslipByPayrollId(long payrollId)
         {

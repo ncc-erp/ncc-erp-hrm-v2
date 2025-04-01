@@ -33,7 +33,7 @@
                                 </td>
                                 <td class="text-center align-middle">
                                     <a 
-                                    class="hyperlink"  [routerLink]="['/app', 'list-payroll-token','list-payroll-token','list-detail']" [queryParams]="{id: payRoll.month}">{{payRoll.month }}
+                                    class="hyperlink"  [routerLink]="['/app', 'list-payroll-token','list-payroll-token','list-detail']" [queryParams]="{id: payRoll.payrollId}">{{payRoll.applyMonth | date: "MM/yyyy"}}
                                         
                                     </a>
                                 </td>
@@ -44,7 +44,7 @@
                                     </button>
                                     <mat-menu #menu="matMenu" class="p-2">
                                       <button *ngIf="isShowDeleteBtn()"
-                                      (click)="onDelete(payRoll.month)"
+                                      (click)="onDelete(payRoll.payrollId, payRoll.applyMonth)"
                                       [disabled]
                                       class="mat-menu-item"
                                     >

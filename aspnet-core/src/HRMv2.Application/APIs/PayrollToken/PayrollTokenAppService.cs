@@ -16,7 +16,7 @@ namespace HRMv2.APIs.PayrollToken
     public class PayrollTokenAppService : HRMv2AppServiceBase
     {
         private readonly PayrollTokneManager _payrollTokneManager;
-        
+
         public PayrollTokenAppService(PayrollTokneManager payrollTokneManager)
         {
             _payrollTokneManager = payrollTokneManager;
@@ -30,16 +30,16 @@ namespace HRMv2.APIs.PayrollToken
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Payroll_PaySlip_Token_View)]
-        public async Task<GridResult<PayslipTokenDto>> GetAllPagingPayslip(string month, GridParam input)
+        public async Task<GridResult<PayslipTokenDto>> GetAllPagingPayslip(long payrollId, GridParam input)
         {
-            return await _payrollTokneManager.GetAllPagingPayslip(input ,month);
+            return await _payrollTokneManager.GetAllPagingPayslip(input, payrollId);
         }
 
         [HttpDelete]
         [AbpAuthorize(PermissionNames.Payroll_Token_Delete)]
-        public async Task DeletePayrollToken(string month)
+        public async Task DeletePayrollToken(long payrollId)
         {
-             _payrollTokneManager.DeletePayrollToken(month);
+            _payrollTokneManager.DeletePayrollToken(payrollId);
         }
         [HttpDelete]
         [AbpAuthorize(PermissionNames.Payroll_PaySlip_Token_Delete)]
@@ -49,9 +49,9 @@ namespace HRMv2.APIs.PayrollToken
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Payroll_PaySlip_Token_Send)]
-        public async Task SendToken(long paySlipId)
+        public async Task SendToken(long paySlipTokenId)
         {
-            _payrollTokneManager.SendToken(paySlipId);
+            _payrollTokneManager.SendToken(paySlipTokenId);
         }
     }
 }

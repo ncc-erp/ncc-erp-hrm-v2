@@ -11,12 +11,14 @@ namespace HRMv2.Entities
     public class PayrollToken : NccAuditEntity, IMayHaveTenant
     {
         public int? TenantId { get; set; }
-        public string EmailAddress { get; set; }
+        public long EmployeeId { get; set; }
         public string Note { get; set; }
-        public int TokenMezon { get; set; }
-        public StatusSendToken Status { get; set; }
-        public string Month {  get; set; }
-        public long PayrollId { get; set; }
+        public int Amount { get; set; }
+        public StatusSendToken Status { get; set; } 
+        /// <summary>
+        /// Benefit ăn trưa thì refereceId = payslipDetail.Id
+        /// </summary>
+        public long ReferenceId { get; set; }
 
     }
 }

@@ -22,18 +22,18 @@ export class PayrollTokenServiceService extends BaseApiService {
   public UpdatePaySlipToken(input: object):Observable<ApiResponseDto<any>>{
     return this.processPost('UpdatePaySlipToken', input);
   }
-  public getAllPaggingPayslip(month : any,payload: any): Observable<ApiResponseDto<any>> {
-    return this.processGetAllPaging(`GetAllPagingPayslip?month=${month}`, payload)
+  public getAllPaggingPayslip(payrollId : any,payload: any): Observable<ApiResponseDto<any>> {
+    return this.processGetAllPaging(`GetAllPagingPayslip?payrollId=${payrollId}`, payload)
   }
 
-  public deletePayrollToken(month: string): Observable<ApiResponseDto<any>> {
-   return this.processDelete(`DeletePayrollToken?month=${month}`);
+  public deletePayrollToken(payrollId: any): Observable<ApiResponseDto<any>> {
+   return this.processDelete(`DeletePayrollToken?payrollId=${payrollId}`);
   }
   public deletePayslipToken(id: any): Observable<ApiResponseDto<any>> {
    return this.processDelete(`DeletePaySlipToken?id=${id}`);
   }
 
   public sendToken(id: any): Observable<ApiResponseDto<any>> {
-    return this.processPost(`SendToken?payslipId=${id}`,null );
+    return this.processPost(`SendToken?paySlipTokenId=${id}`,null );
   }
 }

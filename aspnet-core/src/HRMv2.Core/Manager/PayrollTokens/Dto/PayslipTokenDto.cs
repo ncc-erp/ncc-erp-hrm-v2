@@ -11,14 +11,14 @@ using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.PayrollTokens.Dto
 {
-    [AutoMapTo(typeof(PayrollToken))]
+
     public class PayslipTokenDto: EntityDto<long>
     {
         public long Id { get; set; }
         [ApplySearch]
         public string EmailAddress { get; set; }
         public string Note { get; set; }
-        public double TokenMezon {  get; set; }
+        public int Amount {  get; set; }
         public StatusSendToken Status {  get; set; }
 
     }

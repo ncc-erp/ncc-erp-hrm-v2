@@ -2985,6 +2985,9 @@ namespace HRMv2.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -2997,8 +3000,8 @@ namespace HRMv2.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("EmailAddress")
-                        .HasColumnType("text");
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -3009,22 +3012,16 @@ namespace HRMv2.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Month")
-                        .HasColumnType("text");
-
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<long>("PayrollId")
+                    b.Property<long>("ReferenceId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<int?>("TenantId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TokenMezon")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

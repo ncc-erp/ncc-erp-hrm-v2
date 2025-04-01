@@ -1,6 +1,7 @@
 ﻿using HRMv2.Entities;
 using HRMv2.Manager.PayrollTokens.Dto;
 using HRMv2.NccCore;
+using Microsoft.EntityFrameworkCore;
 using NccCore.Extension;
 using NccCore.Paging;
 using System;
@@ -16,32 +17,58 @@ namespace HRMv2.Manager.PayrollTokens
         public PayrollTokneManager(IWorkScope workScope) : base(workScope)
         {
         }
-            public async Task<GridResult<PayrollTokenDto>> GetAllPaging(GridParam input)
-            {
-            var query = WorkScope.GetAll<PayrollToken>()
-                .GroupBy(x => x.Month)
-                .Select(x =>new PayrollTokenDto
-                {              
-                    Month = x.Key,
-                });
-                return await query.GetGridResult(query, input);
-            }
-
-       public async Task<GridResult<PayslipTokenDto>> GetAllPagingPayslip(GridParam input,string month)
+        public async Task<GridResult<PayrollTokenDto>> GetAllPaging(GridParam input)
         {
-            var query = WorkScope.GetAll<PayrollToken>()
-                .Where(x => x.Month == month)   
-                .Select(x => new PayslipTokenDto
+            
+            var payslipDetailIds = WorkScope.GetAll<PayrollToken>().Select(x => x.ReferenceId).ToList();
+
+            var payrollIds = WorkScope.GetAll<PayslipDetail>().Include(x => x.Payslip)
+                .Where(x => payslipDetailIds.Contains(x.Id)).Select(a => a.Payslip.PayrollId).ToList();
+
+            var query = WorkScope.GetAll<Payroll>().Where(x => payrollIds.Contains(x.Id))
+                .OrderByDescending(x => x.ApplyMonth)
+                .Select(x => new PayrollTokenDto
                 {
-                    Id = x.Id,
-                    EmailAddress = x.EmailAddress,
-                    Note = x.Note,
-                    TokenMezon = x.TokenMezon,
-                    Status = x.Status,
-                });
-               
+                    PayrollId = x.Id,
+                    ApplyMonth = x.ApplyMonth,
+                });    
+
             return await query.GetGridResult(query, input);
         }
+
+        public async Task<GridResult<PayslipTokenDto>> GetAllPagingPayslip(GridParam input, long payrollId)
+        {
+            var paySlipIds = await WorkScope.GetAll<Payslip>()
+                .Where(x => x.PayrollId == payrollId)
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            var payayslipDetailIds = await WorkScope.GetAll<PayslipDetail>()
+                .Where(x => paySlipIds.Contains(x.PayslipId))
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            var employeeEmail = WorkScope.GetAll<Employee>()
+                .Select(x => new { x.Id, x.Email });
+
+            var query = from pt in WorkScope.GetAll<PayrollToken>()
+                        join emp in employeeEmail on pt.EmployeeId equals emp.Id 
+                        where payayslipDetailIds.Contains(pt.ReferenceId)
+                        select new PayslipTokenDto
+                        {
+                            Id = pt.Id,
+                            EmailAddress = emp.Email,
+                            Note = pt.Note,
+                            Amount = pt.Amount,
+                            Status = pt.Status,
+                        };
+
+            return await query.GetGridResult(query, input); 
+        }
+
+
+
+
 
         public async Task SendToken(long payslipId)
         {
@@ -50,11 +77,18 @@ namespace HRMv2.Manager.PayrollTokens
             WorkScope.UpdateAsync(paySlipToken);
             CurrentUnitOfWork.SaveChanges();
         }
-        
-        public async Task DeletePayrollToken(string month)
+
+        public async Task DeletePayrollToken(long payrollId)
         {
+            var payslipIds = WorkScope.GetAll<Payslip>().Where(x => x.PayrollId == payrollId).Select(x => x.Id).ToList();
+            var payslipDetailIds = WorkScope.GetAll<PayslipDetail>()
+                .Where(x => payslipIds.Contains(x.PayslipId))
+                .Select(x => x.Id)
+               .ToList();
+
             var payrollTokens = WorkScope.GetAll<PayrollToken>()
-                .Where(x => x.Month == month).ToList();
+                .Where(x => payslipDetailIds.Contains(x.ReferenceId))
+                .ToList();
 
             payrollTokens.ForEach(x => x.IsDeleted = true);
             WorkScope.UpdateRangeAsync(payrollTokens);

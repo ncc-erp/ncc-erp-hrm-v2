@@ -4,6 +4,7 @@ import { PagedListingComponentBase } from '@shared/paged-listing-component-base'
 import { PagedRequestDto } from '@shared/paged-listing-component-base';
 import { PayrollTokenServiceService } from '@app/service/api/payroll-token/payroll-token-service.service';  
 import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
+
 @Component({
   selector: 'app-payroll-token',
   templateUrl: './payroll-token.component.html',
@@ -44,16 +45,21 @@ export class PayrollTokenComponent extends PagedListingComponentBase<PayrollToke
 
 
 
-  public onDelete(month: any) {
-    this.confirmDelete(`Delete payroll token <strong>${month}</strong>`, () => {
+  public onDelete(payrollId: any,applyMonth: any) {
+    applyMonth = this.formatDate(new Date(applyMonth));
+    this.confirmDelete(`Delete payroll token of <strong>${applyMonth }</strong>`, () => {
       this.subscription.push(
-        this.payrollTokenService.deletePayrollToken(month).subscribe(rs => {
-          abp.notify.success(`Deleted payroll token of ${month} successfull`)
+        this.payrollTokenService.deletePayrollToken(payrollId).subscribe(rs => {
+          abp.notify.success(`Deleted payroll token of ${applyMonth} successfull`)
           this.refresh()
         })
       )
     })
   }
 
-  
+  formatDate(date: Date): string {
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const year = date.getFullYear();
+    return `${month}/${year}`;
+  }
 }

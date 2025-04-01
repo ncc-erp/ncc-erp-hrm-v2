@@ -53,7 +53,7 @@ ngOnInit(): void {
 
   public onDelete(id: any) {
 
-    this.confirmDelete(`Delete payslip token has <strong>${id}</strong>`, () => {
+    this.confirmDelete(`Delete payslip token has id <strong>${id}</strong>`, () => {
       this.subscription.push(
         this.payrollTokenService.deletePayslipToken(id).subscribe(rs => {
           abp.notify.success(`Deleted payslip token with id ${id} successfull`)
