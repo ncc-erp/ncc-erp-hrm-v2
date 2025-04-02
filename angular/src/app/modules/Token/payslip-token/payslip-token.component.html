@@ -61,24 +61,20 @@
 
                                 </td>
                                 <td class="text-center">
-                                    <button [matMenuTriggerFor]="menu"
-                                        class="btn mr-2">
+                                    <ng-container *ngIf="isCheckAction(payslip.status)">
+                                      <button [matMenuTriggerFor]="menu" class="btn mr-2">
                                         <i class="fas fa-bars fa-lg"></i>  
-                                    </button>
-                                    <mat-menu #menu="matMenu" class="p-2">
-                                        
-                                      <button *ngIf="payslip.status == 0"
-                                      (click)="onDelete(payslip.id)"
-                                      [disabled]
-                                      class="mat-menu-item"
-                                    >
-                                      <i class="fa-solid fa-trash-can mr-2"></i>Delete
-                                    </button>
-                                    <button *ngIf="payslip.status == 0" class="mat-menu-item" (click)="SendToken(payslip.id)">
-                                      <i class="fas fa-envelope fa-lg mr-2"></i>
-                                      Send 
-                                    </button>
-                                    </mat-menu>
+                                      </button>
+                                      <mat-menu #menu="matMenu" class="p-2">
+                                        <button (click)="onDelete(payslip.id)" class="mat-menu-item">
+                                          <i class="fa-solid fa-trash-can mr-2"></i>Delete
+                                        </button>
+                                        <button class="mat-menu-item" (click)="SendToken(payslip.id)">
+                                          <i class="fas fa-envelope fa-lg mr-2"></i>
+                                          Send 
+                                        </button>
+                                      </mat-menu>
+                                    </ng-container>
                                   </td>
 
                         

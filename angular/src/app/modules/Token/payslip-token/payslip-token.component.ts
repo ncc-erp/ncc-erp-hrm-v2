@@ -50,6 +50,10 @@ ngOnInit(): void {
     }, {});
   }
 
+  isCheckAction(id: any) {   
+    return id !== APP_ENUMS.StatusSendToken.Done;
+  }
+  
 
   public onDelete(id: any) {
 
