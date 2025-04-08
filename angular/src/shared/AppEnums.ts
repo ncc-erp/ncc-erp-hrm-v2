@@ -273,7 +273,7 @@ export const APP_ENUMS = {
     },
    StatusSendToken: {
         Pending : 0,
-        Done :1,
+        SentToEmployee :1,
     }
 }
 

@@ -1,11 +1,11 @@
-export class PayrollTokenDto{
-    public month: string;
-    public payrollId: number;
-}
+import { BaseEmployeeDto } from './../../../../shared/dto/user-infoDto';
 
-export class PayslipTokenDto{
-    public emailAddress: string;
-    public note: string;
-    public amount: number;
-    public status : number;
+export interface MezonTokenDto extends  BaseEmployeeDto{
+        id: number;
+        employeeId: number;
+        statusToken: number;
+        note : string;
+        amount: number;
+        sentToEmployeeAt: string;
+        referenceId: number;
 }

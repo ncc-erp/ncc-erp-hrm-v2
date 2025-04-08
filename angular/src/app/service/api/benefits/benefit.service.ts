@@ -88,4 +88,10 @@ export class BenefitService extends BaseApiService {
   GetBenefitActive(): Observable<ApiResponseDto<benefitDto[]>>{
     return this.processGet(`GetBenefitActive`)
   }
+  GetBenefitById(id: number): Observable<ApiResponseDto<benefitDto>>{
+    return this.processGet(`GetBenefitById?id=${id}`)
+  }
+  GetBenefitByPayslipDetailId(id: number): Observable<ApiResponseDto<benefitDto>>{
+    return this.processGet(`GetBenefitByPayslipDetailId?id=${id}`)
+  }
 }

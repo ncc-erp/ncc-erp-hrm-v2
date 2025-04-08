@@ -31,7 +31,6 @@ export class ConfirmTokenDialogComponent extends AppComponentBase {
        this.getBenefitActive();
        this.getAllBenefitType();
        
-       console.log(this.selectedBenefit)
   }
  isCheck(){
   return this._mezonToken != null;

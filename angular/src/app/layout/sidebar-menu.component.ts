@@ -242,10 +242,10 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                 'Payroll.View'
             ),
             new MenuItem(
-                this.l('Payroll Token'),
-                '/app/list-payroll-token/list-payroll-token',
+                this.l('Mezon Token'),
+                '/app/list-mezon-token/list-mezon-token',
                 'fas fa-sack-dollar',
-                'Payroll.Token.View'
+                'Mezon.Token.View'
             )
             ,
              new MenuItem(

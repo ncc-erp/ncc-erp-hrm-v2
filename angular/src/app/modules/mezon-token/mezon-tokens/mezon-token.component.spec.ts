@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PayslipTokenComponent } from './payslip-token.component';
+import { MezonTokenComponent } from './mezon-token.component';
 
 describe('PayslipTokenComponent', () => {
-  let component: PayslipTokenComponent;
-  let fixture: ComponentFixture<PayslipTokenComponent>;
+  let component: MezonTokenComponent;
+  let fixture: ComponentFixture<MezonTokenComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PayslipTokenComponent ]
+      declarations: [ MezonTokenComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PayslipTokenComponent);
+    fixture = TestBed.createComponent(MezonTokenComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

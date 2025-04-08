@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using HRMv2.Entities;
+using HRMv2.Manager.Common.Dto;
 using NccCore.Anotations;
 using System;
 using System.Collections.Generic;
@@ -9,17 +10,19 @@ using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
 
-namespace HRMv2.Manager.PayrollTokens.Dto
+namespace HRMv2.Manager.MezonTokens.Dto
 {
-
-    public class PayslipTokenDto: EntityDto<long>
+    [AutoMap(typeof(MezonToken))]
+    public class MezonTokenDto : BaseEmployeeDto
     {
-        public long Id { get; set; }
+
         [ApplySearch]
-        public string EmailAddress { get; set; }
         public string Note { get; set; }
+        public DateTime SentToEmployeeAt { get; set; }
+        public long EmployeeId { get; set; }
         public int Amount {  get; set; }
-        public StatusSendToken Status {  get; set; }
+        public StatusSendToken StatusToken {  get; set; }
+        public long ReferenceId { get; set; }
 
     }
 }

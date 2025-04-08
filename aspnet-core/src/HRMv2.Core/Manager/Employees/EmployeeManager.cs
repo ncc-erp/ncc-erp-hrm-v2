@@ -326,6 +326,20 @@ namespace HRMv2.Manager.Employees
             return query.ToList();
         }
 
+        public List<GetEmployeeBasicInfoDto> GetEmployeeExceptStatusQuit()
+        {
+            var query = WorkScope.GetAll<Employee>()
+                .Where(x => x.Status != EmployeeStatus.Quit)
+                .Select(x => new GetEmployeeBasicInfoDto 
+                {
+                    Id= x.Id,
+                    FullName= x.FullName,
+                    Email = x.Email
+                });
+            return query.ToList();
+
+
+        }
         public List<GetEmployeeToSelect> GetAllEmployeeToSelect()
         {
             return WorkScope.GetAll<Employee>()

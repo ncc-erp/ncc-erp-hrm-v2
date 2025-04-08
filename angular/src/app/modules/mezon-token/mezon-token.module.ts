@@ -1,16 +1,16 @@
-import { PayrollTokenRoutingModule } from './payroll-token-routing.component';
+import { PayrollTokenRoutingModule } from './mezon-token-routing.component';
 import { popperVariation,  tooltipVariation } from '@ngneat/helipopper';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
-import { PayslipTokenComponent } from './payslip-token/payslip-token.component';
-import { PayrollTokenComponent } from './payroll-token/payroll-token.component';
+import { MezonTokenComponent } from './mezon-tokens/mezon-token.component';
 import { ConfirmTokenDialogComponent } from './confirm-token-dialog-component/confirm-token-dialog-component.component';
 import { TippyModule } from '@ngneat/helipopper';
 import { TippyProps } from '@ngneat/helipopper/lib/tippy.types';
 
+import { AddMezonTokenComponent } from './add-mezon-token/add-mezon-token.component';
 export const customeTooltipVariation: Partial<TippyProps> = {
   theme: 'light',
   arrow: true,
@@ -21,9 +21,10 @@ export const customeTooltipVariation: Partial<TippyProps> = {
 
 @NgModule({
   declarations: [
-    PayrollTokenComponent,
-    PayslipTokenComponent,
-    ConfirmTokenDialogComponent
+
+    MezonTokenComponent,
+    ConfirmTokenDialogComponent,
+    AddMezonTokenComponent
 ]   ,
   imports: [
     FormsModule,
@@ -42,4 +43,4 @@ export const customeTooltipVariation: Partial<TippyProps> = {
             })
   ]
 })
-export class PayrollTokenModule { }
+export class MezonTokenModule { }

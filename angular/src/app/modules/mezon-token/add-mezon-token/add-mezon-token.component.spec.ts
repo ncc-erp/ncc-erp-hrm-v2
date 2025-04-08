@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PayrollTokenComponent } from '../payroll-token/payroll-token.component';
+import { AddMezonTokenComponent } from './add-mezon-token.component';
 
-describe('PayrollTokenComponent', () => {
-  let component: PayrollTokenComponent;
-  let fixture: ComponentFixture<PayrollTokenComponent>;
+describe('AddMezonTokenComponent', () => {
+  let component: AddMezonTokenComponent;
+  let fixture: ComponentFixture<AddMezonTokenComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PayrollTokenComponent ]
+      declarations: [ AddMezonTokenComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PayrollTokenComponent);
+    fixture = TestBed.createComponent(AddMezonTokenComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

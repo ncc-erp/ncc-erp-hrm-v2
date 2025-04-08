@@ -163,13 +163,12 @@ export const PERMISSIONS_CONSTANT = {
     PunishmentFund_Edit : "PunishmentFund.Edit",
     PunishmentFund_Delete : "PunishmentFund.Delete",
     //Payroll Token
-     Payroll_Token : "Payroll.Token",
-         Payroll_Token_View : "Payroll.Token.View",
-         Payroll_Token_Delete : "Payroll.Token.Delete",
-         Payroll_PaySlip_Token : "Payroll.Payslip.Token",
-         Payroll_PaySlip_Token_View : "Payroll.Payslip.Token.View",
-         Payroll_PaySlip_Token_Delete : "Payroll.Payslip.Token.Delete",
-         Payroll_PaySlip_Token_Send : "Payroll.Payslip.Token.Send",
+         Mezon_Token : "Mezon.Token",
+         Mezon_Token_Create : "Mezon.Token.Create",
+         Mezon_Token_View : "Mezon.Token.View",
+         Mezon_Token_Delete : "Mezon.Token.Delete",
+         Mezon_Token_Edit : "Mezon.Token.Edit",
+    
 
 
     //Employee

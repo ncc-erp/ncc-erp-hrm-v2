@@ -1,4 +1,5 @@
-import { PayrollTokenModule } from './modules/Token/payroll-token.module';
+import { MezonTokenModule } from './modules/mezon-token/mezon-token.module';
+
 import { ReportModule } from './modules/report/report.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
@@ -46,6 +47,7 @@ import { UserDataForChartDetailComponent } from './home/chart-detail-data/user-d
 import { PayslipDetailPreviewLinkComponent } from './modules/payslip-detail-preview-link/payslip-detail-preview-link.component';
 import { NotHaveAccessComponent } from './modules/not-have-access/not-have-access.component';
 import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-to-confirm-mail-or-complain-mail/payslip-to-confirm-mail-or-complain-mail.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -73,6 +75,8 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
     PayslipDetailPreviewLinkComponent,
     NotHaveAccessComponent,
     PayslipToConfirmMailOrComplainMailComponent,
+
+  
   ],
   imports: [
     CommonModule,
@@ -93,7 +97,7 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
     DebtModule,
     RefundsModule,
     ReportModule,
-    PayrollTokenModule
+    MezonTokenModule
 
   ],
   providers: [

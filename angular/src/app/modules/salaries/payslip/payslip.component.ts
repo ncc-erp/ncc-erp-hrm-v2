@@ -39,7 +39,7 @@ import { ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent } from './
 import { of } from 'rxjs';
 import { PenaltyUserDialogComponent } from './penalty-user-dialog/penalty-user-dialog.component';
 import { SendDirectMessageToUserComponent } from './send-DirectMessage-toUser/send-direct-message-touser.component';
-import { ConfirmTokenDialogComponent } from '@app/modules/Token/confirm-token-dialog-component/confirm-token-dialog-component.component';
+import { ConfirmTokenDialogComponent } from '@app/modules/mezon-token/confirm-token-dialog-component/confirm-token-dialog-component.component';
 
 @Component({
   selector: 'app-payslip',

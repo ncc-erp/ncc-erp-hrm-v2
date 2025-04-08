@@ -126,8 +126,8 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
                         canActivate: [AppRouteGuard]
                     },
                     {
-                        path: "list-payroll-token",
-                        loadChildren: () => import('app/modules/Token/payroll-token.module').then(m => m.PayrollTokenModule),
+                        path: "list-mezon-token",
+                        loadChildren: () => import('app/modules/mezon-token/mezon-token.module').then(m => m.MezonTokenModule),
                         data: {
                             permission: PERMISSIONS_CONSTANT.Payrol_View,
                             preload: true

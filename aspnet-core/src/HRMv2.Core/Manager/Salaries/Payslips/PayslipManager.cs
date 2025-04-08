@@ -427,7 +427,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .Where(x => payslipIds.Contains(x.PayslipId) && x.ReferenceId == benefitId)
                 .ToList();
 
-            var payrollTokens = new List<PayrollToken>();
+            var payrollTokens = new List<MezonToken>();
 
             foreach (var payslipDetail in payslipDetails)
             {
@@ -438,19 +438,18 @@ namespace HRMv2.Manager.Salaries.Payslips
 
                 var payslip = payslips.FirstOrDefault(p => p.Id == payslipDetail.PayslipId);
              
-                payrollTokens.Add(new PayrollToken
-                {                
+                payrollTokens.Add(new MezonToken
+                {
                     EmployeeId = payslip.EmployeeId,
-                    Amount =(int)amount ,
+                    Amount = (int)amount,
                     Status = StatusSendToken.Pending,
                     ReferenceId = payslipDetail.Id,
-                    Note = $"Tiền Token ăn trưa {amount:N0} token, tiền ăn trưa sau khi trừ là  {payslipDetail.Money:N0} VND"
-                });
+                    Note = $"Tiền Token ăn trưa {amount:N0} token, tiền ăn trưa sau khi trừ là  {payslipDetail.Money:N0} VND",
+                    SentToEmployeeAt = DateTime.Now,
+                } );
 
                 payslip.Salary = payslip.PayslipDetails.Sum(x => x.Money);
             }
-
-
 
             await WorkScope.UpdateRangeAsync(payslipDetails);
             await WorkScope.InsertRangeAsync(payrollTokens);
