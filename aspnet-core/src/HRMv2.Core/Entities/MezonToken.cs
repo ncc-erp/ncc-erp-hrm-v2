@@ -16,8 +16,8 @@ namespace HRMv2.Entities
         [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; }
         public string Note { get; set; }
-        public int Amount { get; set; }
-        public DateTime SentToEmployeeAt { get; set; }
+        public long Amount { get; set; }
+        public DateTime? SentToEmployeeAt { get; set; }
         public StatusSendToken Status { get; set; } 
         /// <summary>
         /// Tạo từ PayslipDetail, Benefit ăn trưa thì refereceId = payslipDetail.Id

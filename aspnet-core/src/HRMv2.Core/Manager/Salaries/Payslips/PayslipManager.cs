@@ -402,57 +402,52 @@ namespace HRMv2.Manager.Salaries.Payslips
             return result;
         }
 
-        public async Task DetachPayslipWithToken(int mezonToken, long payrollId,long benefitId)
+        public async Task DetachPayslipWithToken(int tokenDefault, long payrollId,long benefitId)
         {
-            var payroll = WorkScope.GetAll<Payroll>()
+            var payrollStatus = WorkScope.GetAll<Payroll>()
            .Where(x => x.Id == payrollId)
-           .Select(x => new PayrollDto
-           {
-               Id = x.Id,
-               ApplyMonth = x.ApplyMonth,
-               NormalWorkingDay = x.NormalWorkingDay,
-               OpenTalk = x.OpenTalk,
-               Status = x.Status
-           })
+           .Select(x => x.Status)
            .FirstOrDefault();
-            CheckValidGeneratePayslips(payroll);
 
-            var payslips =  WorkScope.GetAll<Payslip>()
-                .Where(x => x.PayrollId == payrollId)
-                .ToList();
-
-            var payslipIds = payslips.Select(p => p.Id).ToList();
+            if (payrollStatus == PayrollStatus.Executed)
+            {
+                throw new UserFriendlyException($"The PayrollId {payrollId} is Executed");
+            }           
 
             var payslipDetails =  WorkScope.GetAll<PayslipDetail>()
-                .Where(x => payslipIds.Contains(x.PayslipId) && x.ReferenceId == benefitId)
+                .Include(s => s.Payslip)
+                .Where(s => s.Payslip.PayrollId == payrollId)
+                .Where(s => s.Payslip.IsDeleted == false)
+                .Where(x => x.ReferenceId == benefitId)
                 .ToList();
 
-            var payrollTokens = new List<MezonToken>();
+            var mezonTokens = new List<MezonToken>();
 
             foreach (var payslipDetail in payslipDetails)
             {
-                var newMoney = payslipDetail.Money - mezonToken;
-                var amount = newMoney < 0 ? payslipDetail.Money : mezonToken;
-
-                payslipDetail.Money = newMoney < 0 ? 0 : newMoney;
-
-                var payslip = payslips.FirstOrDefault(p => p.Id == payslipDetail.PayslipId);
-             
-                payrollTokens.Add(new MezonToken
+                long tokenValue = tokenDefault;
+                if (payslipDetail.Payslip.Salary <=0)
                 {
-                    EmployeeId = payslip.EmployeeId,
-                    Amount = (int)amount,
+                    tokenValue = 0;
+                }else if (payslipDetail.Money <= tokenDefault)
+                {
+                    tokenValue = (long) (payslipDetail.Money);
+                }
+
+                payslipDetail.Money -= tokenValue;
+                payslipDetail.Payslip.Salary -= tokenValue;
+             
+                mezonTokens.Add(new MezonToken
+                {
+                    EmployeeId = payslipDetail.Payslip.EmployeeId,
+                    Amount = tokenValue,
                     Status = StatusSendToken.Pending,
                     ReferenceId = payslipDetail.Id,
-                    Note = $"Tiền Token ăn trưa {amount:N0} token, tiền ăn trưa sau khi trừ là  {payslipDetail.Money:N0} VND",
-                    SentToEmployeeAt = DateTime.Now,
-                } );
-
-                payslip.Salary = payslip.PayslipDetails.Sum(x => x.Money);
+                    Note = $"Tiền mặt {payslipDetail.Note} còn lại: {payslipDetail.Money:N0} VND, ReferenceId {payslipDetail.Id}",                    
+                });                
             }
 
-            await WorkScope.UpdateRangeAsync(payslipDetails);
-            await WorkScope.InsertRangeAsync(payrollTokens);
+            await WorkScope.InsertRangeAsync(mezonTokens);
             await CurrentUnitOfWork.SaveChangesAsync();
 
         }
