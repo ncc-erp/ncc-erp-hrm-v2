@@ -129,7 +129,7 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
                         path: "list-mezon-token",
                         loadChildren: () => import('app/modules/mezon-token/mezon-token.module').then(m => m.MezonTokenModule),
                         data: {
-                            permission: PERMISSIONS_CONSTANT.Payrol_View,
+                            permission: PERMISSIONS_CONSTANT.Mezon_Token_View,
                             preload: true
                         },
                         canActivate: [AppRouteGuard]
