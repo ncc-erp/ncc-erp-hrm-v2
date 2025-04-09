@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    [Migration("20250408041829_add_table_mezon_token")]
+    [Migration("20250409101141_add_table_mezon_token")]
     partial class add_table_mezon_token
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2934,8 +2934,8 @@ namespace HRMv2.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer");
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone");
@@ -2967,7 +2967,7 @@ namespace HRMv2.Migrations
                     b.Property<long>("ReferenceId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("SentToEmployeeAt")
+                    b.Property<DateTime?>("SentToEmployeeAt")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Status")

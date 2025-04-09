@@ -18,9 +18,9 @@ namespace HRMv2.Manager.MezonTokens.Dto
 
         [ApplySearch]
         public string Note { get; set; }
-        public DateTime SentToEmployeeAt { get; set; }
+        public DateTime? SentToEmployeeAt { get; set; }
         public long EmployeeId { get; set; }
-        public int Amount {  get; set; }
+        public long Amount {  get; set; }
         public StatusSendToken StatusToken {  get; set; }
         public long ReferenceId { get; set; }
 

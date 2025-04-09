@@ -2932,8 +2932,8 @@ namespace HRMv2.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer");
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone");
@@ -2965,7 +2965,7 @@ namespace HRMv2.Migrations
                     b.Property<long>("ReferenceId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("SentToEmployeeAt")
+                    b.Property<DateTime?>("SentToEmployeeAt")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Status")

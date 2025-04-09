@@ -10,9 +10,6 @@ namespace HRMv2.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "PayrollTokens");
-
             migrationBuilder.CreateTable(
                 name: "MezonTokens",
                 columns: table => new
@@ -22,8 +19,8 @@ namespace HRMv2.Migrations
                     TenantId = table.Column<int>(type: "integer", nullable: true),
                     EmployeeId = table.Column<long>(type: "bigint", nullable: false),
                     Note = table.Column<string>(type: "text", nullable: true),
-                    Amount = table.Column<int>(type: "integer", nullable: false),
-                    SentToEmployeeAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Amount = table.Column<long>(type: "bigint", nullable: false),
+                    SentToEmployeeAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     ReferenceId = table.Column<long>(type: "bigint", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -75,51 +72,6 @@ namespace HRMv2.Migrations
         {
             migrationBuilder.DropTable(
                 name: "MezonTokens");
-
-            migrationBuilder.CreateTable(
-                name: "PayrollTokens",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
-                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
-                    Amount = table.Column<int>(type: "integer", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    EmployeeId = table.Column<long>(type: "bigint", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Note = table.Column<string>(type: "text", nullable: true),
-                    ReferenceId = table.Column<long>(type: "bigint", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PayrollTokens", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PayrollTokens_AbpUsers_CreatorUserId",
-                        column: x => x.CreatorUserId,
-                        principalTable: "AbpUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_PayrollTokens_AbpUsers_LastModifierUserId",
-                        column: x => x.LastModifierUserId,
-                        principalTable: "AbpUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PayrollTokens_CreatorUserId",
-                table: "PayrollTokens",
-                column: "CreatorUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PayrollTokens_LastModifierUserId",
-                table: "PayrollTokens",
-                column: "LastModifierUserId");
         }
     }
 }
