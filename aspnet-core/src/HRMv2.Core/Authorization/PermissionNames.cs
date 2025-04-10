@@ -364,6 +364,7 @@ namespace HRMv2.Authorization
         public const string Mezon_Token_View = "Mezon.Token.View";
         public const string Mezon_Token_Delete = "Mezon.Token.Delete";
         public const string Mezon_Token_Edit = "Mezon.Token.Edit";
+        public const string Mezon_Token_Export = "Mezon.Token.Export";
 
         // Payroll
         public const string Payroll = "Payroll";
@@ -824,6 +825,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_View,
                         PermissionNames.Mezon_Token_Delete,
                         PermissionNames.Mezon_Token_Edit,
+                        PermissionNames.Mezon_Token_Export,
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -1237,6 +1239,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_Create,
                         PermissionNames.Mezon_Token_Delete,
                         PermissionNames.Mezon_Token_Edit,
+                           PermissionNames.Mezon_Token_Export,
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -1647,6 +1650,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_Create,
                         PermissionNames.Mezon_Token_Delete,
                         PermissionNames.Mezon_Token_Edit,
+                           PermissionNames.Mezon_Token_Export,
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -2056,6 +2060,7 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_Create,
                         PermissionNames.Mezon_Token_Delete,
                         PermissionNames.Mezon_Token_Edit,
+                           PermissionNames.Mezon_Token_Export,
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -2489,7 +2494,7 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token View"},
                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete"},
                    new SystemPermission{ Name =  PermissionNames.Mezon_Token_Edit,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Payslip Token"},
-                  
+                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_Export,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Export"},
 
                   new SystemPermission{ Name =  PermissionNames.Payroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Payroll"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
@@ -3111,6 +3116,7 @@ namespace HRMv2.Authorization
                            new SystemPermission{ Name =  PermissionNames.Mezon_Token_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token View "},
                            new SystemPermission{ Name =  PermissionNames.Mezon_Token_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete"},
                            new SystemPermission{ Name =  PermissionNames.Mezon_Token_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Edit"},
+                            new SystemPermission{ Name =  PermissionNames.Mezon_Token_Export ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Export"},
                       } 
                       
                 }

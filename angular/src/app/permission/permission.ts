@@ -168,6 +168,7 @@ export const PERMISSIONS_CONSTANT = {
          Mezon_Token_View : "Mezon.Token.View",
          Mezon_Token_Delete : "Mezon.Token.Delete",
          Mezon_Token_Edit : "Mezon.Token.Edit",
+         Mezon_Token_Export: "Mezon.Token.Export",
     
 
 

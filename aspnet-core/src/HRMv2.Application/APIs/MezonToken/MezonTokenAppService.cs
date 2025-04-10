@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using HRMv2.Authorization;
+using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.MezonTokens;
 using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.Manager.Salaries.SalaryCalculators.Dto;
@@ -52,6 +53,12 @@ namespace HRMv2.APIs.PayrollToken
         public async Task<MezonTokenDto> EditMezonToken(MezonTokenDto input)
         {
             return await _mezonTokneManager.EditMezonToken(input);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Mezon_Token_Export)]
+        public async Task<FileBase64Dto> ExportMezonToken(GridParam input)
+        {
+            return await _mezonTokneManager.ExportMezonToken(input);
         }
     }
 }

@@ -4,11 +4,12 @@ import { MezonTokenDto } from '../../../service/model/payroll-token/PayrollToken
 import { Component, Injector, OnInit } from '@angular/core';
 import { PagedListingComponentBase } from '@shared/paged-listing-component-base';
 import { PagedRequestDto } from '@shared/paged-listing-component-base';
-import { MezonTokenServiceService } from '@app/service/api/payroll-token/payroll-token-service.service';  
+import { MezonTokenServiceService } from '@app/service/api/mezon-token/mezon-token-service.service';  
 import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { property } from '@node_modules/@types/lodash';
 import { AddMezonTokenComponent } from '../add-mezon-token/add-mezon-token.component';
-
+import { MatDialog } from '@angular/material/dialog';
+import * as FileSaver from 'file-saver';
 @Component({
   selector: 'app-mezon-token',
   templateUrl: './mezon-token.component.html',
@@ -18,20 +19,19 @@ export class MezonTokenComponent extends PagedListingComponentBase<MezonTokenDto
   public month : string;
   public statusSendTokens : any
   public listMezonToken :  MezonTokenDto[];
+  public filter : any;
   public selectedSatatusSendToken : number =0;
     public DEFAULT_FILTER: StatusSent = {
       status: APP_ENUMS.StatusSendToken.Pending,
       type: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE
     }
     statusSendConvert : any
-  constructor(injector: Injector,private route:ActivatedRoute,private mezonTokenService:MezonTokenServiceService) {
+  constructor(injector: Injector,private route:ActivatedRoute,private mezonTokenService :MezonTokenServiceService) {
     super(injector);
 
    }
 
 ngOnInit(): void {
-   this.pageSizeType = 5;
-    this.pageSize = 5;
     this.route.queryParams.subscribe(params => {
       this.month = params['id']
     });
@@ -44,11 +44,13 @@ ngOnInit(): void {
      this.getAllStatusSendToken()
   }
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void { 
-    
+    request.maxResultCount = 2147483647;
+    this.filter = request;
     this.subscription.push(
       this.mezonTokenService.getAllPagging(request).subscribe((rs) => {
         this.listMezonToken = rs.result.items;
-        this.showPaging(rs.result, pageNumber)
+  
+    // this.showPaging(rs.result, pageNumber)
       }, () => this.isLoading = false))   
   }
   private getAllStatusSendToken(){
@@ -75,7 +77,18 @@ ngOnInit(): void {
       )
     })
   }
+  public onExport() {
+  
+    this.subscription.push(
+      this.mezonTokenService.exportMezonToken(this.filter).subscribe((rs) => {
+        const file = new Blob([this.convertFile(atob(rs.result.base64))], {
+          type: "application/vnd.ms-excel;charset=utf-8"
+        });
+        FileSaver.saveAs(file, `MezonToken.xlsx`)
+      })
 
+    )
+  }
   public deleteAllPending(){
     this.confirmDelete(`Delete mezon token has status Pending`, () => {
       this.subscription.push(
@@ -129,6 +142,9 @@ ngOnInit(): void {
     }
   isShowAddBtn(){
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_Create);
+  }
+  isShowExportBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_Export);
   }
 
 }

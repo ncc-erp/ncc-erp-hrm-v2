@@ -2,7 +2,7 @@ import { Component, Injector, OnInit } from '@angular/core';
 import { EmployeeService } from '@app/service/api/employee/employee.service';
 import { MezonTokenDto } from '@app/service/model/payroll-token/PayrollTokenDto.dto';
 import { DialogComponentBase } from '@shared/dialog-component-base';
-import { MezonTokenServiceService } from '@app/service/api/payroll-token/payroll-token-service.service';
+import { MezonTokenServiceService } from '@app/service/api/mezon-token/mezon-token-service.service';
 import { BenefitService } from '@app/service/api/benefits/benefit.service';
 import { APP_ENUMS } from '@shared/AppEnums';
 import { benefitDto } from '@app/service/model/benefits/beneft.dto';
@@ -28,7 +28,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   public employeeId: number;
   public searchUser: string = ''; 
 
-  constructor(injector : Injector,private mezonTokenService:MezonTokenServiceService,
+  constructor(injector : Injector,private mezonTokenService :MezonTokenServiceService,
     private employeeService : EmployeeService,private benefitService: BenefitService,   
   ) { 
     super(injector);
