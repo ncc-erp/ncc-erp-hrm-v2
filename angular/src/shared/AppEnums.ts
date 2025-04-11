@@ -175,6 +175,12 @@ export const APP_ENUMS = {
         2: '#28a745',
         3: '#ff3b00'
     },
+    StatusSendTokenColor: {
+        0: '#007bff',   
+        1: '#28a745',
+
+    }
+    ,
 
     PayrollStatus: {
         "New": 1,
@@ -264,6 +270,10 @@ export const APP_ENUMS = {
     ActiveStatus: {
         Active: 1,
         InActive: 0,
+    },
+   StatusSendToken: {
+        Pending : 0,
+        SentToEmployee :1,
     }
 }
 
@@ -337,3 +347,5 @@ export enum ChartDataType
     Employee = 0,
     Salary = 1,
 }
+
+

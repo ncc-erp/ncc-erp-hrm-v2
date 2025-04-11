@@ -58,6 +58,7 @@ using System.Linq.Expressions;
 using HRMv2.BackgroundJob.SendDirectMessage;
 
 
+
 namespace HRMv2.Manager.Salaries.Payslips
 {
     public class PayslipManager : BaseManager
@@ -399,6 +400,56 @@ namespace HRMv2.Manager.Salaries.Payslips
             }
 
             return result;
+        }
+
+        public async Task DetachPayslipWithToken(int tokenDefault, long payrollId,long benefitId)
+        {
+            var payrollStatus = WorkScope.GetAll<Payroll>()
+           .Where(x => x.Id == payrollId)
+           .Select(x => x.Status)
+           .FirstOrDefault();
+
+            if (payrollStatus == PayrollStatus.Executed)
+            {
+                throw new UserFriendlyException($"The PayrollId {payrollId} is Executed");
+            }           
+
+            var payslipDetails =  WorkScope.GetAll<PayslipDetail>()
+                .Include(s => s.Payslip)
+                .Where(s => s.Payslip.PayrollId == payrollId)
+                .Where(s => s.Payslip.IsDeleted == false)
+                .Where(x => x.ReferenceId == benefitId)
+                .ToList();
+
+            var mezonTokens = new List<MezonToken>();
+
+            foreach (var payslipDetail in payslipDetails)
+            {
+                long tokenValue = tokenDefault;
+                if (payslipDetail.Payslip.Salary <=0)
+                {
+                    tokenValue = 0;
+                }else if (payslipDetail.Money <= tokenDefault)
+                {
+                    tokenValue = (long) (payslipDetail.Money);
+                }
+
+                payslipDetail.Money -= tokenValue;
+                payslipDetail.Payslip.Salary -= tokenValue;
+             
+                mezonTokens.Add(new MezonToken
+                {
+                    EmployeeId = payslipDetail.Payslip.EmployeeId,
+                    Amount = tokenValue,
+                    Status = StatusSendToken.Pending,
+                    ReferenceId = payslipDetail.Id,
+                    Note = $"Tiền mặt {payslipDetail.Note} còn lại: {payslipDetail.Money:N0} VND, ReferenceId {payslipDetail.Id}",                    
+                });                
+            }
+
+            await WorkScope.InsertRangeAsync(mezonTokens);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
         }
 
 
@@ -1639,8 +1690,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             var debtPaids = new List<DebtPaid>();
             foreach (var dto in nccSalaryCaculator.OutputAllPayslipDetails)
             {
-                var entity = ObjectMapper.Map<PayslipDetail>(dto);
-                entity.Money = entity.Money;
+                var entity = ObjectMapper.Map<PayslipDetail>(dto);              
                 entity.PayslipId = payslipId;
                 payslipDetails.Add(entity);
                 entity.Id = WorkScope.InsertAndGetId(entity);
@@ -1885,7 +1935,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 || (x.StartDate.Date <= lastDayOfPayroll && (x.EndDate == null || x.EndDate >= firstDayOfPayroll)))
                  .Select(x => new CollectBenefitForPayslipDetailDto
                  {
-                     ReferenceId = x.Id,
+                     ReferenceId = x.BenefitId,
                      EmployeeId = x.EmployeeId,
                      Note = x.Benefit.Name,
                      Money = x.Benefit.Money,

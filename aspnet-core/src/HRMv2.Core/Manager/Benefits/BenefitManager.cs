@@ -556,5 +556,43 @@ namespace HRMv2.Manager.Categories.Benefits
                 .ToList();
             return employees;
         }
+
+        public async Task<BenefitDto> GetBenefitByPayslipDetailId(long payslipDetailId)
+        {
+            var dto = WorkScope.GetAll<PayslipDetail>().Select(x => new {
+                Id = x.Id,
+                ReferenceId = x.ReferenceId,
+              }).FirstOrDefault(x => x.Id == payslipDetailId);
+            return WorkScope.GetAll<Benefit>().Where(x => x.Id == dto.ReferenceId)
+                .Select(x => new BenefitDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Type = x.Type,
+                }).FirstOrDefault();
+        }
+
+        public async Task<BenefitDto> GetBenefitById(long benefitId)
+        {
+            return WorkScope.GetAll<Benefit>()
+                .Where(x => x.Id ==  benefitId)
+                .Select(x => new BenefitDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Type = x.Type,
+                }).FirstOrDefault();
+        }
+        public async Task<List<BenefitDto>> GetBenefitActive()
+        {
+            return await WorkScope.GetAll<Benefit>().Where(x => x.IsActive)
+                .Select(x => new BenefitDto
+                {
+                    Id= x.Id,
+                    Name = x.Name,
+                    Type = x.Type,
+                })
+                .ToListAsync();
+        }
     }
 }

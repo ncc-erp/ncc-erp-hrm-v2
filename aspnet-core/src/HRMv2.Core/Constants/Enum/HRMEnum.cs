@@ -222,5 +222,11 @@ namespace HRMv2.Constants.Enum
             Mezon = 0,
             Google = 1,
         }
+
+        public enum StatusSendToken
+        {
+            Pending = 0,
+            SentToEmployee = 1,
+        }
     }
 }

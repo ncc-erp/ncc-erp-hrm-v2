@@ -130,7 +130,11 @@ namespace HRMv2.APIs.Employees
         {
             _employeeManager.ReCreateEmployeeToOtherTool(employeeId);
         }
-
+        [HttpGet]
+        public List<GetEmployeeBasicInfoDto> GetEmployeeExceptStatusQuit()
+        {
+            return _employeeManager.GetEmployeeExceptStatusQuit();
+        }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Employee_Export)]
         public async Task<FileBase64Dto> ExportEmployeeStatistic(InputExportEmployeeStatisticDto input)
