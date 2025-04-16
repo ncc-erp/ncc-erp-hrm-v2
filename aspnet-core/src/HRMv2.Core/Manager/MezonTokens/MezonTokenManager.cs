@@ -1,4 +1,6 @@
-﻿using Abp.UI;
+﻿using Abp.BackgroundJobs;
+using Abp.UI;
+using HRMv2.BackgroundJob.SentToken;
 using HRMv2.Entities;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Employees.Dto;
@@ -6,8 +8,10 @@ using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.Manager.Salaries.Payslips.Dto;
 using HRMv2.NccCore;
 using HRMv2.Net.MimeTypes;
+using HRMv2.WebServices.Mezon;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Configuration;
 using NccCore.Extension;
 using NccCore.Paging;
 using OfficeOpenXml;
@@ -18,13 +22,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.MezonTokens
 {
     public class MezonTokenManager : BaseManager
     {
-        public MezonTokenManager(IWorkScope workScope) : base(workScope)
+        private readonly MezonWebService _mezonWebService;
+        private readonly BackgroundJobManager _backgroundJobManager;
+        private readonly IConfiguration _configuration;
+        public MezonTokenManager(IWorkScope workScope,MezonWebService mezonWebService, BackgroundJobManager backgroundJobManager,IConfiguration configuration) : base(workScope)
         {
+            _mezonWebService = mezonWebService;
+            _backgroundJobManager = backgroundJobManager;
+            _configuration = configuration;
         }
         public async Task<GridResult<MezonTokenDto>> GetAllPaging(GridParam input)
         {
@@ -159,6 +170,53 @@ namespace HRMv2.Manager.MezonTokens
                 onboardRowIndex++;
             }
 
+        }
+
+        public void SentToken(MezonTokenDto input)
+        {
+            var url = _configuration.GetValue<string>("BotHRM:Url_Sent_Token");
+
+            var userName = input.Email.Split('@')[0];
+            var dto = new SentTokenDto
+            {
+                sender_id = _configuration.GetValue<string>("BotHRM:Application_Id"),
+                sender_name = _configuration.GetValue<string>("BotHRM:Name"),
+                amount = input.Amount,
+                receiver_id = userName,
+                note = input.Note,
+            };
+            var check = _mezonWebService.SentToken(dto, url);
+
+            var entity =  WorkScope.GetAll<MezonToken>().FirstOrDefault(x => x.Id == input.Id);
+            if (check)
+            {
+                entity.SentToEmployeeAt = DateTime.UtcNow;
+                entity.Status = StatusSendToken.SentToEmployee;
+                CurrentUnitOfWork.SaveChanges();
+            }
+        }
+
+        public string SentAllToken()
+        {
+            var input = WorkScope.GetAll<MezonToken>()
+                .Where(x => x.Status == Constants.Enum.HRMEnum.StatusSendToken.Pending)
+                .Select(x => new MezonTokenDto
+                {
+                    Id = x.Id,
+                    Amount = x.Amount,
+                    Email = x.Employee.Email,
+                    Note = x.Note,
+                })
+                .ToList();
+
+            var delaySentToken = 0;
+            foreach(var item in input)
+            {
+                _backgroundJobManager.Enqueue<SentTokenBackgroundJob, MezonTokenDto>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySentToken));
+                delaySentToken += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
+            }
+
+            return $"Started sent token mezon.";
         }
     }
 }

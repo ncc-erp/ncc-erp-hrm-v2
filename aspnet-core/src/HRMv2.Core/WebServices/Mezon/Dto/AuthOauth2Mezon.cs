@@ -15,4 +15,9 @@ namespace HRMv2.WebServices.Mezon.Dto
         public long rat { get; set; }
         public string sub {  get; set; }    
     }
+
+    public class Acount
+    {
+        public string token { get; set; }
+    }
 }

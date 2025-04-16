@@ -631,7 +631,7 @@ onSendDirectMessage(payslip: PaySlipDto){
   }
 
   isShowDetachBtn(){
-    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_Detach_Token)&& (this.payrollStatus == APP_ENUMS.PayrollStatus.New
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_SplitBenefitbyToken)&& (this.payrollStatus == APP_ENUMS.PayrollStatus.New
       || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByKT || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByCEO);;
   }
   public columnList = [

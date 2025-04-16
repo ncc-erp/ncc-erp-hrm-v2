@@ -167,8 +167,11 @@ export const PERMISSIONS_CONSTANT = {
          Mezon_Token_Create : "Mezon.Token.Create",
          Mezon_Token_View : "Mezon.Token.View",
          Mezon_Token_Delete : "Mezon.Token.Delete",
+         Mezon_Token_DeleteAll: "Mezon.Token.DeleteAll",
          Mezon_Token_Edit : "Mezon.Token.Edit",
          Mezon_Token_Export: "Mezon.Token.Export",
+         Mezon_Token_SentToken: "Mezon.Token.SentToken",
+         Mezon_Token_SentTokenAll: "Mezon.Token.SentTokenAll",
     
 
 
@@ -367,7 +370,7 @@ export const PERMISSIONS_CONSTANT = {
     Payroll_Execute: 'Payroll.Execute',
     Payroll_Payslip: 'Payroll.Payslip',
     Payroll_Payslip_View: 'Payroll.Payslip.View',
-    Payroll_Payslip_Detach_Token: 'Payroll.Payslip.Detach.Token',
+    Payroll_Payslip_SplitBenefitbyToken: 'Payroll.Payslip.SplitBenefitbyToken',
     Payroll_Payslip_CalculateSalary: 'Payroll.Payslip.CalculateSalary',
     Payroll_Payslip_SendMailAll: 'Payroll.Payslip.SendMailAll',
     Payroll_Payslip_Add: 'Payroll.Payslip.Add',

@@ -3,8 +3,10 @@ using Abp.Runtime.Session;
 using Amazon.S3.Model;
 using Google.Apis.Auth.OAuth2.Responses;
 using HRMv2.Configuration;
+using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.Notifications.SendMezonDM.Dto;
+using HRMv2.WebServices.Dto;
 using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +32,40 @@ namespace HRMv2.WebServices.Mezon
         {
             _isNotifyToMezon = configuration.GetValue<string>($"{serviceName}:EnableKomuNotification", "true");
             _configuration = configuration;
+           
+
         }
+
+        private async Task<AuthData> GetAuthDataMezon()
+        {
+            var url = _configuration.GetValue<string>("BotHRM:Url_Authenticate"); ;
+            var tokenApplication = _configuration.GetValue<string>("BotHRM:Application_Token");
+
+            var authData = await PostAsync<AuthData>(url, new
+            {
+                account = new Acount
+                {
+                    token = tokenApplication
+                }
+            });
+            return authData;
+
+        }
+
+        public bool SentToken(SentTokenDto input, string url)
+        {
+            var authData = GetAuthDataMezon().GetAwaiter().GetResult();
+            SetAuthorizationToken(authData.token);
+
+            var result = PostAsync<object>(url, input).GetAwaiter().GetResult();
+
+            if (result != null )
+            {
+                return true;
+            }
+            return false;
+        }
+
 
         public void NotifyToChannel(MezonMessage mezonMessage, string mezonUrl)
         {
@@ -77,7 +112,7 @@ namespace HRMv2.WebServices.Mezon
 
             var formData = new Dictionary<string, string>
             {
-               { "client_id", client_id },
+                 { "client_id", client_id },
                        { "client_secret", client_secret },
                        { "grant_type", grant_type },
                        { "redirect_uri", redirect_uri },

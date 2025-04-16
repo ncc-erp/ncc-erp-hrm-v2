@@ -23,6 +23,7 @@ namespace HRMv2.Manager.MezonTokens.Dto
         public long Amount {  get; set; }
         public StatusSendToken StatusToken {  get; set; }
         public long ReferenceId { get; set; }
-
+        public int? TenantId { get; set; }
+        public long? CurrentUserLoginId { get; set; }
     }
 }

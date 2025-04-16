@@ -1,3 +1,4 @@
+import { SentToken } from './../../../service/model/payroll-token/PayrollTokenDto.dto';
 import { APP_ENUMS } from '../../../../shared/AppEnums';
 import { ActivatedRoute } from '@angular/router';
 import { MezonTokenDto } from '../../../service/model/payroll-token/PayrollTokenDto.dto';
@@ -10,6 +11,7 @@ import { property } from '@node_modules/@types/lodash';
 import { AddMezonTokenComponent } from '../add-mezon-token/add-mezon-token.component';
 import { MatDialog } from '@angular/material/dialog';
 import * as FileSaver from 'file-saver';
+
 @Component({
   selector: 'app-mezon-token',
   templateUrl: './mezon-token.component.html',
@@ -26,9 +28,9 @@ export class MezonTokenComponent extends PagedListingComponentBase<MezonTokenDto
       type: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE
     }
     statusSendConvert : any
+
   constructor(injector: Injector,private route:ActivatedRoute,private mezonTokenService :MezonTokenServiceService) {
     super(injector);
-
    }
 
 ngOnInit(): void {
@@ -42,6 +44,7 @@ ngOnInit(): void {
       {name:'Mezon Token ',url:''}];
       this.refresh();
      this.getAllStatusSendToken()
+    
   }
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void { 
     request.maxResultCount = 2147483647;
@@ -132,7 +135,7 @@ ngOnInit(): void {
         }
       })
     }
-  
+
 
   isShowEditBtn(){
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_Edit);
@@ -146,6 +149,44 @@ ngOnInit(): void {
   isShowExportBtn(){
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_Export);
   }
+  isShowDeleteAllBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_DeleteAll);
+  }
+  isShowSentTokenBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SentToken);
+  }
+  isShowSentTokenAllBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SentTokenAll);
+  }
+
+  SentToken(mezonToken){
+    this.confirmDelete(`Sent token for ${mezonToken.email}`, () => {
+      this.subscription.push(
+        this.mezonTokenService.sentToken(mezonToken).subscribe(rs => {        
+          abp.notify.success(`Sent token for ${mezonToken.email} successfull`)
+          this.refresh()
+        })
+      )
+    })
+  }
+
+  SentAllMezonToken() {
+    this.confirmDelete('Send All Mezon Token Pending', () => {
+      this.subscription.push(
+        this.mezonTokenService.sentAllMezonTokenPending().subscribe({
+          next: (rs) => {
+            if (rs.result) {
+            
+              abp.message.success(rs.result);
+              this.refresh();
+            } 
+          }
+        })
+      );
+      this.refresh();
+    });
+  }
+  
 
 }
 

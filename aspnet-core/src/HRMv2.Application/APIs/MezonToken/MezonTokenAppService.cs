@@ -36,7 +36,7 @@ namespace HRMv2.APIs.PayrollToken
             _mezonTokneManager.DeleteMezonTokenById(id);
         }
         [HttpDelete]
-        [AbpAuthorize(PermissionNames.Mezon_Token_Delete)]
+        [AbpAuthorize(PermissionNames.Mezon_Token_DeleteAll)]
         public async Task DeleteAllPending()
         {
             _mezonTokneManager.DeleteAllPending();
@@ -60,5 +60,20 @@ namespace HRMv2.APIs.PayrollToken
         {
             return await _mezonTokneManager.ExportMezonToken(input);
         }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Mezon_Token_SentToken)]
+        public async Task SentToken(MezonTokenDto input)
+        {
+            _mezonTokneManager.SentToken(input);
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Mezon_Token_SentTokenAll)]
+        public string SentAllToken()
+        {
+          return _mezonTokneManager.SentAllToken();
+        }
+
     }
 }
