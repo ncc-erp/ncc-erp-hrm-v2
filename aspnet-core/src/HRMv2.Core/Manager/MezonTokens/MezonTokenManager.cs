@@ -186,10 +186,10 @@ namespace HRMv2.Manager.MezonTokens
                 receiver_id = userName,
                 note = input.Note,
             };
-            var response = _mezonWebService.SentToken(dto, url).GetAwaiter().GetResult();
+            var response = await _mezonWebService.SentToken(dto, url);
 
             var entity =  WorkScope.GetAll<MezonToken>().FirstOrDefault(x => x.Id == input.Id);
-            if (response.message == null )
+            if (string.IsNullOrEmpty(response.message))
             {
                 entity.SentToEmployeeAt = DateTime.UtcNow.AddHours(7);
                 entity.Status = StatusSendToken.SentToEmployee;
@@ -206,31 +206,6 @@ namespace HRMv2.Manager.MezonTokens
                     message = $"Sent Token for {userName} error : {response.message}  "
                 };
                       
-        }
-
-        public void SentTokenBackgroundJob(MezonTokenDto input)
-        {
-            var url = _configuration.GetValue<string>("BotHRM:Url_Sent_Token");
-
-            var userName = input.Email.Split('@')[0];
-            var dto = new SentTokenDto
-            {
-                sender_id = _configuration.GetValue<string>("BotHRM:Application_Id"),
-                sender_name = _configuration.GetValue<string>("BotHRM:Name"),
-                amount = input.Amount,
-                receiver_id = userName,
-                note = input.Note,
-            };
-            var response = _mezonWebService.SentToken(dto, url).GetAwaiter().GetResult();
-
-            var entity = WorkScope.GetAll<MezonToken>().FirstOrDefault(x => x.Id == input.Id);
-            if (response.message == null)
-            {
-                entity.SentToEmployeeAt = DateTime.UtcNow.AddHours(7);
-                entity.Status = StatusSendToken.SentToEmployee;
-                CurrentUnitOfWork.SaveChanges();
-            }
-            
         }
 
         public async Task<string> SentAllToken()

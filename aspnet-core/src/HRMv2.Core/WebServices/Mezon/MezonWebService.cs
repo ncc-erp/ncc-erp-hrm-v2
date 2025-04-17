@@ -49,17 +49,16 @@ namespace HRMv2.WebServices.Mezon
                 }
             });
             return authData;
-
         }
 
         public async Task<AuthResponse> SentToken(SentTokenDto input, string url)
         {
-            var authData = GetAuthDataMezon().GetAwaiter().GetResult();
+            var authData = await GetAuthDataMezon();
             SetAuthorizationToken(authData.token);
 
             var result = await PostAllowErrorResponseAsync<AuthResponse>(url, input);
 
-             return result;
+            return result;
         }
 
 
