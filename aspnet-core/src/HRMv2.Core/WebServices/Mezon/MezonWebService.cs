@@ -52,18 +52,14 @@ namespace HRMv2.WebServices.Mezon
 
         }
 
-        public bool SentToken(SentTokenDto input, string url)
+        public async Task<AuthResponse> SentToken(SentTokenDto input, string url)
         {
             var authData = GetAuthDataMezon().GetAwaiter().GetResult();
             SetAuthorizationToken(authData.token);
 
-            var result = PostAsync<object>(url, input).GetAwaiter().GetResult();
+            var result = await PostAsync<AuthResponse>(url, input);
 
-            if (result != null )
-            {
-                return true;
-            }
-            return false;
+             return result;
         }
 
 

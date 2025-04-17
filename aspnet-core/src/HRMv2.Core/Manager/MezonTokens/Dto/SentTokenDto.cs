@@ -12,7 +12,7 @@ namespace HRMv2.Manager.MezonTokens.Dto
         public string sender_name { get; set;}
         public string receiver_id { get; set; }
         public double amount { get; set; }
-        public string? note { get; set; }
+        public string note { get; set; }
 
     }
 }

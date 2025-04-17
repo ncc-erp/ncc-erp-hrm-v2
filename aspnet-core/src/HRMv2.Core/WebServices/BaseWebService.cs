@@ -64,12 +64,12 @@ namespace HRMv2.WebServices
             {
                 Logger.LogInformation(logInfo);
                 var response = await httpClient.PostAsync(url, contentString);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    Logger.LogInformation($"{logInfo} response: {responseContent}");
-                    return JsonConvert.DeserializeObject<T>(responseContent);
-                }
+                var responseContent = await response.Content.ReadAsStringAsync(); 
+
+                Logger.LogInformation($"{logInfo} response ({(int)response.StatusCode}): {responseContent}");
+          
+                var result = JsonConvert.DeserializeObject<T>(responseContent);
+                return result;
             }
             catch (Exception ex)
             {

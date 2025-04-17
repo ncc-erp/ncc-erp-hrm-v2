@@ -162,9 +162,14 @@ ngOnInit(): void {
   SentToken(mezonToken){
     this.confirmDelete(`Sent token for ${mezonToken.email}`, () => {
       this.subscription.push(
-        this.mezonTokenService.sentToken(mezonToken).subscribe(rs => {        
-          abp.notify.success(`Sent token for ${mezonToken.email} successfull`)
-          this.refresh()
+        this.mezonTokenService.sentToken(mezonToken).subscribe(rs => {   
+
+          if (rs.result.code == 0) {
+            abp.message.success(rs.result.message);
+          }else{
+            abp.message.error(rs.result.message);  
+          }    
+          this.refresh();
         })
       )
     })
@@ -175,8 +180,7 @@ ngOnInit(): void {
       this.subscription.push(
         this.mezonTokenService.sentAllMezonTokenPending().subscribe({
           next: (rs) => {
-            if (rs.result) {
-            
+            if (rs.result) {           
               abp.message.success(rs.result);
               this.refresh();
             } 

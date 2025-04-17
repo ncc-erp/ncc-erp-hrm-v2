@@ -14,4 +14,10 @@ namespace HRMv2.WebServices.Mezon.Dto
 
     }  
 
+    public class AuthResponse
+    {
+        public int code { get; set; }
+        public string message { get; set; }
+    }
+
 }

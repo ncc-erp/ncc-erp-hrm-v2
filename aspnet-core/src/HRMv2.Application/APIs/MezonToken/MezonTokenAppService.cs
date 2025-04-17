@@ -4,6 +4,7 @@ using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.MezonTokens;
 using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.Manager.Salaries.SalaryCalculators.Dto;
+using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.AspNetCore.Mvc;
 using NccCore.Paging;
 using System;
@@ -63,16 +64,16 @@ namespace HRMv2.APIs.PayrollToken
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Mezon_Token_SentToken)]
-        public async Task SentToken(MezonTokenDto input)
+        public async Task<AuthResponse> SentToken(MezonTokenDto input)
         {
-            _mezonTokneManager.SentToken(input);
+           return await _mezonTokneManager.SentToken(input);
         }
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Mezon_Token_SentTokenAll)]
-        public string SentAllToken()
+        public async Task<string> SentAllToken()
         {
-          return _mezonTokneManager.SentAllToken();
+          return await _mezonTokneManager.SentAllToken();
         }
 
     }
