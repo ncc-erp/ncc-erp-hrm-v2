@@ -57,7 +57,7 @@ namespace HRMv2.WebServices.Mezon
             var authData = GetAuthDataMezon().GetAwaiter().GetResult();
             SetAuthorizationToken(authData.token);
 
-            var result = await PostAsync<AuthResponse>(url, input);
+            var result = await PostAllowErrorResponseAsync<AuthResponse>(url, input);
 
              return result;
         }

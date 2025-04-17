@@ -118,6 +118,17 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
         
       }
   saveAndClose(){
+    let localDate: Date;
+
+    if (this.sentToEmployeeAt instanceof Date) {
+      localDate = this.sentToEmployeeAt;
+    } else {
+      localDate = new Date(this.sentToEmployeeAt);
+    }
+  
+    localDate = new Date(localDate.getTime() + 7 * 60 * 60 * 1000);
+    this.sentToEmployeeAt = localDate;
+
         let input = {
         id: this.dialogData.mezonToken?.id,
         employeeId: this.employeeId,

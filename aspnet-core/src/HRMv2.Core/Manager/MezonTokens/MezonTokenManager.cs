@@ -191,7 +191,7 @@ namespace HRMv2.Manager.MezonTokens
             var entity =  WorkScope.GetAll<MezonToken>().FirstOrDefault(x => x.Id == input.Id);
             if (response.message == null )
             {
-                entity.SentToEmployeeAt = DateTime.UtcNow;
+                entity.SentToEmployeeAt = DateTime.UtcNow.AddHours(7);
                 entity.Status = StatusSendToken.SentToEmployee;
                 CurrentUnitOfWork.SaveChanges();
                 return new AuthResponse
