@@ -203,6 +203,7 @@ namespace HRMv2.Web.Host.Startup
 
         private void RegisterFileService(IServiceCollection services)
         {
+            LoadMezonTokenConfig();
             LoadUploadFileConfig();
             if (UploadFileConstant.UploadFileProvider == UploadFileConstant.AmazoneS3)
             {
@@ -255,6 +256,15 @@ namespace HRMv2.Web.Host.Startup
             }
             UploadFileConstant.AllowFileTypes = strAllowFileType.Split(",");
             UploadFileConstant.FileFolder = _appConfiguration.GetValue<string>("UploadFile:FileFolder");
+        }
+
+        private void LoadMezonTokenConfig()
+        {
+            MezonTokenConstant.ApplicationToken = _appConfiguration.GetValue<string>("BotHRM:Application_Token"); ;
+            MezonTokenConstant.ApplicationId = _appConfiguration.GetValue<string>("BotHRM:Application_Id"); ;
+            MezonTokenConstant.UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate"); ;
+            MezonTokenConstant.UrlSendToken = _appConfiguration.GetValue<string>("BotHRM:Url_Sent_Token"); ;
+            MezonTokenConstant.Name = _appConfiguration.GetValue<string>("BotHRM:Name");
         }
         
     }

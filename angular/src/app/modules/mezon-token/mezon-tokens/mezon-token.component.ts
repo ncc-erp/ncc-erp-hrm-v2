@@ -47,7 +47,6 @@ ngOnInit(): void {
     
   }
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void { 
-    request.maxResultCount = 2147483647;
     this.filter = request;
     this.subscription.push(
       this.mezonTokenService.getAllPagging(request).subscribe((rs) => {
@@ -153,16 +152,17 @@ ngOnInit(): void {
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_DeleteAll);
   }
   isShowSentTokenBtn(){
-    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SentToken);
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SendToken);
   }
   isShowSentTokenAllBtn(){
-    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SentTokenAll);
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SendTokenAll);
   }
 
   SentToken(mezonToken){
+
     this.confirmDelete(`Sent token for ${mezonToken.email}`, () => {
       this.subscription.push(
-        this.mezonTokenService.sentToken(mezonToken).subscribe(rs => {   
+        this.mezonTokenService.sentToken(mezonToken.id).subscribe(rs => {   
 
           if (rs.result.code == 0) {
             abp.message.success(rs.result.message);

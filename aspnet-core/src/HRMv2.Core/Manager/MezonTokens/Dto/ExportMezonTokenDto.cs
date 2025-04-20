@@ -10,5 +10,8 @@ namespace HRMv2.Manager.MezonTokens.Dto
     {
         public string EmailAddress { get; set; }    
         public long Amount {  get; set; }
+        public string Note { get; set; }
+        public string Status {  get; set; }
+        public DateTime? SentAt { get; set; }
     }
 }

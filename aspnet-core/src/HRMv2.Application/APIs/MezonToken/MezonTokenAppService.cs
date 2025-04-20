@@ -63,17 +63,17 @@ namespace HRMv2.APIs.PayrollToken
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Mezon_Token_SentToken)]
-        public async Task<AuthResponse> SentToken(MezonTokenDto input)
+        [AbpAuthorize(PermissionNames.Mezon_Token_SendToken)]
+        public async Task<AuthResponse> SendToken(long mezonTokenId)
         {
-           return await _mezonTokneManager.SentToken(input);
+           return await _mezonTokneManager.SendToken(mezonTokenId);
         }
 
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Mezon_Token_SentTokenAll)]
-        public async Task<string> SentAllToken()
+        [AbpAuthorize(PermissionNames.Mezon_Token_SendTokenAll)]
+        public async Task<string> SendTokenToAllPending()
         {
-          return await _mezonTokneManager.SentAllToken();
+          return await _mezonTokneManager.SentTokenToAllPending();
         }
 
     }

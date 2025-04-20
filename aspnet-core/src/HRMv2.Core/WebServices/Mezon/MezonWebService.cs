@@ -3,6 +3,7 @@ using Abp.Runtime.Session;
 using Amazon.S3.Model;
 using Google.Apis.Auth.OAuth2.Responses;
 using HRMv2.Configuration;
+using HRMv2.Constants;
 using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.Notifications.SendMezonDM.Dto;
@@ -36,10 +37,10 @@ namespace HRMv2.WebServices.Mezon
 
         }
 
-        private async Task<AuthData> GetAuthDataMezon()
+        public async Task<AuthData> GetAuthDataMezon()
         {
-            var url = _configuration.GetValue<string>("BotHRM:Url_Authenticate"); ;
-            var tokenApplication = _configuration.GetValue<string>("BotHRM:Application_Token");
+            var url = MezonTokenConstant.UrlAuthenticate;
+            var tokenApplication = MezonTokenConstant.ApplicationToken;
 
             var authData = await PostAsync<AuthData>(url, new
             {
@@ -51,10 +52,9 @@ namespace HRMv2.WebServices.Mezon
             return authData;
         }
 
-        public async Task<AuthResponse> SentToken(SentTokenDto input, string url)
+        public async Task<AuthResponse> SendToken(SendTokenDto input, string url,string token)
         {
-            var authData = await GetAuthDataMezon();
-            SetAuthorizationToken(authData.token);
+            SetAuthorizationToken(token);
 
             var result = await PostAllowErrorResponseAsync<AuthResponse>(url, input);
 

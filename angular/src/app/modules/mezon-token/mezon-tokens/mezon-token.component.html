@@ -26,7 +26,7 @@
                         Add
                     </button>
                     <button class="btn btn-success" (click)="SentAllMezonToken()" *ngIf="isShowSentTokenAllBtn()">
-                        Sent All Pending
+                        Send All Pending
                     </button>
                     <button *ngIf="isShowDeleteAllBtn()" class="btn btn-danger" (click)="deleteAllPending()" style="margin-left: 10px;">
                         Delete All Pending
@@ -101,7 +101,7 @@
                                           <i class="fa-solid fa-trash-can mr-2"></i>Delete
                                         </button>
                                         <button *ngIf="isShowSentTokenBtn()" (click)="SentToken(item)" class="mat-menu-item">
-                                            <i class="fa-solid fa-trash-can mr-2"></i>Sent
+                                            <i class="fas fa-paper-plane mr-1"></i>Send
                                           </button>
                                       </mat-menu>
                                     </ng-container>

@@ -366,8 +366,8 @@ namespace HRMv2.Authorization
         public const string Mezon_Token_DeleteAll = "Mezon.Token.DeleteAll";
         public const string Mezon_Token_Edit = "Mezon.Token.Edit";
         public const string Mezon_Token_Export = "Mezon.Token.Export";
-        public const string Mezon_Token_SentToken = "Mezon.Token.SentToken";
-        public const string Mezon_Token_SentTokenAll = "Mezon.Token.SentTokenAll";
+        public const string Mezon_Token_SendToken = "Mezon.Token.SendToken";
+        public const string Mezon_Token_SendTokenAll = "Mezon.Token.SendTokenAll";
 
         // Payroll
         public const string Payroll = "Payroll";
@@ -830,8 +830,8 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_DeleteAll,
                         PermissionNames.Mezon_Token_Edit,
                         PermissionNames.Mezon_Token_Export,
-                        PermissionNames.Mezon_Token_SentToken,
-                        PermissionNames.Mezon_Token_SentTokenAll,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -1247,8 +1247,8 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_DeleteAll,
                         PermissionNames.Mezon_Token_Edit,
                         PermissionNames.Mezon_Token_Export,
-                        PermissionNames.Mezon_Token_SentToken,
-                        PermissionNames.Mezon_Token_SentTokenAll,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -1661,8 +1661,8 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_DeleteAll,
                         PermissionNames.Mezon_Token_Edit,
                         PermissionNames.Mezon_Token_Export,
-                        PermissionNames.Mezon_Token_SentToken,
-                        PermissionNames.Mezon_Token_SentTokenAll,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -2074,8 +2074,8 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_DeleteAll,
                         PermissionNames.Mezon_Token_Edit,
                         PermissionNames.Mezon_Token_Export,
-                        PermissionNames.Mezon_Token_SentToken,
-                        PermissionNames.Mezon_Token_SentTokenAll,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
 
 
                         PermissionNames.Payroll,
@@ -2512,8 +2512,8 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_DeleteAll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete All"},
                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_Edit,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Payslip Token"},
                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_Export,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Export"},
-                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_SentToken, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SentToken"},
-                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_SentTokenAll, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SentAll Token"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendToken, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendToken"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendTokenAll, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendAll Token"},
 
                   new SystemPermission{ Name =  PermissionNames.Payroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Payroll"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
@@ -3135,8 +3135,8 @@ namespace HRMv2.Authorization
                           new SystemPermission{ Name =  PermissionNames.Mezon_Token_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token View "},
                           new SystemPermission{ Name =  PermissionNames.Mezon_Token_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete"},
                           new SystemPermission{ Name =  PermissionNames.Mezon_Token_DeleteAll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete All"},
-                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_SentToken, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SentToken"},
-                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_SentTokenAll,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SentAll Token"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendToken, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendToken"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendTokenAll,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendAll Token"},
                           new SystemPermission{ Name =  PermissionNames.Mezon_Token_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Edit"},
                           new SystemPermission{ Name =  PermissionNames.Mezon_Token_Export ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Export"},
                       } 
