@@ -34,13 +34,13 @@ namespace HRMv2.APIs.PayrollToken
         [AbpAuthorize(PermissionNames.Mezon_Token_Delete)]
         public async Task DeleteMezonToken(long id)
         {
-            _mezonTokneManager.DeleteMezonTokenById(id);
+            await _mezonTokneManager.DeleteMezonTokenById(id);
         }
         [HttpDelete]
         [AbpAuthorize(PermissionNames.Mezon_Token_DeleteAll)]
         public async Task DeleteAllPending()
         {
-            _mezonTokneManager.DeleteAllPending();
+           await _mezonTokneManager.DeleteAllPending();
         }
 
         [HttpPost]
