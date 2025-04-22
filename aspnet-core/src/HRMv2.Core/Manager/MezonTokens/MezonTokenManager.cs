@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using NccCore.Extension;
 using NccCore.Paging;
+using NccCore.Uitls;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -187,8 +188,16 @@ namespace HRMv2.Manager.MezonTokens
         public async Task<AuthResponse> SendToken(InputSendMezonToken input)
         {
             var tokenEntity = await WorkScope.GetAll<MezonToken>()
-                .Include(x => x.Employee)
-                .FirstOrDefaultAsync(x => x.Id == input.MezonTokenId);
+                .Where(x => x.Id == input.MezonTokenId)
+                .Select(x => new
+                {
+                    x.Amount,
+                    x.Note,
+                    x.Status,
+                    x.SentToEmployeeAt,
+                    Email = x.Employee.Email
+                })
+                .FirstOrDefaultAsync();
 
             if (tokenEntity == null)
             {
@@ -196,7 +205,7 @@ namespace HRMv2.Manager.MezonTokens
             }
 
             var url = MezonTokenConstant.UrlSendToken;
-            var userName = tokenEntity.Employee.Email.Split("@")[0];
+            var userName = tokenEntity.Email.Split("@")[0];
 
             var sendTokenDto = new SendTokenDto
             {
@@ -217,9 +226,10 @@ namespace HRMv2.Manager.MezonTokens
 
             if (string.IsNullOrEmpty(sendResponse.message))
             {
-                tokenEntity.SentToEmployeeAt = DateTime.UtcNow.AddHours(7);
-                tokenEntity.Status = StatusSendToken.SentToEmployee;
-                await WorkScope.UpdateAsync(tokenEntity);
+                var entityToUpdate = await WorkScope.GetAsync<MezonToken>(input.MezonTokenId);
+                entityToUpdate.SentToEmployeeAt = DateTimeUtils.GetNow();
+                entityToUpdate.Status = StatusSendToken.SentToEmployee;
+                await WorkScope.UpdateAsync(entityToUpdate);
 
                 return new AuthResponse
                 {
