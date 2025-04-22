@@ -4,6 +4,7 @@ using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.MezonTokens;
 using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.Manager.Salaries.SalaryCalculators.Dto;
+using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.AspNetCore.Mvc;
 using NccCore.Paging;
 using System;
@@ -33,13 +34,13 @@ namespace HRMv2.APIs.PayrollToken
         [AbpAuthorize(PermissionNames.Mezon_Token_Delete)]
         public async Task DeleteMezonToken(long id)
         {
-            _mezonTokneManager.DeleteMezonTokenById(id);
+            await _mezonTokneManager.DeleteMezonTokenById(id);
         }
         [HttpDelete]
-        [AbpAuthorize(PermissionNames.Mezon_Token_Delete)]
+        [AbpAuthorize(PermissionNames.Mezon_Token_DeleteAll)]
         public async Task DeleteAllPending()
         {
-            _mezonTokneManager.DeleteAllPending();
+           await _mezonTokneManager.DeleteAllPending();
         }
 
         [HttpPost]
@@ -60,5 +61,20 @@ namespace HRMv2.APIs.PayrollToken
         {
             return await _mezonTokneManager.ExportMezonToken(input);
         }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Mezon_Token_SendToken)]
+        public async Task<AuthResponse> SendToken(InputSendMezonToken input)
+        {
+           return await _mezonTokneManager.SendToken(input);
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Mezon_Token_SendTokenAll)]
+        public async Task<string> SendTokenToAllPending()
+        {
+          return await _mezonTokneManager.SentTokenToAllPending();
+        }
+
     }
 }

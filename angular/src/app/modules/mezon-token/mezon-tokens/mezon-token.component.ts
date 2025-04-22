@@ -1,3 +1,4 @@
+import { SentToken } from './../../../service/model/payroll-token/PayrollTokenDto.dto';
 import { APP_ENUMS } from '../../../../shared/AppEnums';
 import { ActivatedRoute } from '@angular/router';
 import { MezonTokenDto } from '../../../service/model/payroll-token/PayrollTokenDto.dto';
@@ -10,6 +11,7 @@ import { property } from '@node_modules/@types/lodash';
 import { AddMezonTokenComponent } from '../add-mezon-token/add-mezon-token.component';
 import { MatDialog } from '@angular/material/dialog';
 import * as FileSaver from 'file-saver';
+
 @Component({
   selector: 'app-mezon-token',
   templateUrl: './mezon-token.component.html',
@@ -26,9 +28,9 @@ export class MezonTokenComponent extends PagedListingComponentBase<MezonTokenDto
       type: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE
     }
     statusSendConvert : any
+
   constructor(injector: Injector,private route:ActivatedRoute,private mezonTokenService :MezonTokenServiceService) {
     super(injector);
-
    }
 
 ngOnInit(): void {
@@ -42,9 +44,9 @@ ngOnInit(): void {
       {name:'Mezon Token ',url:''}];
       this.refresh();
      this.getAllStatusSendToken()
+    
   }
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void { 
-    request.maxResultCount = 2147483647;
     this.filter = request;
     this.subscription.push(
       this.mezonTokenService.getAllPagging(request).subscribe((rs) => {
@@ -132,7 +134,7 @@ ngOnInit(): void {
         }
       })
     }
-  
+
 
   isShowEditBtn(){
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_Edit);
@@ -146,6 +148,52 @@ ngOnInit(): void {
   isShowExportBtn(){
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_Export);
   }
+  isShowDeleteAllBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_DeleteAll);
+  }
+  isShowSentTokenBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SendToken);
+  }
+  isShowSentTokenAllBtn(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SendTokenAll);
+  }
+
+  SentToken(mezonToken){
+    const input = {
+        mezonTokenId: mezonToken.id,
+        tokenBot:"",
+    }
+    this.confirmDelete(`Sent token for ${mezonToken.email}`, () => {
+      this.subscription.push(
+        this.mezonTokenService.sentToken(input).subscribe(rs => {   
+
+          if (rs.result.code == 0) {
+            abp.message.success(rs.result.message);
+          }else{
+            abp.message.error(rs.result.message);  
+          }    
+          this.refresh();
+        })
+      )
+    })
+  }
+
+  SentAllMezonToken() {
+    this.confirmDelete('Send All Mezon Token Pending', () => {
+      this.subscription.push(
+        this.mezonTokenService.sentAllMezonTokenPending().subscribe({
+          next: (rs) => {
+            if (rs.result) {           
+              abp.message.success(rs.result);
+              this.refresh();
+            } 
+          }
+        })
+      );
+      this.refresh();
+    });
+  }
+  
 
 }
 

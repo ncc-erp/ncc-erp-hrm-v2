@@ -130,7 +130,16 @@ namespace HRMv2.Configuration
                     Redirect_URI = _appConfiguration.GetValue<string>("Oauth2Mezon:Redirect_URI"),
                     Url_Oauth2Mezon = _appConfiguration.GetValue<string>("Oauth2Mezon:Url_Oauth2Mezon"),
                     Url_UserInfo = _appConfiguration.GetValue<string>("Oauth2Mezon:Url_UserInfo"),
-                }
+                },
+               BotHRM = new BotHRMSetting
+               {
+                   NameBot = _appConfiguration.GetValue<string>("BotHRM:Name"),
+                   ApplicationToken = _appConfiguration.GetValue<string>("BotHRM:Application_Token"),
+                   ApplicationId = _appConfiguration.GetValue<string>("BotHRM:Application_Id"),
+                   UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate"),
+                   UrlSentToken = _appConfiguration.GetValue<string>("BotHRM:Url_Sent_Token"),
+               }
+
             };
         }        
 

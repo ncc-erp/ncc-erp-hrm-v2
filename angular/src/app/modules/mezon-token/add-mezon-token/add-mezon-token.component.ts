@@ -118,12 +118,32 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
         
       }
   saveAndClose(){
+    let localDate: Date | null = null;
+
+    if (this.sentToEmployeeAt) {
+      if (this.sentToEmployeeAt instanceof Date) {
+        localDate = this.sentToEmployeeAt;
+      } else {
+        const parsedDate = new Date(this.sentToEmployeeAt);
+        if (!isNaN(parsedDate.getTime())) {
+          localDate = parsedDate;
+        }
+      }
+  
+      if (localDate) {
+        localDate = new Date(localDate.getTime() + 7 * 60 * 60 * 1000);
+      }
+    }
+  
+    this.sentToEmployeeAt = localDate;
+  
+
         let input = {
         id: this.dialogData.mezonToken?.id,
         employeeId: this.employeeId,
         amount: this.amount,
         note: this.note,
-        sentToEmployeeAt: this.sentToEmployeeAt,
+        sentToEmployeeAt : this.sentToEmployeeAt,
         referenceId: this.selectedBenefit
       }
     if(this.dialogData.type === 'edit'){

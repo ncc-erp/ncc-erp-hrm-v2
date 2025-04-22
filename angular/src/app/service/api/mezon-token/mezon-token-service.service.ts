@@ -36,4 +36,12 @@ export class MezonTokenServiceService extends BaseApiService {
   public exportMezonToken(request : any): Observable<ApiResponseDto<any>>{
     return this.processPost(`ExportMezonToken`, request);
   }
+
+  public sentToken(input: any): Observable<ApiResponseDto<any>> { 
+    return this.processPost(`SendToken`, input);
+  }
+
+  public sentAllMezonTokenPending(): Observable<ApiResponseDto<any>> {  
+    return this.processPost(`SendTokenToAllPending`, null);
+  }
 }
