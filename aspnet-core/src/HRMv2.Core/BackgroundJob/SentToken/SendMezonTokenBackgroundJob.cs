@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.BackgroundJob.SentToken
 {
-    public class SendMezonTokenBackgroundJob : BackgroundJob<InputSendMezonTokenBJob>, ITransientDependency
+    public class SendMezonTokenBackgroundJob : BackgroundJob<InputSendMezonToken>, ITransientDependency
     {
 
         private readonly IAbpSession _abpSession;
@@ -29,14 +29,14 @@ namespace HRMv2.BackgroundJob.SentToken
         }
 
         [UnitOfWork]
-        public override void Execute(InputSendMezonTokenBJob args)
+        public override void Execute(InputSendMezonToken args)
         {
             _abpSession.Use(args.TenantId, args.CurrentUserLoginId);
             var uow = _unitOfWork.Current;
 
             using (uow.SetTenantId(args.TenantId))
             {
-                _mezonTokenManager.SendMezonTokenInBJob(args).GetAwaiter().GetResult();
+                _mezonTokenManager.SendToken(args).GetAwaiter().GetResult();
                 //uow.SaveChanges();
             }
         }

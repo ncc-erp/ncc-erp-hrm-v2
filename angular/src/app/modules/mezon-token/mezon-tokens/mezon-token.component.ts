@@ -159,10 +159,13 @@ ngOnInit(): void {
   }
 
   SentToken(mezonToken){
-
+    const input = {
+        mezonTokenId: mezonToken.id,
+        tokenBot:"",
+    }
     this.confirmDelete(`Sent token for ${mezonToken.email}`, () => {
       this.subscription.push(
-        this.mezonTokenService.sentToken(mezonToken.id).subscribe(rs => {   
+        this.mezonTokenService.sentToken(input).subscribe(rs => {   
 
           if (rs.result.code == 0) {
             abp.message.success(rs.result.message);

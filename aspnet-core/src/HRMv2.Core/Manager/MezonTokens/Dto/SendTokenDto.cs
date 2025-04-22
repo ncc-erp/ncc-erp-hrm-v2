@@ -16,10 +16,10 @@ namespace HRMv2.Manager.MezonTokens.Dto
 
     }
 
-    public class InputSendMezonTokenBJob
+    public class InputSendMezonToken
     {
         public long MezonTokenId { get; set; }
-        public string TokenBot { get; set; }
+        public string? TokenBot { get; set; }
         public int? TenantId { get; set; }
         public long? CurrentUserLoginId { get; set; }
     }

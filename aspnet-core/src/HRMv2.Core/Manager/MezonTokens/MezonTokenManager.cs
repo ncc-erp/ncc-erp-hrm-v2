@@ -184,85 +184,59 @@ namespace HRMv2.Manager.MezonTokens
 
         }
 
-        public async Task<AuthResponse> SendToken(long mezonTokenId)
+        public async Task<AuthResponse> SendToken(InputSendMezonToken input)
         {
-
-            var entity = await WorkScope.GetAll<MezonToken>()
-               .Include(x => x.Employee)
-               .FirstOrDefaultAsync(x => x.Id == mezonTokenId);
-
-            if (entity == null)
-            {
-                throw new UserFriendlyException("Mezon Token don't exits");
-            }
-
-            var url = MezonTokenConstant.UrlSendToken;
-            var userName = entity.Employee.Email.Split("@")[0];
-            var dto = new SendTokenDto
-            {
-                sender_id = MezonTokenConstant.ApplicationId,
-                sender_name = MezonTokenConstant.Name,
-                amount = entity.Amount,
-                receiver_id = userName,
-                note = entity.Note,
-            };
-
-            var authData = await _mezonWebService.GetAuthDataMezon();
-            var response = await _mezonWebService.SendToken(dto, url, authData.token);
-
-            if (string.IsNullOrEmpty(response.message))
-            {
-                entity.SentToEmployeeAt = DateTime.UtcNow.AddHours(7);
-                entity.Status = StatusSendToken.SentToEmployee;
-                await WorkScope.UpdateAsync(entity);
-                return new AuthResponse
-                {
-                    code = 0,
-                    message = $"Sent Token for user {userName} successful!"
-                };
-            }              
-                return new AuthResponse
-                {
-                    code = 1,
-                    message = $"Sent Token for {userName} error : {response.message}  "
-                };
-                      
-        }
-
-
-        public async Task SendMezonTokenInBJob(InputSendMezonTokenBJob input)
-        {
-
-            var entity = await WorkScope.GetAll<MezonToken>()
+            var tokenEntity = await WorkScope.GetAll<MezonToken>()
                 .Include(x => x.Employee)
                 .FirstOrDefaultAsync(x => x.Id == input.MezonTokenId);
 
-            if (entity == null)
+            if (tokenEntity == null)
             {
-                throw new UserFriendlyException("Mezon Token don't exits");
+                throw new UserFriendlyException("Mezon Token doesn't exist");
             }
 
             var url = MezonTokenConstant.UrlSendToken;
-            var userName = entity.Employee.Email.Split("@")[0];
-            var dto = new SendTokenDto
+            var userName = tokenEntity.Employee.Email.Split("@")[0];
+
+            var sendTokenDto = new SendTokenDto
             {
                 sender_id = MezonTokenConstant.ApplicationId,
                 sender_name = MezonTokenConstant.Name,
-                amount = entity.Amount,
+                amount = tokenEntity.Amount,
                 receiver_id = userName,
-                note = entity.Note,
+                note = tokenEntity.Note,
             };
 
-            var response = await _mezonWebService.SendToken(dto, url, input.TokenBot);
-
-            if (string.IsNullOrEmpty(response.message))
+            if (string.IsNullOrEmpty(input.TokenBot))
             {
-                entity.SentToEmployeeAt = DateTime.UtcNow.AddHours(7);
-                entity.Status = StatusSendToken.SentToEmployee;
-                await WorkScope.UpdateAsync(entity);
+                var tokenResponse = await _mezonWebService.GetAuthDataMezon();
+                input.TokenBot = tokenResponse.token;
             }
 
+            var sendResponse = await _mezonWebService.SendToken(sendTokenDto, url, input.TokenBot);
+
+            if (string.IsNullOrEmpty(sendResponse.message))
+            {
+                tokenEntity.SentToEmployeeAt = DateTime.UtcNow.AddHours(7);
+                tokenEntity.Status = StatusSendToken.SentToEmployee;
+                await WorkScope.UpdateAsync(tokenEntity);
+
+                return new AuthResponse
+                {
+                    code = 0,
+                    message = $"Sent Token for user {userName} successfully!"
+                };
+            }
+
+            return new AuthResponse
+            {
+                code = 1,
+                message = $"Failed to send Token to {userName}: {sendResponse.message}"
+            };
         }
+
+
+
 
         public async Task<string> SentTokenToAllPending()
         {
@@ -270,7 +244,7 @@ namespace HRMv2.Manager.MezonTokens
             var authData =await _mezonWebService.GetAuthDataMezon();
             var input = WorkScope.GetAll<MezonToken>()
                 .Where(x => x.Status == StatusSendToken.Pending)
-                .Select(x => new InputSendMezonTokenBJob
+                .Select(x => new InputSendMezonToken
                 {
                     MezonTokenId = x.Id,
                     TokenBot = authData.token
@@ -281,7 +255,7 @@ namespace HRMv2.Manager.MezonTokens
 
             foreach(var item in input)
             {
-                _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonTokenBJob>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
+                _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
                 delaySendToken += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
             }
            
