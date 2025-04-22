@@ -3,8 +3,11 @@ using Abp.Runtime.Session;
 using Amazon.S3.Model;
 using Google.Apis.Auth.OAuth2.Responses;
 using HRMv2.Configuration;
+using HRMv2.Constants;
+using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.Manager.Notifications.SendMezonDM.Dto;
+using HRMv2.WebServices.Dto;
 using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +33,34 @@ namespace HRMv2.WebServices.Mezon
         {
             _isNotifyToMezon = configuration.GetValue<string>($"{serviceName}:EnableKomuNotification", "true");
             _configuration = configuration;
+           
+
         }
+
+        public async Task<AuthData> GetAuthDataMezon()
+        {
+            var url = MezonTokenConstant.UrlAuthenticate;
+            var tokenApplication = MezonTokenConstant.ApplicationToken;
+
+            var authData = await PostAsync<AuthData>(url, new
+            {
+                account = new Acount
+                {
+                    token = tokenApplication
+                }
+            });
+            return authData;
+        }
+
+        public async Task<AuthResponse> SendToken(SendTokenDto input, string url,string token)
+        {
+            SetAuthorizationToken(token);
+
+            var result = await PostAllowErrorResponseAsync<AuthResponse>(url, input);
+
+            return result;
+        }
+
 
         public void NotifyToChannel(MezonMessage mezonMessage, string mezonUrl)
         {
@@ -77,7 +107,7 @@ namespace HRMv2.WebServices.Mezon
 
             var formData = new Dictionary<string, string>
             {
-               { "client_id", client_id },
+                 { "client_id", client_id },
                        { "client_secret", client_secret },
                        { "grant_type", grant_type },
                        { "redirect_uri", redirect_uri },

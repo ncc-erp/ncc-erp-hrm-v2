@@ -16,6 +16,7 @@
                         </div>
                         <button *ngIf="isShowCalculateSalaryBtn()" class="btn btn-primary mr-2" (click)="onCollectData()"
                         [disabled]="isCalculating">{{isCalculating ? 'Calculating salary...' : 'Calculate salary all'}}</button>
+                        <button *ngIf="isShowDetachBtn()" class="btn btn-primary mr-2" (click)="detachToken()">Split Benefit by Token</button>
                         <button *ngIf="isShowAddBtn()" class="btn btn-primary mr-2" (click)="onAdd()">Add employee</button>
                         <button [matMenuTriggerFor]="exportMenu" class="btn btn-primary mr-2">Export</button>
                             <mat-menu #exportMenu="matMenu">

@@ -106,5 +106,9 @@ export class EmployeeService extends BaseApiService {
   public quitJobToOtherTool(input): Observable<ApiResponseDto<any>>{
     return this.processPost(`QuitJobToOtherTool`, input);
   }
+
+  public getEmployeeExceptStatusQuit(): Observable<ApiResponseDto<any>>{
+    return this.processGet(`GetEmployeeExceptStatusQuit`);
+  }
  
 }

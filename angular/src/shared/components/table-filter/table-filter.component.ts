@@ -104,6 +104,9 @@ export class TableFilterComponent extends AppComponentBase implements OnInit {
       if (this.filterType == APP_ENUMS.FilterTypeEnum.DatePicker) {
         this.datePickerValue = this.defaultValue;
       }
+      if (this.filterType === this.filterTypeEnum.Dropdown) {
+        this.onDropdownFilter(); 
+      }
     }
     this.teamMultiFilterCtrl.valueChanges
       .pipe(takeUntil(this._onDestroy))

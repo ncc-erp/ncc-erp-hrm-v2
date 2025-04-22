@@ -105,6 +105,7 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
                         },
                         canActivate: [AppRouteGuard],
                     },
+
                     {
                         path: "salary-change-requests",
                         loadChildren: () => import('app/modules/salary-change-requests/salary-change-requests.module').then(m => m.SalaryChangeRequestsModule),
@@ -124,6 +125,16 @@ import { PayslipToConfirmMailOrComplainMailComponent } from './modules/payslip-t
                         },
                         canActivate: [AppRouteGuard]
                     },
+                    {
+                        path: "list-mezon-token",
+                        loadChildren: () => import('app/modules/mezon-token/mezon-token.module').then(m => m.MezonTokenModule),
+                        data: {
+                            permission: PERMISSIONS_CONSTANT.Mezon_Token_View,
+                            preload: true
+                        },
+                        canActivate: [AppRouteGuard]
+                    }
+                    ,
                     {
                         path: "warning-for-employee",
                         loadChildren: () => import('app/modules/warning-for-employee-update/warning-for-employee-update.module').then(m => m.BackToWorkModule),

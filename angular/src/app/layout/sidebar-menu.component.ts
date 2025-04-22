@@ -241,6 +241,13 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                 'fas fa-sack-dollar',
                 'Payroll.View'
             ),
+            new MenuItem(
+                this.l('Mezon Token'),
+                '/app/list-mezon-token/list-mezon-token',
+                'fas fa-sack-dollar',
+                'Mezon.Token.View'
+            )
+            ,
              new MenuItem(
                 this.l('Salary change request'),
                 '/app/salary-change-requests/list-request',
@@ -260,7 +267,7 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
                     ),
                 ]
             ),
-
+        
             new MenuItem(
                 this.l('Guideline'),
                 'https://docs.google.com/document/d/1b--62hwvelkzwa1hcybwOfyPH7WKRbIHSodXTYysaxM/edit#heading=h.2x6675vns67e',

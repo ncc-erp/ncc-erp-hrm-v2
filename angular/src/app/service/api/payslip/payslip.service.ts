@@ -188,4 +188,8 @@ export class PayslipService extends BaseApiService {
   public getStatusEmployeeToComplain(payslipId: number): Observable<ApiResponseDto<any>> {
     return this.processGet(`GetStatusEmployeeToComplain?payslipId=${payslipId}`)
   } 
+
+  public changePayslipWithToken(payrollId: any , mezonToken: any,benefitId: any): Observable<any>{
+    return this.processPost(`ChangePayslipWithToken?payrollId=${payrollId}&mezonToken=${mezonToken}&benefitId=${benefitId}`,"")
+  }
 }
