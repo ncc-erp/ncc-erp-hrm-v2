@@ -231,7 +231,8 @@ namespace HRMv2.Authorization
         public const string Employee_EmployeeDetail_TabSalaryHistory_EditNote = "Employee.EmployeeDetail.TabSalaryHistory.EditNote";
         public const string Employee_EmployeeDetail_TabSalaryHistory_Delete = "Employee.EmployeeDetail.TabSalaryHistory.Delete";
         public const string Employee_EmployeeDetail_TabSalaryHistory_ForceDelete = "Employee.EmployeeDetail.TabSalaryHistory.ForceDelete";
-
+        
+        
         //Tab WorkingHistory
         public const string Employee_EmployeeDetail_TabWorkingHistory = "Employee.EmployeeDetail.TabWorkingHistory";
         public const string Employee_EmployeeDetail_TabWorkingHistory_View = "Employee.EmployeeDetail.TabWorkingHistory.View";
@@ -357,6 +358,17 @@ namespace HRMv2.Authorization
         public const string Benefit_BenefitDetail_TabEmployee_Edit = "Benefit.BenefitDetail.TabEmployee.Edit";
         public const string Benefit_BenefitDetail_TabEmployee_Delete = "Benefit.BenefitDetail.TabEmployee.Delete";
 
+        //PayrollToken
+        public const string Mezon_Token = "Mezon.Token";
+        public const string Mezon_Token_Create = "Mezon.Token.Create";
+        public const string Mezon_Token_View = "Mezon.Token.View";
+        public const string Mezon_Token_Delete = "Mezon.Token.Delete";
+        public const string Mezon_Token_DeleteAll = "Mezon.Token.DeleteAll";
+        public const string Mezon_Token_Edit = "Mezon.Token.Edit";
+        public const string Mezon_Token_Export = "Mezon.Token.Export";
+        public const string Mezon_Token_SendToken = "Mezon.Token.SendToken";
+        public const string Mezon_Token_SendTokenAll = "Mezon.Token.SendTokenAll";
+
         // Payroll
         public const string Payroll = "Payroll";
         public const string Payroll_View = "Payroll.View";
@@ -373,6 +385,7 @@ namespace HRMv2.Authorization
         public const string Payroll_Payslip = "Payroll.PayslipDetail";
 
         public const string Payroll_Payslip_View = "Payroll.Payslip.View";
+        public const string Payroll_Payslip_SplitBenefitbyToken = "Payroll.Payslip.SplitBenefitbyToken";
         public const string Payroll_Payslip_CalculateSalary = "Payroll.Payslip.CalculateSalary";
         public const string Payroll_Payslip_SendMailAll = "Payroll.Payslip.SendMailAll";
         public const string Payroll_Payslip_Add = "Payroll.Payslip.Add";
@@ -810,6 +823,16 @@ namespace HRMv2.Authorization
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_UpdateAllEndDate,
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_Delete,
 
+                        PermissionNames.Mezon_Token,
+                        PermissionNames.Mezon_Token_Create,
+                        PermissionNames.Mezon_Token_View,
+                        PermissionNames.Mezon_Token_Delete,
+                        PermissionNames.Mezon_Token_DeleteAll,
+                        PermissionNames.Mezon_Token_Edit,
+                        PermissionNames.Mezon_Token_Export,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
+
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
                         PermissionNames.Payroll_Create,
@@ -826,6 +849,7 @@ namespace HRMv2.Authorization
 
 
                         PermissionNames.Payroll_Payslip_View,
+                        PermissionNames.Payroll_Payslip_SplitBenefitbyToken,
                         PermissionNames.Payroll_Payslip_CalculateSalary,
                         PermissionNames.Payroll_Payslip_SendMailAll,
                         PermissionNames.Payroll_Payslip_Add,
@@ -1216,6 +1240,16 @@ namespace HRMv2.Authorization
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_UpdateAllEndDate,
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_Delete,
 
+                        PermissionNames.Mezon_Token,
+                        PermissionNames.Mezon_Token_View,
+                        PermissionNames.Mezon_Token_Create,
+                        PermissionNames.Mezon_Token_Delete,
+                        PermissionNames.Mezon_Token_DeleteAll,
+                        PermissionNames.Mezon_Token_Edit,
+                        PermissionNames.Mezon_Token_Export,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
+
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
                         PermissionNames.Payroll_Create,
@@ -1228,6 +1262,7 @@ namespace HRMv2.Authorization
 
 
                         PermissionNames.Payroll_Payslip_View,
+                         PermissionNames.Payroll_Payslip_SplitBenefitbyToken,
                         PermissionNames.Payroll_Payslip_CalculateSalary,
                         PermissionNames.Payroll_Payslip_SendMailAll,
                         PermissionNames.Payroll_Payslip_Add,
@@ -1619,6 +1654,16 @@ namespace HRMv2.Authorization
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_UpdateAllEndDate,
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_Delete,
 
+                          PermissionNames.Mezon_Token,
+                        PermissionNames.Mezon_Token_View,
+                        PermissionNames.Mezon_Token_Create,
+                        PermissionNames.Mezon_Token_Delete,
+                        PermissionNames.Mezon_Token_DeleteAll,
+                        PermissionNames.Mezon_Token_Edit,
+                        PermissionNames.Mezon_Token_Export,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
+
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
                         PermissionNames.Payroll_Create,
@@ -1631,6 +1676,7 @@ namespace HRMv2.Authorization
 
 
                         PermissionNames.Payroll_Payslip_View,
+                        PermissionNames.Payroll_Payslip_SplitBenefitbyToken,
                         PermissionNames.Payroll_Payslip_CalculateSalary,
                         PermissionNames.Payroll_Payslip_SendMailAll,
                         PermissionNames.Payroll_Payslip_Add,
@@ -2021,6 +2067,17 @@ namespace HRMv2.Authorization
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_UpdateAllEndDate,
                         PermissionNames.Benefit_BenefitDetail_TabEmployee_Delete,
 
+                          PermissionNames.Mezon_Token,
+                        PermissionNames.Mezon_Token_View,
+                        PermissionNames.Mezon_Token_Create,
+                        PermissionNames.Mezon_Token_Delete,
+                        PermissionNames.Mezon_Token_DeleteAll,
+                        PermissionNames.Mezon_Token_Edit,
+                        PermissionNames.Mezon_Token_Export,
+                        PermissionNames.Mezon_Token_SendToken,
+                        PermissionNames.Mezon_Token_SendTokenAll,
+
+
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
                         PermissionNames.Payroll_Create,
@@ -2031,6 +2088,7 @@ namespace HRMv2.Authorization
 
 
                         PermissionNames.Payroll_Payslip_View,
+                          PermissionNames.Payroll_Payslip_SplitBenefitbyToken,     
                         PermissionNames.Payroll_Payslip_CalculateSalary,
                         PermissionNames.Payroll_Payslip_SendMailAll,
                         PermissionNames.Payroll_Payslip_Add,
@@ -2447,6 +2505,16 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.Refund_RefundDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
                   new SystemPermission{ Name =  PermissionNames.Refund_RefundDetail_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Delete"},
 
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Meon Token"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Create"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token View"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_DeleteAll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete All"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_Edit,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Payslip Token"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_Export,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Export"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendToken, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendToken"},
+                  new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendTokenAll, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendAll Token"},
+
                   new SystemPermission{ Name =  PermissionNames.Payroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Payroll"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
@@ -2463,6 +2531,7 @@ namespace HRMv2.Authorization
 
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Payslip"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_SplitBenefitbyToken ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "SplitBenefitby Token"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_CalculateSalary ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Calculate Salary"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_SendMailAll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Send Mail All "},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_Add ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Add"},
@@ -3059,6 +3128,22 @@ namespace HRMv2.Authorization
                       },
                     }
                 },
+                new SystemPermission{Name = PermissionNames.Mezon_Token,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token",
+                      Childrens = new List<SystemPermission> 
+                      {
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Create"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token View "},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_Delete ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_DeleteAll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Delete All"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendToken, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendToken"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendTokenAll,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendAll Token"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Edit"},
+                          new SystemPermission{ Name =  PermissionNames.Mezon_Token_Export ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Export"},
+                      } 
+                      
+                }
+                
+                ,
                 new SystemPermission{ Name =  PermissionNames.Bonus ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Bonus",
                     Childrens = new List<SystemPermission>()
                     {
@@ -3183,6 +3268,7 @@ namespace HRMv2.Authorization
                             Childrens = new List<SystemPermission>()
                             {
                                 new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_SplitBenefitbyToken ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "SplitBenefitby Token"},
                                 new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_CalculateSalary ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Calculate Salary"},
                                 new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_SendMailAll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Send Mail All"},
                                 new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_Add ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Add"},

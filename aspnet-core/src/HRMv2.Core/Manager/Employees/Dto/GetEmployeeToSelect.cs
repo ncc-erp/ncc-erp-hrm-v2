@@ -12,4 +12,10 @@ namespace HRMv2.Manager.Employees.Dto
         public string Name => Email.Split('@')[0];
         public long Value {  get; set; }
     }
+    public class GetEmployeeExceptStausQuit
+    {
+        public string Email { get; set; }
+        public string FullName { get; set; }
+        public long Id { get; set; }
+    }
 }

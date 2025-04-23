@@ -11,6 +11,15 @@ export interface ConfigurationDto {
     komuService:KomuSettingDto,
     hrmService: SettingDto,
     oauth2Mezon: Oauth2Mezon,
+    botHRM: BotHRMSetting,
+}
+
+export interface BotHRMSetting{
+    nameBot: string,
+    applicationToken: string,
+    applicationId: string,
+    urlAuthenticate: string,
+    urlSentToken: string,
 }
 export interface Oauth2Mezon{
     client_Id: string,

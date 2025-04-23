@@ -59,7 +59,6 @@ namespace HRMv2.WebServices
             var strInput = JsonConvert.SerializeObject(input);
             var logInfo = $"Post: BaseAddress [{httpClient.BaseAddress}], url: {url}, input: {strInput}";
             var contentString = new StringContent(strInput, Encoding.UTF8, "application/json");
-
             try
             {
                 Logger.LogInformation(logInfo);
@@ -70,6 +69,29 @@ namespace HRMv2.WebServices
                     Logger.LogInformation($"{logInfo} response: {responseContent}");
                     return JsonConvert.DeserializeObject<T>(responseContent);
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"{logInfo} error: {ex.Message}");
+            }
+            return default;
+        }
+
+        protected virtual async Task<T> PostAllowErrorResponseAsync<T>(string url, object input)
+        {
+            var strInput = JsonConvert.SerializeObject(input);
+            var logInfo = $"Post: BaseAddress [{httpClient.BaseAddress}], url: {url}, input: {strInput}";
+            var contentString = new StringContent(strInput, Encoding.UTF8, "application/json");
+            try
+            {
+                Logger.LogInformation(logInfo);
+                var response = await httpClient.PostAsync(url, contentString);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                Logger.LogInformation($"{logInfo} response ({(int)response.StatusCode}): {responseContent}");
+
+                var result = JsonConvert.DeserializeObject<T>(responseContent);
+                return result;
             }
             catch (Exception ex)
             {

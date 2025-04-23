@@ -2924,6 +2924,67 @@ namespace HRMv2.Migrations
                     b.ToTable("Levels");
                 });
 
+            modelBuilder.Entity("HRMv2.Entities.MezonToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<long>("ReferenceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("SentToEmployeeAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorUserId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("LastModifierUserId");
+
+                    b.ToTable("MezonTokens");
+                });
+
             modelBuilder.Entity("HRMv2.Entities.Payroll", b =>
                 {
                     b.Property<long>("Id")
@@ -4744,6 +4805,29 @@ namespace HRMv2.Migrations
                         .HasForeignKey("LastModifierUserId");
 
                     b.Navigation("CreatorUser");
+
+                    b.Navigation("LastModifierUser");
+                });
+
+            modelBuilder.Entity("HRMv2.Entities.MezonToken", b =>
+                {
+                    b.HasOne("HRMv2.Authorization.Users.User", "CreatorUser")
+                        .WithMany()
+                        .HasForeignKey("CreatorUserId");
+
+                    b.HasOne("HRMv2.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HRMv2.Authorization.Users.User", "LastModifierUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifierUserId");
+
+                    b.Navigation("CreatorUser");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("LastModifierUser");
                 });

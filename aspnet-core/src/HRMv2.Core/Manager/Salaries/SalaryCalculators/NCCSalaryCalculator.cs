@@ -593,7 +593,8 @@ namespace HRMv2.Manager.Salaries.SalaryCalculators
                 Type = PayslipDetailType.Benefit,
                 Money = CommonUtil.RoundMoneyVND(money),
                 Note = input.Note,
-                IsProjectCost = true
+                IsProjectCost = true,
+                ReferenceId = input.ReferenceId,
             };
         }
 
@@ -620,7 +621,8 @@ namespace HRMv2.Manager.Salaries.SalaryCalculators
                 Money = CommonUtil.RoundMoneyVND(money),
                 Note = note,
                 IsProjectCost = true,
-                IsExpired = isExpire
+                IsExpired = isExpire,
+                ReferenceId = input.ReferenceId
             };
         }
 
@@ -650,7 +652,8 @@ namespace HRMv2.Manager.Salaries.SalaryCalculators
                 Money = CommonUtil.RoundMoneyVND(money),
                 Note = note,
                 IsProjectCost = true,
-                IsExpired = isExpire
+                IsExpired = isExpire,
+                ReferenceId = input.ReferenceId,
             };
         }
 
