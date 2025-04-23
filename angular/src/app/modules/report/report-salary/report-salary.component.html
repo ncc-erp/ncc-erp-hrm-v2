@@ -154,8 +154,13 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let item of resultList | paginate: { id: 'report', itemsPerPage: pageSize, currentPage: pageNumber, totalItems: totalItems }; let i = index">
-                          <td class="text-center sticky-col ">{{ i + 1 }}</td>
+                        <tr *ngFor="let item of resultList | paginate: {
+                          id: 'server',
+                          itemsPerPage: pageSize,
+                          currentPage: pageNumber,
+                          totalItems: totalItems
+                        }; let i =index">
+                          <td class="text-center sticky-col ">{{(pageNumber-1)*pageSize+i+1}}</td>
                           <td *ngIf="item.infoEmployee" class="sticky-col">    
                             <app-user-info     
                               [userData]="{
@@ -176,8 +181,21 @@
                             {{ item.totalSalary | moneyFormat}}
                           </td>
                           <ng-container *ngFor="let month of applyDates">
-                            <td style="text-align: right; min-width: 120px;">{{ salaryByApplyDate[month][item.infoEmployee.employeeId] | moneyFormat}}</td>
+                            <td style="text-align: right; min-width: 120px;">
+                              <ng-container *ngIf="salaryByApplyDate[month]?.[item.infoEmployee.employeeId] as salary">
+                                {{ salary | moneyFormat }}
+                              </ng-container>
+                            </td>
                           </ng-container>
+                          
+                          
+                        </tr>
+                        <tr style="font-weight: bold;">
+                          <td colspan="2" style="text-align: center;" class="sticky-col">Tổng cộng</td>
+                          <td style="text-align: right;">{{ allTotalSalary | moneyFormat }}</td>
+                          <td style="text-align: right;" *ngFor="let month of applyDates">
+                            {{ salaryByApplyDateWithoutPaging[month] | moneyFormat }}
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -185,7 +203,10 @@
                 </div>
               </div>
             </div>
-            
+            <div class="card-footer">
+              <pagination-control [totalItems]="totalItems" [pageSize]="pageSizeType"
+                  (pageAction)="pageControlActions($event)"></pagination-control>
+          </div>
           </div>
     </div>
 </div>

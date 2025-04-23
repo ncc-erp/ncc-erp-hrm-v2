@@ -1,3 +1,4 @@
+import { ResultReport } from './../../../service/model/report/reportSalary.dto';
 import { ReportService } from './../../../service/api/report/report.service';
 import { TeamService } from '@app/service/api/categories/team.service';
 import { GetEmployeeBasicInfo } from './../../../service/model/employee/employee.dto';
@@ -66,6 +67,8 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public listApplyDate: any[] = [];
   public salaryByApplyDate: any;
 
+  public allTotalSalary : number;
+
   @Output() onMultiFilterWithCondition? = new EventEmitter()
   public filterTypeEnum = APP_ENUMS.FilterTypeEnum;
   ngOnInit(): void {
@@ -103,29 +106,38 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
     } as any;
   
     this.requestItem = input;
-  
+
     this.subscription.push(
       this.reportService.GetListReportSalary(input)
         .pipe(
           finalize(() => {
-            this.isLoading = false; 
+            this.isLoading = false; ;
             finishedCallback();
           })
         )
         .subscribe({
           next: (rs) => {
-            this.resultList = rs.result;
-            this.applyDates = [...new Set(rs.result.flatMap(employee =>
-              employee.resultReports.map(report => report.payrollName)
-            ))].sort();
-  
-            this.salaryByApplyDate = rs.result.reduce((acc, employee) => {
+            this.resultList = rs.result.result.items;
+            this.allTotalSalary = rs.result.allTotalSalary;         
+            this.applyDates = rs.result.payroll;
+
+         
+          this.salaryByApplyDate = rs.result.result.items.reduce((acc, employee) => {
               employee.resultReports.forEach(report => {
                 acc[report.payrollName] = acc[report.payrollName] || {};
                 acc[report.payrollName][employee.infoEmployee.employeeId] = report.salary;
               });
               return acc;
             }, {});
+
+            this.salaryByApplyDateWithoutPaging = rs.result.resultReport.reduce((acc, report) => {
+              acc[report.payrollName] = (acc[report.payrollName] || 0) + report.salary;
+              return acc;
+            }, {});
+            
+            this.allTotalSalary = rs.result.resultReport.reduce((sum , report) => sum + report.salary,0);
+            
+            this.showPaging(rs.result.result, pageNumber)
           },
           error: (err) => {
             console.error('Error:', err);
@@ -137,6 +149,10 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail);
     }
 
+
+
+
+    
   public getPayrollWithStatusExecute(){
     this.payrollService.GetPayrollWithStatusExecute().subscribe(res=>{
       this.listPayrollWihStatusExecute = res.result;
