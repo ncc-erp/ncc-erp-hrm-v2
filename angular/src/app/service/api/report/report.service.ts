@@ -20,7 +20,7 @@ export class ReportService extends BaseApiService {
   public GetListReportSalary(input: any): Observable<ApiResponseDto<any>> {
      return this.processPost(`GetListReportSalary`,input);
    }
-
+   
    public ExportReportSalary(input: any): Observable<ApiResponseDto<any>> {
     return this.processPost(`ExportReportSalary`,input);  
    }

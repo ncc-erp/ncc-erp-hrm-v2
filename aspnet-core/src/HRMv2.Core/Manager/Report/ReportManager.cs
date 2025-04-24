@@ -5,6 +5,7 @@ using HRMv2.Manager.Benefits.Dto;
 using HRMv2.Manager.Employees;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Report.Dto;
+using HRMv2.Manager.Salaries.Dto;
 using HRMv2.Manager.Salaries.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips;
 using HRMv2.Manager.Salaries.Payslips.Dto;
@@ -70,6 +71,7 @@ namespace HRMv2.Manager.Report
                        EmployeeId = s.EmployeeId,
                        FullName = s.FullName,
                        Sex = s.Sex,
+                       TeamIds = s.TeamIds,
                    }).First(),
                    ResultReports = x.Select(r => new ResultReport
                    {
@@ -120,7 +122,7 @@ namespace HRMv2.Manager.Report
             return query;
     
         }
-        public async Task<List<ReportSalaryDto>> GetListReportSalary(InputMultiFilterReportSalaryPagingDto input)
+        public List<ReportSalaryDto> GetAllReportFilter(InputMultiFilterReportSalaryPagingDto input)
         {
             var query = payslipManager.QueryAllPayslip();
 
@@ -136,9 +138,54 @@ namespace HRMv2.Manager.Report
             query =  ApplyFilterPaySlip(query,input);
             
             var result = GetReportSalary(query);
-            return result;
-
+            return  result;
         }
+
+        public async Task<ResultReportSalary> GetAllPaging(InputMultiFilterReportSalaryPagingDto input)
+        {
+
+            var result = GetAllReportFilter(input);
+            var totalSalaryByMonth = result.SelectMany(x => x.ResultReports)
+                .GroupBy(x => x.PayrollName)
+                .Select(t => new ResultReport
+                {
+                    PayrollName = t.Key,
+                    Salary = t.Sum(r => r.Salary),
+                }).ToList();
+
+
+            var totalCount = result.Count;
+
+            var dicPayrollIdToName = GetDicPayrollIdToName();
+            var listPayroll = new List<string>();
+
+            if (input.PayrollIds == null || input.PayrollIds.Count == 0)
+            {
+                listPayroll = result
+                    .SelectMany(x => x.ResultReports)
+                    .Select(r => r.PayrollName)
+                    .Distinct()
+                    .ToList();
+            }else{
+                listPayroll = input.PayrollIds
+                    .Where(id => dicPayrollIdToName.ContainsKey(id))
+                    .Select(id => dicPayrollIdToName[id])
+                    .ToList();
+            }
+
+            var pagedResult = result.Skip(input.GridParam.SkipCount)
+                .Take(input.GridParam.MaxResultCount)
+                .ToList();
+
+            return new ResultReportSalary
+            {
+                Result = new GridResult<ReportSalaryDto>(pagedResult, totalCount),
+                Payroll = listPayroll,
+                ResultReport = totalSalaryByMonth
+
+            };
+        }
+
         public async Task<FileBase64Dto> ExportReportSalary(InputMultiFilterReportSalaryPagingDto input) 
         {
             var templateFilePath = Path.Combine(templateFolder, "Export-ReportSalary.xlsx");
@@ -147,7 +194,7 @@ namespace HRMv2.Manager.Report
                 using (var package = new ExcelPackage(memoryStream))
                 {
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                    FillDataToExport(package, input);
+                    await FillDataToExport(package, input);
 
                     string fileBase64 = Convert.ToBase64String(package.GetAsByteArray());
                     return new FileBase64Dto
@@ -160,12 +207,23 @@ namespace HRMv2.Manager.Report
             }
         }
        
+        private string GetNameTeam(List<long> teamIds,Dictionary<long,string> teamDic)
+        {
+            return string.Join(", ", teamIds
+                .Where(x => teamDic.ContainsKey(x))
+                .Select(x => teamDic[x]));
+        }
+
         public async Task FillDataToExport(ExcelPackage package, InputMultiFilterReportSalaryPagingDto input)
         {
-            var reportSalarys = await GetListReportSalary(input);
+            input.GridParam.MaxResultCount = int.MaxValue;
+            input.GridParam.SkipCount = 0;
+
+            var reportData = await GetAllPaging(input);
+            var reportSalarys = reportData.Result.Items;
             var worksheet = package.Workbook.Worksheets[0];
             var rowIndex = 2;
-            var columnIndex = 4;
+            var columnIndex = 9;
 
             var columns = reportSalarys
                 .SelectMany(x => x.ResultReports.Select(s => s.PayrollName))
@@ -181,12 +239,25 @@ namespace HRMv2.Manager.Report
                 columnIndex++;
             }
 
+            var dicEmployeeTeam = workScope.GetAll<Team>()
+               .ToDictionary(x => x.Id, x => x.Name);
+
             foreach (var report in reportSalarys)
-            {
+            {            
+                var team = GetNameTeam(report.InfoEmployee.TeamIds, dicEmployeeTeam);
                 worksheet.Cells[rowIndex, 1].Value = rowIndex - 1;
                 worksheet.Cells[rowIndex, 2].Value = report.InfoEmployee.Email;
-                worksheet.Cells[rowIndex, 3].Value = report.TotalSalary;
-                var salaryMap = report.ResultReports.ToDictionary(r => r.PayrollName, r => r.Salary);
+                worksheet.Cells[rowIndex, 3].Value = report.InfoEmployee.BranchInfo.Name;
+                worksheet.Cells[rowIndex, 4].Value = report.InfoEmployee.JobPositionInfo.Name;
+                worksheet.Cells[rowIndex, 5].Value = report.InfoEmployee.LevelInfo.Name;
+                worksheet.Cells[rowIndex, 6].Value = report.InfoEmployee.UserTypeInfo.Name;
+                worksheet.Cells[rowIndex, 7].Value = team;
+                worksheet.Cells[rowIndex, 8].Value = report.TotalSalary;
+
+                var salaryMap = report.ResultReports
+                      .GroupBy(r => r.PayrollName)
+                      .ToDictionary(g => g.Key, g => g.First().Salary);
+
 
                 foreach (var date in columns)
                 {
@@ -197,6 +268,26 @@ namespace HRMv2.Manager.Report
                 }
                 rowIndex++;
             }
+
+            var totalAllSalary = reportData.ResultReport.Sum(x => x.Salary);
+
+            worksheet.Cells[rowIndex, 1].Value = "Tổng";
+            worksheet.Cells[rowIndex, 1, rowIndex, 7].Merge = true;
+            worksheet.Row(rowIndex).Style.Font.Bold = true;
+            worksheet.Cells[rowIndex, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            worksheet.Cells[rowIndex, 8].Value = totalAllSalary;
+
+            var totalPerMonth = reportData.ResultReport
+                                         .GroupBy(x => x.PayrollName)
+                                         .ToDictionary(x => x.Key, x => x.Sum(a => a.Salary));
+            foreach (var date in columns)
+            {
+                if (totalPerMonth .ContainsKey(date))
+                {
+                    worksheet.Cells[rowIndex, columnMappings[date]].Value = totalPerMonth[date];
+                }
+            }
+
         }
 
     }
