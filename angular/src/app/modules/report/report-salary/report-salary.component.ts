@@ -1,3 +1,4 @@
+import { ResultReport } from './../../../service/model/report/reportSalary.dto';
 import { ReportService } from './../../../service/api/report/report.service';
 import { TeamService } from '@app/service/api/categories/team.service';
 import { GetEmployeeBasicInfo } from './../../../service/model/employee/employee.dto';
@@ -52,9 +53,9 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public requestItem: any;
   public listTeam: any = [];
   public levelIds: number[]=[];
-  public levelPayslipId :number[]= [];
-  public jobPositionPayslipId : number[]=[];
-  public branchPayslipId : number[] =[];
+  public levelPayslipIds :number[]= [];
+  public jobPositionPayslipIds : number[]=[];
+  public branchPayslipIds : number[] =[];
   public teamPayslipIds: number[] = [];
   public userTypePayslipIds: number[] = [];
 
@@ -65,6 +66,8 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public applyDates : any;
   public listApplyDate: any[] = [];
   public salaryByApplyDate: any;
+
+  public allTotalSalary : number;
 
   @Output() onMultiFilterWithCondition? = new EventEmitter()
   public filterTypeEnum = APP_ENUMS.FilterTypeEnum;
@@ -96,36 +99,45 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       payrollIds: this.payrollIds,
       employeeIds: this.employeeIds,
       levelIds: this.levelIds,
-      levelPayslipId: this.levelPayslipId,
-      jobPositionPayslipId: this.jobPositionPayslipId,
-      branchPayslipId: this.branchPayslipId,
+      levelPayslipIds: this.levelPayslipIds,
+      jobPositionPayslipIds: this.jobPositionPayslipIds,
+      branchPayslipIds: this.branchPayslipIds,
       gridParam: request
     } as any;
   
     this.requestItem = input;
-  
+
     this.subscription.push(
       this.reportService.GetListReportSalary(input)
         .pipe(
           finalize(() => {
-            this.isLoading = false; 
+            this.isLoading = false; ;
             finishedCallback();
           })
         )
         .subscribe({
           next: (rs) => {
-            this.resultList = rs.result;
-            this.applyDates = [...new Set(rs.result.flatMap(employee =>
-              employee.resultReports.map(report => report.payrollName)
-            ))].sort();
-  
-            this.salaryByApplyDate = rs.result.reduce((acc, employee) => {
+            this.resultList = rs.result.result.items;
+            this.allTotalSalary = rs.result.allTotalSalary;         
+            this.applyDates = rs.result.payroll;
+
+         
+          this.salaryByApplyDate = rs.result.result.items.reduce((acc, employee) => {
               employee.resultReports.forEach(report => {
                 acc[report.payrollName] = acc[report.payrollName] || {};
                 acc[report.payrollName][employee.infoEmployee.employeeId] = report.salary;
               });
               return acc;
             }, {});
+
+            this.salaryByApplyDateWithoutPaging = rs.result.resultReport.reduce((acc, report) => {
+              acc[report.payrollName] = (acc[report.payrollName] || 0) + report.salary;
+              return acc;
+            }, {});
+            
+            this.allTotalSalary = rs.result.resultReport.reduce((sum , report) => sum + report.salary,0);
+            
+            this.showPaging(rs.result.result, pageNumber)
           },
           error: (err) => {
             console.error('Error:', err);
@@ -137,6 +149,10 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail);
     }
 
+
+
+
+    
   public getPayrollWithStatusExecute(){
     this.payrollService.GetPayrollWithStatusExecute().subscribe(res=>{
       this.listPayrollWihStatusExecute = res.result;
@@ -199,7 +215,12 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
     this.branchIds = ids;
     this.onSearchEnter(this.searchText)
   }
-   
+  onBranchPayslipEmplyeeSelect(ids: number[]) {
+    this.branchPayslipIds = ids;
+    this.onSearchEnter(this.searchText)
+  } 
+
+
   onEmployeeSelect(ids: number[]) {
     this.employeeIds = ids;
     this.onSearchEnter(this.searchText)
@@ -212,27 +233,25 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
    this.userTypePayslipIds = ids;
    this.onSearchEnter(this.searchText)
   }
+
  onJobPositionSelect(ids: number[]) {
     this.jobPositionsId = ids;
     this.onSearchEnter(this.searchText)
   }
+  onJobPositionPayslipEmplyeeSelect(ids: number[]) {
+    this.jobPositionPayslipIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+
   onTableMultiSelectLevelIdFilter(ids: number[]) {
     this.levelIds = ids;
     this.onSearchEnter(this.searchText)
   }
   onMultiSelectPayslipEmployeeLevelFilter(ids: number[]) {
-    this.levelPayslipId = ids;
+    this.levelPayslipIds = ids;
     this.onSearchEnter(this.searchText)
   }
  
-  onBranchPayslipEmplyeeSelect(ids: number[]) {
-    this.branchPayslipId = ids;
-    this.onSearchEnter(this.searchText)
-  }
-  onJobPositionPayslipEmplyeeSelect(ids: number[]) {
-    this.jobPositionPayslipId = ids;
-    this.onSearchEnter(this.searchText)
-  }
   onPayrollSelect(ids: number[]) {
     this.payrollIds = ids;
     this.onSearchEnter(this.searchText)
