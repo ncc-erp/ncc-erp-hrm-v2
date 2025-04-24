@@ -51,5 +51,6 @@ namespace HRMv2.Manager.Report.Dto
         public BadgeInfoDto LevelInfo { get; set; }
         public Sex Sex { get; set; }
         public string Email { get; set; }
+        public List<long> TeamIds { get; set; }
     }
 }
