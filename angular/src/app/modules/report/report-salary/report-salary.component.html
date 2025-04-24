@@ -144,13 +144,20 @@
                   <div>
                     <table  [busy]="isLoading" class="table table-hover text-nowrap">
                       <thead>
-                        <tr>
-                          <th style="width: 50px;" class="sticky-col">#</th>
-                          <th class="pointer sticky-col" (click)="onSortChange('email')" style="min-width: 350px;">Employee</th>
-                          <th style="min-width: 200px;">Tổng</th>
+                        <tr class="header-row">
+                          <th class="sticky-col">#</th>
+                          <th class="sticky-col">Employee</th>
+                          <th>Tổng</th>
                           <ng-container *ngFor="let month of applyDates">
-                            <th style="min-width: 120px;">{{ month }}</th>
+                            <th>{{ month }}</th>
                           </ng-container>
+                        </tr>
+                        <tr class="total-row">
+                          <td class="sticky-col" colspan="2" style="text-align: center;">Tổng cộng</td>
+                          <td style="text-align: right;">{{ allTotalSalary | moneyFormat }}</td>
+                          <td style="text-align: right;" *ngFor="let month of applyDates">
+                            {{ salaryByApplyDateWithoutPaging[month] | moneyFormat }}
+                          </td>
                         </tr>
                       </thead>
                       <tbody>
@@ -189,13 +196,6 @@
                           </ng-container>
                           
                           
-                        </tr>
-                        <tr style="font-weight: bold;">
-                          <td colspan="2" style="text-align: center;" class="sticky-col">Tổng cộng</td>
-                          <td style="text-align: right;">{{ allTotalSalary | moneyFormat }}</td>
-                          <td style="text-align: right;" *ngFor="let month of applyDates">
-                            {{ salaryByApplyDateWithoutPaging[month] | moneyFormat }}
-                          </td>
                         </tr>
                       </tbody>
                     </table>

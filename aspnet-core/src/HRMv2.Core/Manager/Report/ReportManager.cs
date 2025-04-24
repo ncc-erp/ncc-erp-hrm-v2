@@ -207,14 +207,11 @@ namespace HRMv2.Manager.Report
             }
         }
        
-        private string GetNameTeam(List<long> teamIds)
+        private string GetNameTeam(List<long> teamIds,Dictionary<long,string> teamDic)
         {
-            var dicEmployeeTeam = workScope.GetAll<Team>()
-                   .ToDictionary(x => x.Id, x => x.Name);
-
             return string.Join(", ", teamIds
-                .Where(x => dicEmployeeTeam.ContainsKey(x))
-                .Select(x => dicEmployeeTeam[x]));
+                .Where(x => teamDic.ContainsKey(x))
+                .Select(x => teamDic[x]));
         }
 
         public async Task FillDataToExport(ExcelPackage package, InputMultiFilterReportSalaryPagingDto input)
@@ -242,15 +239,19 @@ namespace HRMv2.Manager.Report
                 columnIndex++;
             }
 
+            var dicEmployeeTeam = workScope.GetAll<Team>()
+               .ToDictionary(x => x.Id, x => x.Name);
+
             foreach (var report in reportSalarys)
             {            
+                var team = GetNameTeam(report.InfoEmployee.TeamIds, dicEmployeeTeam);
                 worksheet.Cells[rowIndex, 1].Value = rowIndex - 1;
                 worksheet.Cells[rowIndex, 2].Value = report.InfoEmployee.Email;
                 worksheet.Cells[rowIndex, 3].Value = report.InfoEmployee.BranchInfo.Name;
                 worksheet.Cells[rowIndex, 4].Value = report.InfoEmployee.JobPositionInfo.Name;
                 worksheet.Cells[rowIndex, 5].Value = report.InfoEmployee.LevelInfo.Name;
                 worksheet.Cells[rowIndex, 6].Value = report.InfoEmployee.UserTypeInfo.Name;
-                worksheet.Cells[rowIndex, 7].Value = GetNameTeam(report.InfoEmployee.TeamIds);
+                worksheet.Cells[rowIndex, 7].Value = team;
                 worksheet.Cells[rowIndex, 8].Value = report.TotalSalary;
 
                 var salaryMap = report.ResultReports

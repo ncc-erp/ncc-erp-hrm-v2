@@ -53,9 +53,9 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   public requestItem: any;
   public listTeam: any = [];
   public levelIds: number[]=[];
-  public levelPayslipId :number[]= [];
-  public jobPositionPayslipId : number[]=[];
-  public branchPayslipId : number[] =[];
+  public levelPayslipIds :number[]= [];
+  public jobPositionPayslipIds : number[]=[];
+  public branchPayslipIds : number[] =[];
   public teamPayslipIds: number[] = [];
   public userTypePayslipIds: number[] = [];
 
@@ -99,9 +99,9 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
       payrollIds: this.payrollIds,
       employeeIds: this.employeeIds,
       levelIds: this.levelIds,
-      levelPayslipId: this.levelPayslipId,
-      jobPositionPayslipId: this.jobPositionPayslipId,
-      branchPayslipId: this.branchPayslipId,
+      levelPayslipIds: this.levelPayslipIds,
+      jobPositionPayslipIds: this.jobPositionPayslipIds,
+      branchPayslipIds: this.branchPayslipIds,
       gridParam: request
     } as any;
   
@@ -215,7 +215,12 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
     this.branchIds = ids;
     this.onSearchEnter(this.searchText)
   }
-   
+  onBranchPayslipEmplyeeSelect(ids: number[]) {
+    this.branchPayslipIds = ids;
+    this.onSearchEnter(this.searchText)
+  } 
+
+
   onEmployeeSelect(ids: number[]) {
     this.employeeIds = ids;
     this.onSearchEnter(this.searchText)
@@ -228,27 +233,25 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
    this.userTypePayslipIds = ids;
    this.onSearchEnter(this.searchText)
   }
+
  onJobPositionSelect(ids: number[]) {
     this.jobPositionsId = ids;
     this.onSearchEnter(this.searchText)
   }
+  onJobPositionPayslipEmplyeeSelect(ids: number[]) {
+    this.jobPositionPayslipIds = ids;
+    this.onSearchEnter(this.searchText)
+  }
+
   onTableMultiSelectLevelIdFilter(ids: number[]) {
     this.levelIds = ids;
     this.onSearchEnter(this.searchText)
   }
   onMultiSelectPayslipEmployeeLevelFilter(ids: number[]) {
-    this.levelPayslipId = ids;
+    this.levelPayslipIds = ids;
     this.onSearchEnter(this.searchText)
   }
  
-  onBranchPayslipEmplyeeSelect(ids: number[]) {
-    this.branchPayslipId = ids;
-    this.onSearchEnter(this.searchText)
-  }
-  onJobPositionPayslipEmplyeeSelect(ids: number[]) {
-    this.jobPositionPayslipId = ids;
-    this.onSearchEnter(this.searchText)
-  }
   onPayrollSelect(ids: number[]) {
     this.payrollIds = ids;
     this.onSearchEnter(this.searchText)
