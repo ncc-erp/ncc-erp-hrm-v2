@@ -133,7 +133,7 @@ export class ChartSelectComponent {
   export interface IChartDataType {
     name: string;
     value: number;
-    dataType: number;
+    dataType: any;
     hidden: boolean;
   }
 

@@ -73,7 +73,12 @@
             <!-- <span class="data-type-label">{{
               getDataTypeLabel(data.dataType)
             }}</span> -->
+            <span class="data-name" *ngIf="data.dataType != null">{{
+              truncateNameOnMatOption(data.dataType, 70)
+            }}</span>
+
           </div>
+
         </mat-option>
       </div>
     </mat-select>

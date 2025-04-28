@@ -3171,6 +3171,13 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public List<GetPayrollApply> GetPayrollForEmployee(long employeeId) 
         {
+            var dicLevel = WorkScope.GetAll<Level>()
+                 .ToDictionary(x => x.Id, x => x.Name);
+            var dicPosition = WorkScope.GetAll<JobPosition>()
+                .ToDictionary(x => x.Id, x => x.Name);
+            var dicBranch = WorkScope.GetAll<Branch>()
+                .ToDictionary(x => x.Id, x => x.Name);
+
             var listPayroll =  WorkScope.GetAll<Payslip>()
                 .Include(x => x.Payroll)
                 .Where(x => x.EmployeeId == employeeId)
@@ -3178,6 +3185,10 @@ namespace HRMv2.Manager.Salaries.Payslips
                 {
                     Value = x.PayrollId,
                     ApplyDate = x.Payroll.ApplyMonth,
+                    UserType = CommonUtil.GetUserTypeNameVN(x.UserType),
+                    Level = dicLevel[x.LevelId],
+                    JobPosition = dicPosition[x.JobPositionId],
+                    Branch = dicBranch[x.BranchId]
                 })
                 .ToList();
             return listPayroll;
@@ -3224,6 +3235,8 @@ namespace HRMv2.Manager.Salaries.Payslips
             listPayslip.ForEach(x => x.JobPositionId = input.JobPositionId);
             await WorkScope.UpdateRangeAsync(listPayslip);
         }
+
+
 
     }
 }

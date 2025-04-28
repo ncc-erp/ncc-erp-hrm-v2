@@ -10,6 +10,10 @@ namespace HRMv2.Manager.Salaries.Payslips.Dto
     {
         public long Value { get; set; }
         public DateTime ApplyDate { get; set; }
+        public string JobPosition { get; set; }
+        public string Level { get; set; }
+        public string Branch { get; set; }
+        public string UserType { get; set; }
         public string Name => ApplyDate.ToString("yyyy-MM");
     }
 }

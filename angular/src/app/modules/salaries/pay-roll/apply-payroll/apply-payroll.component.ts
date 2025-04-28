@@ -46,8 +46,39 @@ public payrollIds: number[] = [];
   public getListPayroll(){
       this.payslipService.getPayrollForEmployee(this.payslip.employeeId).subscribe((res: any) => {
         this.listPayroll = res.result;
-        console.log(this.listPayroll);
-      }     
+        if(this.selectedBranchId != this.payslip.branchId) {
+          this.listPayroll = this.listPayroll.map((item: any) => ({
+            value: item.value,
+            name : item.name,
+            dataType : item.branch
+        }))
+      } 
+    
+      if(this.selectedLevelId != this.payslip.levelId) {
+        this.listPayroll = this.listPayroll.map((item: any) => ({
+          value: item.value,
+          name : item.name,
+          dataType : item.level
+      }))
+    }  
+
+    if(this.selectedJobPositionid != this.payslip.jobPositionId) {
+      this.listPayroll = this.listPayroll.map((item: any) => ({
+        value: item.value,
+        name : item.name,
+        dataType : item.jobPosition
+    }))
+  }  
+
+  if(this.selectedUsertype != this.payslip.payslipUserType) {
+    this.listPayroll = this.listPayroll.map((item: any) => ({
+      value: item.value,
+      name : item.name,
+      dataType : item.userType
+  }))
+}  
+
+    }   
     );
   }
 
