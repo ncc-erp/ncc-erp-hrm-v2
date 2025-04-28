@@ -6,7 +6,19 @@
 >
     <app-dialog-header [dialogTitle]="title"> </app-dialog-header>
     <div class="pt-3 w-100">
-        <label> Apply Payroll</label>
+        <span *ngIf="isCheckUpdateBranch()">
+            Update Branch <strong>{{selectedBranchName}}</strong> for following Payroll:
+        </span>
+          <span *ngIf="isCheckUpdateLevel()">
+            Update Level <strong>{{selectedLevelName}}</strong> for following Payroll:
+          </span>
+          <span *ngIf="isCheckUpdateUserType()">
+            Update UserType <strong>{{selecteUserTypeName}}</strong> for following Payroll:
+          </span>
+          <span *ngIf="isCheckUpdateJobPosition()">
+            Update JobPosition <strong>{{selectedJobPositionName}}</strong> for following Payroll:
+          </span>
+
         <chart-select
             style="
                 margin-top: 8px;

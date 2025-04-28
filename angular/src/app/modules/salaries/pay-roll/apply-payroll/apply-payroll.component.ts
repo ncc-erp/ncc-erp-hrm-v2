@@ -24,6 +24,12 @@ public selectedLevelId : number;
 public selectedJobPositionid: number;
 public selectedUsertype : number;
 public payrollIds: number[] = [];
+
+public selecteUserTypeName: string;
+public selectedJobPositionName : string;
+public selectedLevelName : string;
+public selectedBranchName : string;
+
   constructor(injetor : Injector,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ApplyPayrollComponent>,private payslipService : PayslipService, private payrollService:PayRollService,
@@ -31,22 +37,47 @@ public payrollIds: number[] = [];
     super(injetor);
   }
   ngOnInit(): void {
-    this.title = "Choose Payroll Apply ";
+    this.title = this.data.payslip.email;
     this.payslip = this.data.payslip;
     this.defaultPayrollId[0] = this.data.payrollId
     this.selectedBranchId = this.data.selectedBrandId;
     this.selectedLevelId = this.data.selectedLevelId;
     this.selectedJobPositionid = this.data.selectedJobPositionId;
     this.selectedUsertype = this.data.selectedUsertype;
+    this.selecteUserTypeName = this.data.selecteUserTypeName;
+    this.selectedJobPositionName = this.data.selectedJobPositionName;
+    this.selectedLevelName = this.data.selectedLevelName;
+    this.selectedBranchName = this.data.selectedBranchName;
     this.getListPayroll();
-
+     
   }
 
+  isCheckUpdateBranch(){
+    if(this.selectedBranchId != this.payslip.branchId) {
+     return  true;
+    }
+  }
+
+  isCheckUpdateLevel(){
+    if(this.selectedLevelId != this.payslip.levelId) {
+      return true;
+    }
+  }
+  isCheckUpdateUserType(){
+    if(this.selectedUsertype != this.payslip.payslipUserType) {
+     return true;
+    }
+  }
+  isCheckUpdateJobPosition(){
+    if(this.selectedJobPositionid != this.payslip.jobPositionId) {
+     return true;
+    }
+  }
 
   public getListPayroll(){
       this.payslipService.getPayrollForEmployee(this.payslip.employeeId).subscribe((res: any) => {
         this.listPayroll = res.result;
-        if(this.selectedBranchId != this.payslip.branchId) {
+        if(this.isCheckUpdateBranch()) {
           this.listPayroll = this.listPayroll.map((item: any) => ({
             value: item.value,
             name : item.name,
@@ -54,7 +85,7 @@ public payrollIds: number[] = [];
         }))
       } 
     
-      if(this.selectedLevelId != this.payslip.levelId) {
+      if(this.isCheckUpdateLevel()) {
         this.listPayroll = this.listPayroll.map((item: any) => ({
           value: item.value,
           name : item.name,
@@ -62,7 +93,7 @@ public payrollIds: number[] = [];
       }))
     }  
 
-    if(this.selectedJobPositionid != this.payslip.jobPositionId) {
+    if(this.isCheckUpdateJobPosition()) {
       this.listPayroll = this.listPayroll.map((item: any) => ({
         value: item.value,
         name : item.name,
@@ -70,7 +101,7 @@ public payrollIds: number[] = [];
     }))
   }  
 
-  if(this.selectedUsertype != this.payslip.payslipUserType) {
+  if(this.isCheckUpdateUserType()) {
     this.listPayroll = this.listPayroll.map((item: any) => ({
       value: item.value,
       name : item.name,
@@ -86,16 +117,16 @@ public payrollIds: number[] = [];
     this.payrollIds = ids;
   }
   public send(){
-    if(this.selectedBranchId != this.payslip.branchId){
+    if(this.isCheckUpdateBranch()){
       this.updateBranch(this.payrollIds);
     }
-    if(this.selectedLevelId != this.payslip.levelId){
+    if(this.isCheckUpdateLevel()){
       this.updateLevel(this.payrollIds);
     }
-    if(this.selectedJobPositionid != this.payslip.jobPositionId){
+    if(this.isCheckUpdateJobPosition()){
       this.updateJobPosition(this.payrollIds);
     }
-    if(this.selectedUsertype != this.payslip.payslipUserType){
+    if(this.isCheckUpdateUserType()){
       this.updateUserType(this.payrollIds);
     }
   }

@@ -90,10 +90,10 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
   public payroll = {} as PayRollDto;
   public listPayslips: PaySlipDto[] = [];
   public employeeList: GetEmployeeDto[] = [];
-  public userTypeList: UserTypeDto[] = [];
-  public userLevelList: LevelDto[] = [];
-  public branchList: BranchDto[] = [];
-  public positionList: JobPositionDto[] = [];
+  public userTypeList: any[] = [];
+  public userLevelList: any[] = [];
+  public branchList: any[] = [];
+  public positionList: any[] = [];
   public teamList: TeamDto[] = [];
   public statusList: Object[] = [];
   public genderList: Object[] = [];
@@ -563,9 +563,11 @@ onSendDirectMessage(payslip: PaySlipDto){
   }
 
   onGetPayrollApplyUpdate(payslip){
+
     this.dialog.open(ApplyPayrollComponent,{
       width: "400px",
       disableClose: true,
+      
       data: {
         payslip: payslip,
         payrollId: this.payrollId,
@@ -573,8 +575,14 @@ onSendDirectMessage(payslip: PaySlipDto){
         selectedLevelId : this.selectedLevelId,
         selectedJobPositionId : this.selectedJobPositionId,
         selectedUsertype : this.selectedUsertype,
+        selectedBranchName: this.branchList.find(x => x.value == this.selectedBranchId)?.key || '',
+        selectedLevelName: this.userLevelList.find(x => x.value == this.selectedLevelId)?.key || '',
+        selectedJobPositionName: this.positionList.find(x => x.value == this.selectedJobPositionId)?.key || '',
+        selecteUserTypeName: this.userTypeList.find(x => x.value == this.selectedUsertype)?.key || ''
 
       }
+    
+    
     }).afterClosed().subscribe((rs) => {
       if (rs) {
         this.refresh()
