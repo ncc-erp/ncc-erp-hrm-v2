@@ -3128,5 +3128,102 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         }
 
+        public async Task UpdateBranchPayslip(UpdateBranchPayslip input)
+        {
+            var payslip =await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            if(payslip == null)
+            {
+                throw new UserFriendlyException("Payslip don`t exist !");
+            }
+            payslip.BranchId = input.BranchId;
+            await  WorkScope.UpdateAsync(payslip);
+        }
+        public async Task UpdateUserTypePayslip(UpdateUserTypePayslip input)
+        {
+            var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            if (payslip == null)
+            {
+                throw new UserFriendlyException("Payslip don`t exist !");
+            }
+            payslip.UserType = input.UserType;
+            await WorkScope.UpdateAsync(payslip);
+        }
+        public async Task UpdateLevelPayslip(UpdateLevelPayslip input)
+        {
+            var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            if (payslip == null)
+            {
+                throw new UserFriendlyException("Payslip don`t exist !");
+            }
+            payslip.LevelId = input.LevelId;
+            await WorkScope.UpdateAsync(payslip);
+        }
+        public async Task UpdatePositionPayslip(UpdatePositionPayslip input)
+        {
+            var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            if (payslip == null)
+            {
+                throw new UserFriendlyException("Payslip don`t exist !");
+            }
+            payslip.JobPositionId = input.JobPositionId;
+            await WorkScope.UpdateAsync(payslip);
+        }
+
+        public List<GetPayrollApply> GetPayrollForEmployee(long employeeId) 
+        {
+            var listPayroll =  WorkScope.GetAll<Payslip>()
+                .Include(x => x.Payroll)
+                .Where(x => x.EmployeeId == employeeId)
+                .Select(x => new GetPayrollApply
+                {
+                    Value = x.PayrollId,
+                    ApplyDate = x.Payroll.ApplyMonth,
+                })
+                .ToList();
+            return listPayroll;
+        }
+
+        public async Task UpdateBranchPayslipForPayroll(UpdateBranchEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.BranchId = input.BranchId);
+            await WorkScope.UpdateRangeAsync(listPayslip);
+        }
+
+        public async Task UpdateLevelPayslipForPayroll(UpdateLevelEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.LevelId = input.LevelId);
+            await WorkScope.UpdateRangeAsync(listPayslip);
+        }
+        public async Task UpdateUserTypePayslipForPayroll(UpdateUserTypeEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.UserType = input.UserType);
+            await WorkScope.UpdateRangeAsync(listPayslip);
+        }
+        public async Task UpdateJobPositionPayslipForPayroll(UpdateJobPositionEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.JobPositionId = input.JobPositionId);
+            await WorkScope.UpdateRangeAsync(listPayslip);
+        }
+
     }
 }

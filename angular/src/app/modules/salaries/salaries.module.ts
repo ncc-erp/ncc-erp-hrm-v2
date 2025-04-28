@@ -22,7 +22,7 @@ import { CalculateResultComponent } from './payslip-detail/calculate-result/calc
 import { ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent } from './payslip/import-employee-remain-leave-days-after-calculating-salary/import-employee-remain-leave-days-after-calculating-salary.component';
 import { EditPayslipDetailDialogComponent } from './payslip-detail/payslip-detail-salary/edit-payslip-detail-dialog/edit-payslip-detail-dialog.component';
 import { PenaltyUserDialogComponent } from './payslip/penalty-user-dialog/penalty-user-dialog.component';
-
+import { ApplyPayrollComponent } from './pay-roll/apply-payroll/apply-payroll.component';
 export const customeTooltipVariation: Partial<TippyProps> = {
   theme: 'light',
   arrow: true,
@@ -49,7 +49,8 @@ export const customeTooltipVariation: Partial<TippyProps> = {
     ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent,
     EditPayslipDetailDialogComponent,
     PenaltyUserDialogComponent,
-    SendDirectMessageToUserComponent
+    SendDirectMessageToUserComponent,
+    ApplyPayrollComponent
   ],
   imports: [
     CommonModule,

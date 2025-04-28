@@ -1,6 +1,6 @@
 <div class="row justify-content-between">
     <div class="col-4">
-        <app-search [placeholder]="'Search by Name or Email'" (onSearch)="onSearchFilter($event)"></app-search>
+        <app-search [placeholder]="'Search by Name or Email, Phone'" (onSearch)="onSearchFilter($event)"></app-search>
         <div class="d-flex">
             <div class="mt-2 d-flex" *ngIf="isOnDialog">
                 <button class="btn btn-success d-flex mr-2" (click)="onSelectClick()"><i class="fa-solid fa-check mr-1 mt-1"></i>Select</button>

@@ -24,12 +24,14 @@ namespace HRMv2.APIs.Report
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Report_Salary_View)]
         public async  Task<ResultReportSalary> GetListReportSalary(InputMultiFilterReportSalaryPagingDto input)
         {
             return await _reportManager.GetAllPaging(input);
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Report_Salary_Export)]
         public async Task<FileBase64Dto> ExportReportSalary(InputMultiFilterReportSalaryPagingDto input)
         {
             return await _reportManager.ExportReportSalary(input);

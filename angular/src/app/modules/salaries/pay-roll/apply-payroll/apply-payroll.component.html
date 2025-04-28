@@ -1,0 +1,35 @@
+<form
+    class="form-horizontal #deadline-form"
+    autocomplete="off"
+    #confirmMail="ngForm"
+    novalidate
+>
+    <app-dialog-header [dialogTitle]="title"> </app-dialog-header>
+    <div class="pt-3 w-100">
+        <label> Apply Payroll</label>
+        <chart-select
+            style="
+                margin-top: 8px;
+                margin-bottom: 18px;
+                width: 100%;
+                display: block;
+            "
+            (onSelect)="onSelectPayroll($event)"
+            [label]="'Payroll'"
+            [defaultValue]="defaultPayrollId"
+            [placeholder]="'Payroll'"
+            [dropdownData]="listPayroll"
+        >
+        </chart-select>
+
+        <div class="text-right mt-3">
+            <button
+                class="btn btn-primary"
+                [disabled]="!isCheck()"
+                (click)="send()"
+            >
+                Submit
+            </button>
+        </div>
+    </div>
+</form>

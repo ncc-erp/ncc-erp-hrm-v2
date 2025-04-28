@@ -192,4 +192,34 @@ export class PayslipService extends BaseApiService {
   public changePayslipWithToken(payrollId: any , mezonToken: any,benefitId: any): Observable<any>{
     return this.processPost(`ChangePayslipWithToken?payrollId=${payrollId}&mezonToken=${mezonToken}&benefitId=${benefitId}`,"")
   }
+
+  public updateBranchEmployeePayslip(input : any):Observable<any>{
+    return this.processPost(`UpdateBranchEmployeePayslip`,input);
+  }
+
+  public updateUserTypeEmployeePayslip(input : any):Observable<any>{
+    return this.processPost(`UpdateUserTypeEmployeePayslip`,input);
+  }
+  public updateLevelEmployeePayslip(input : any):Observable<any>{
+    return this.processPost(`UpdateLevelEmployeePayslip`,input);
+  }
+  public updateJobPositionEmployeePayslip(input : any):Observable<any>{
+    return this.processPost(`UpdateJobPositionEmployeePayslip`,input);
+  }
+  public updateBranchEmployeeForListPayroll(input : any):Observable<any>{
+    return this.processPost(`UpdateBranchEmployeeForListPayroll`,input);
+  }
+  public updateUserTypeEmployeeForListPayroll(input : any):Observable<any>{
+    return this.processPost(`UpdateUserTypeEmployeeForListPayroll`,input);
+  }
+  public updateJobPositionEmployeeForListPayroll(input : any):Observable<any>{
+    return this.processPost(`updateJobPositionEmployeeForListPayroll`,input);
+  }
+  public updateLevelEmployeeForListPayroll(input : any):Observable<any>{
+    return this.processPost(`UpdateLevelEmployeeForListPayroll`,input);
+  }
+
+  public getPayrollForEmployee(employeeId: number): Observable<ApiResponseDto<any>> {
+    return this.processGet(`GetPayrollForEmployee?employeeId=${employeeId}`)
+  } 
 }

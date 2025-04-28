@@ -107,43 +107,49 @@ export class ReportSalaryComponent extends PagedListingComponentBase<GetEmployee
   
     this.requestItem = input;
 
-    this.subscription.push(
-      this.reportService.GetListReportSalary(input)
-        .pipe(
-          finalize(() => {
-            this.isLoading = false; ;
-            finishedCallback();
-          })
-        )
-        .subscribe({
-          next: (rs) => {
-            this.resultList = rs.result.result.items;
-            this.allTotalSalary = rs.result.allTotalSalary;         
-            this.applyDates = rs.result.payroll;
-
-         
-          this.salaryByApplyDate = rs.result.result.items.reduce((acc, employee) => {
-              employee.resultReports.forEach(report => {
-                acc[report.payrollName] = acc[report.payrollName] || {};
-                acc[report.payrollName][employee.infoEmployee.employeeId] = report.salary;
-              });
-              return acc;
-            }, {});
-
-            this.salaryByApplyDateWithoutPaging = rs.result.resultReport.reduce((acc, report) => {
-              acc[report.payrollName] = (acc[report.payrollName] || 0) + report.salary;
-              return acc;
-            }, {});
-            
-            this.allTotalSalary = rs.result.resultReport.reduce((sum , report) => sum + report.salary,0);
-            
-            this.showPaging(rs.result.result, pageNumber)
-          },
-          error: (err) => {
-            console.error('Error:', err);
-          }
+if (input.payrollIds && input.payrollIds.length > 0) {
+  this.subscription.push(
+    this.reportService.GetListReportSalary(input)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          finishedCallback();
         })
-    );
+      )
+      .subscribe({
+        next: (rs) => {
+          this.resultList = rs.result.result.items;
+          this.allTotalSalary = rs.result.allTotalSalary;         
+          this.applyDates = rs.result.payroll;
+
+          this.salaryByApplyDate = rs.result.result.items.reduce((acc, employee) => {
+            employee.resultReports.forEach(report => {
+              acc[report.payrollName] = acc[report.payrollName] || {};
+              acc[report.payrollName][employee.infoEmployee.employeeId] = report.salary;
+            });
+            return acc;
+          }, {});
+
+          this.salaryByApplyDateWithoutPaging = rs.result.resultReport.reduce((acc, report) => {
+            acc[report.payrollName] = (acc[report.payrollName] || 0) + report.salary;
+            return acc;
+          }, {});
+
+          this.allTotalSalary = rs.result.resultReport.reduce((sum , report) => sum + report.salary, 0);
+
+          this.showPaging(rs.result.result, pageNumber);
+        },
+        error: (err) => {
+          console.error('Error:', err);
+        }
+      })
+  );
+} else {
+  this.isLoading = false;
+  finishedCallback();
+  abp.message.error('You must select at least one payroll !')
+ 
+}
   }
     isAllowRoutingDetail(){
       return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail);

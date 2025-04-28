@@ -354,6 +354,11 @@ export const PERMISSIONS_CONSTANT = {
     Benefit_BenefitDetail_TabEmployee_Delete: 'Benefit.BenefitDetail.TabEmployee.Delete',
     Benefit_BenefitDetail_TabEmployee_UpdateAllStartDate: 'Benefit.BenefitDetail.TabEmployee.UpdateAllStartDate',
     Benefit_BenefitDetail_TabEmployee_UpdateAllEndDate: 'Benefit.BenefitDetail.TabEmployee.UpdateAllEndDate',
+   // Report
+   Report: 'Report',
+   Report_Salary:'Report.Salary',
+   Report_Salary_View: "Report.Salary.View",
+   Report_Salary_Export: "Report.Salary.Export",
 
     //Payroll
     Payroll: 'Payroll',
@@ -414,6 +419,15 @@ export const PERMISSIONS_CONSTANT = {
     Payroll_Payslip_PayslipDetail_TabPayslipPreview: 'Payroll.Payslip.PayslipDetail.TabPayslipPreview',
     Payroll_Payslip_PayslipDetail_TabPayslipPreview_View: 'Payroll.Payslip.PayslipDetail.TabPayslipPreview.View',
 
+    Payroll_Payslip_PayslipDetail_Edit: 'Payroll.Payslip.PayslipDetail.Edit',
+    Payroll_Payslip_PayslipDetail_EditBranch: 'Payroll.Payslip.PayslipDetail.EditBranch',
+    Payroll_Payslip_PayslipDetail_EditLevel: 'Payroll.Payslip.PayslipDetail.EditLevel',
+    Payroll_Payslip_PayslipDetail_EditJobPosition: 'Payroll.Payslip.PayslipDetail.EditJobPosition',
+    Payroll_Payslip_PayslipDetail_EditUserType: 'Payroll.Payslip.PayslipDetail.EditUserType',
+    Payroll_Payslip_PayslipDetail_EditBranchToListPayroll: 'Payroll.Payslip.PayslipDetail.EditBranchToListPayroll',
+    Payroll_Payslip_PayslipDetail_EditLevelToListPayroll: 'Payroll.Payslip.PayslipDetail.EditLevelToListPayroll',
+    Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll: 'Payroll.Payslip.PayslipDetail.EditJobPositionToListPayroll',
+    Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll: 'Payroll.Payslip.PayslipDetail.EditUserTypeToListPayroll',
     //SalaryChangeRequest
     SalaryChangeRequest: 'SalaryChangeRequest',
     SalaryChangeRequest_View: 'SalaryChangeRequest.View',
