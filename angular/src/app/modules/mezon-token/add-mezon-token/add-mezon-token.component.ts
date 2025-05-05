@@ -23,7 +23,6 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   public selectedEmployee: number;
   public amount: number;
   public note: string = '';
-  public sentToEmployeeAt: Date;
   public defaultBenefit: any ;
   public employeeId: number;
   public searchUser: string = ''; 
@@ -40,9 +39,8 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
     if(this.dialogData.mezonToken){
     this.note = this.dialogData.mezonToken.note;
     this.employeeId = this.dialogData.mezonToken.employeeId;
-    this.sentToEmployeeAt = this.dialogData.mezonToken.sentToEmployeeAt;
     this.amount = this.dialogData.mezonToken.amount;
-    this.selectedBenefit = this.dialogData.mezonToken.referenceId;
+    this.selectedBenefit = (this.dialogData.mezonToken.referenceId != null && this.dialogData.mezonToken.referenceId != 0) ? this.dialogData.mezonToken.referenceId : -1;
     this.getBenefitDefault(this.selectedBenefit);
     }
 
@@ -52,7 +50,13 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
     this.getAllBenefitType();
 
   }
-
+   
+  isChecksBenfit(){
+    if(this.selectedBenefit > 0){
+      return true;
+    }
+    return false;
+  }
   getListEmployee(){
     this.subscription.push(
       this.employeeService.getEmployeeExceptStatusQuit().subscribe((res) => {
@@ -65,6 +69,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   }
 
   getBenefitDefault(id: number) {
+    if(this.isChecksBenfit()){
     this.subscription.push(
       this.benefitService.GetBenefitById(id).pipe(
         switchMap((res1) => {
@@ -90,7 +95,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
       })
     );
   }
-
+  }
   compareBenefit = (a: any, b: any): boolean => {
     return a && b && a.id === b.id;
   }
@@ -106,9 +111,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
       })
     );
   }
-  onBenefitChange(value: any) {
-    this.selectedBenefit = value.id;
-  }
+
   private getAllBenefitType(){
         const listTypeBenefit = this.getListFormEnum(APP_ENUMS.BenefitType).filter(item => item.key != 'All');
         this.listTypeBenefit = listTypeBenefit.reduce((acc, item) => {
@@ -118,32 +121,13 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
         
       }
   saveAndClose(){
-    let localDate: Date | null = null;
-
-    if (this.sentToEmployeeAt) {
-      if (this.sentToEmployeeAt instanceof Date) {
-        localDate = this.sentToEmployeeAt;
-      } else {
-        const parsedDate = new Date(this.sentToEmployeeAt);
-        if (!isNaN(parsedDate.getTime())) {
-          localDate = parsedDate;
-        }
-      }
-  
-      if (localDate) {
-        localDate = new Date(localDate.getTime() + 7 * 60 * 60 * 1000);
-      }
-    }
-  
-    this.sentToEmployeeAt = localDate;
-  
 
         let input = {
         id: this.dialogData.mezonToken?.id,
         employeeId: this.employeeId,
         amount: this.amount,
         note: this.note,
-        sentToEmployeeAt : this.sentToEmployeeAt,
+        sentToEmployeeAt : "",
         referenceId: this.selectedBenefit
       }
     if(this.dialogData.type === 'edit'){

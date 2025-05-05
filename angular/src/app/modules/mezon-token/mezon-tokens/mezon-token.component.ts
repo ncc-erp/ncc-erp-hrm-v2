@@ -105,7 +105,7 @@ ngOnInit(): void {
   openEditMezonToken(mezonToken){
       const dia = this.dialog.open(AddMezonTokenComponent, {
         data: {
-          title : "Edit Mezon Token",
+          title : "Edit Send Token To User",  
           mezonToken : {...mezonToken},
           type : "edit"
         },
@@ -122,7 +122,7 @@ ngOnInit(): void {
     openAddMezonToken(){
       const dia = this.dialog.open(AddMezonTokenComponent, {
         data: {
-          title : 'Add Mezon Token',
+          title : 'Send Token To User',
           type : "create",
         },
         width: "700px"
