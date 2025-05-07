@@ -6,6 +6,8 @@ using HRMv2.Entities;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.MezonTokens.Dto;
+using HRMv2.Manager.Report.Dto;
+using HRMv2.Manager.Salaries.Dto;
 using HRMv2.Manager.Salaries.Payslips.Dto;
 using HRMv2.NccCore;
 using HRMv2.Net.MimeTypes;
@@ -40,13 +42,25 @@ namespace HRMv2.Manager.MezonTokens
             _backgroundJobManager = backgroundJobManager;
             _configuration = configuration;
         }
-        public async Task<GridResult<MezonTokenDto>> GetAllPaging(GridParam input)
+        public async Task<ResultMezonToken> GetAllPaging(GridParam input)
         {
-            input.MaxResultCount = int.MaxValue;
-            input.SkipCount = 0;
             var query = GetAllMezonToken();
-            return await query.GetGridResult(query, input);
+
+            var queryFilter = query.ApplySearchAndFilter(input);
+            var totalToken = queryFilter.Sum(x => x.Amount);
+
+
+            var totalCount = queryFilter.ToList().Count();
+            var pagedResult = queryFilter.Skip(input.SkipCount)
+                .Take(input.MaxResultCount)
+                .ToList();
+            return new ResultMezonToken
+            {
+                Result = new GridResult<MezonTokenDto>(pagedResult, totalCount),
+                TotalAmout = totalToken,
+            };
         }
+
 
         public IQueryable<MezonTokenDto> GetAllMezonToken()
         {
@@ -121,7 +135,7 @@ namespace HRMv2.Manager.MezonTokens
 
         public List<ExportMezonTokenDto> GetFilterMezonToken(GridParam input)
         {
-            var mezonTokens = GetAllPaging(input);
+            var mezonTokens = GetAllPaging(input).Result;
             return mezonTokens.Result.Items
                 .Select(x => new ExportMezonTokenDto
                 {

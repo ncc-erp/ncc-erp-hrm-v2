@@ -26,6 +26,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   public defaultBenefit: any ;
   public employeeId: number;
   public searchUser: string = ''; 
+  public nameBenefit: string ;
 
   constructor(injector : Injector,private mezonTokenService :MezonTokenServiceService,
     private employeeService : EmployeeService,private benefitService: BenefitService,   
@@ -42,12 +43,12 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
     this.amount = this.dialogData.mezonToken.amount;
     this.selectedBenefit = (this.dialogData.mezonToken.referenceId != null && this.dialogData.mezonToken.referenceId != 0) ? this.dialogData.mezonToken.referenceId : -1;
     this.getBenefitDefault(this.selectedBenefit);
+   
     }
 
    
     this.getListEmployee();
-    this.getBenefitActive();
-    this.getAllBenefitType();
+
 
   }
    
@@ -86,6 +87,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
           this.defaultBenefit = {
             ...rs.result,
             name: rs.result.name?.toLowerCase(),
+            
           };
           this.selectedBenefit = rs.result.id;
         } else {
@@ -99,27 +101,8 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   compareBenefit = (a: any, b: any): boolean => {
     return a && b && a.id === b.id;
   }
-  public getBenefitActive() {
-    this.subscription.push(
-      this.benefitService.GetBenefitActive().subscribe((rs) => {  
-        if (rs.success) {
-          this.listBenefit = rs.result.map((item: any) => ({
-            ...item,
-            name: item.name.toLowerCase(),
-          }));;
-        } 
-      })
-    );
-  }
 
-  private getAllBenefitType(){
-        const listTypeBenefit = this.getListFormEnum(APP_ENUMS.BenefitType).filter(item => item.key != 'All');
-        this.listTypeBenefit = listTypeBenefit.reduce((acc, item) => {
-          acc[item.value as string] = item.key; 
-          return acc;
-        }, {});
-        
-      }
+
   saveAndClose(){
 
         let input = {
