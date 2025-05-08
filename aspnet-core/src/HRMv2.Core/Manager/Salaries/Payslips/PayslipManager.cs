@@ -3131,30 +3131,18 @@ namespace HRMv2.Manager.Salaries.Payslips
         public async Task UpdateBranchPayslip(UpdateBranchPayslip input)
         {
             var payslip =await WorkScope.GetAsync<Payslip>(input.PayslipId);
-            if(payslip == null)
-            {
-                throw new UserFriendlyException("Payslip don`t exist !");
-            }
             payslip.BranchId = input.BranchId;
             await  WorkScope.UpdateAsync(payslip);
         }
         public async Task UpdateUserTypePayslip(UpdateUserTypePayslip input)
         {
             var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
-            if (payslip == null)
-            {
-                throw new UserFriendlyException("Payslip don`t exist !");
-            }
             payslip.UserType = input.UserType;
             await WorkScope.UpdateAsync(payslip);
         }
         public async Task UpdateLevelPayslip(UpdateLevelPayslip input)
         {
             var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
-            if (payslip == null)
-            {
-                throw new UserFriendlyException("Payslip don`t exist !");
-            }
             payslip.LevelId = input.LevelId;
             await WorkScope.UpdateAsync(payslip);
         }
@@ -3162,9 +3150,6 @@ namespace HRMv2.Manager.Salaries.Payslips
         {
             var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
             if (payslip == null)
-            {
-                throw new UserFriendlyException("Payslip don`t exist !");
-            }
             payslip.JobPositionId = input.JobPositionId;
             await WorkScope.UpdateAsync(payslip);
         }
@@ -3202,7 +3187,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .ToList();
 
             listPayslip.ForEach(x => x.BranchId = input.BranchId);
-            await WorkScope.UpdateRangeAsync(listPayslip);
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateLevelPayslipForPayroll(UpdateLevelEmployeeForListPayroll input)
@@ -3213,7 +3198,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .ToList();
 
             listPayslip.ForEach(x => x.LevelId = input.LevelId);
-            await WorkScope.UpdateRangeAsync(listPayslip);
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
         public async Task UpdateUserTypePayslipForPayroll(UpdateUserTypeEmployeeForListPayroll input)
         {
@@ -3223,7 +3208,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .ToList();
 
             listPayslip.ForEach(x => x.UserType = input.UserType);
-            await WorkScope.UpdateRangeAsync(listPayslip);
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
         public async Task UpdateJobPositionPayslipForPayroll(UpdateJobPositionEmployeeForListPayroll input)
         {
@@ -3233,7 +3218,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .ToList();
 
             listPayslip.ForEach(x => x.JobPositionId = input.JobPositionId);
-            await WorkScope.UpdateRangeAsync(listPayslip);
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
 
 
