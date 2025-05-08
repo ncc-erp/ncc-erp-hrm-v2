@@ -51,9 +51,8 @@ namespace HRMv2.Manager.MezonTokens
 
 
             var totalCount = queryFilter.ToList().Count();
-            var pagedResult = queryFilter.Skip(input.SkipCount)
-                .Take(input.MaxResultCount)
-                .ToList();
+
+            var pagedResult =await queryFilter.TakePage(input).ToListAsync();
             return new ResultMezonToken
             {
                 Result = new GridResult<MezonTokenDto>(pagedResult, totalCount),
@@ -280,7 +279,7 @@ namespace HRMv2.Manager.MezonTokens
             foreach(var item in input)
             {
                 _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
-                delaySendToken += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
+                delaySendToken += 3;
             }
            
             return $"Started sent {input.Count} token mezon to {input.Count} user.";

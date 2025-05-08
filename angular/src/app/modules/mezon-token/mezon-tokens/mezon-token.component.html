@@ -46,11 +46,20 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <th class="col-stt">#</th>
-                            <th class="pointer sticky-col" (click)="onSortChange('email')" style="min-width: 350px;">Employee</th>
-                            <th>MezonToken</th>  
-                            <th class="pointer sticky-col" (click)="onSortChange('amount')" style="min-width: 350px;">Note</th>
+                            <th class="pointer sticky-col" (click)="onSortChange('email')" style="min-width: 350px;">Employee
+                                <sortable [name]="'email'" [sortProperty]="sortProperty"
+                                        [sortDirection]="sortDirection"></sortable>
+                            </th>
+                            <th (click)="onSortChange('amount')" >MezonToken
+                                <sortable [name]="'amount'" [sortProperty]="sortProperty"
+                                        [sortDirection]="sortDirection"></sortable>
+                            </th>  
+                            <th class="pointer sticky-col"  style="min-width: 350px;">Note</th>
                             <th >Status</th>
-                            <th>Sent At</th>                
+                            <th (click)="onSortChange('sentToEmployeeAt')" >Sent At
+                                <sortable [name]="'sentToEmployeeAt'" [sortProperty]="sortProperty"
+                                        [sortDirection]="sortDirection"></sortable>
+                            </th>                
                             <th class="col-action">
                                 Action
                                          
@@ -66,18 +75,23 @@
                                     <td class="text-center sticky-col ">{{(pageNumber-1)*pageSize+i+1}}</td>  
                                 <td class="sticky-col">    
                                     <app-user-info     
-                                      [userData]="{
+                                    [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
+                                    [isAllowRouting]="isAllowViewTabPersonalInfo()"
+                                    [link]="['/app/employees/list-employee/employee-detail/personal-info']" 
+                                    [queryParams]="{id:item.employeeId}"
+                                    [userData]="{
                                         id: item.employeeId,
-                                         avatarFullPath: item.avatarFullPath,
+                                        avatarFullPath: item.avatarFullPath,
                                         fullName: item.fullName,
-                                        sex: item.sex,
-                                     
+                                        sex: item.sex,  
                                         email: item.email,
                                         branchInfo: item.branchInfo,
                                         jobPositionInfo: item.jobPositionInfo,
                                         userTypeInfo: item.userTypeInfo,
                                         levelInfo: item.levelInfo
-                                      }">
+                                      }"
+                                      
+                                      >
                                     </app-user-info>
                                   </td>
                                 <td class="text-right align-middle" >

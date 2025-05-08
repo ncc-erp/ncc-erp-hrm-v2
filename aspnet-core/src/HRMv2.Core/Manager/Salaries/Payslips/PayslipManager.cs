@@ -436,15 +436,17 @@ namespace HRMv2.Manager.Salaries.Payslips
 
                 payslipDetail.Money -= tokenValue;
                 payslipDetail.Payslip.Salary -= tokenValue;
-             
-                mezonTokens.Add(new MezonToken
+                if (tokenValue > 0)
                 {
-                    EmployeeId = payslipDetail.Payslip.EmployeeId,
-                    Amount = tokenValue,
-                    Status = StatusSendToken.Pending,
-                    ReferenceId = payslipDetail.Id,
-                    Note = $"Tiền mặt {payslipDetail.Note} còn lại: {payslipDetail.Money:N0} VND, ReferenceId {payslipDetail.Id}",                    
-                });                
+                    mezonTokens.Add(new MezonToken
+                    {
+                        EmployeeId = payslipDetail.Payslip.EmployeeId,
+                        Amount = tokenValue,
+                        Status = StatusSendToken.Pending,
+                        ReferenceId = payslipDetail.Id,
+                        Note = $"Tiền mặt {payslipDetail.Note} còn lại: {payslipDetail.Money:N0} VND, ReferenceId {payslipDetail.Id}",
+                    });
+                }    
             }
 
             await WorkScope.InsertRangeAsync(mezonTokens);
@@ -1107,6 +1109,16 @@ namespace HRMv2.Manager.Salaries.Payslips
             var qPayslip = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId).ToList();
 
+            var listPayslipId = qPayslip.Select(x => x.Id).ToList();
+            var payslipDetailIds = WorkScope.GetAll<PayslipDetail>()
+                .Where(x => listPayslipId.Contains(x.PayslipId)).Select(x => x.Id).ToList();
+
+            var listMezonTokenPending = WorkScope.GetAll<MezonToken>()
+                .Where(x => payslipDetailIds.Contains(x.ReferenceId))
+                .Where(x => x.Status == StatusSendToken.Pending)
+                .Select(x => x.Amount)
+                .ToList();
+
             var list1 = WorkScope.GetAll<PayslipDetail>()
                                 .Where(x => x.Payslip.PayrollId == payrollId)
                                 .GroupBy(x => x.Type)
@@ -1151,6 +1163,13 @@ namespace HRMv2.Manager.Salaries.Payslips
                 Name = "Tổng chi (bắn sang Finfast)  = Tổng lương - Phạt không thu được",
                 Quantity = list2.Sum(s => s.Quantity),
                 TotalSalary = list2.Sum(s => s.TotalSalary) - notPayPunishment.Sum(s => s.Salary),
+            });
+
+            results.Add(new SumaryInfoDto
+            {
+                Name = "Tổng Token ",
+                Quantity = listMezonTokenPending.Count(),
+                TotalSalary = listMezonTokenPending.Sum()
             });
 
             results.Add(new SumaryInfoDto

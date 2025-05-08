@@ -158,8 +158,10 @@ ngOnInit(): void {
   }
   isShowSentTokenAllBtn(){
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SendTokenAll);
+  }   
+  isAllowViewTabPersonalInfo(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_View);
   }
-
   SentToken(mezonToken){
     const input = {
         mezonTokenId: mezonToken.id,
