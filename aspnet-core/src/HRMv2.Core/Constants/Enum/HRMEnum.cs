@@ -156,6 +156,7 @@ namespace HRMv2.Constants.Enum
             PayrollExecuted = 13,
             LinkToPreviewPayslip = 14,
             MezonDMLinkToPreviewPayslip = 15,
+            MezonDMSendToken = 16,
         }
 
         public enum TemplateType

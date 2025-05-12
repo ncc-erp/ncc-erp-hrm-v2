@@ -1,11 +1,14 @@
 ﻿using Abp.BackgroundJobs;
 using Abp.UI;
+using HRMv2.BackgroundJob.SendDirectMessage;
 using HRMv2.BackgroundJob.SentToken;
 using HRMv2.Constants;
 using HRMv2.Entities;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.MezonTokens.Dto;
+using HRMv2.Manager.Notifications.Email;
+using HRMv2.Manager.Notifications.SendMezonDM;
 using HRMv2.Manager.Report.Dto;
 using HRMv2.Manager.Salaries.Dto;
 using HRMv2.Manager.Salaries.Payslips.Dto;
@@ -36,11 +39,18 @@ namespace HRMv2.Manager.MezonTokens
         private readonly MezonWebService _mezonWebService;
         private readonly BackgroundJobManager _backgroundJobManager;
         private readonly IConfiguration _configuration;
-        public MezonTokenManager(IWorkScope workScope,MezonWebService mezonWebService, BackgroundJobManager backgroundJobManager,IConfiguration configuration) : base(workScope)
+        private readonly SendMezonDMService _sendDMService;
+        private readonly EmailManager _emailManager;
+        public MezonTokenManager(IWorkScope workScope,MezonWebService mezonWebService,
+            BackgroundJobManager backgroundJobManager,IConfiguration configuration
+            ,SendMezonDMService sendDMService,
+            EmailManager emailManager) : base(workScope)
         {
             _mezonWebService = mezonWebService;
             _backgroundJobManager = backgroundJobManager;
             _configuration = configuration;
+            _sendDMService = sendDMService;
+            _emailManager = emailManager;
         }
         public async Task<ResultMezonToken> GetAllPaging(GridParam input)
         {
@@ -198,6 +208,13 @@ namespace HRMv2.Manager.MezonTokens
 
         }
 
+
+        private void SendNotiDM(long mezonTokenId)
+        {
+            var sendContent = _emailManager.GetDMMezonContentById(NotifyTemplateEnum.MezonDMSendToken, mezonTokenId);
+            _sendDMService.SendDMToUser(sendContent);
+        }
+
         public async Task<AuthResponse> SendToken(InputSendMezonToken input)
         {
             var tokenEntity = await WorkScope.GetAll<MezonToken>()
@@ -244,6 +261,7 @@ namespace HRMv2.Manager.MezonTokens
                 entityToUpdate.Status = StatusSendToken.SentToEmployee;
                 await WorkScope.UpdateAsync(entityToUpdate);
 
+                SendNotiDM(input.MezonTokenId);
                 return new AuthResponse
                 {
                     code = 0,
