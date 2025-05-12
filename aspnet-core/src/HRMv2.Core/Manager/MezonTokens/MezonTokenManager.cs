@@ -60,7 +60,7 @@ namespace HRMv2.Manager.MezonTokens
             var totalToken = queryFilter.Sum(x => x.Amount);
 
 
-            var totalCount = queryFilter.ToList().Count();
+            var totalCount = queryFilter.Count();
 
             var pagedResult =await queryFilter.TakePage(input).ToListAsync();
             return new ResultMezonToken

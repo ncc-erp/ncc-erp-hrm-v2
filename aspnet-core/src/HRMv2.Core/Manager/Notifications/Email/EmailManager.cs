@@ -861,13 +861,21 @@ namespace HRMv2.Manager.Notifications.Email
 
             var mezonToken = WorkScope.GetAll<MezonToken>()
                 .Include(x => x.Employee)
-                .Where(x => x.Id == mezonTokenId).FirstOrDefault();
+                .Where(x => x.Id == mezonTokenId)
+                .Select(x => new
+                {
+                    x.Amount,
+                    x.Employee.FullName,
+                    x.Employee.Email,
+                    x.Note
+                })
+                .FirstOrDefault();
 
             var result = new InputNotiSendTokenDMTemplateDto
             {
-                EmployeeFullName = mezonToken.Employee.FullName,
+                EmployeeFullName = mezonToken.FullName,
                 Amount = mezonToken.Amount.ToString(),
-                MezonUsername = mezonToken.Employee.Email.Split("@")[0],
+                MezonUsername = mezonToken.Email.Split("@")[0],
                 Note = mezonToken.Note
             };
 

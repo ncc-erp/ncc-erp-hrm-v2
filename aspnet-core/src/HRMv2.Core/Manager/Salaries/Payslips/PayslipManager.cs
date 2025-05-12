@@ -56,6 +56,7 @@ using System.Text.RegularExpressions;
 using Amazon.S3.Model;
 using System.Linq.Expressions;
 using HRMv2.BackgroundJob.SendDirectMessage;
+using HRMv2.Manager.Salaries.Payrolls.Dto;
 
 
 
@@ -404,12 +405,16 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public async Task DetachPayslipWithToken(int tokenDefault, long payrollId,long benefitId)
         {
-            var payrollStatus = WorkScope.GetAll<Payroll>()
+            var payroll = WorkScope.GetAll<Payroll>()
            .Where(x => x.Id == payrollId)
-           .Select(x => x.Status)
+           .Select(x => new
+           {
+               x.Status,
+               x.ApplyMonth
+           })
            .FirstOrDefault();
 
-            if (payrollStatus == PayrollStatus.Executed)
+            if (payroll.Status == PayrollStatus.Executed)
             {
                 throw new UserFriendlyException($"The PayrollId {payrollId} is Executed");
             }           
@@ -444,7 +449,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Amount = tokenValue,
                         Status = StatusSendToken.Pending,
                         ReferenceId = payslipDetail.Id,
-                        Note = $"Tiền mặt {payslipDetail.Note} còn lại: {payslipDetail.Money:N0} VND, ReferenceId {payslipDetail.Id}",
+                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("yyyy-MM")}(tiền mặt ăn trưa còn lại: {payslipDetail.Money:N0} VND)"
                     });
                 }    
             }
@@ -1109,15 +1114,16 @@ namespace HRMv2.Manager.Salaries.Payslips
             var qPayslip = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId).ToList();
 
-            var listPayslipId = qPayslip.Select(x => x.Id).ToList();
-            var payslipDetailIds = WorkScope.GetAll<PayslipDetail>()
-                .Where(x => listPayslipId.Contains(x.PayslipId)).Select(x => x.Id).ToList();
-
-            var listMezonTokenPending = WorkScope.GetAll<MezonToken>()
-                .Where(x => payslipDetailIds.Contains(x.ReferenceId))
+            var queryToken = WorkScope.GetAll<MezonToken>()
                 .Where(x => x.Status == StatusSendToken.Pending)
-                .Select(x => x.Amount)
-                .ToList();
+                .Select(x => new
+                {
+                    x.Amount,
+                    x.Id
+                }).ToList();
+
+            var totalToken = queryToken.Sum(x => x.Amount);
+            var countToken = queryToken.Count();
 
             var list1 = WorkScope.GetAll<PayslipDetail>()
                                 .Where(x => x.Payslip.PayrollId == payrollId)
@@ -1168,8 +1174,8 @@ namespace HRMv2.Manager.Salaries.Payslips
             results.Add(new SumaryInfoDto
             {
                 Name = "Tổng Token ",
-                Quantity = listMezonTokenPending.Count(),
-                TotalSalary = listMezonTokenPending.Sum()
+                Quantity = countToken,
+                TotalSalary = totalToken
             });
 
             results.Add(new SumaryInfoDto
