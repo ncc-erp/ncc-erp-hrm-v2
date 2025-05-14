@@ -338,7 +338,7 @@ namespace HRMv2.APIs.Payslips
         [HttpGet]
         public List<GetPayrollApply> GetPayrollForEmployee(long employeeId)
         {
-            return _payslipManager.GetPayrollForEmployee(employeeId);
+            return _payslipManager.GetPayrollsByEmployeeId(employeeId);
         }
 
         [HttpPost]
