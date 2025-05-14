@@ -1,5 +1,5 @@
 <div style="display: flex">
-  <mat-form-field appearance="outline" [class]="className">
+  <mat-form-field appearance="outline" [class]="className" [ngStyle]="{ width: '100%' }">
     <mat-label>{{ label }}</mat-label>
     <mat-select
       panelClass="custom-panel"
@@ -73,7 +73,12 @@
             <!-- <span class="data-type-label">{{
               getDataTypeLabel(data.dataType)
             }}</span> -->
+            <span class="data-name" *ngIf="data.dataType != null">{{
+              truncateNameOnMatOption(data.dataType, 70)
+            }}</span>
+
           </div>
+
         </mat-option>
       </div>
     </mat-select>

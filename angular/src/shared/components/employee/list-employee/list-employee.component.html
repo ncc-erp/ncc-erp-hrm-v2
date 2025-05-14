@@ -18,17 +18,20 @@
                                 <sortable [name]="'email'" [sortProperty]="sortProperty"
                                     [sortDirection]="sortDirection"></sortable>
                             </th>
-                            <th  style="width: 120px;" (click)="onSortChange('birthday')" *ngIf="columnList[1].isShow">{{columnList[2].displayName}}
+                            <th *ngIf="columnList[1].isShow">
+                                {{columnList[2].displayName}}
+                            </th>
+                            <th  style="width: 120px;" (click)="onSortChange('birthday')" *ngIf="columnList[2].isShow">{{columnList[3].displayName}}
                                 <sortable [name]="'birthday'" [sortProperty]="sortProperty"
                                 [sortDirection]="sortDirection"></sortable>
                             </th>
-                            <th *ngIf="columnList[2].isShow">{{columnList[3].displayName}}</th>
                             <th *ngIf="columnList[3].isShow">{{columnList[4].displayName}}</th>
-                            <th  style="width: 120px; white-space: nowrap;" *ngIf="columnList[4].isShow">
+                            <th *ngIf="columnList[4].isShow">{{columnList[5].displayName}}</th>
+                            <th  style="width: 120px; white-space: nowrap;" *ngIf="columnList[5].isShow">
                                 {{columnList[5].displayName}} 
                             </th>
 
-                            <th (click)="onSortChange('updatedTime')" style="width: 155px;" *ngIf="columnList[5].isShow">{{columnList[6].displayName}}
+                            <th (click)="onSortChange('updatedTime')" style="width: 155px;" *ngIf="columnList[6].isShow">{{columnList[7].displayName}}
                                 <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
                                 [sortDirection]="sortDirection"></sortable>
                             </th>
@@ -60,6 +63,8 @@
                                     [userData]="employee">
                                 </app-user-info>
                             </td>
+
+                            <td class="text-center" >{{employee.phone}}</td>
                             <td class="text-center" >{{employee.birthday | DMYDateFormat}}</td>
                             <td class="text-center" *ngIf="columnList[2].isShow"><span
                                     [ngClass]="employee.status | userStatus: true">

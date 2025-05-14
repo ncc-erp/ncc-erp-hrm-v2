@@ -27,6 +27,7 @@ namespace HRMv2.Manager.Employees.Dto
         public DateTime? BeTViecDate { get; set; }
         public DateTime? BeStaffDate { get; set; }
         public DateTime? UpdatedTime { get; set; }
+        [ApplySearch]
         public string Phone { get; set; }
         public DateTime? Birthday { get; set; }
         public string IdCard { get; set; }

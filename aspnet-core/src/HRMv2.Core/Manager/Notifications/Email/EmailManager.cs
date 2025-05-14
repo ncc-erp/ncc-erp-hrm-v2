@@ -1,6 +1,7 @@
 ﻿using Abp.Net.Mail;
 using Abp.Runtime.Session;
 using Abp.UI;
+using Amazon.Runtime.Internal.Util;
 using DocumentFormat.OpenXml.VariantTypes;
 using HRMv2.Constants.Dictionary;
 using HRMv2.Entities;
@@ -318,6 +319,8 @@ namespace HRMv2.Manager.Notifications.Email
                     return GetDataPayslipToConfirm(id);
                 case NotifyTemplateEnum.MezonDMLinkToPreviewPayslip:
                     return GetDataForMezonDMLinkToPreviewPayslip(id);
+                case NotifyTemplateEnum.MezonDMSendToken:
+                    return GetDataForSendTokenMezonDm(id);
                 default:
                     return null;
             }
@@ -841,6 +844,42 @@ namespace HRMv2.Manager.Notifications.Email
             };
 
             return new ResultTemplateEmail<InputMezonDMTemplateDto>
+            {
+                Result = result,
+            };
+        }
+
+        private ResultTemplateEmail<InputNotiSendTokenDMTemplateDto> GetDataForSendTokenMezonDm(long? mezonTokenId)
+        {
+            if(mezonTokenId == null)
+            {
+                return new ResultTemplateEmail<InputNotiSendTokenDMTemplateDto>
+                {
+                    Result = TemplateHelper.GetSendMezonTokenDMFakeData(),
+                };
+            }
+
+            var mezonToken = WorkScope.GetAll<MezonToken>()
+                .Include(x => x.Employee)
+                .Where(x => x.Id == mezonTokenId)
+                .Select(x => new
+                {
+                    x.Amount,
+                    x.Employee.FullName,
+                    x.Employee.Email,
+                    x.Note
+                })
+                .FirstOrDefault();
+
+            var result = new InputNotiSendTokenDMTemplateDto
+            {
+                EmployeeFullName = mezonToken.FullName,
+                Amount = mezonToken.Amount.ToString(),
+                MezonUsername = mezonToken.Email.Split("@")[0],
+                Note = mezonToken.Note
+            };
+
+            return new ResultTemplateEmail<InputNotiSendTokenDMTemplateDto>
             {
                 Result = result,
             };

@@ -472,6 +472,7 @@ namespace HRMv2.Utils
                 case NotifyTemplateEnum.ContractTV:
                     return TemplateType.Print;
                 case NotifyTemplateEnum.MezonDMLinkToPreviewPayslip:
+                case NotifyTemplateEnum.MezonDMSendToken:
                     return TemplateType.MezonDM;
             }
             return TemplateType.Mail;

@@ -309,5 +309,62 @@ namespace HRMv2.APIs.Payslips
         {
             return _payslipManager.SendMezonDMAllUser(input);
         }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditBranch)]
+        public async Task UpdateBranchEmployeePayslip(UpdateBranchPayslip input)
+        {
+            await _payslipManager.UpdateBranchPayslip(input);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditUserType)]
+        public async Task UpdateUserTypeEmployeePayslip(UpdateUserTypePayslip input)
+        {
+            await _payslipManager.UpdateUserTypePayslip(input);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditLevel)]
+        public async Task UpdateLevelEmployeePayslip(UpdateLevelPayslip input)
+        {
+            await _payslipManager.UpdateLevelPayslip(input);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPosition)]
+        public async Task UpdateJobPositionEmployeePayslip(UpdatePositionPayslip input)
+        {
+            await _payslipManager.UpdatePositionPayslip(input);
+        }
+
+        [HttpGet]
+        public List<GetPayrollApply> GetPayrollForEmployee(long employeeId)
+        {
+            return _payslipManager.GetPayrollForEmployee(employeeId);
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll)]
+        public async Task UpdateBranchEmployeeForListPayroll(UpdateBranchEmployeeForListPayroll input)
+        {
+           await _payslipManager.UpdateBranchPayslipForPayroll(input);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll)]
+        public async Task UpdateUserTypeEmployeeForListPayroll(UpdateUserTypeEmployeeForListPayroll input)
+        {
+            await _payslipManager.UpdateUserTypePayslipForPayroll(input);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll)]
+        public async Task UpdateJobPositionEmployeeForListPayroll(UpdateJobPositionEmployeeForListPayroll input)
+        {
+            await _payslipManager.UpdateJobPositionPayslipForPayroll(input);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll)]
+        public async Task UpdateLevelEmployeeForListPayroll(UpdateLevelEmployeeForListPayroll input)
+        {
+            await _payslipManager.UpdateLevelPayslipForPayroll(input);
+        }
+
     }
 }

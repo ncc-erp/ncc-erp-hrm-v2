@@ -40,10 +40,11 @@ import { of } from 'rxjs';
 import { PenaltyUserDialogComponent } from './penalty-user-dialog/penalty-user-dialog.component';
 import { SendDirectMessageToUserComponent } from './send-DirectMessage-toUser/send-direct-message-touser.component';
 import { ConfirmTokenDialogComponent } from '@app/modules/mezon-token/confirm-token-dialog-component/confirm-token-dialog-component.component';
-
+import { result } from '@node_modules/@types/lodash';
+import { ApplyPayrollComponent } from '../pay-roll/apply-payroll/apply-payroll.component';
 @Component({
   selector: 'app-payslip',
-  templateUrl: './payslip.component.html',
+  templateUrl:'./payslip.component.html',
   styleUrls: ['./payslip.component.css']
 })
 export class PayslipComponent extends PagedListingComponentBase<any> implements OnInit {
@@ -89,10 +90,10 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
   public payroll = {} as PayRollDto;
   public listPayslips: PaySlipDto[] = [];
   public employeeList: GetEmployeeDto[] = [];
-  public userTypeList: UserTypeDto[] = [];
-  public userLevelList: LevelDto[] = [];
-  public branchList: BranchDto[] = [];
-  public positionList: JobPositionDto[] = [];
+  public userTypeList: any[] = [];
+  public userLevelList: any[] = [];
+  public branchList: any[] = [];
+  public positionList: any[] = [];
   public teamList: TeamDto[] = [];
   public statusList: Object[] = [];
   public genderList: Object[] = [];
@@ -104,6 +105,11 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
   public calculateStatus: string = ""
   public isCalculating: boolean = false
   private inputExportPayroll: GetInputFilterDto
+  public isEditingBranch: boolean = false;
+  public listBranchUpdate : any = [];
+  public listUserTypeUpdate : any;
+  public listLevelUpdate : any;
+  public listJobPostionUpdate: any;
   private calculateResultRef
   public confirmMailFilters = [
     {
@@ -123,7 +129,18 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
       value: 2
     }
   ]
+public mapColorBranch: any
+public mapColorLevel: any
+public mapColorUserType: any
+public mapColorJobPosition : any
+public selectedBranchId : number;
+public selectedLevelId : number;
+public selectedJobPositionId: number;
+public selectedUsertype : number;
+editingIndex: number | null = null;
+public editingField : string;
 
+          
   public DEFAULT_FILTER = {
     branch: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE,
     team: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE,
@@ -184,7 +201,85 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
     )
   }
 
+  editInfoPayslip(payslip: any, index: number, field: string) {
+    this.editingIndex = index;
+    this.editingField = field;
+    this.selectedBranchId = payslip.branchId; 
+    this.selectedJobPositionId = payslip.jobPositionId;
+    this.selectedLevelId = payslip.levelId;
+    this.selectedUsertype = payslip.payslipUserType;
+  }
   
+  saveEdit(index: number,payslip: any) {
+  
+     if(this.selectedBranchId != payslip.branchId)   this.UpdateBranchPayslip(payslip.id)
+     
+     if(this.selectedJobPositionId != payslip.jobPositionId) this.UpdateJobPositionPayslip(payslip.id)
+  
+     if(this.selectedLevelId != payslip.levelId) this.UpdateLevelPayslip(payslip.id)
+  
+     if(this.selectedUsertype != payslip.userType) this.UpdateUserTypePayslip(payslip.id)
+     
+      this.editingIndex = null;
+  
+  }
+  
+  private UpdateBranchPayslip(payslipId){
+    const input = {
+      payslipId : payslipId,
+      branchId : this.selectedBranchId
+    }
+      this.subscription.push(
+        this.payslipService.updateBranchEmployeePayslip(input).subscribe(rs => {
+          this.notify.success("Update Branch Payslip successfull");
+          this.refresh()
+        })
+      )
+    }
+  
+    private UpdateLevelPayslip(payslipId){
+      const input = {
+        payslipId : payslipId,
+        levelId : this.selectedLevelId
+      }
+        this.subscription.push(
+          this.payslipService.updateLevelEmployeePayslip(input).subscribe(rs => {
+            this.notify.success("Update Level Payslip successfull")
+            this.refresh()
+          })
+        )
+      }
+  
+      private UpdateUserTypePayslip(payslipId){
+        const input = {
+          payslipId : payslipId,
+          userType : this.selectedUsertype
+        }
+          this.subscription.push(
+            this.payslipService.updateUserTypeEmployeePayslip(input).subscribe(rs => {
+              this.notify.success("Update UserType Payslip successfull")
+              this.refresh()
+            })
+          )
+        }
+  
+        private UpdateJobPositionPayslip(payslipId){
+          const input = {
+            payslipId : payslipId,
+            jobPositionId : this.selectedJobPositionId
+          }
+            this.subscription.push(
+              this.payslipService.updateJobPositionEmployeePayslip(input).subscribe(rs => {
+                this.notify.success("Update JobPosition Payslip successfull")
+                this.refresh()
+              })
+            )
+          }
+    
+          cancelEdit() {
+            this.editingIndex = null;
+            this.editingField = null;
+          }
   public OnGetNotPaidInfo()
   {
     this.dialog.open(PenaltyUserDialogComponent,{
@@ -290,18 +385,33 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
 
   private getAllUserType() {
     this.subscription.push(this.userTyService.getAll().subscribe(rs => {
+      this.mapColorUserType = rs.result.reduce((acc, item) => {
+        acc[item.name] = item.color;
+        return acc;
+      }, {});
+      
       this.userTypeList = this.mapToFilter(rs.result, true)
     }))
   }
 
   private getAllLevel() {
     this.subscription.push(this.levelService.getAll().subscribe(rs => {
+      this.mapColorLevel = rs.result.reduce((acc, item) => {
+        acc[item.name] = item.color;
+        return acc;
+      }, {});
+      
       this.userLevelList = this.mapToFilter(rs.result, true)
     }))
   }
 
   private getAllBranch() {
     this.subscription.push(this.branchService.getAll().subscribe(rs => {
+      this.mapColorBranch = rs.result.reduce((acc, item) => {
+        acc[item.name] = item.color;
+        return acc;
+      }, {});
+      
       this.branchList = this.mapToFilter(rs.result, true)
     }))
   }
@@ -314,6 +424,11 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
 
   private getAllJobPositon() {
     this.subscription.push(this.positionService.getAll().subscribe(rs => {
+      this.mapColorJobPosition = rs.result.reduce((acc, item) => {
+        acc[item.name] = item.color;
+        return acc;
+      }, {});
+      
       this.positionList = this.mapToFilter(rs.result, true)
     }))
   }
@@ -331,6 +446,7 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
       })
     )
   }
+
 
   public onCollectData() {
     abp.message.confirm("Are you want to calculate salary?", "", (result) => {
@@ -446,6 +562,34 @@ onSendDirectMessage(payslip: PaySlipDto){
     })
   }
 
+  onGetPayrollApplyUpdate(payslip){
+
+    this.dialog.open(ApplyPayrollComponent,{
+      width: "400px",
+      disableClose: true,
+      
+      data: {
+        payslip: payslip,
+        payrollId: this.payrollId,
+        selectedBrandId : this.selectedBranchId,
+        selectedLevelId : this.selectedLevelId,
+        selectedJobPositionId : this.selectedJobPositionId,
+        selectedUsertype : this.selectedUsertype,
+        selectedBranchName: this.branchList.find(x => x.value == this.selectedBranchId)?.key || '',
+        selectedLevelName: this.userLevelList.find(x => x.value == this.selectedLevelId)?.key || '',
+        selectedJobPositionName: this.positionList.find(x => x.value == this.selectedJobPositionId)?.key || '',
+        selecteUserTypeName: this.userTypeList.find(x => x.value == this.selectedUsertype)?.key || ''
+
+      }
+    
+    
+    }).afterClosed().subscribe((rs) => {
+      if (rs) {
+        this.refresh()
+        this.editingIndex = null;
+      }
+    })
+  }
   executePayroll() {
     const dateString = moment(this.payroll.applyMonth).format("MM/YYYY").toString()
     abp.message.confirm(`Execute payroll <strong>${dateString}</strong>`, "", (rs) => {
@@ -634,6 +778,51 @@ onSendDirectMessage(payslip: PaySlipDto){
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_SplitBenefitbyToken)&& (this.payrollStatus == APP_ENUMS.PayrollStatus.New
       || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByKT || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByCEO);;
   }
+
+  isShowEditBranch(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditBranch);
+  }
+  isShowEditLevel(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditLevel);
+  }
+  isShowEditJobPosition(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditJobPosition);
+  }
+  isShowEditUserType(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditUserType);
+  }
+  isShowEditBranchToListPayroll(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll);
+  }
+  isShowEditUserTypeToListPayroll(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll);
+  }
+  isShowtEditLevelToListPayroll(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll);
+  }
+  isShowEditJobPositionToListPayroll(){
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll);
+  }
+  isCheckUpdateBranch(branchId: any) {
+    if(this.selectedBranchId != branchId ) {
+      return true
+    }
+  }
+  isCheckUpdateLevel(levelId: any) {
+    if(this.selectedLevelId != levelId) {
+      return true
+    }
+  }
+  isCheckUpdateJobPostion(jobPositionId: any) {
+    if(this.selectedJobPositionId != jobPositionId) {
+      return true
+    }
+  }
+  isCheckUpdateUserType(userType: any) {
+    if(this.selectedUsertype != userType) {
+      return true
+    }
+  }
   public columnList = [
     {
       name: "no",
@@ -726,7 +915,7 @@ onSendDirectMessage(payslip: PaySlipDto){
     {
       name: "RefundDay",
       displayName: "Refund day",
-      isShow: true,
+      isShow: false,
       sortable: false,
       className: "",
       width: 70
@@ -734,15 +923,15 @@ onSendDirectMessage(payslip: PaySlipDto){
     {
       name: "remainLeaveDays",
       displayName: "Remain leave day after",
-      isShow: true,
-      sortable: true,
+      isShow: false,
+      sortable: false,
       className: "",
       width: 70
     },
     {
       name: "branch",
       displayName: "Branch",
-      isShow: false,
+      isShow: true,
       sortable: false,
       className: "",
       width: 70
@@ -750,7 +939,7 @@ onSendDirectMessage(payslip: PaySlipDto){
     {
       name: "userType",
       displayName: "User type",
-      isShow: false,
+      isShow: true,
       sortable: false,
       className: "",
       width: 70
@@ -758,7 +947,7 @@ onSendDirectMessage(payslip: PaySlipDto){
     {
       name: "Position",
       displayName: "Position",
-      isShow: false,
+      isShow: true,
       sortable: false,
       className: "",
       width: 70
@@ -766,7 +955,7 @@ onSendDirectMessage(payslip: PaySlipDto){
     {
       name: "level",
       displayName: "Level",
-      isShow: false,
+      isShow: true,
       sortable: false,
       className: "",
       width: 70
