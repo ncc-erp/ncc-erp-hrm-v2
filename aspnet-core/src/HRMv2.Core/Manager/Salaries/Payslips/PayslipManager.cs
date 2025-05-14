@@ -3101,7 +3101,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             if (template == default)
             {
-                throw new UserFriendlyException($"Not found [MezonDM]Payslip Mezon Direct Message Link");
+                throw new UserFriendlyException($"Not found [MezonDM]Payslip Mezon Direct Message Link template");
             }
             var listPayslip = WorkScope.GetAll<Payslip>()
                 .Include(s => s.Employee)
@@ -3179,7 +3179,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             await WorkScope.UpdateAsync(payslip);
         }
 
-        public List<GetPayrollApply> GetPayrollForEmployee(long employeeId) 
+        public List<GetPayrollApply> GetPayrollsByEmployeeId(long employeeId) 
         {
             var dicLevel = WorkScope.GetAll<Level>()
                  .ToDictionary(x => x.Id, x => x.Name);
@@ -3191,10 +3191,12 @@ namespace HRMv2.Manager.Salaries.Payslips
             var listPayroll =  WorkScope.GetAll<Payslip>()
                 .Include(x => x.Payroll)
                 .Where(x => x.EmployeeId == employeeId)
+                .Select(s => new {s.PayrollId, s.Payroll.ApplyMonth, s.UserType, s.LevelId, s.JobPositionId, s.BranchId })
+                .ToList()
                 .Select(x => new GetPayrollApply
                 {
                     Value = x.PayrollId,
-                    ApplyDate = x.Payroll.ApplyMonth,
+                    ApplyDate = x.ApplyMonth,
                     UserType = CommonUtil.GetUserTypeNameVN(x.UserType),
                     Level = dicLevel[x.LevelId],
                     JobPosition = dicPosition[x.JobPositionId],
