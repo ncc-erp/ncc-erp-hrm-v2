@@ -369,6 +369,13 @@ namespace HRMv2.Authorization
         public const string Mezon_Token_SendToken = "Mezon.Token.SendToken";
         public const string Mezon_Token_SendTokenAll = "Mezon.Token.SendTokenAll";
 
+        // Report 
+        public const string Report = "Report";
+        public const string Report_Salary = "Report.Salary";
+        public const string Report_Salary_View = "Report.Salary.View";
+        public const string Report_Salary_Export = "Report.Salary.Export";
+
+
         // Payroll
         public const string Payroll = "Payroll";
         public const string Payroll_View = "Payroll.View";
@@ -421,6 +428,15 @@ namespace HRMv2.Authorization
         public const string Payroll_Payslip_PayslipDetail_TabBenefit = "Payroll.Payslip.PayslipDetail.TabBenefit";
         public const string Payroll_Payslip_PayslipDetail_TabBenefit_View = "Payroll.Payslip.PayslipDetail.TabBenefit.View";
 
+        public const string Payroll_Payslip_PayslipDetail_Edit = "Payroll.Payslip.PayslipDetail.Edit";
+        public const string Payroll_Payslip_PayslipDetail_EditBranch = "Payroll.Payslip.PayslipDetail.EditBranch";
+        public const string Payroll_Payslip_PayslipDetail_EditLevel = "Payroll.Payslip.PayslipDetail.EditLevel";
+        public const string Payroll_Payslip_PayslipDetail_EditJobPosition = "Payroll.Payslip.PayslipDetail.EditJobPosition";
+        public const string Payroll_Payslip_PayslipDetail_EditUserType = "Payroll.Payslip.PayslipDetail.EditUserType";
+        public const string Payroll_Payslip_PayslipDetail_EditBranchToListPayroll = "Payroll.Payslip.PayslipDetail.EditBranchToListPayroll";
+        public const string Payroll_Payslip_PayslipDetail_EditLevelToListPayroll = "Payroll.Payslip.PayslipDetail.EditLevelToListPayroll";
+        public const string Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll = "Payroll.Payslip.PayslipDetail.EditJobPositionToListPayroll";
+        public const string Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll = "Payroll.Payslip.PayslipDetail.EditUserTypeToListPayroll";
 
         public const string Payroll_Payslip_PayslipDetail_TabBonus = "Payroll.Payslip.PayslipDetail.TabBonus";
         public const string Payroll_Payslip_PayslipDetail_TabBonus_View = "Payroll.Payslip.PayslipDetail.TabBonus.View";
@@ -833,6 +849,11 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_SendToken,
                         PermissionNames.Mezon_Token_SendTokenAll,
 
+                        PermissionNames.Report,
+                        PermissionNames.Report_Salary,
+                        PermissionNames.Report_Salary_View,
+                        PermissionNames.Report_Salary_Export,
+
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
                         PermissionNames.Payroll_Create,
@@ -882,6 +903,15 @@ namespace HRMv2.Authorization
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit_View,
 
+                         PermissionNames.Payroll_Payslip_PayslipDetail_Edit,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditBranch,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPosition,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevel,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserType,
 
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus_View,
@@ -1250,6 +1280,12 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_SendToken,
                         PermissionNames.Mezon_Token_SendTokenAll,
 
+                         PermissionNames.Report,
+                         PermissionNames.Report_Salary,
+                        PermissionNames.Report_Salary_View,
+                        PermissionNames.Report_Salary_Export,
+
+
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
                         PermissionNames.Payroll_Create,
@@ -1290,6 +1326,15 @@ namespace HRMv2.Authorization
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit_View,
 
+                        PermissionNames.Payroll_Payslip_PayslipDetail_Edit,
+                         PermissionNames.Payroll_Payslip_PayslipDetail_EditBranch,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPosition,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevel,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserType,
 
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus_View,
@@ -1664,6 +1709,11 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_SendToken,
                         PermissionNames.Mezon_Token_SendTokenAll,
 
+                        PermissionNames.Report,
+                        PermissionNames.Report_Salary,
+                        PermissionNames.Report_Salary_View,
+                        PermissionNames.Report_Salary_Export,
+
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
                         PermissionNames.Payroll_Create,
@@ -1704,6 +1754,15 @@ namespace HRMv2.Authorization
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit_View,
 
+                         PermissionNames.Payroll_Payslip_PayslipDetail_Edit,
+                         PermissionNames.Payroll_Payslip_PayslipDetail_EditBranch,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPosition,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevel,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserType,
 
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus_View,
@@ -2077,6 +2136,11 @@ namespace HRMv2.Authorization
                         PermissionNames.Mezon_Token_SendToken,
                         PermissionNames.Mezon_Token_SendTokenAll,
 
+                         PermissionNames.Report,
+                         PermissionNames.Report_Salary,
+                        PermissionNames.Report_Salary_View,
+                        PermissionNames.Report_Salary_Export,
+
 
                         PermissionNames.Payroll,
                         PermissionNames.Payroll_View,
@@ -2114,6 +2178,15 @@ namespace HRMv2.Authorization
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit_View,
 
+                         PermissionNames.Payroll_Payslip_PayslipDetail_Edit,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditBranch,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPosition,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditLevel,
+                        PermissionNames.Payroll_Payslip_PayslipDetail_EditUserType,
 
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus,
                         PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus_View,
@@ -2515,6 +2588,11 @@ namespace HRMv2.Authorization
                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendToken, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendToken"},
                   new SystemPermission{ Name =  PermissionNames.Mezon_Token_SendTokenAll, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token SendAll Token"},
 
+                  new SystemPermission{ Name =  PermissionNames.Report, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report"},
+                  new SystemPermission{ Name =  PermissionNames.Report_Salary,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report Salary"},
+                  new SystemPermission{ Name =  PermissionNames.Report_Salary_View, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report Salary View"},
+                  new SystemPermission{ Name =  PermissionNames.Report_Salary_Export, MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report Salary Export"},
+
                   new SystemPermission{ Name =  PermissionNames.Payroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Payroll"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Create ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Create"},
@@ -2567,6 +2645,17 @@ namespace HRMv2.Authorization
 
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Tab Benefit"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditUserType ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit UserType"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPosition ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit JobPosition"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditLevel ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Level"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditBranch ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Branch"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Branch ToListPayroll"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Level ToListPayroll"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit JobPosition ToListPayroll"},
+                  new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit UserType ToListPayroll"},
+
 
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Tab Bonus"},
                   new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
@@ -3141,8 +3230,21 @@ namespace HRMv2.Authorization
                           new SystemPermission{ Name =  PermissionNames.Mezon_Token_Export ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Mezon Token Export"},
                       } 
                       
+                },
+                  new SystemPermission{Name = PermissionNames.Report,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report",
+                      Childrens = new List<SystemPermission>
+                      {
+                          new SystemPermission{ Name =  PermissionNames.Report_Salary ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Report Salary",
+                          Childrens = new List<SystemPermission>(){
+                             new SystemPermission{ Name =  PermissionNames.Report_Salary_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"},
+                             new SystemPermission{ Name =  PermissionNames.Report_Salary_Export ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Export"},
+
+                          } },
+                          
+                        
+                      }
+
                 }
-                
                 ,
                 new SystemPermission{ Name =  PermissionNames.Bonus ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Bonus",
                     Childrens = new List<SystemPermission>()
@@ -3315,6 +3417,19 @@ namespace HRMv2.Authorization
                                                 new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBenefit_View ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "View"}
                                             }
 
+                                        },
+                                        new SystemPermission{ Name = PermissionNames.Payroll_Payslip_PayslipDetail_Edit ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit",
+                                            Childrens = new List<SystemPermission>()
+                                            {
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditBranch ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Branch"},
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditUserType ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit UserType"},
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditLevel ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Level"},
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPosition ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit JobPosition"},
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Branch ToListPayroll"},
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit Level ToListPayroll"},
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit UserType ToListPayroll"},
+                                                new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Edit JobPosition ToListPayroll"},
+                                            }
                                         },
                                         new SystemPermission{ Name =  PermissionNames.Payroll_Payslip_PayslipDetail_TabBonus ,MultiTenancySides = MultiTenancySides.Host | MultiTenancySides.Tenant, DisplayName = "Tab Bonus",
                                             Childrens = new List<SystemPermission>()

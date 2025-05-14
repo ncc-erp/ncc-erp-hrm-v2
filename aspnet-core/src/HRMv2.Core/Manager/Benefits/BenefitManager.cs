@@ -115,22 +115,24 @@ namespace HRMv2.Manager.Categories.Benefits
         {
             var currentEmployeeIds = QueryAllBenefitEmployee()
                 .Where(x => x.BenefitId == input.BenefitId)
-                .Select(x => x.Id);
+                .Select(x => x.Id)
+                .ToList();
+
+            var dicEmployeeIdToStartDate = WorkScope.GetAll<Employee>()
+                        .Where(x => input.ListEmployeeId.Contains(x.Id))
+                        .Select(x => new { x.Id, x.StartWorkingDate.Date })
+                        .ToDictionary(x => x.Id, x => x.Date);
+
             var listToInsert = new List<BenefitEmployee>();
             foreach (var employeeId in input.ListEmployeeId)
             {
                 if (!currentEmployeeIds.Contains(employeeId))
                 {
-                    DateTime employeeWorkingDate = WorkScope.GetAll<Employee>()
-                        .Where(x => x.Id == employeeId)
-                        .Select(x => x.StartWorkingDate.Date)
-                        .FirstOrDefault();
-
                     var entity = new BenefitEmployee
                     {
                         EmployeeId = employeeId,
-                        StartDate = input.StartDate != null ? (DateTime)input.StartDate : employeeWorkingDate,
-                        EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null ,
+                        StartDate = input.StartDate != null ? (DateTime)input.StartDate : dicEmployeeIdToStartDate[employeeId],
+                        EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null,
                         BenefitId = input.BenefitId,
                         LastModificationTime = DateTimeUtils.GetNow(),
                         LastModifierUserId = AbpSession.UserId

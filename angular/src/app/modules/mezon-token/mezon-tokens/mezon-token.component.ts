@@ -22,6 +22,7 @@ export class MezonTokenComponent extends PagedListingComponentBase<MezonTokenDto
   public statusSendTokens : any
   public listMezonToken :  MezonTokenDto[];
   public filter : any;
+  public totalAmount: number
   public selectedSatatusSendToken : number =0;
     public DEFAULT_FILTER: StatusSent = {
       status: APP_ENUMS.StatusSendToken.Pending,
@@ -49,10 +50,11 @@ ngOnInit(): void {
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void { 
     this.filter = request;
     this.subscription.push(
-      this.mezonTokenService.getAllPagging(request).subscribe((rs) => {
-        this.listMezonToken = rs.result.items;
-  
-    // this.showPaging(rs.result, pageNumber)
+      this.mezonTokenService.GetListMezonToken(request).subscribe((rs) => {
+        this.listMezonToken = rs.result.result.items;
+        this.totalAmount = rs.result.totalAmout;
+
+      this.showPaging(rs.result.result, pageNumber)
       }, () => this.isLoading = false))   
   }
   private getAllStatusSendToken(){
@@ -105,7 +107,7 @@ ngOnInit(): void {
   openEditMezonToken(mezonToken){
       const dia = this.dialog.open(AddMezonTokenComponent, {
         data: {
-          title : "Edit Mezon Token",
+          title : "Edit Send Token To User",  
           mezonToken : {...mezonToken},
           type : "edit"
         },
@@ -122,7 +124,7 @@ ngOnInit(): void {
     openAddMezonToken(){
       const dia = this.dialog.open(AddMezonTokenComponent, {
         data: {
-          title : 'Add Mezon Token',
+          title : 'Send Token To User',
           type : "create",
         },
         width: "700px"
@@ -156,8 +158,10 @@ ngOnInit(): void {
   }
   isShowSentTokenAllBtn(){
     return this.isGranted(PERMISSIONS_CONSTANT.Mezon_Token_SendTokenAll);
+  }   
+  isAllowViewTabPersonalInfo(){
+    return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_View);
   }
-
   SentToken(mezonToken){
     const input = {
         mezonTokenId: mezonToken.id,

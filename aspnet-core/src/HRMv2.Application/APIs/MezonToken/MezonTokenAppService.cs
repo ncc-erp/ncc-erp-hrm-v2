@@ -25,7 +25,7 @@ namespace HRMv2.APIs.PayrollToken
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Mezon_Token_View)]
-        public async Task<GridResult<MezonTokenDto>> GetAllPaging(GridParam input)
+        public async Task<ResultMezonToken> GetListMezonToken(GridParam input)
         {
             return await _mezonTokneManager.GetAllPaging(input);
         }
