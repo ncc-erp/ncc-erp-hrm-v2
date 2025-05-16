@@ -524,16 +524,16 @@
                                 <tr *ngFor="let info of summaryInfomations; let i = index" [ngStyle] ="{'font-weight' : i == 0 ? 'bold' : 'normal'}">
                                     <td class="text-center">{{i+1}}</td>
                                     <td class="text-left">
-                                        <span *ngIf="info.name !== 'Phạt không thu được'">
+                                        <span *ngIf="info.name !== 'Phạt không thu được' && info.name !== 'Tổng Token '">
                                             {{info.name}}
                                         </span>
                                         
                                         <span *ngIf="info.name == 'Tổng Token '"
                                         (click)="navigateToFilteredPage()"
                                        [queryParams]="{ statusToken: 0,payrollIds:[payrollId] }"
-                                     style="cursor: pointer; color: blue;"
+                                     style="cursor: pointer; color: purple;font-weight: bold;"
                                          >
-                                            => MezonToken
+                                            {{info.name}}
                                         </span>
 
                                         <button class="fixPaidNotGetInfo" *ngIf="info.name === 'Phạt không thu được'" (click)="OnGetNotPaidInfo()">
