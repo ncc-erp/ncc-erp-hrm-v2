@@ -3,6 +3,7 @@ using HRMv2.Authorization;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.MezonTokens;
 using HRMv2.Manager.MezonTokens.Dto;
+using HRMv2.Manager.Salaries.Payrolls.Dto;
 using HRMv2.Manager.Salaries.SalaryCalculators.Dto;
 using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace HRMv2.APIs.PayrollToken
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Mezon_Token_View)]
-        public async Task<ResultMezonToken> GetListMezonToken(GridParam input)
+        public async Task<ResultMezonToken> GetListMezonToken(InputMezonToken input)
         {
             return await _mezonTokneManager.GetAllPaging(input);
         }
@@ -57,7 +58,7 @@ namespace HRMv2.APIs.PayrollToken
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Mezon_Token_Export)]
-        public async Task<FileBase64Dto> ExportMezonToken(GridParam input)
+        public async Task<FileBase64Dto> ExportMezonToken(InputMezonToken input)
         {
             return await _mezonTokneManager.ExportMezonToken(input);
         }

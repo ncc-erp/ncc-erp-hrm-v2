@@ -110,7 +110,8 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
   public listUserTypeUpdate : any;
   public listLevelUpdate : any;
   public listJobPostionUpdate: any;
-  private calculateResultRef
+  private calculateResultRef;
+  public payrollIds: number[] = [];
   public confirmMailFilters = [
     {
       key: "All",
@@ -695,6 +696,17 @@ onSendDirectMessage(payslip: PaySlipDto){
     column.width = 200
   }
 
+  navigateToFilteredPage() {
+  const filterItems = [{
+    propertyName: 'statusToken',
+    value: 0,
+    comparision: 0
+  }];
+  this.payrollIds = [this.payrollId]
+  const url = `/app/list-mezon-token/list-mezon-token?pageNumber=1&pageSize=20&searchText=&payrollIds=${encodeURIComponent(JSON.stringify(this.payrollIds))}&filterItems=${encodeURIComponent(JSON.stringify(filterItems))}`;
+  
+  this.router.navigateByUrl(url);
+}
 
 
   isShowCalculateSalaryBtn() {

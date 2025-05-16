@@ -8,6 +8,8 @@ export interface MezonTokenDto extends  BaseEmployeeDto{
         amount: number;
         sentToEmployeeAt: string;
         referenceId: number;
+        payrollId: number;
+        payrollName: string;
 }
 
 export interface SentToken{

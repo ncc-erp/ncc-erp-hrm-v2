@@ -22,7 +22,18 @@
                 </mat-error>
             </div>
         </div>
-        
+            <div class="form-group row  mt-3">
+            <label class="col-md-3 col-form-label">Payroll:</label>
+            <div class="col-md-9">
+                 <mat-form-field class="w-100" appearance="outline">
+                        <mat-select name="month" required [(ngModel)]="payrollId" placeholder="select payroll" #month="ngModel">
+                            <mat-option *ngFor="let payroll of listPayroll" [value]="payroll.value">
+                                {{payroll.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+            </div>
+        </div>
         <div class="form-group row required mt-3">
             <label class="col-md-3 col-form-label">Amount:</label>
             <div class="col-md-9">

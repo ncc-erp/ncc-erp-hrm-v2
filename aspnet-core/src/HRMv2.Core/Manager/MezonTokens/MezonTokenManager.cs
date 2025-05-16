@@ -11,6 +11,7 @@ using HRMv2.Manager.Notifications.Email;
 using HRMv2.Manager.Notifications.SendMezonDM;
 using HRMv2.Manager.Report.Dto;
 using HRMv2.Manager.Salaries.Dto;
+using HRMv2.Manager.Salaries.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips.Dto;
 using HRMv2.NccCore;
 using HRMv2.Net.MimeTypes;
@@ -52,17 +53,21 @@ namespace HRMv2.Manager.MezonTokens
             _sendDMService = sendDMService;
             _emailManager = emailManager;
         }
-        public async Task<ResultMezonToken> GetAllPaging(GridParam input)
+        public async Task<ResultMezonToken> GetAllPaging(InputMezonToken input)
         {
+
             var query = GetAllMezonToken();
 
-            var queryFilter = query.ApplySearchAndFilter(input);
+            query = query.Where(x => x.PayrollId.HasValue && input.PayrollIds.Contains(x.PayrollId.Value));
+
+
+            var queryFilter = query.ApplySearchAndFilter(input.GridParam);
             var totalToken = queryFilter.Sum(x => x.Amount);
 
 
             var totalCount = queryFilter.Count();
 
-            var pagedResult =await queryFilter.TakePage(input).ToListAsync();
+            var pagedResult =await queryFilter.TakePage(input.GridParam).ToListAsync();
             return new ResultMezonToken
             {
                 Result = new GridResult<MezonTokenDto>(pagedResult, totalCount),
@@ -70,9 +75,20 @@ namespace HRMv2.Manager.MezonTokens
             };
         }
 
-
+        public Dictionary<long, string> GetDicPayrollIdToName()
+        {
+            var dic = WorkScope.GetAll<Payroll>()
+                .Select(x => new 
+                {
+                    ApplyDate = x.ApplyMonth,
+                    Value = x.Id
+                }).ToList()
+                .ToDictionary(x => x.Value, x => x.ApplyDate.ToString("MM-yyyy"));
+            return dic;
+        }
         public IQueryable<MezonTokenDto> GetAllMezonToken()
         {
+            var dicPayroll = GetDicPayrollIdToName();
             return WorkScope.GetAll<MezonToken>()
                   .Include(x => x.Employee)
                   .OrderByDescending(x => x.CreationTime)
@@ -104,6 +120,8 @@ namespace HRMv2.Manager.MezonTokens
                          Color = x.Employee.JobPosition.Color
                      },
                       ReferenceId = x.ReferenceId,
+                      PayrollId = x.PayrollId,
+                      PayrollName = x.PayrollId.HasValue ? dicPayroll[x.PayrollId.Value] : ""
                   });
         }
 
@@ -138,11 +156,12 @@ namespace HRMv2.Manager.MezonTokens
             entity.EmployeeId = input.EmployeeId;
             entity.Note = input.Note;
             entity.SentToEmployeeAt = input.SentToEmployeeAt;
+            entity.PayrollId = input.PayrollId.HasValue ? input.PayrollId.Value : null;
             await WorkScope.UpdateAsync(entity);
             return input;
         }
 
-        public List<ExportMezonTokenDto> GetFilterMezonToken(GridParam input)
+        public List<ExportMezonTokenDto> GetFilterMezonToken(InputMezonToken input)
         {
             var mezonTokens = GetAllPaging(input).Result;
             return mezonTokens.Result.Items
@@ -156,7 +175,7 @@ namespace HRMv2.Manager.MezonTokens
                 })
                 .ToList();
         }
-        public async Task<FileBase64Dto> ExportMezonToken(GridParam input)
+        public async Task<FileBase64Dto> ExportMezonToken(InputMezonToken input)
         {
             var templateFilePath = Path.Combine(HRMv2Consts.templateFolder, "Export-MezonToken.xlsx");
 
@@ -165,8 +184,8 @@ namespace HRMv2.Manager.MezonTokens
                 throw new UserFriendlyException("Can't find template");
             }
 
-            input.MaxResultCount = int.MaxValue;
-            input.SkipCount = 0;
+            input.GridParam.MaxResultCount = int.MaxValue;
+            input.GridParam.SkipCount = 0;
             var mezonTokens = GetFilterMezonToken(input);
 
             using (var memoryStream = new MemoryStream(File.ReadAllBytes(templateFilePath)))

@@ -24,6 +24,7 @@ namespace HRMv2.Entities
         /// Tạo từ MezonToken , referenceId = -1
         /// </summary>
         public long ReferenceId { get; set; }
+        public long? PayrollId { get; set; }
 
     }
 }

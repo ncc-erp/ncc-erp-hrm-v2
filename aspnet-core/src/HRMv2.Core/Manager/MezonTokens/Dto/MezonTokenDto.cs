@@ -25,5 +25,7 @@ namespace HRMv2.Manager.MezonTokens.Dto
         public long ReferenceId { get; set; }
         public int? TenantId { get; set; }
         public long? CurrentUserLoginId { get; set; }
+        public long? PayrollId { get; set; }
+        public string? PayrollName { get; set; }
     }
 }

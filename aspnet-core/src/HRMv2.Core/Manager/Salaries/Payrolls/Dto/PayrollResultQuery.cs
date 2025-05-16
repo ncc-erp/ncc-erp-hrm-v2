@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HRMv2.Manager.Salaries.Payrolls.Dto
 {
-    public class PayrollWithStatusExecute
+    public class PayrollResultQuery
     {
         public long Value { get; set; }
         public DateTime ApplyDate { get; set; }

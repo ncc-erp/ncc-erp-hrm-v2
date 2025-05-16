@@ -527,6 +527,15 @@
                                         <span *ngIf="info.name !== 'Phạt không thu được'">
                                             {{info.name}}
                                         </span>
+                                        
+                                        <span *ngIf="info.name == 'Tổng Token '"
+                                        (click)="navigateToFilteredPage()"
+                                       [queryParams]="{ statusToken: 0,payrollIds:[payrollId] }"
+                                     style="cursor: pointer; color: blue;"
+                                         >
+                                            => MezonToken
+                                        </span>
+
                                         <button class="fixPaidNotGetInfo" *ngIf="info.name === 'Phạt không thu được'" (click)="OnGetNotPaidInfo()">
                                             {{info.name}}
                                         </button>
