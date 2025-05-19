@@ -522,8 +522,9 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let info of summaryInfomations; let i = index" [ngStyle] ="{'font-weight' : i == 0 ? 'bold' : 'normal'}">
-                                    <td class="text-center">{{i+1}}</td>
-                                    <td class="text-left">
+                                   <td class="text-center" [ngStyle]="{'background-color': info.name == 'Tổng Token ' ? 'rgb(220, 6, 220)' : 'normal'}">{{i + 1}}</td>
+
+                                    <td class="text-left" [ngStyle]="{'background-color': info.name == 'Tổng Token ' ? 'rgb(220, 6, 220)' : 'normal'}">
                                         <span *ngIf="info.name !== 'Phạt không thu được' && info.name !== 'Tổng Token '">
                                             {{info.name}}
                                         </span>
@@ -531,7 +532,7 @@
                                         <span *ngIf="info.name == 'Tổng Token '"
                                         (click)="navigateToFilteredPage()"
                                        [queryParams]="{ statusToken: 0,payrollIds:[payrollId] }"
-                                     style="cursor: pointer; color: purple;font-weight: bold;"
+                                     style="cursor: pointer;font-weight: bold;"
                                          >
                                             {{info.name}}
                                         </span>
@@ -541,9 +542,11 @@
                                         </button>
                                     </td>
 
-                                    <td class="text-center">{{info.quantity}}</td>
-                                    <td class="text-right" [ngStyle]="{'color': info.totalSalary < 0 ? 'red' : ''}">{{info.totalSalary | moneyFormat}}</td>
-                                    <td class="text-right" [ngStyle]="{'color': info.avgSalary < 0 ? 'red' : ''}">{{info.avgSalary | moneyFormat}}</td>
+                                    <td class="text-center" [ngStyle]="{'background-color': info.name == 'Tổng Token ' ? 'rgb(220, 6, 220)' : 'normal'}">{{info.quantity}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.totalSalary < 0 ? 'red' : ''}" 
+                                    [ngStyle]="{'background-color': info.name == 'Tổng Token ' ? 'rgb(220, 6, 220)' : 'normal'}">{{info.totalSalary | moneyFormat}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.avgSalary < 0 ? 'red' : ''}"
+                                    [ngStyle]="{'background-color': info.name == 'Tổng Token ' ? 'rgb(220, 6, 220)' : 'normal'}">{{info.avgSalary | moneyFormat}}</td>
                                 </tr>
                             </tbody>
                         </table>
