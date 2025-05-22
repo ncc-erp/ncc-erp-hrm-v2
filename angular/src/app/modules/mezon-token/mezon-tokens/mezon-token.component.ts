@@ -7,9 +7,10 @@ import { PagedListingComponentBase } from '@shared/paged-listing-component-base'
 import { PagedRequestDto } from '@shared/paged-listing-component-base';
 import { MezonTokenServiceService } from '@app/service/api/mezon-token/mezon-token-service.service';  
 import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
-import { property } from '@node_modules/@types/lodash';
+import { property, result } from '@node_modules/@types/lodash';
 import { AddMezonTokenComponent } from '../add-mezon-token/add-mezon-token.component';
 import { MatDialog } from '@angular/material/dialog';
+import { PayRollService } from '@app/service/api/pay-roll/pay-roll.service';
 import * as FileSaver from 'file-saver';
 
 @Component({
@@ -24,46 +25,85 @@ export class MezonTokenComponent extends PagedListingComponentBase<MezonTokenDto
   public filter : any;
   public totalAmount: number
   public selectedSatatusSendToken : number =0;
+  public payrollIds: number[] = [];
+  public listPayroll: any;
+  public selectedPayroll: number [] = [];
+
     public DEFAULT_FILTER: StatusSent = {
       status: APP_ENUMS.StatusSendToken.Pending,
       type: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE
     }
-    statusSendConvert : any
+   public statusSendConvert : any
 
-  constructor(injector: Injector,private route:ActivatedRoute,private mezonTokenService :MezonTokenServiceService) {
+  constructor(injector: Injector,private route:ActivatedRoute,private mezonTokenService :MezonTokenServiceService,private payRollService: PayRollService,) {
     super(injector);
    }
 
 ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.month = params['id']
+         const raw = params['payrollIds']
+  try {
+    this.payrollIds = JSON.parse(raw); 
+    this.selectedPayroll = this.payrollIds;
+  } catch (e) {
+    this.payrollIds = [];
+  }
+     
     });
     this.statusSendTokens = this.getListFormEnum(APP_ENUMS.StatusSendToken);
     this.listBreadCrumb = [
       {name: '<i class="fa-solid fa-house fa-sm"></i>',url:''},
       {name: ' <i class="fa-solid fa-chevron-right"></i> '},
       {name:'Mezon Token ',url:''}];
-      this.refresh();
+      
      this.getAllStatusSendToken()
-    
+    this.getListPayroll();
+    this.refresh();
   }
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void { 
-    this.filter = request;
+   
+    const input = {
+      payrollIds : this.payrollIds,
+      gridParam: request
+    }
+    this.filter = input;
     this.subscription.push(
-      this.mezonTokenService.GetListMezonToken(request).subscribe((rs) => {
+      this.mezonTokenService.GetListMezonToken(input).subscribe((rs) => {
         this.listMezonToken = rs.result.result.items;
         this.totalAmount = rs.result.totalAmout;
 
       this.showPaging(rs.result.result, pageNumber)
       }, () => this.isLoading = false))   
   }
+
+  onPayrollSelect(ids: number[]) {
+    this.payrollIds = ids;
+    this.onSearchEnter(this.searchText)
+     const currentParams = { ...this.route.snapshot.queryParams };
+     this.router.navigate([], {
+    relativeTo: this.route,
+    queryParams: {
+      ...currentParams,
+      payrollIds: JSON.stringify(ids),
+    },
+    queryParamsHandling: 'merge', 
+  });
+  }
+  
   private getAllStatusSendToken(){
     const statusSendConvert = this.getListFormEnum(APP_ENUMS.StatusSendToken).filter(item => item.key != 'All');
     this.statusSendConvert = statusSendConvert.reduce((acc, item) => {
       acc[item.value as string] = item.key; 
       return acc;
     }, {});
+
   }
+getListPayroll() {
+  this.payRollService.GetPayrollWithStatusDiffExecute().subscribe((res) => {
+    this.listPayroll = res.result
+  });
+}
+
 
   isCheckAction(id: any) {   
     return id !== APP_ENUMS.StatusSendToken.SentToEmployee;

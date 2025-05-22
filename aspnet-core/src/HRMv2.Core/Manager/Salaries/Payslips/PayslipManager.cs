@@ -449,7 +449,8 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Amount = tokenValue,
                         Status = StatusSendToken.Pending,
                         ReferenceId = payslipDetail.Id,
-                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("yyyy-MM")}(tiền mặt ăn trưa còn lại: {payslipDetail.Money:N0} VND)"
+                        PayrollId = payrollId,
+                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("MM-yyyy")} (tiền mặt ăn trưa còn lại: {payslipDetail.Money:N0} VND)"
                     });
                 }    
             }
@@ -1115,7 +1116,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                 .Where(x => x.PayrollId == payrollId).ToList();
 
             var queryToken = WorkScope.GetAll<MezonToken>()
-                .Where(x => x.Status == StatusSendToken.Pending)
+                .Where(x => x.PayrollId == payrollId)
                 .Select(x => new
                 {
                     x.Amount,
@@ -1180,7 +1181,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             results.Add(new SumaryInfoDto
             {
-                Name = "Tổng lương",
+                Name = "Tổng lương (Bao gồm cả lương âm)",
                 TotalSalary = list2.Sum(s => s.TotalSalary),
                 Quantity = list2.Sum(s => s.Quantity)
             });

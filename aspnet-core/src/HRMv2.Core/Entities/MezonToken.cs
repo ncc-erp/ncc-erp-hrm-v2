@@ -24,6 +24,10 @@ namespace HRMv2.Entities
         /// Tạo từ MezonToken , referenceId = -1
         /// </summary>
         public long ReferenceId { get; set; }
+        public long? PayrollId { get; set; }
+
+        [ForeignKey(nameof(PayrollId))]
+        public Payroll Payroll { get; set; }
 
     }
 }

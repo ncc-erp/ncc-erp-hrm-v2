@@ -1,3 +1,4 @@
+import { PayRollService } from '@app/service/api/pay-roll/pay-roll.service';
 import { Component, Injector, OnInit } from '@angular/core';
 import { EmployeeService } from '@app/service/api/employee/employee.service';
 import { MezonTokenDto } from '@app/service/model/payroll-token/PayrollTokenDto.dto';
@@ -27,9 +28,11 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   public employeeId: number;
   public searchUser: string = ''; 
   public nameBenefit: string ;
+  public listPayroll: any[] = [];
+  public payrollId: number;
 
   constructor(injector : Injector,private mezonTokenService :MezonTokenServiceService,
-    private employeeService : EmployeeService,private benefitService: BenefitService,   
+    private employeeService : EmployeeService,private benefitService: BenefitService,   private payRollService: PayRollService,
   ) { 
     super(injector);
     
@@ -41,15 +44,13 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
     this.note = this.dialogData.mezonToken.note;
     this.employeeId = this.dialogData.mezonToken.employeeId;
     this.amount = this.dialogData.mezonToken.amount;
+    this.payrollId = this.dialogData.mezonToken.payrollId;
     this.selectedBenefit = (this.dialogData.mezonToken.referenceId != null && this.dialogData.mezonToken.referenceId != 0) ? this.dialogData.mezonToken.referenceId : -1;
     this.getBenefitDefault(this.selectedBenefit);
    
     }
-
-   
     this.getListEmployee();
-
-
+    this.getListPayroll();
   }
    
   isChecksBenfit(){
@@ -58,6 +59,14 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
     }
     return false;
   }
+
+  getListPayroll(){
+    this.payRollService.GetPayrollWithStatusDiffExecute().subscribe((res) => {
+      this.listPayroll = res.result;
+
+    } )
+  }
+  
   getListEmployee(){
     this.subscription.push(
       this.employeeService.getEmployeeExceptStatusQuit().subscribe((res) => {
@@ -111,6 +120,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
         amount: this.amount,
         note: this.note,
         sentToEmployeeAt : "",
+        payrollId: this.payrollId,
         referenceId: this.selectedBenefit
       }
     if(this.dialogData.type === 'edit'){

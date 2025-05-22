@@ -46,7 +46,7 @@ namespace HRMv2.Manager.Report
         {
             var dic = WorkScope.GetAll<Payroll>()
                 .Where(x => x.Status == PayrollStatus.Executed)
-                .Select(x => new PayrollWithStatusExecute
+                .Select(x => new PayrollResultQuery
                 {
                     ApplyDate = x.ApplyMonth,
                     Value = x.Id
