@@ -26,5 +26,8 @@ namespace HRMv2.Entities
         public long ReferenceId { get; set; }
         public long? PayrollId { get; set; }
 
+        [ForeignKey(nameof(PayrollId))]
+        public Payroll Payroll { get; set; }
+
     }
 }

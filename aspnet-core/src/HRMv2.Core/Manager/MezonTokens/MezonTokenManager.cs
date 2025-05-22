@@ -58,7 +58,10 @@ namespace HRMv2.Manager.MezonTokens
 
             var query = GetAllMezonToken();
 
-            query = query.Where(x => x.PayrollId.HasValue && input.PayrollIds.Contains(x.PayrollId.Value));
+            if (input.PayrollIds != null && input.PayrollIds.Any())
+            {
+                query = query.Where(x => x.PayrollId.HasValue && input.PayrollIds.Contains(x.PayrollId.Value));
+            }
 
 
             var queryFilter = query.ApplySearchAndFilter(input.GridParam);
@@ -75,20 +78,8 @@ namespace HRMv2.Manager.MezonTokens
             };
         }
 
-        public Dictionary<long, string> GetDicPayrollIdToName()
-        {
-            var dic = WorkScope.GetAll<Payroll>()
-                .Select(x => new 
-                {
-                    ApplyDate = x.ApplyMonth,
-                    Value = x.Id
-                }).ToList()
-                .ToDictionary(x => x.Value, x => x.ApplyDate.ToString("MM-yyyy"));
-            return dic;
-        }
         public IQueryable<MezonTokenDto> GetAllMezonToken()
         {
-            var dicPayroll = GetDicPayrollIdToName();
             return WorkScope.GetAll<MezonToken>()
                   .Include(x => x.Employee)
                   .OrderByDescending(x => x.CreationTime)
@@ -121,7 +112,7 @@ namespace HRMv2.Manager.MezonTokens
                      },
                       ReferenceId = x.ReferenceId,
                       PayrollId = x.PayrollId,
-                      PayrollName = x.PayrollId.HasValue ? dicPayroll[x.PayrollId.Value] : ""
+                      PayrollApplyMonth = x.Payroll != null ? x.Payroll.ApplyMonth : null
                   });
         }
 
@@ -151,12 +142,11 @@ namespace HRMv2.Manager.MezonTokens
 
         public async Task<MezonTokenDto> EditMezonToken(MezonTokenDto input)
         {
-            var entity = await WorkScope.GetAll<MezonToken>().FirstOrDefaultAsync(x => x.Id == input.Id);
+            var entity = await WorkScope.GetAsync<MezonToken>(input.Id);
             entity.Amount = input.Amount;
             entity.EmployeeId = input.EmployeeId;
             entity.Note = input.Note;
-            entity.SentToEmployeeAt = input.SentToEmployeeAt;
-            entity.PayrollId = input.PayrollId.HasValue ? input.PayrollId.Value : null;
+            entity.PayrollId = input.PayrollId;
             await WorkScope.UpdateAsync(entity);
             return input;
         }
@@ -181,7 +171,7 @@ namespace HRMv2.Manager.MezonTokens
 
             if (templateFilePath == default)
             {
-                throw new UserFriendlyException("Can't find template");
+                throw new UserFriendlyException("Can't find template Export-MezonToken.xlsx");
             }
 
             input.GridParam.MaxResultCount = int.MaxValue;
@@ -284,7 +274,7 @@ namespace HRMv2.Manager.MezonTokens
                 return new AuthResponse
                 {
                     code = 0,
-                    message = $"Sent Token for user {userName} successfully!"
+                    message = $"Sent Token to {userName} successfully!"
                 };
             }
 
@@ -298,7 +288,7 @@ namespace HRMv2.Manager.MezonTokens
 
 
 
-        public async Task<string> SentTokenToAllPending()
+        public async Task<string> SendTokenToAllPending()
         {
 
             var authData =await _mezonWebService.GetAuthDataMezon();
@@ -319,7 +309,7 @@ namespace HRMv2.Manager.MezonTokens
                 delaySendToken += 3;
             }
            
-            return $"Started sent {input.Count} token mezon to {input.Count} user.";
+            return $"Started sending token to {input.Count} users.";
         }
     }
 }

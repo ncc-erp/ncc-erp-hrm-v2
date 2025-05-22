@@ -74,7 +74,7 @@ namespace HRMv2.APIs.PayrollToken
         [AbpAuthorize(PermissionNames.Mezon_Token_SendTokenAll)]
         public async Task<string> SendTokenToAllPending()
         {
-          return await _mezonTokneManager.SentTokenToAllPending();
+          return await _mezonTokneManager.SendTokenToAllPending();
         }
 
     }
