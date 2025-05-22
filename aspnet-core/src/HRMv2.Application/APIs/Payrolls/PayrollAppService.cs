@@ -97,9 +97,15 @@ namespace HRMv2.APIs.Payrolls
         }
 
         [HttpGet]
-        public List<PayrollWithStatusExecute> GetPayrollWithStatusExecute()
+        public List<PayrollResultQuery> GetPayrollWithStatusExecuted()
         {
-            return _payrollManager.GetPayrollWithStatusExecute();
+            return _payrollManager.GetPayrollWithStatusExecuted();
+        }
+
+        [HttpGet]
+        public List<PayrollResultQuery> GetPayrollWithStatusDiffExecuted()
+        {
+            return _payrollManager.GetPayrollWithStatusDiffExecuted();
         }
     }
 }

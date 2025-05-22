@@ -16,12 +16,17 @@
                     <table-filter [filterType]="filterTypeEnum.Dropdown" [dropdownData]="statusSendTokens" 
                     [placeholder]="'Status'" [defaultValue]="DEFAULT_FILTER.status"
                     (onTableFilter)="onTableFilter(filterTypeEnum.Dropdown, $event, 'statusToken')">
-      </table-filter>
+                    </table-filter>
                 </div>
-                <div style="text-align: center; font-weight: bold; margin-top: 12px;">
-                    TotalAmount : {{ totalAmount | moneyFormat }}
+                  <div class="col-2 ">
+                     <chart-select class="w-100" style="margin-top: 8px; margin-bottom:18px;"
+                             (onSelect)="onPayrollSelect($event)"
+                             [label]="'Payroll'"
+                             [defaultValue]="selectedPayroll"
+                             [placeholder]="'Payroll'"
+                             [dropdownData]="listPayroll">
+            </chart-select>
                   </div>
-                  
                 <div class="d-flex justify-content-end gap-2 col-4" >
                     <button class="btn btn-primary mr-2" (click)="onExport()" *ngIf="isShowExportBtn()">
                         Export
@@ -50,7 +55,8 @@
                                 <sortable [name]="'email'" [sortProperty]="sortProperty"
                                         [sortDirection]="sortDirection"></sortable>
                             </th>
-                            <th (click)="onSortChange('amount')" >MezonToken
+                            <th class="pointer sticky-col"  style="min-width: 100px;">Payroll</th>
+                            <th (click)="onSortChange('amount')" >MezonToken<br>Total: {{ totalAmount | moneyFormat }}
                                 <sortable [name]="'amount'" [sortProperty]="sortProperty"
                                         [sortDirection]="sortDirection"></sortable>
                             </th>  
@@ -60,7 +66,7 @@
                                 <sortable [name]="'sentToEmployeeAt'" [sortProperty]="sortProperty"
                                         [sortDirection]="sortDirection"></sortable>
                             </th>                
-                            <th class="col-action">
+                            <th class="col-action" style="width: 100px;">
                                 Action
                                          
                               </th>
@@ -94,6 +100,10 @@
                                       >
                                     </app-user-info>
                                   </td>
+
+                                  <td class="text-center align-middle" >
+                                    <span>{{item.payrollName}}</span>
+                                </td> 
                                 <td class="text-right align-middle" >
                                     <span>{{item.amount | moneyFormat}}</span>
                                 </td>

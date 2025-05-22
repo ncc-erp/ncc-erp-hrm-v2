@@ -521,20 +521,36 @@
                                 <th>Avg Salary</th>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let info of summaryInfomations; let i = index" [ngStyle] ="{'font-weight' : i == 0 ? 'bold' : 'normal'}">
-                                    <td class="text-center">{{i+1}}</td>
-                                    <td class="text-left">
-                                        <span *ngIf="info.name !== 'Phạt không thu được'">
+                                <tr *ngFor="let info of summaryInfomations; let i = index"
+                                [ngStyle]="{
+                                      'font-weight': i === 0 || info.name === 'Tổng Token ' ? 'bold' : 'normal',
+                                      'color': info.name === 'Tổng Token ' ? 'purple' : 'black'
+                                   }">
+                                   <td class="text-center" >{{i + 1}}</td>
+
+                                    <td class="text-left" >
+                                        <span *ngIf="info.name !== 'Phạt không thu được' && info.name !== 'Tổng Token '">
                                             {{info.name}}
                                         </span>
+                                        
+                                        <span *ngIf="info.name == 'Tổng Token '"
+                                        (click)="navigateToFilteredPage()"
+                                       [queryParams]="{ statusToken: 0,payrollIds:[payrollId] }"
+                                     style="cursor: pointer; color: purple;"
+                                         >
+                                            {{info.name}}
+                                        </span>
+
                                         <button class="fixPaidNotGetInfo" *ngIf="info.name === 'Phạt không thu được'" (click)="OnGetNotPaidInfo()">
                                             {{info.name}}
                                         </button>
                                     </td>
 
-                                    <td class="text-center">{{info.quantity}}</td>
-                                    <td class="text-right" [ngStyle]="{'color': info.totalSalary < 0 ? 'red' : ''}">{{info.totalSalary | moneyFormat}}</td>
-                                    <td class="text-right" [ngStyle]="{'color': info.avgSalary < 0 ? 'red' : ''}">{{info.avgSalary | moneyFormat}}</td>
+                                    <td class="text-center" >{{info.quantity}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.totalSalary < 0 ? 'red' : ''}" 
+                                   >{{info.totalSalary | moneyFormat}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.avgSalary < 0 ? 'red' : ''}"
+                                   >{{info.avgSalary | moneyFormat}}</td>
                                 </tr>
                             </tbody>
                         </table>
