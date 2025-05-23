@@ -27,7 +27,7 @@ export class MezonTokenComponent extends PagedListingComponentBase<MezonTokenDto
   public selectedSatatusSendToken : number =0;
   public payrollIds: number[] = [];
   public listPayroll: any;
-  public selectedPayroll: number [] = [];
+  public selectedPayroll: number[] = [];
 
     public DEFAULT_FILTER: StatusSent = {
       status: APP_ENUMS.StatusSendToken.Pending,
@@ -46,7 +46,8 @@ ngOnInit(): void {
     this.payrollIds = JSON.parse(raw); 
     this.selectedPayroll = this.payrollIds;
   } catch (e) {
-    this.payrollIds = [];
+    this.payrollIds = [null];
+    this.selectedPayroll = [-1];
   }
      
     });
@@ -77,14 +78,15 @@ ngOnInit(): void {
   }
 
   onPayrollSelect(ids: number[]) {
-    this.payrollIds = ids;
+    const payrolls = ids.map(id => id === -1 ? null : id);
+    this.payrollIds = payrolls
     this.onSearchEnter(this.searchText)
      const currentParams = { ...this.route.snapshot.queryParams };
      this.router.navigate([], {
     relativeTo: this.route,
     queryParams: {
       ...currentParams,
-      payrollIds: JSON.stringify(ids),
+      payrollIds: JSON.stringify(payrolls),
     },
     queryParamsHandling: 'merge', 
   });
@@ -100,7 +102,13 @@ ngOnInit(): void {
   }
 getListPayroll() {
   this.payRollService.GetPayrollWithStatusDiffExecute().subscribe((res) => {
-    this.listPayroll = res.result
+    this.listPayroll = [
+      {
+        value: -1,
+        name: 'Payroll null' 
+      },
+      ...res.result
+    ];
   });
 }
 

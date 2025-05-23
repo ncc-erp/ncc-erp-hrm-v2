@@ -60,7 +60,8 @@ namespace HRMv2.Manager.MezonTokens
 
             if (input.PayrollIds != null && input.PayrollIds.Any())
             {
-                query = query.Where(x => x.PayrollId.HasValue && input.PayrollIds.Contains(x.PayrollId.Value));
+                query = query.Where(x => (x.PayrollId == null && input.PayrollIds.Contains(null)) || 
+                 (x.PayrollId != null && input.PayrollIds.Contains(x.PayrollId)));
             }
 
 

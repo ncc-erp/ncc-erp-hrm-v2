@@ -29,7 +29,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   public searchUser: string = ''; 
   public nameBenefit: string ;
   public listPayroll: any[] = [];
-  public payrollId: number;
+  public payrollId: any;
 
   constructor(injector : Injector,private mezonTokenService :MezonTokenServiceService,
     private employeeService : EmployeeService,private benefitService: BenefitService,   private payRollService: PayRollService,
