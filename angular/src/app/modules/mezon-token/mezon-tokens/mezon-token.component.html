@@ -56,7 +56,7 @@
                                         [sortDirection]="sortDirection"></sortable>
                             </th>
                             <th class="pointer sticky-col"  style="min-width: 100px;">Payroll</th>
-                            <th (click)="onSortChange('amount')" >MezonToken<br>Total: {{ totalAmount | moneyFormat }}
+                            <th (click)="onSortChange('amount')" >MezonToken<br>{{ totalAmount | moneyFormat }}
                                 <sortable [name]="'amount'" [sortProperty]="sortProperty"
                                         [sortDirection]="sortDirection"></sortable>
                             </th>  
