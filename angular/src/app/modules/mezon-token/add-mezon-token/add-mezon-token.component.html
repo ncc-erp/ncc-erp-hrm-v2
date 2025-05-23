@@ -67,9 +67,6 @@
                         placeholder="Select Payroll"
                         #month="ngModel"
                     >
-                        <mat-option [value]="null"
-                            >Payroll null</mat-option
-                        >
                         <mat-option
                             *ngFor="let payroll of listPayroll"
                             [value]="payroll.value"
