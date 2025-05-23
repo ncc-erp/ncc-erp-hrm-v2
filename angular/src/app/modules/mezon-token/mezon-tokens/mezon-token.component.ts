@@ -46,8 +46,8 @@ ngOnInit(): void {
     this.payrollIds = JSON.parse(raw); 
     this.selectedPayroll = this.payrollIds;
   } catch (e) {
-    this.payrollIds = [null];
-    this.selectedPayroll = [-1];
+    this.payrollIds = [];
+
   }
      
     });
@@ -59,7 +59,7 @@ ngOnInit(): void {
       
      this.getAllStatusSendToken()
     this.getListPayroll();
-    this.refresh();
+    
   }
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void { 
    
@@ -78,15 +78,15 @@ ngOnInit(): void {
   }
 
   onPayrollSelect(ids: number[]) {
-    const payrolls = ids.map(id => id === -1 ? null : id);
-    this.payrollIds = payrolls
+
+    this.payrollIds = ids
     this.onSearchEnter(this.searchText)
      const currentParams = { ...this.route.snapshot.queryParams };
      this.router.navigate([], {
     relativeTo: this.route,
     queryParams: {
       ...currentParams,
-      payrollIds: JSON.stringify(payrolls),
+      payrollIds: JSON.stringify(ids),
     },
     queryParamsHandling: 'merge', 
   });
