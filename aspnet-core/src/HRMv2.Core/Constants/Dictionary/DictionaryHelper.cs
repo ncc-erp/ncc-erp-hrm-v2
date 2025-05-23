@@ -152,6 +152,15 @@ namespace HRMv2.Constants.Dictionary
                     Description = "",
                     Subject = "[NCC]_THÔNG BÁO CHI TIẾT LƯƠNG"
                 }
+            },
+            {
+                NotifyTemplateEnum.MezonDMSendToken,
+                new MailInfoDto
+                {
+                    Name = "Send Mezon Token Direct Message",
+                    Description = "",
+                    Subject = "[NCC]_THÔNG BÁO SEND TOKEN"
+                }
             }
 
         };

@@ -9,6 +9,7 @@ import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { FormControl, NgModel } from '@angular/forms';
 import { startWithTap } from '@shared/helpers/observerHelper';
 import { finalize } from 'rxjs/operators'
+import { MatSelectChange } from '@angular/material/select';
 @Component({
   selector: 'app-employee-benefit',
   templateUrl: './employee-benefit.component.html',
@@ -172,7 +173,8 @@ export class EmployeeBenefitComponent extends PagedListingComponentBase<BenefitE
     }
   }
 
-  onBenefitChange(benefitId: number, benefit: BenefitOfEmployeeDto) {
+  onBenefitChange(event: MatSelectChange, benefit: BenefitOfEmployeeDto) {
+    const benefitId = event.value
     const newBenefit = this.listBenefit.find(b => b.id == benefitId)
     if (newBenefit) {
       benefit.benefitId = benefitId

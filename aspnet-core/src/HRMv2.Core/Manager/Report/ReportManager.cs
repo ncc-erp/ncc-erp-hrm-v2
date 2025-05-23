@@ -1,4 +1,5 @@
 ﻿
+using Abp.UI;
 using Amazon.S3.Model;
 using HRMv2.Entities;
 using HRMv2.Manager.Benefits.Dto;
@@ -44,8 +45,8 @@ namespace HRMv2.Manager.Report
         public Dictionary<long, string> GetDicPayrollIdToName()
         {
             var dic = WorkScope.GetAll<Payroll>()
-                .Where(x => x.Status == PayrollStatus.Executed)              
-                .Select(x => new PayrollWithStatusExecute
+                .Where(x => x.Status == PayrollStatus.Executed)
+                .Select(x => new PayrollResultQuery
                 {
                     ApplyDate = x.ApplyMonth,
                     Value = x.Id
@@ -82,7 +83,7 @@ namespace HRMv2.Manager.Report
             return queryResult;
         }
 
-        private IQueryable<GetPayslipDto> ApplyFilterEmployee(IQueryable<GetPayslipDto> query,InputMultiFilterReportSalaryPagingDto input)
+        private IQueryable<GetPayslipDto> ApplyFilterEmployee(IQueryable<GetPayslipDto> query, InputMultiFilterReportSalaryPagingDto input)
         {
             if (input.UserTypes != null && input.UserTypes.Count == 1) query = query.Where(x => input.UserTypes[0] == x.UserType);
             else if (input.UserTypes != null && input.UserTypes.Count > 1) query = query.Where(x => input.UserTypes.Contains(x.UserType));
@@ -99,10 +100,10 @@ namespace HRMv2.Manager.Report
             if (input.TeamIds != null && input.TeamIds.Count == 1) query = query.Where(x => x.TeamIds.Contains(input.TeamIds[0]));
             else if (input.TeamIds != null && input.TeamIds.Count > 1) query = query.Where(x => x.TeamIds.Any(s => input.TeamIds.Contains(s)));
             return query;
-           
+
         }
 
-        private IQueryable<GetPayslipDto> ApplyFilterPaySlip(IQueryable<GetPayslipDto> query,InputMultiFilterReportSalaryPagingDto input)
+        private IQueryable<GetPayslipDto> ApplyFilterPaySlip(IQueryable<GetPayslipDto> query, InputMultiFilterReportSalaryPagingDto input)
         {
             if (input.BranchPayslipIds != null && input.BranchPayslipIds.Count == 1) query = query.Where(x => input.BranchPayslipIds[0] == x.BranchPayslipId);
             else if (input.BranchPayslipIds != null && input.BranchPayslipIds.Count > 1) query = query.Where(x => input.BranchPayslipIds.Contains(x.BranchPayslipId));
@@ -120,12 +121,12 @@ namespace HRMv2.Manager.Report
             else if (input.TeamPayslipIds != null && input.TeamPayslipIds.Count > 1) query = query.Where(x => x.PayslipTeamIds.Any(x => input.TeamPayslipIds.Contains(x)));
 
             return query;
-    
+
         }
         public List<ReportSalaryDto> GetAllReportFilter(InputMultiFilterReportSalaryPagingDto input)
         {
-            var query = payslipManager.QueryAllPayslip();
 
+            var query = payslipManager.QueryAllPayslip();
 
             if (input.PayrollIds != null && input.PayrollIds.Count > 1) query = query.Where(x => input.PayrollIds.Contains(x.PayrollId));
             else if (input.PayrollIds != null && input.PayrollIds.Count == 1) query = query.Where(x => input.PayrollIds[0] == x.PayrollId);
@@ -133,17 +134,20 @@ namespace HRMv2.Manager.Report
             if (input.EmployeeIds != null && input.EmployeeIds.Count > 1) query = query.Where(x => input.EmployeeIds.Contains(x.EmployeeId));
             else if (input.EmployeeIds != null && input.EmployeeIds.Count == 1) query = query.Where(x => input.EmployeeIds[0] == x.EmployeeId);
 
-            query = ApplyFilterEmployee(query,input);
+            query = ApplyFilterEmployee(query, input);
 
-            query =  ApplyFilterPaySlip(query,input);
-            
+            query = ApplyFilterPaySlip(query, input);
+
             var result = GetReportSalary(query);
-            return  result;
+            return result;
         }
 
         public async Task<ResultReportSalary> GetAllPaging(InputMultiFilterReportSalaryPagingDto input)
         {
-
+            if(input.PayrollIds.Count > 0)
+            {
+                throw new UserFriendlyException("You must select at least one payroll.");
+            }
             var result = GetAllReportFilter(input);
             var totalSalaryByMonth = result.SelectMany(x => x.ResultReports)
                 .GroupBy(x => x.PayrollName)
@@ -157,21 +161,14 @@ namespace HRMv2.Manager.Report
             var totalCount = result.Count;
 
             var dicPayrollIdToName = GetDicPayrollIdToName();
-            var listPayroll = new List<string>();
+            var listPayrollNames = new List<string>();
 
-            if (input.PayrollIds == null || input.PayrollIds.Count == 0)
-            {
-                listPayroll = result
-                    .SelectMany(x => x.ResultReports)
-                    .Select(r => r.PayrollName)
-                    .Distinct()
-                    .ToList();
-            }else{
-                listPayroll = input.PayrollIds
+
+            listPayrollNames = input.PayrollIds
                     .Where(id => dicPayrollIdToName.ContainsKey(id))
                     .Select(id => dicPayrollIdToName[id])
                     .ToList();
-            }
+            
 
             var pagedResult = result.Skip(input.GridParam.SkipCount)
                 .Take(input.GridParam.MaxResultCount)
@@ -180,13 +177,13 @@ namespace HRMv2.Manager.Report
             return new ResultReportSalary
             {
                 Result = new GridResult<ReportSalaryDto>(pagedResult, totalCount),
-                Payroll = listPayroll,
+                Payroll = listPayrollNames,
                 ResultReport = totalSalaryByMonth
 
             };
         }
 
-        public async Task<FileBase64Dto> ExportReportSalary(InputMultiFilterReportSalaryPagingDto input) 
+        public async Task<FileBase64Dto> ExportReportSalary(InputMultiFilterReportSalaryPagingDto input)
         {
             var templateFilePath = Path.Combine(templateFolder, "Export-ReportSalary.xlsx");
             using (var memoryStream = new MemoryStream(File.ReadAllBytes(templateFilePath)))
@@ -206,8 +203,8 @@ namespace HRMv2.Manager.Report
                 }
             }
         }
-       
-        private string GetNameTeam(List<long> teamIds,Dictionary<long,string> teamDic)
+
+        private string GetNameTeam(List<long> teamIds, Dictionary<long, string> teamDic)
         {
             return string.Join(", ", teamIds
                 .Where(x => teamDic.ContainsKey(x))
@@ -228,7 +225,7 @@ namespace HRMv2.Manager.Report
             var columns = reportSalarys
                 .SelectMany(x => x.ResultReports.Select(s => s.PayrollName))
                 .Distinct()
-                .OrderBy(date => date) 
+                .OrderBy(date => date)
                 .ToList();
 
             var columnMappings = new Dictionary<String, int>();
@@ -243,7 +240,7 @@ namespace HRMv2.Manager.Report
                .ToDictionary(x => x.Id, x => x.Name);
 
             foreach (var report in reportSalarys)
-            {            
+            {
                 var team = GetNameTeam(report.InfoEmployee.TeamIds, dicEmployeeTeam);
                 worksheet.Cells[rowIndex, 1].Value = rowIndex - 1;
                 worksheet.Cells[rowIndex, 2].Value = report.InfoEmployee.Email;
@@ -282,7 +279,7 @@ namespace HRMv2.Manager.Report
                                          .ToDictionary(x => x.Key, x => x.Sum(a => a.Salary));
             foreach (var date in columns)
             {
-                if (totalPerMonth .ContainsKey(date))
+                if (totalPerMonth.ContainsKey(date))
                 {
                     worksheet.Cells[rowIndex, columnMappings[date]].Value = totalPerMonth[date];
                 }

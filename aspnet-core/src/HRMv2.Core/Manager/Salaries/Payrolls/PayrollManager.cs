@@ -560,11 +560,24 @@ namespace HRMv2.Manager.Payrolls
             }
         }
 
-        public List<PayrollWithStatusExecute> GetPayrollWithStatusExecute()
+        public List<PayrollResultQuery> GetPayrollWithStatusExecuted()
         {
             return  WorkScope.GetAll<Payroll>()
                 .Where(x => x.Status == PayrollStatus.Executed)
-                .Select(x => new PayrollWithStatusExecute
+                .Select(x => new PayrollResultQuery
+                {
+                    ApplyDate = x.ApplyMonth,
+                    Value = x.Id
+                })
+                .OrderByDescending(x => x.ApplyDate)
+                .ToList();
+        }
+
+        public List<PayrollResultQuery> GetPayrollWithStatusDiffExecuted()
+        {
+            return WorkScope.GetAll<Payroll>()
+                .Where(x => x.Status != PayrollStatus.Executed)
+                .Select(x => new PayrollResultQuery
                 {
                     ApplyDate = x.ApplyMonth,
                     Value = x.Id

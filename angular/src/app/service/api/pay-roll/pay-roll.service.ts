@@ -36,6 +36,10 @@ export class PayRollService extends BaseApiService{
   }
 
   public GetPayrollWithStatusExecute():Observable<ApiResponseDto<any>>{
-    return this.processGet('GetPayrollWithStatusExecute');
+    return this.processGet('GetPayrollWithStatusExecuted');
+  }
+
+    public GetPayrollWithStatusDiffExecute():Observable<ApiResponseDto<any>>{
+    return this.processGet('GetPayrollWithStatusDiffExecuted');
   }
 }

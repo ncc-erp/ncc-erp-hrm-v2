@@ -33,6 +33,11 @@ export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployee
       isShow: true
     },
     {
+      name: "Phone",
+      displayName: "Phone",
+      isShow: true
+    },
+    {
       name: "Birthday",
       displayName: "Birthday",
       isShow: true

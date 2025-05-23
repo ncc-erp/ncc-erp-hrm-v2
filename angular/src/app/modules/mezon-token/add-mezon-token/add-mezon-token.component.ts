@@ -1,3 +1,4 @@
+import { PayRollService } from '@app/service/api/pay-roll/pay-roll.service';
 import { Component, Injector, OnInit } from '@angular/core';
 import { EmployeeService } from '@app/service/api/employee/employee.service';
 import { MezonTokenDto } from '@app/service/model/payroll-token/PayrollTokenDto.dto';
@@ -23,13 +24,15 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   public selectedEmployee: number;
   public amount: number;
   public note: string = '';
-  public sentToEmployeeAt: Date;
   public defaultBenefit: any ;
   public employeeId: number;
   public searchUser: string = ''; 
+  public nameBenefit: string ;
+  public listPayroll: any[] = [];
+  public payrollId: any;
 
   constructor(injector : Injector,private mezonTokenService :MezonTokenServiceService,
-    private employeeService : EmployeeService,private benefitService: BenefitService,   
+    private employeeService : EmployeeService,private benefitService: BenefitService,   private payRollService: PayRollService,
   ) { 
     super(injector);
     
@@ -40,19 +43,30 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
     if(this.dialogData.mezonToken){
     this.note = this.dialogData.mezonToken.note;
     this.employeeId = this.dialogData.mezonToken.employeeId;
-    this.sentToEmployeeAt = this.dialogData.mezonToken.sentToEmployeeAt;
     this.amount = this.dialogData.mezonToken.amount;
-    this.selectedBenefit = this.dialogData.mezonToken.referenceId;
+    this.payrollId = this.dialogData.mezonToken.payrollId;
+    this.selectedBenefit = (this.dialogData.mezonToken.referenceId != null && this.dialogData.mezonToken.referenceId != 0) ? this.dialogData.mezonToken.referenceId : -1;
     this.getBenefitDefault(this.selectedBenefit);
-    }
-
    
+    }
     this.getListEmployee();
-    this.getBenefitActive();
-    this.getAllBenefitType();
-
+    this.getListPayroll();
+  }
+   
+  isChecksBenfit(){
+    if(this.selectedBenefit > 0){
+      return true;
+    }
+    return false;
   }
 
+  getListPayroll(){
+    this.payRollService.GetPayrollWithStatusDiffExecute().subscribe((res) => {
+      this.listPayroll = res.result;
+
+    } )
+  }
+  
   getListEmployee(){
     this.subscription.push(
       this.employeeService.getEmployeeExceptStatusQuit().subscribe((res) => {
@@ -65,6 +79,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   }
 
   getBenefitDefault(id: number) {
+    if(this.isChecksBenfit()){
     this.subscription.push(
       this.benefitService.GetBenefitById(id).pipe(
         switchMap((res1) => {
@@ -81,6 +96,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
           this.defaultBenefit = {
             ...rs.result,
             name: rs.result.name?.toLowerCase(),
+            
           };
           this.selectedBenefit = rs.result.id;
         } else {
@@ -90,60 +106,21 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
       })
     );
   }
-
+  }
   compareBenefit = (a: any, b: any): boolean => {
     return a && b && a.id === b.id;
   }
-  public getBenefitActive() {
-    this.subscription.push(
-      this.benefitService.GetBenefitActive().subscribe((rs) => {  
-        if (rs.success) {
-          this.listBenefit = rs.result.map((item: any) => ({
-            ...item,
-            name: item.name.toLowerCase(),
-          }));;
-        } 
-      })
-    );
-  }
-  onBenefitChange(value: any) {
-    this.selectedBenefit = value.id;
-  }
-  private getAllBenefitType(){
-        const listTypeBenefit = this.getListFormEnum(APP_ENUMS.BenefitType).filter(item => item.key != 'All');
-        this.listTypeBenefit = listTypeBenefit.reduce((acc, item) => {
-          acc[item.value as string] = item.key; 
-          return acc;
-        }, {});
-        
-      }
-  saveAndClose(){
-    let localDate: Date | null = null;
 
-    if (this.sentToEmployeeAt) {
-      if (this.sentToEmployeeAt instanceof Date) {
-        localDate = this.sentToEmployeeAt;
-      } else {
-        const parsedDate = new Date(this.sentToEmployeeAt);
-        if (!isNaN(parsedDate.getTime())) {
-          localDate = parsedDate;
-        }
-      }
-  
-      if (localDate) {
-        localDate = new Date(localDate.getTime() + 7 * 60 * 60 * 1000);
-      }
-    }
-  
-    this.sentToEmployeeAt = localDate;
-  
+
+  saveAndClose(){
 
         let input = {
         id: this.dialogData.mezonToken?.id,
         employeeId: this.employeeId,
         amount: this.amount,
         note: this.note,
-        sentToEmployeeAt : this.sentToEmployeeAt,
+        sentToEmployeeAt : "",
+        payrollId: this.payrollId,
         referenceId: this.selectedBenefit
       }
     if(this.dialogData.type === 'edit'){

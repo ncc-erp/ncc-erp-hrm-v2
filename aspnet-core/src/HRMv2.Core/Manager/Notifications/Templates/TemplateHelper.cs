@@ -14,6 +14,7 @@ namespace HRMv2.Manager.Notifications.Templates
     public static class TemplateHelper
     {
         private static InputMezonDM inputMezonDM = new InputMezonDM { Content = new ContentMezonDM { Text = "Chào anh/chị {{EmployeeFullName}}, bộ phận kế toán gửi anh chị bảng lương tháng {{PayrollMonth}}/{{PayrollYear}}:\r\n{{SalaryLink}} .\r\nAnh/chị vui lòng xác nhận bảng lương trước {{ComplainDeadline}}Sau thời điểm trên, mọi trường hợp thiếu lương sẽ không được giải quyết." } };
+        private static InputMezonDM inputSentTokenMezonDM = new InputMezonDM { Content = new ContentMezonDM { Text = "Chào anh/chị {{EmployeeFullName}}, bộ phận kế toán gửi anh chị {{Amount}} token. Với note la {{Note}} ." } };
         public static string ContentEmailTemplate(NotifyTemplateEnum type) =>
             type switch
             {
@@ -32,6 +33,7 @@ namespace HRMv2.Manager.Notifications.Templates
                 NotifyTemplateEnum.PayrollExecuted => @"<div style=""font-family:Inter,sans-serif;font-size:13pt""><div style=""margin-top:10px""><span><strong>Thông báo:</strong>&nbsp;[Bảng lương tháng<strong>&nbsp;{{ApplyMonth}}</strong>]</span></div><div style=""margin-top:10px"">Bảng lương tháng {{ApplyMonth}} đã được execute</div><div style=""margin-top:10px""><a href=""{{ConfirmUrl}}"" style=""text-decoration:underline;font-weight:600"">Ấn vào đây để xem chi tiết yêu cầu.</a></div></div>",
                 NotifyTemplateEnum.LinkToPreviewPayslip => @"<div style=""background: rgba(0, 0, 0, 0.15); min-height: 800px; padding:40px; font-family: Inter, sans-serif;""><div style=""width: 900px; margin: auto; background: #fff;padding: 20px 60px; border-radius: 15px;""><table style=""border-collapse: collapse; width: 100%; height: 19.188px; border-width: 0;"" border=""0""><colgroup> <col style=""width: 60%;""><col style=""width: 40%;""> </colgroup><tbody><tr style=""height: 19.188px;""><td style=""height: 19.188px; border-width: 0; vertical-align: middle; padding: 20px 0;""><img src=""https://do78x13wq0td.cloudfront.net/prod/avatars/host/logo-ncc.png""alt="" width=""204"" height=""88""></td><td style=""height: 19.188px;text-align: right; border-width: 0; vertical-align: middle;""><p><span style=""text-decoration: underline; color: #ed1b24;""><span style=""font-size: 24pt; font-weight: bold;"">PAYSLIP</span></span></p><p><span style=""color: #000; font-size: 12pt;""><strong>{{PayrollMonth}}</strong>/<strong>{{PayrollYear}}</strong></span></p></td></tr></tbody></table><div><hr></div><div>&nbsp;</div><div><span style=""font-size: 14pt;"">Ch&agrave;o anh/chị&nbsp;<strong>{{EmployeeFullName}},</strong></span></div><div>&nbsp;</div><div><spanstyle=""font-size: 14pt;"">Bộ phận kế to&aacute;n gửi anh/chị <a style=""color: #007bff; text-decoration: underline; font-weight: 600; font-family:Inter, sans-serif;"" href=""{{SalaryLink}}"" target=""_blank"" rel=""noopener""> bảng lương chi tiết th&aacute;ng&nbsp;<strong>{{PayrollMonth}}</strong>/<strong>{{PayrollYear}}</strong></a>,</span></div><p style=""font-family: Inter, sans-serif;"">Anh/chị vui l&ograve;ng x&aacute;c nhận bảng lương trước <strong>{{ComplainDeadline}}</strong>.Sau thời điểm tr&ecirc;n, mọi trường hợp thiếu lương sẽ kh&ocirc;ng đượcgiải quyết.</p><hr><p style=""text-align: center;"">&nbsp;</p><p style=""text-align: center;""><strong>2022 &copy; NCC Vietnam. All rights reserved.</strong></p></div></div>",
                 NotifyTemplateEnum.MezonDMLinkToPreviewPayslip => JsonConvert.SerializeObject(inputMezonDM, Formatting.Indented),
+                NotifyTemplateEnum.MezonDMSendToken => JsonConvert.SerializeObject(inputSentTokenMezonDM, Formatting.Indented),
                 _ => string.Empty
 
             };
@@ -291,6 +293,17 @@ namespace HRMv2.Manager.Notifications.Templates
                 PayrollYear = "2022",
                 ComplainDeadline = "5/10/2022 5:20",
                 SalaryLink = HRMv2Consts.HRM_Uri + "/app/payslip-confirm?id=3"
+            };
+        }
+
+        public static InputNotiSendTokenDMTemplateDto GetSendMezonTokenDMFakeData()
+        {
+            return new InputNotiSendTokenDMTemplateDto
+            {
+                EmployeeFullName = "Nguyễn Văn A",
+                Amount = "200000",
+                Note = "Tiền ăn trưa",
+                MezonUsername = "a.nguyenvan@ncc.asia"
             };
         }
         public static DebtMailTemplateDto GetDebtFakeDate()

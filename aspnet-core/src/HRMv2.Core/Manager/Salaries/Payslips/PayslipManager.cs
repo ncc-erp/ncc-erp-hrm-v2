@@ -56,6 +56,7 @@ using System.Text.RegularExpressions;
 using Amazon.S3.Model;
 using System.Linq.Expressions;
 using HRMv2.BackgroundJob.SendDirectMessage;
+using HRMv2.Manager.Salaries.Payrolls.Dto;
 
 
 
@@ -404,12 +405,16 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         public async Task DetachPayslipWithToken(int tokenDefault, long payrollId,long benefitId)
         {
-            var payrollStatus = WorkScope.GetAll<Payroll>()
+            var payroll = WorkScope.GetAll<Payroll>()
            .Where(x => x.Id == payrollId)
-           .Select(x => x.Status)
+           .Select(x => new
+           {
+               x.Status,
+               x.ApplyMonth
+           })
            .FirstOrDefault();
 
-            if (payrollStatus == PayrollStatus.Executed)
+            if (payroll.Status == PayrollStatus.Executed)
             {
                 throw new UserFriendlyException($"The PayrollId {payrollId} is Executed");
             }           
@@ -436,15 +441,18 @@ namespace HRMv2.Manager.Salaries.Payslips
 
                 payslipDetail.Money -= tokenValue;
                 payslipDetail.Payslip.Salary -= tokenValue;
-             
-                mezonTokens.Add(new MezonToken
+                if (tokenValue > 0)
                 {
-                    EmployeeId = payslipDetail.Payslip.EmployeeId,
-                    Amount = tokenValue,
-                    Status = StatusSendToken.Pending,
-                    ReferenceId = payslipDetail.Id,
-                    Note = $"Tiền mặt {payslipDetail.Note} còn lại: {payslipDetail.Money:N0} VND, ReferenceId {payslipDetail.Id}",                    
-                });                
+                    mezonTokens.Add(new MezonToken
+                    {
+                        EmployeeId = payslipDetail.Payslip.EmployeeId,
+                        Amount = tokenValue,
+                        Status = StatusSendToken.Pending,
+                        ReferenceId = payslipDetail.Id,
+                        PayrollId = payrollId,
+                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("MM-yyyy")} (tiền mặt ăn trưa còn lại: {payslipDetail.Money:N0} VND)"
+                    });
+                }    
             }
 
             await WorkScope.InsertRangeAsync(mezonTokens);
@@ -1107,6 +1115,17 @@ namespace HRMv2.Manager.Salaries.Payslips
             var qPayslip = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId).ToList();
 
+            var queryToken = WorkScope.GetAll<MezonToken>()
+                .Where(x => x.PayrollId == payrollId)
+                .Select(x => new
+                {
+                    x.Amount,
+                    x.Id
+                }).ToList();
+
+            var totalToken = queryToken.Sum(x => x.Amount);
+            var countToken = queryToken.Count();
+
             var list1 = WorkScope.GetAll<PayslipDetail>()
                                 .Where(x => x.Payslip.PayrollId == payrollId)
                                 .GroupBy(x => x.Type)
@@ -1155,7 +1174,14 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             results.Add(new SumaryInfoDto
             {
-                Name = "Tổng lương",
+                Name = "Tổng Token ",
+                Quantity = countToken,
+                TotalSalary = totalToken
+            });
+
+            results.Add(new SumaryInfoDto
+            {
+                Name = "Tổng lương (Bao gồm cả lương âm)",
                 TotalSalary = list2.Sum(s => s.TotalSalary),
                 Quantity = list2.Sum(s => s.Quantity)
             });
@@ -3076,7 +3102,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             if (template == default)
             {
-                throw new UserFriendlyException($"Not found [MezonDM]Payslip Mezon Direct Message Link");
+                throw new UserFriendlyException($"Not found [MezonDM]Payslip Mezon Direct Message Link template");
             }
             var listPayslip = WorkScope.GetAll<Payslip>()
                 .Include(s => s.Employee)
@@ -3127,6 +3153,103 @@ namespace HRMv2.Manager.Salaries.Payslips
             _sendDMService.SendDMToUser(dmContent);
 
         }
+
+        public async Task UpdateBranchPayslip(UpdateBranchPayslip input)
+        {
+            var payslip =await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            payslip.BranchId = input.BranchId;
+            await  WorkScope.UpdateAsync(payslip);
+        }
+        public async Task UpdateUserTypePayslip(UpdateUserTypePayslip input)
+        {
+            var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            payslip.UserType = input.UserType;
+            await WorkScope.UpdateAsync(payslip);
+        }
+        public async Task UpdateLevelPayslip(UpdateLevelPayslip input)
+        {
+            var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            payslip.LevelId = input.LevelId;
+            await WorkScope.UpdateAsync(payslip);
+        }
+        public async Task UpdatePositionPayslip(UpdatePositionPayslip input)
+        {
+            var payslip = await WorkScope.GetAsync<Payslip>(input.PayslipId);
+            if (payslip == null)
+            payslip.JobPositionId = input.JobPositionId;
+            await WorkScope.UpdateAsync(payslip);
+        }
+
+        public List<GetPayrollApply> GetPayrollsByEmployeeId(long employeeId) 
+        {
+            var dicLevel = WorkScope.GetAll<Level>()
+                 .ToDictionary(x => x.Id, x => x.Name);
+            var dicPosition = WorkScope.GetAll<JobPosition>()
+                .ToDictionary(x => x.Id, x => x.Name);
+            var dicBranch = WorkScope.GetAll<Branch>()
+                .ToDictionary(x => x.Id, x => x.Name);
+
+            var listPayroll =  WorkScope.GetAll<Payslip>()
+                .Include(x => x.Payroll)
+                .Where(x => x.EmployeeId == employeeId)
+                .Select(s => new {s.PayrollId, s.Payroll.ApplyMonth, s.UserType, s.LevelId, s.JobPositionId, s.BranchId })
+                .ToList()
+                .Select(x => new GetPayrollApply
+                {
+                    Value = x.PayrollId,
+                    ApplyDate = x.ApplyMonth,
+                    UserType = CommonUtil.GetUserTypeNameVN(x.UserType),
+                    Level = dicLevel[x.LevelId],
+                    JobPosition = dicPosition[x.JobPositionId],
+                    Branch = dicBranch[x.BranchId]
+                })
+                .ToList();
+            return listPayroll;
+        }
+
+        public async Task UpdateBranchPayslipForPayroll(UpdateBranchEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.BranchId = input.BranchId);
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
+
+        public async Task UpdateLevelPayslipForPayroll(UpdateLevelEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.LevelId = input.LevelId);
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
+        public async Task UpdateUserTypePayslipForPayroll(UpdateUserTypeEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.UserType = input.UserType);
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
+        public async Task UpdateJobPositionPayslipForPayroll(UpdateJobPositionEmployeeForListPayroll input)
+        {
+            var listPayslip = WorkScope.GetAll<Payslip>()
+                .Where(x => input.PayrollIds.Contains(x.PayrollId))
+                .Where(x => x.EmployeeId == input.EmployeeId)
+                .ToList();
+
+            listPayslip.ForEach(x => x.JobPositionId = input.JobPositionId);
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
+
+
 
     }
 }

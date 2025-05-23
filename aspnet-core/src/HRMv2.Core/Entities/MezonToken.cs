@@ -21,9 +21,13 @@ namespace HRMv2.Entities
         public StatusSendToken Status { get; set; } 
         /// <summary>
         /// Tạo từ PayslipDetail, Benefit ăn trưa thì refereceId = payslipDetail.Id
-        /// Tạo từ MezonToken , referenceId = Benefit.Id
+        /// Tạo từ MezonToken , referenceId = -1
         /// </summary>
         public long ReferenceId { get; set; }
+        public long? PayrollId { get; set; }
+
+        [ForeignKey(nameof(PayrollId))]
+        public Payroll Payroll { get; set; }
 
     }
 }

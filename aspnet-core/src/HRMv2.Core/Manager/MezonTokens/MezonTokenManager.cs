@@ -1,11 +1,17 @@
 ﻿using Abp.BackgroundJobs;
 using Abp.UI;
+using HRMv2.BackgroundJob.SendDirectMessage;
 using HRMv2.BackgroundJob.SentToken;
 using HRMv2.Constants;
 using HRMv2.Entities;
 using HRMv2.Manager.Common.Dto;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.MezonTokens.Dto;
+using HRMv2.Manager.Notifications.Email;
+using HRMv2.Manager.Notifications.SendMezonDM;
+using HRMv2.Manager.Report.Dto;
+using HRMv2.Manager.Salaries.Dto;
+using HRMv2.Manager.Salaries.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips.Dto;
 using HRMv2.NccCore;
 using HRMv2.Net.MimeTypes;
@@ -34,18 +40,47 @@ namespace HRMv2.Manager.MezonTokens
         private readonly MezonWebService _mezonWebService;
         private readonly BackgroundJobManager _backgroundJobManager;
         private readonly IConfiguration _configuration;
-        public MezonTokenManager(IWorkScope workScope,MezonWebService mezonWebService, BackgroundJobManager backgroundJobManager,IConfiguration configuration) : base(workScope)
+        private readonly SendMezonDMService _sendDMService;
+        private readonly EmailManager _emailManager;
+        public MezonTokenManager(IWorkScope workScope,MezonWebService mezonWebService,
+            BackgroundJobManager backgroundJobManager,IConfiguration configuration
+            ,SendMezonDMService sendDMService,
+            EmailManager emailManager) : base(workScope)
         {
             _mezonWebService = mezonWebService;
             _backgroundJobManager = backgroundJobManager;
             _configuration = configuration;
+            _sendDMService = sendDMService;
+            _emailManager = emailManager;
         }
-        public async Task<GridResult<MezonTokenDto>> GetAllPaging(GridParam input)
+        public async Task<ResultMezonToken> GetAllPaging(InputMezonToken input)
         {
-            input.MaxResultCount = int.MaxValue;
-            input.SkipCount = 0;
+
             var query = GetAllMezonToken();
-            return await query.GetGridResult(query, input);
+
+            if (input.PayrollIds != null && input.PayrollIds.Any())
+            {
+                query = query.Where(x => (x.PayrollId == null && input.PayrollIds.Contains(-1)) || 
+                 (x.PayrollId != null && input.PayrollIds.Contains(x.PayrollId)));
+            }
+            else
+            {
+                query = query.Where(x => false);
+            }
+
+
+            var queryFilter = query.ApplySearchAndFilter(input.GridParam);
+            var totalToken = queryFilter.Sum(x => x.Amount);
+
+
+            var totalCount = queryFilter.Count();
+
+            var pagedResult =await queryFilter.TakePage(input.GridParam).ToListAsync();
+            return new ResultMezonToken
+            {
+                Result = new GridResult<MezonTokenDto>(pagedResult, totalCount),
+                TotalAmout = totalToken,
+            };
         }
 
         public IQueryable<MezonTokenDto> GetAllMezonToken()
@@ -81,6 +116,8 @@ namespace HRMv2.Manager.MezonTokens
                          Color = x.Employee.JobPosition.Color
                      },
                       ReferenceId = x.ReferenceId,
+                      PayrollId = x.PayrollId,
+                      PayrollApplyMonth = x.Payroll != null ? x.Payroll.ApplyMonth : null
                   });
         }
 
@@ -110,18 +147,18 @@ namespace HRMv2.Manager.MezonTokens
 
         public async Task<MezonTokenDto> EditMezonToken(MezonTokenDto input)
         {
-            var entity = await WorkScope.GetAll<MezonToken>().FirstOrDefaultAsync(x => x.Id == input.Id);
+            var entity = await WorkScope.GetAsync<MezonToken>(input.Id);
             entity.Amount = input.Amount;
             entity.EmployeeId = input.EmployeeId;
             entity.Note = input.Note;
-            entity.SentToEmployeeAt = input.SentToEmployeeAt;
+            entity.PayrollId = input.PayrollId;
             await WorkScope.UpdateAsync(entity);
             return input;
         }
 
-        public List<ExportMezonTokenDto> GetFilterMezonToken(GridParam input)
+        public List<ExportMezonTokenDto> GetFilterMezonToken(InputMezonToken input)
         {
-            var mezonTokens = GetAllPaging(input);
+            var mezonTokens = GetAllPaging(input).Result;
             return mezonTokens.Result.Items
                 .Select(x => new ExportMezonTokenDto
                 {
@@ -133,17 +170,17 @@ namespace HRMv2.Manager.MezonTokens
                 })
                 .ToList();
         }
-        public async Task<FileBase64Dto> ExportMezonToken(GridParam input)
+        public async Task<FileBase64Dto> ExportMezonToken(InputMezonToken input)
         {
             var templateFilePath = Path.Combine(HRMv2Consts.templateFolder, "Export-MezonToken.xlsx");
 
             if (templateFilePath == default)
             {
-                throw new UserFriendlyException("Can't find template");
+                throw new UserFriendlyException("Can't find template Export-MezonToken.xlsx");
             }
 
-            input.MaxResultCount = int.MaxValue;
-            input.SkipCount = 0;
+            input.GridParam.MaxResultCount = int.MaxValue;
+            input.GridParam.SkipCount = 0;
             var mezonTokens = GetFilterMezonToken(input);
 
             using (var memoryStream = new MemoryStream(File.ReadAllBytes(templateFilePath)))
@@ -183,6 +220,13 @@ namespace HRMv2.Manager.MezonTokens
                 onboardRowIndex++;
             }
 
+        }
+
+
+        private void SendNotiDM(long mezonTokenId)
+        {
+            var sendContent = _emailManager.GetDMMezonContentById(NotifyTemplateEnum.MezonDMSendToken, mezonTokenId);
+            _sendDMService.SendDMToUser(sendContent);
         }
 
         public async Task<AuthResponse> SendToken(InputSendMezonToken input)
@@ -231,10 +275,11 @@ namespace HRMv2.Manager.MezonTokens
                 entityToUpdate.Status = StatusSendToken.SentToEmployee;
                 await WorkScope.UpdateAsync(entityToUpdate);
 
+                SendNotiDM(input.MezonTokenId);
                 return new AuthResponse
                 {
                     code = 0,
-                    message = $"Sent Token for user {userName} successfully!"
+                    message = $"Sent Token to {userName} successfully!"
                 };
             }
 
@@ -248,7 +293,7 @@ namespace HRMv2.Manager.MezonTokens
 
 
 
-        public async Task<string> SentTokenToAllPending()
+        public async Task<string> SendTokenToAllPending()
         {
 
             var authData =await _mezonWebService.GetAuthDataMezon();
@@ -266,10 +311,10 @@ namespace HRMv2.Manager.MezonTokens
             foreach(var item in input)
             {
                 _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
-                delaySendToken += HRMv2Consts.DELAY_SEND_MAIL_SECOND;
+                delaySendToken += 3;
             }
            
-            return $"Started sent {input.Count} token mezon to {input.Count} user.";
+            return $"Started sending token to {input.Count} users.";
         }
     }
 }

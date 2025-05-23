@@ -158,7 +158,7 @@
                                     <th>
                                         <toggle-column
                                         [columnList]="columnList"
-                                        (columnToggle)="columnList = $event"
+                                        (columnToggle)="$event"
                                         [tableName]="'payslipTable'"
                                         >
                                         </toggle-column>
@@ -259,15 +259,148 @@
                                         {{payslip.remainLeaveDays}}
                                     </td>
                                     <td class="text-center align-middle" *ngIf="columnList[13].isShow">
-                                        <span class="badge text-white" [style.backgroundColor]="payslip.branchInfo.color">{{payslip.payslipBanrch}}</span></td>
+                                        <ng-container *ngIf="editingIndex === i && editingField === 'branch' && isShowEditBranch(); else showBranch">
+                                          <mat-form-field appearance="outline">
+                                            <mat-select [(ngModel)]="selectedBranchId" name="branchId_{{i}}">
+                                              <mat-option *ngFor="let type of branchList" [value]="type.value">
+                                                {{ type.key }}
+                                              </mat-option>
+                                            </mat-select>
+                                          </mat-form-field>
+                                          <div class="mt-3" style="display: flex; gap: 8px; justify-content: center;">
+                                            <button 
+                                              *ngIf="isCheckUpdateBranch(payslip.branchId)" mat-button (click)="saveEdit(i,payslip)" 
+                                              style="min-width: 60px; padding: 2px 8px; color: white; background-color: #4CAF50;">OK
+                                            </button>
+                                          
+                                            <button  mat-button (click)="cancelEdit()"  style="min-width: 60px; padding: 2px 8px; color: white; background-color: #F44336;">
+                                              Cancel
+                                            </button>
+                                          
+                                            <button *ngIf="isCheckUpdateBranch(payslip.branchId) && isShowEditBranchToListPayroll()"  mat-button (click)="onGetPayrollApplyUpdate(payslip)" 
+                                              style="min-width: 60px; padding: 2px 8px; color: white; background-color: #2196F3;">
+                                              ApplyTo
+                                            </button>
+                                          </div>
+                                          
+                                          
+                                        </ng-container>
+                                      
+                                        <ng-template #showBranch>
+                                          <span class="badge" [style.backgroundColor]="mapColorBranch[payslip.payslipBanrch]" (click)="editInfoPayslip(payslip, i,'branch')">
+                                            {{ payslip.payslipBanrch }}
+                                          </span>
+                                        </ng-template>
+                                      </td>
+                                      
+                       
                                     <td class="text-center align-middle" *ngIf="columnList[14].isShow">
-                                        <span class="badge text-white" [style.backgroundColor]="payslip.userTypeInfo.color">{{payslip.payslipUserTypeName}}</span>
+                                       
+                                        <ng-container *ngIf="editingIndex === i && editingField === 'userType' && isShowEditUserType();  else showBranch">
+                                            <mat-form-field appearance="outline">
+                                              <mat-select [(ngModel)]="selectedUsertype" name="branchId_{{i}}">
+                                                <mat-option *ngFor="let type of userTypeList" [value]="type.value">
+                                                  {{ type.key }}
+                                                </mat-option>
+                                              </mat-select>
+                                            </mat-form-field>
+                                            <div class="mt-3" style="display: flex; gap: 8px; justify-content: center;">
+                                              <button 
+                                                *ngIf="isCheckUpdateUserType(payslip.userType)" mat-button (click)="saveEdit(i,payslip)" 
+                                                style="min-width: 60px; padding: 2px 8px; color: white; background-color: #4CAF50;">OK
+                                              </button>
+                                            
+                                              <button  mat-button (click)="cancelEdit()"  style="min-width: 60px; padding: 2px 8px; color: white; background-color: #F44336;">
+                                                Cancel
+                                              </button>
+                                            
+                                              <button *ngIf="isCheckUpdateUserType(payslip.userType) && isShowEditUserTypeToListPayroll()"  mat-button (click)="onGetPayrollApplyUpdate(payslip)" 
+                                                style="min-width: 60px; padding: 2px 8px; color: white; background-color: #2196F3;">
+                                                ApplyTo
+                                              </button>
+                                            </div>
+                                            
+                                            
+                                          </ng-container>
+                                        
+                                          <ng-template #showBranch>
+                                            <span class="badge" [style.backgroundColor]="mapColorUserType[payslip.payslipUserTypeName]" (click)="editInfoPayslip(payslip, i,'userType')">
+                                                {{payslip.payslipUserTypeName}}
+                                            </span>
+                                          </ng-template>
+
                                     </td>
                                     <td class="text-center text-white align-middle" *ngIf="columnList[15].isShow">
-                                        <span class="badge text-black" [style.backgroundColor]="payslip.jobPositionInfo.color">{{payslip.payslipPosition}}</span>
+
+                                        <ng-container *ngIf="editingIndex === i && editingField === 'jobPosition'  && isShowEditJobPosition(); else showBranch">
+                                            <mat-form-field appearance="outline">
+                                              <mat-select [(ngModel)]="selectedJobPositionId" name="branchId_{{i}}">
+                                                <mat-option *ngFor="let type of positionList" [value]="type.value">
+                                                  {{ type.key }}
+                                                </mat-option>
+                                              </mat-select>
+                                            </mat-form-field>
+                                            <div class="mt-3" style="display: flex; gap: 8px; justify-content: center;">
+                                              <button 
+                                                *ngIf="isCheckUpdateJobPostion(payslip.jobPositionId)" mat-button (click)="saveEdit(i,payslip)" 
+                                                style="min-width: 60px; padding: 2px 8px; color: white; background-color: #4CAF50;">OK
+                                              </button>
+                                            
+                                              <button  mat-button (click)="cancelEdit()"  style="min-width: 60px; padding: 2px 8px; color: white; background-color: #F44336;">
+                                                Cancel
+                                              </button>
+                                            
+                                              <button *ngIf="isCheckUpdateJobPostion(payslip.jobPositionId) && isShowEditJobPositionToListPayroll()"  mat-button (click)="onGetPayrollApplyUpdate(payslip)" 
+                                                style="min-width: 60px; padding: 2px 8px; color: white; background-color: #2196F3;">
+                                                ApplyTo
+                                              </button>
+                                            </div>
+                                            
+                                            
+                                          </ng-container>
+                                        
+                                          <ng-template #showBranch>
+                                            <span class="badge" [style.backgroundColor]="mapColorJobPosition[payslip.payslipPosition]" (click)="editInfoPayslip(payslip, i,'jobPosition')">
+                                              {{ payslip.payslipPosition }}
+                                            </span>
+                                          </ng-template>
+                                       
                                     </td>
                                     <td class="text-center align-middle" *ngIf="columnList[16].isShow">
-                                        <span class="badge text-white" [style.backgroundColor]="payslip.levelInfo.color">{{payslip.payslipLevel}}</span>
+
+                                        <ng-container *ngIf="editingIndex === i && editingField === 'level'  && isShowEditLevel(); else showBranch">
+                                            <mat-form-field appearance="outline">
+                                              <mat-select [(ngModel)]="selectedLevelId" name="branchId_{{i}}">
+                                                <mat-option *ngFor="let type of userLevelList" [value]="type.value">
+                                                  {{ type.key }}
+                                                </mat-option>
+                                              </mat-select>
+                                            </mat-form-field>
+                                            <div class="mt-3" style="display: flex; gap: 8px; justify-content: center;">
+                                              <button 
+                                                *ngIf="isCheckUpdateLevel(payslip.levelId)" mat-button (click)="saveEdit(i,payslip)" 
+                                                style="min-width: 60px; padding: 2px 8px; color: white; background-color: #4CAF50;">OK
+                                              </button>
+                                            
+                                              <button  mat-button (click)="cancelEdit()"  style="min-width: 60px; padding: 2px 8px; color: white; background-color: #F44336;">
+                                                Cancel
+                                              </button>
+                                            
+                                              <button *ngIf="isCheckUpdateLevel(payslip.levelId) && isShowtEditLevelToListPayroll()"  mat-button (click)="onGetPayrollApplyUpdate(payslip)" 
+                                                style="min-width: 60px; padding: 2px 8px; color: white; background-color: #2196F3;">
+                                                ApplyTo
+                                              </button>
+                                            </div>
+                                            
+                                            
+                                          </ng-container>
+                                        
+                                          <ng-template #showBranch>
+                                            <span class="badge" [style.backgroundColor]="mapColorLevel[payslip.payslipLevel]" (click)="editInfoPayslip(payslip, i,'level')">
+                                                {{payslip.payslipLevel}}
+                                            </span>
+                                          </ng-template>
+                                       
                                     </td>
                                     <td class="text-center align-middle" *ngIf="columnList[17].isShow">
                                             <div>{{payslip.bankInfo.bankAccountNumber}}</div>
@@ -388,20 +521,36 @@
                                 <th>Avg Salary</th>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let info of summaryInfomations; let i = index" [ngStyle] ="{'font-weight' : i == 0 ? 'bold' : 'normal'}">
-                                    <td class="text-center">{{i+1}}</td>
-                                    <td class="text-left">
-                                        <span *ngIf="info.name !== 'Phạt không thu được'">
+                                <tr *ngFor="let info of summaryInfomations; let i = index"
+                                [ngStyle]="{
+                                      'font-weight': i === 0 || info.name === 'Tổng Token ' ? 'bold' : 'normal',
+                                      'color': info.name === 'Tổng Token ' ? 'purple' : 'black'
+                                   }">
+                                   <td class="text-center" >{{i + 1}}</td>
+
+                                    <td class="text-left" >
+                                        <span *ngIf="info.name !== 'Phạt không thu được' && info.name !== 'Tổng Token '">
                                             {{info.name}}
                                         </span>
+                                        
+                                        <span *ngIf="info.name == 'Tổng Token '"
+                                        (click)="navigateToFilteredPage()"
+                                       [queryParams]="{ statusToken: 0,payrollIds:[payrollId] }"
+                                     style="cursor: pointer; color: purple;"
+                                         >
+                                            {{info.name}}
+                                        </span>
+
                                         <button class="fixPaidNotGetInfo" *ngIf="info.name === 'Phạt không thu được'" (click)="OnGetNotPaidInfo()">
                                             {{info.name}}
                                         </button>
                                     </td>
 
-                                    <td class="text-center">{{info.quantity}}</td>
-                                    <td class="text-right" [ngStyle]="{'color': info.totalSalary < 0 ? 'red' : ''}">{{info.totalSalary | moneyFormat}}</td>
-                                    <td class="text-right" [ngStyle]="{'color': info.avgSalary < 0 ? 'red' : ''}">{{info.avgSalary | moneyFormat}}</td>
+                                    <td class="text-center" >{{info.quantity}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.totalSalary < 0 ? 'red' : ''}" 
+                                   >{{info.totalSalary | moneyFormat}}</td>
+                                    <td class="text-right" [ngStyle]="{'color': info.avgSalary < 0 ? 'red' : ''}"
+                                   >{{info.avgSalary | moneyFormat}}</td>
                                 </tr>
                             </tbody>
                         </table>
