@@ -111,7 +111,9 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
     return a && b && a.id === b.id;
   }
 
-
+ clearPayroll() {
+  this.payrollId = null;
+ }
   saveAndClose(){
 
         let input = {

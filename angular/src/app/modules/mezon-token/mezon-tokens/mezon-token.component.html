@@ -55,7 +55,10 @@
                                 <sortable [name]="'email'" [sortProperty]="sortProperty"
                                         [sortDirection]="sortDirection"></sortable>
                             </th>
-                            <th class="pointer sticky-col"  style="min-width: 100px;">Payroll</th>
+                            <th  (click)="onSortChange('payrollApplyMonth')"  style="min-width: 100px;">Payroll
+                                <sortable [name]="'payrollApplyMonth'" [sortProperty]="sortProperty"
+                                        [sortDirection]="sortDirection"></sortable>
+                            </th>
                             <th (click)="onSortChange('amount')" >MezonToken<br>{{ totalAmount | moneyFormat }}
                                 <sortable [name]="'amount'" [sortProperty]="sortProperty"
                                         [sortDirection]="sortDirection"></sortable>
@@ -126,16 +129,16 @@
                                       </button>
                                       <mat-menu #menu="matMenu" class="p-2">
                                         <button *ngIf="isShowEditBtn()" class="mat-menu-item" (click)="openEditMezonToken(item)">
-                                            <i class="fas fa-envelope fa-lg mr-2"></i>
+                                            <i class="fas fa-pencil-alt mr-1"></i>
                                             Edit
                                           </button>
                                         <button *ngIf="isShowDeleteBtn()" (click)="onDelete(item.id)" class="mat-menu-item">
                                           <i class="fa-solid fa-trash-can mr-2"></i>Delete
                                         </button>
                                         <button *ngIf="isShowSentTokenBtn()" (click)="SentToken(item)" class="mat-menu-item">
-                                            <i class="fas fa-paper-plane mr-1"></i>Send
+                                            <i class="fas fa-paper-plane mr-1"></i>Send Token
                                           </button>
-                                      </mat-menu>
+                                      </mat-menu> 
                                     </ng-container>
                                   </td>
 
