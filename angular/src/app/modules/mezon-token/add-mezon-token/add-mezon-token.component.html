@@ -59,7 +59,7 @@
         </div>
         <div class="row mt-3">
             <label class="col-md-3 col-form-label">Payroll:</label>
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <mat-form-field class="w-100" appearance="outline">
                     <mat-select
                         name="month"
@@ -75,6 +75,14 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+            </div>
+            <div class="col-md-1" style="border-radius:7px; margin-top:7px">
+                    <button  
+      class="btn-clear-all custom-border"
+      (click)="clearPayroll()"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
             </div>
         </div>
         <div class="form-group row required mt-3">
