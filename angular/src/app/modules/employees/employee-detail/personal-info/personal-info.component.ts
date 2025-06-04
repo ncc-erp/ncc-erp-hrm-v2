@@ -1,3 +1,4 @@
+import { result } from '@node_modules/@types/lodash';
 import {
   Component,
   EventEmitter,
@@ -39,6 +40,7 @@ import { GetRequestDetailDto, RejectChangeInfoDto, UpdateRequestDetailDto } from
 import { IssuedByService } from "@app/service/api/categories/issuedBy.service";
 import { MatDatepicker, MatDatepickerInputEvent } from "@node_modules/@angular/material/datepicker";
 
+import { UserService } from "@app/service/api/user/user.service";
 @Component({
   selector: "app-personal-info",
   templateUrl: "./personal-info.component.html",
@@ -100,6 +102,7 @@ export class PersonalInfoComponent
     private bankService: BankService,
     private warningEmployeeService:WarningEmployeeService,
     private issuedByService : IssuedByService,
+    private userService: UserService,
   ) {
     super(injector);
     this.tempEmployeeId = Number(this.activatedRoute.snapshot.queryParamMap.get("tempEmployeeId"));
@@ -148,6 +151,7 @@ export class PersonalInfoComponent
         this.formGroup.controls['surname'].setValue(this.tempEmployeetalentInfo.fullName.split(" ").slice(0, -1).join(' '));
         this.formGroup.controls['name'].setValue(this.tempEmployeetalentInfo.fullName.split(" ").slice(-1).join(' '));
         this.formGroup.controls['phone'].setValue(this.tempEmployeetalentInfo.phone);
+        this.formGroup.controls['userMezonId'].setValue(this.tempEmployeetalentInfo.userMezonId);
         this.formGroup.controls['userType'].setValue(this.tempEmployeetalentInfo.userType);
         this.formGroup.controls['branchId'].setValue(this.tempEmployeetalentInfo.branchId);
         this.formGroup.controls['jobPositionId'].setValue(this.tempEmployeetalentInfo.jobPositionId);
@@ -383,6 +387,7 @@ export class PersonalInfoComponent
       name: ["", [Validators.required]],
       email: ["", [Validators.required, Validators.email]],
       phone: [""],
+      userMezonId: "",
       userType: ["", [Validators.required]],
       branchId: [null, Validators.required],
       jobPositionId: [null, [Validators.required]],
@@ -496,6 +501,7 @@ export class PersonalInfoComponent
       name: name,
       email: info.email,
       phone: info.phone,
+      userMezonId: info.userMezonId,
       userType: info.userType,
       branchId: info.branchId,
       jobPositionId: info.jobPositionId,
@@ -536,6 +542,7 @@ export class PersonalInfoComponent
       id: newInfo.id,
       phone : newInfo.phone,
       birthday : newInfo.birthday,
+      userMezonId: newInfo.userMezonId,
       bankId: newInfo.bankId,
       bankAccountNumber: newInfo.bankAccountNumber,
       idCard: newInfo.idCard,
@@ -597,6 +604,7 @@ export class PersonalInfoComponent
       issuedOn: this.formGroup.controls.issuedOn.value ? this.formatDateYMD(this.formGroup.controls.issuedOn.value) : "",
       issuedBy: this.formGroup.value.issuedBy,
       phone: this.formGroup.value.phone,
+      userMezonId: this.formGroup.value.userMezonId,
       bankAccountNumber: this.formGroup.value.bankAccountNumber,
       remainLeaveDay: this.formGroup.value.remainLeaveDay,
       email: this.formGroup.value.email,
@@ -624,8 +632,41 @@ export class PersonalInfoComponent
       emergencyContactPhone: this.formGroup.value.emergencyContactPhone
     };
     this.trimData(employee)
+
+
     if (this.userId) {
-      this.update(employee)
+  
+     this.userService.getUserMezonIdByEmail(employee.email).subscribe((rs) => {
+         const userMezonIdforUser = rs.result;
+    
+  if (employee.userMezonId && employee.userMezonId != userMezonIdforUser) {
+    abp.message.confirm(
+  'Could you want to update UserMezonId in User?',
+  'Are you sure?',
+  (isConfirmed: boolean) => {
+    if (isConfirmed) {
+      this.subscription.push(
+        this.userService.updateUserMezonId(employee.email, employee.userMezonId).subscribe({
+          next: (rs) => {
+            abp.message.success(rs.result);
+            this.update(employee); 
+          },
+          error: (err) => {
+            abp.message.error("Failed to update UserMezonId");
+          }
+        })
+      );
+    } else {
+      this.update(employee); 
+    }
+  }
+);
+
+  } else {
+    this.update(employee); 
+  }
+});
+
     } else {
       this.create(employee);
     }
@@ -944,6 +985,7 @@ interface PersonalInfo extends BaseEmployeeDto {
   currentAddress: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
+  userMezonId: number;
 }
 
 interface PersonalSkillDto {

@@ -3,6 +3,7 @@ using System;
 using HRMv2.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    partial class HRMv2DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250604090839_add_column_userMezonId_in_table_user_and_employee")]
+    partial class add_column_userMezonId_in_table_user_and_employee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

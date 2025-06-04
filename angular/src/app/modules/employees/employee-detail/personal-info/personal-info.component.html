@@ -405,6 +405,21 @@
                             DMYDateFormat}}</span>
                     </div>
                 </div>
+
+                    <div class="form-group row" >
+                        <label class="col-form-label col-5">
+                            User MezonId:
+                        </label>
+                        <div class="col-7">
+                            <mat-form-field *ngIf="isEdit || isUpdateRequestMode" appearance="outline" class="common-input">
+                                <input   matInput name="userMezonId" formControlName="userMezonId" #userMezonIdNumberEl>
+                            </mat-form-field>
+                            <abp-validation-summary *ngIf="isEdit" [control]="formGroup.controls.userMezonId"
+                                [controlEl]="userMezonIdNumberEl">
+                            </abp-validation-summary>
+                            <span *ngIf="!isEdit && !isUpdateRequestMode" class="view-text">{{personalInfo.userMezonId}}</span>
+                        </div>
+                    </div>
             </div>
             <div class="col-lg-4 col-md-12">
                 <div class="form-group row required" *ngIf="isProbationaryStaff">

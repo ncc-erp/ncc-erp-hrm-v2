@@ -13,12 +13,16 @@ using Abp.Runtime.Caching;
 using HRMv2.Authorization.Roles;
 using System.Threading.Tasks;
 using Abp.UI;
+using System.Linq;
+using HRMv2.NccCore;
+using System.Linq.Dynamic.Core;
 
 namespace HRMv2.Authorization.Users
 {
     public class UserManager : AbpUserManager<Role, User>
     {
         private readonly RoleManager _roleManager;
+        private readonly IWorkScope _workScope;
         public UserManager(
           RoleManager roleManager,
           UserStore store,
@@ -37,6 +41,7 @@ namespace HRMv2.Authorization.Users
           IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
           IOrganizationUnitSettings organizationUnitSettings,
           ISettingManager settingManager,
+          IWorkScope workScope,
           IRepository<UserLogin, long> userLoginRepository)
           : base(
               roleManager,
@@ -59,6 +64,7 @@ namespace HRMv2.Authorization.Users
               userLoginRepository)
         {
             _roleManager = roleManager;
+            _workScope = workScope;
         }
 
         public async Task UpdateUserActiveAsync(string email, bool isActive)
@@ -88,7 +94,7 @@ namespace HRMv2.Authorization.Users
         {
             return await FindByEmailAsync(email);
         }
-        public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName)
+        public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName, string userMezonId)
         {
             var userName = email.Split('@')[0];
             var user = new User
@@ -96,6 +102,7 @@ namespace HRMv2.Authorization.Users
                 TenantId = tenantId,
                 UserName = userName.ToLower(),
                 Name = name,
+                UserMezonId = userMezonId,
                 Surname = surName,
                 EmailAddress = email.ToLower(),
                 IsActive = true,
@@ -117,5 +124,22 @@ namespace HRMv2.Authorization.Users
             await CreateAsync(user);
             return user;
         }
+
+        public async Task<string> GetUserMezonIdByEmail(string email)
+        {
+            var userMezonId = _workScope.GetAll<User>().Where(x => x.EmailAddress == email)
+                .Select(x => x.UserMezonId).FirstOrDefault(); ;
+            return userMezonId;
+        }
+
+        public async Task UpdateUserMezonId(string email,string userMezonId)
+        {
+            var user = _workScope.GetAll<User>().Where(x => x.EmailAddress == email).FirstOrDefault();
+
+            user.UserMezonId = userMezonId;
+            await UpdateAsync(user);
+        }
+
+
     }
 }

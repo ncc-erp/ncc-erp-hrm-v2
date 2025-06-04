@@ -28,7 +28,7 @@ namespace HRMv2.Users.Dto
         [ApplySearch]
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
-
+        public string UserMezonId { get; set; }
         public bool IsActive { get; set; }
 
         public string FullName { get; set; }
