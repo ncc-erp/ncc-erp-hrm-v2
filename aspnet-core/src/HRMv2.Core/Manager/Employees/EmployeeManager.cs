@@ -1144,6 +1144,7 @@ namespace HRMv2.Manager.Employees
                 BranchCode = branchCode,
                 LevelCode = levelCode,
                 EmailAddress = email,
+                MezonUserId = input.UserMezonId,
                 Sex = input.Sex,
                 Type = input.UserType,
                 PositionCode = jobPosition,
