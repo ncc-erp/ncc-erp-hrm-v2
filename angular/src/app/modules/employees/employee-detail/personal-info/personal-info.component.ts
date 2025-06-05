@@ -641,7 +641,7 @@ export class PersonalInfoComponent
     
   if (employee.userMezonId && employee.userMezonId != userMezonIdforUser) {
     abp.message.confirm(
-  'Could you want to update UserMezonId in User?',
+  'Update Mezon UserId in Employee will update Mezon UserId in User',
   'Are you sure?',
   (isConfirmed: boolean) => {
     if (isConfirmed) {
@@ -656,8 +656,6 @@ export class PersonalInfoComponent
           }
         })
       );
-    } else {
-      this.update(employee); 
     }
   }
 );
