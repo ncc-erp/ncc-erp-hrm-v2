@@ -15,6 +15,7 @@ namespace HRMv2.WebServices.Dto
         public Sex Sex { get; set; }
         public UserType Type { get; set; }
         public string EmailAddress { get; set; }
+        public string MezonId {  get; set; }
         public string FullName { get; set; }
         public string Surname => CommonUtil.GetSurNameByFullName(FullName);
         public string Name => CommonUtil.GetNameByFullName(FullName);
