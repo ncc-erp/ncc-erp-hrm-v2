@@ -319,13 +319,16 @@ namespace HRMv2.Users
         [HttpPut]
         public async Task UpdateUserMezonId(string email, string userMezonId)
         {
-            await _userManager.UpdateUserMezonId(email, userMezonId);
+            var user = _workScope.GetAll<User>().Where(x => x.EmailAddress == email).FirstOrDefault();
+            user.UserMezonId = userMezonId;
+            await _userManager.UpdateAsync(user);
         }
         [HttpGet]
         public async Task<string> GetUserMezonIdByEmail(string email)
         {
-         
-            return await _userManager.GetUserMezonIdByEmail(email);
+         var userMezonId = _workScope.GetAll<User>().Where(x => x.EmailAddress == email)
+            .Select(x => x.UserMezonId).FirstOrDefault(); ;
+            return userMezonId;
 
         }
     }

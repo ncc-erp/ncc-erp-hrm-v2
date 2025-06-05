@@ -1988,22 +1988,14 @@ namespace HRMv2.Manager.Employees
                 return employees;
             }
         }
-        public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
+        public Employee GetEmployeeByEmail(string email)
         {
-            return WorkScope.GetAll<Employee>()
-                 .Select(x => new GetEmployeeByEmailDto
-                 {
-                     Email = x.Email,
-                     FullName = x.FullName,
-                     BranchCode = x.Branch.Code,
-                     BranchName = x.Branch.Name,
-                     Status = x.Status
-                 })
+            return WorkScope.GetAll<Employee>()               
                  .Where(s => s.Email.ToLower() == email.ToLower())
                  .FirstOrDefault();
         }
 
-        public GetEmployeeByUserMezonId GetEmployeeByUserMezonId(string userMezonId)
+        public GetEmployeeByUserMezonId GetWorkingEmployeeByUserMezonId(string userMezonId)
         {
             return WorkScope.GetAll<Employee>()
                 .Select(x => new GetEmployeeByUserMezonId
