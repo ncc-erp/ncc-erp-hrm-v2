@@ -107,8 +107,8 @@ namespace HRMv2.Controllers
         [HttpPost]
         public async Task<AuthenticateResultModel> MezonAuthenticate(string codeOauth2Mezon)
         {
-            var userInfo = await _mezonWebService.GetTokenForOauth2Mezon(codeOauth2Mezon);
-            var loginResult = await GetLoginResultMezonAsync(userInfo,GetTenancyNameOrNull());
+            var mezonOauthResult = await _mezonWebService.GetTokenForOauth2Mezon(codeOauth2Mezon);
+            var loginResult = await GetLoginResultMezonAsync(mezonOauthResult,GetTenancyNameOrNull());
 
             Logger.Info("MezonAuthentication");
 
@@ -167,11 +167,11 @@ namespace HRMv2.Controllers
                     throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result, null, tenancyName);
             }
         }
-
-        private async Task<AbpLoginResult<Tenant, User>> GetLoginResultMezonAsync(AuthOauth2Mezon input, string tenancyName)
+    
+        private async Task<AbpLoginResult<Tenant, User>> GetLoginResultMezonAsync(AuthOauth2Mezon mezonOauthResult, string tenancyName)
         {
             Logger.Info("GetLoginResultMezonAsync");
-            var loginResult = await _logInManager.LoginAsyncNoPassWithMezon(input,tenancyName, false);
+            var loginResult = await _logInManager.LoginAsyncNoPassWithMezon(mezonOauthResult,tenancyName, false);
             switch(loginResult.Result)
             {
                 case AbpLoginResultType.Success:

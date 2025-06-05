@@ -20,6 +20,7 @@ namespace HRMv2.Entities
         [Required]
         [StringLength(256)]
         public string Email { get; set; }
+        public string UserMezonId { get; set; }
         public Sex Sex { get; set; }
         [Required]
         [StringLength(20)]

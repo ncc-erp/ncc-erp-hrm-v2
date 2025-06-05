@@ -27,7 +27,8 @@ export interface TempEmployeeTalentDto {
     levelId: number,
     sex: number,
     skillStr: string,
-    onboardStatus: number
+    onboardStatus: number,
+    userMezonId: string,
 }
 export interface RejectChangeInfoDto {
     id: number;

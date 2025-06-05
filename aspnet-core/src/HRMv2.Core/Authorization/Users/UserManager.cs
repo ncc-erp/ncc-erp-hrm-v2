@@ -13,6 +13,9 @@ using Abp.Runtime.Caching;
 using HRMv2.Authorization.Roles;
 using System.Threading.Tasks;
 using Abp.UI;
+using System.Linq;
+using HRMv2.NccCore;
+using System.Linq.Dynamic.Core;
 
 namespace HRMv2.Authorization.Users
 {
@@ -88,7 +91,7 @@ namespace HRMv2.Authorization.Users
         {
             return await FindByEmailAsync(email);
         }
-        public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName)
+        public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName, string userMezonId)
         {
             var userName = email.Split('@')[0];
             var user = new User
@@ -96,6 +99,7 @@ namespace HRMv2.Authorization.Users
                 TenantId = tenantId,
                 UserName = userName.ToLower(),
                 Name = name,
+                UserMezonId = userMezonId,
                 Surname = surName,
                 EmailAddress = email.ToLower(),
                 IsActive = true,

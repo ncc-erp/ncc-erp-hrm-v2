@@ -4129,6 +4129,7 @@ export class CreateUserDto implements ICreateUserDto {
   name: string | undefined;
   surname: string | undefined;
   emailAddress: string | undefined;
+  userMezonId: string | undefined;
   isActive: boolean;
   roleNames: string[] | undefined;
   password: string | undefined;
@@ -4230,6 +4231,7 @@ export class UserDto implements IUserDto {
   name: string | undefined;
   surname: string | undefined;
   emailAddress: string | undefined;
+  userMezonId: string | undefined;
   isActive: boolean;
   fullName: string | undefined;
   lastLoginTime: moment.Moment | undefined;
@@ -4273,7 +4275,7 @@ export class UserDto implements IUserDto {
       this.userLevel = data['userLevel'];
       this.userCode = data['userCode'];
       this.userSkills = data['userSkills'];
-
+      this.userMezonId = data['userMezonId'];
       this.lastLoginTime = data['lastLoginTime']
         ? moment(data['lastLoginTime'].toString())
         : <any>undefined;
@@ -4338,6 +4340,7 @@ export interface IUserDto {
   name: string | undefined;
   surname: string | undefined;
   emailAddress: string | undefined;
+  userMezonId: string | undefined;
   isActive: boolean;
   fullName: string | undefined;
   lastLoginTime: moment.Moment | undefined;
