@@ -90,6 +90,7 @@ export class MultiCreateEmployeeFromTempComponent
       issuedOn: null,
       issuedBy: null,
       phone: +employee.phone,
+      userMezonId: employee.userMezonId,
       bankAccountNumber: "",
       remainLeaveDay: 0,
       email: employee.nccEmail,

@@ -9,6 +9,7 @@ namespace HRMv2.Authorization.Users
     public class User : AbpUser<User>
     {
         public const string DefaultPassword = "Password";
+        public string UserMezonId { get; set; }
 
         public static string CreateRandomPassword()
         {

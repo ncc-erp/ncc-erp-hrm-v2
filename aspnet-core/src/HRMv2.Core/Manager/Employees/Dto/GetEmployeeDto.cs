@@ -23,6 +23,7 @@ namespace HRMv2.Manager.Employees.Dto
     public class GetEmployeeDto : BaseEmployeeDto
     {
         public string UpdatedUser { get; set; }
+        public string UserMezonId { get; set; }
         public DateTime StartWorkingDate { get; set; }
         public DateTime? BeTViecDate { get; set; }
         public DateTime? BeStaffDate { get; set; }

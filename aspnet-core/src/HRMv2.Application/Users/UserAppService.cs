@@ -72,6 +72,7 @@ namespace HRMv2.Users
                             EmailAddress = u.EmailAddress,
                             IsActive = u.IsActive,
                             FullName = u.Name + " " + u.Surname,
+                            UserMezonId = u.UserMezonId,
                             CreationTime = u.CreationTime,
                             RoleNames = _roleManager.Roles
                             .Where(r => u.Roles
@@ -314,6 +315,21 @@ namespace HRMv2.Users
         public async Task UpdateUserActive(string email, bool isActive)
         {
             await _userManager.UpdateUserActiveAsync(email, isActive);
+        }
+        [HttpPut]
+        public async Task UpdateUserMezonId(string email, string userMezonId)
+        {
+            var user = _workScope.GetAll<User>().Where(x => x.EmailAddress == email).FirstOrDefault();
+            user.UserMezonId = userMezonId;
+            await _userManager.UpdateAsync(user);
+        }
+        [HttpGet]
+        public async Task<string> GetUserMezonIdByEmail(string email)
+        {
+         var userMezonId = _workScope.GetAll<User>().Where(x => x.EmailAddress == email)
+            .Select(x => x.UserMezonId).FirstOrDefault(); ;
+            return userMezonId;
+
         }
     }
 }

@@ -26,6 +26,8 @@ using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.Extensions.Configuration;
 using HRMv2.WebServices;
 using Microsoft.Extensions.Logging;
+using HRMv2.NccCore;
+using HRMv2.Entities;
 
 namespace HRMv2.Authorization
 {
@@ -35,6 +37,9 @@ namespace HRMv2.Authorization
         private readonly EmployeeManager _employeeManager;
         private readonly UserManager _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IWorkScope _workScope;
+        private readonly IUnitOfWork _unitOfWork;
+  
         public LogInManager(
             UserManager userManager,
             IMultiTenancyConfig multiTenancyConfig,
@@ -48,6 +53,8 @@ namespace HRMv2.Authorization
             RoleManager roleManager,
             UserClaimsPrincipalFactory claimsPrincipalFactory,
             IConfiguration configuration,
+            IWorkScope workScope,
+            IUnitOfWork unitOfWork,
             EmployeeManager employeeManager)
             : base(
                   userManager,
@@ -67,6 +74,8 @@ namespace HRMv2.Authorization
             _employeeManager = employeeManager;
             _userManager = userManager;
             _configuration = configuration;
+            _unitOfWork = unitOfWork;
+            _workScope = workScope;
         }
         [UnitOfWork]
         public async Task<AbpLoginResult<Tenant, User>> LoginAsyncNoPass(string token, string tenancyName = null, bool shouldLockout = true)
@@ -78,16 +87,16 @@ namespace HRMv2.Authorization
             return result;
         }
         [UnitOfWork]
-        public async Task<AbpLoginResult<Tenant,User>> LoginAsyncNoPassWithMezon(AuthOauth2Mezon input,string tenancyName = null , bool shouldLockout = true)
+        public async Task<AbpLoginResult<Tenant,User>> LoginAsyncNoPassWithMezon(AuthOauth2Mezon mezonOauthResult,string tenancyName = null , bool shouldLockout = true)
         {
             Logger.LogInformation("LoginAsyncNoPassWithMezon");
-            var result = await LoginAsyncInternalNoPass(TypeLoginOuth2.Mezon,null,tenancyName, shouldLockout,input);
+            var result = await LoginAsyncInternalNoPass(TypeLoginOuth2.Mezon,null,tenancyName, shouldLockout,mezonOauthResult);
             var user = result.User;
             SaveLoginAttempt(result,tenancyName,user == null ? null : user.EmailAddress);
             return result;
         }
 
-        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncInternalNoPass(TypeLoginOuth2 type,string token, string tenancyName, bool shouldLockout,AuthOauth2Mezon input)
+        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncInternalNoPass(TypeLoginOuth2 type,string token, string tenancyName, bool shouldLockout,AuthOauth2Mezon mezonOauthResult)
         {
             Logger.LogInformation("LoginAsyncInternalNoPass");
             try
@@ -97,6 +106,7 @@ namespace HRMv2.Authorization
                 var correctAudience = false;
                 var correctIssuer = false;
                 var correctExpriryTime = false;
+                var userMezonId = "";
 
                 if (type == TypeLoginOuth2.Google)
                 {
@@ -115,11 +125,12 @@ namespace HRMv2.Authorization
                      correctExpriryTime = payload.ExpirationTimeSeconds != null || payload.ExpirationTimeSeconds > 0;
                 }else if(type == TypeLoginOuth2.Mezon)
                 {
-                    emailAddress = input.sub;
+                    emailAddress = mezonOauthResult.sub;
+                    userMezonId = mezonOauthResult.user_id ;
                     clientAppId = _configuration.GetValue<string>("Oauth2Mezon:Client_Id");
-                    correctAudience = input.aud.Any(s => s == clientAppId);
-                    correctIssuer =  input.iss == "https://oauth2.mezon.ai";
-                    correctExpriryTime = input.auth_time != null || input.auth_time > 0;
+                    correctAudience = mezonOauthResult.aud.Any(s => s == clientAppId);
+                    correctIssuer =  mezonOauthResult.iss == "https://oauth2.mezon.ai";
+                    correctExpriryTime = mezonOauthResult.auth_time != null || mezonOauthResult.auth_time > 0;
                 }
                 
                 Tenant tenant = null;
@@ -153,22 +164,8 @@ namespace HRMv2.Authorization
                     {
                         await UserManager.InitializeOptionsAsync(tenantId);
 
-                        var user = await UserManager.FindByNameOrEmailAsync(tenantId, emailAddress);
-                        if (user == null)
-                        {
-                            var employee = _employeeManager.GetEmployeeByEmail(emailAddress);
-                            if (employee == null)
-                            {
-                                throw new UserFriendlyException("Login Fail - Not found employee with email " + emailAddress);
-                            }
-                            if (employee.Status != EmployeeStatus.Working && employee.Status != EmployeeStatus.MaternityLeave)
-                            {
-                                throw new UserFriendlyException(string.Format("Login Fail - " + emailAddress + "is not working or maternity leave "));
-                            }
-
-                            user = await _userManager.CreateUserAsync(emailAddress, tenantId, Utils.CommonUtil.GetNameByFullName(employee.FullName), Utils.CommonUtil.GetSurNameByFullName(employee.FullName));
-                        }
-
+                        var user = await GetOrCreateUserAsync(emailAddress,userMezonId, tenantId);
+                        
                         if (await UserManager.IsLockedOutAsync(user))
                         {
                             return new AbpLoginResult<Tenant, User>(AbpLoginResultType.LockedOut, tenant, user);
@@ -194,6 +191,60 @@ namespace HRMv2.Authorization
             {
                 return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidUserNameOrEmailAddress, null);
             }
+        }
+
+        private async Task<User> GetOrCreateUserAsync(string email,string userMezonId, int? tenantId)
+        {
+            var user = _workScope.GetAll<User>().FirstOrDefault(x => x.UserMezonId == userMezonId);
+            
+            if (user != null) return user;
+
+            var employeeInfo = _employeeManager.GetWorkingEmployeeByUserMezonId(userMezonId);
+            if (employeeInfo != null)
+            {
+                return await _userManager.CreateUserAsync(
+                    email,
+                    tenantId,
+                    Utils.CommonUtil.GetNameByFullName(employeeInfo.FullName),
+                    Utils.CommonUtil.GetSurNameByFullName(employeeInfo.FullName),
+                    userMezonId
+                );
+            }
+
+            user = await UserManager.FindByNameOrEmailAsync(tenantId, email);
+            if (user != null)
+            {
+                user.UserMezonId = userMezonId;
+                var employee = _employeeManager.GetEmployeeByEmail(email);
+                if (employee != null)
+                {
+                    employee.UserMezonId = userMezonId;
+                }
+                _unitOfWork.SaveChanges();
+                return user;
+            }
+            var employeeByEmail = _employeeManager.GetEmployeeByEmail(email);
+            
+            if (employeeByEmail == null)
+            {
+                  throw new UserFriendlyException($"Login Fail - Not found employee with email {email}");
+            }            
+
+            if (employeeByEmail.Status != EmployeeStatus.Working && employeeByEmail.Status != EmployeeStatus.MaternityLeave)
+            {
+                  throw new UserFriendlyException($"Login Fail - {email} is not working or maternity leave");
+            } 
+            
+            employeeByEmail.UserMezonId = userMezonId ;
+            _unitOfWork.SaveChanges();
+
+            return await _userManager.CreateUserAsync(
+                email,
+                tenantId,
+                Utils.CommonUtil.GetNameByFullName(employeeByEmail.FullName),
+                Utils.CommonUtil.GetSurNameByFullName(employeeByEmail.FullName),
+                userMezonId
+            );
         }
     }
 }

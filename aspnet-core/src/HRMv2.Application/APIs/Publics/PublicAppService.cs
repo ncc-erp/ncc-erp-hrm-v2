@@ -180,7 +180,15 @@ namespace HRMv2.APIs.Publics
         public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
         {
             var employees = _employeeManager.GetEmployeeByEmail(email);
-            return employees;
+            
+            return new GetEmployeeByEmailDto
+            {
+                Email = employees.Email,
+                BranchCode = employees.Branch.Code,
+                BranchName = employees.Branch.Name,
+                FullName = employees.Email,
+                Status = employees.Status,
+            };
         }
 
         [NccAuthentication]

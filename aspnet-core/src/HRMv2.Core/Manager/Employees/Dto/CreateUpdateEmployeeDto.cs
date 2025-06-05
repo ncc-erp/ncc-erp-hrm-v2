@@ -19,6 +19,7 @@ namespace HRMv2.Manager.Employees.Dto
         [StringLength(256)]
         [DataType(DataType.EmailAddress, ErrorMessage = "Email not valid")]
         public string Email { get; set; }
+        public string UserMezonId { get; set; }
         public Sex Sex { get; set; }
         [StringLength(20)]
         public string Phone { get; set; }
