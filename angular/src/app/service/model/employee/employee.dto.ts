@@ -73,6 +73,7 @@ export interface CreateUpdateEmployeeDto {
     currentAddress: string;
     emergencyContactName: string;
     emergencyContactPhone: string;
+    userMezonId: string;
 }
 export interface StartWorkingDto{
     years: number;

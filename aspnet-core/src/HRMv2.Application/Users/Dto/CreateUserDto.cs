@@ -17,6 +17,7 @@ namespace HRMv2.Users.Dto
         [Required]
         [StringLength(AbpUserBase.MaxNameLength)]
         public string Name { get; set; }
+        public string UserMezonId { get; set; }
 
         [Required]
         [StringLength(AbpUserBase.MaxSurnameLength)]

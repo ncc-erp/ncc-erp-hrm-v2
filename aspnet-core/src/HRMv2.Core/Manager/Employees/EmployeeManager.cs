@@ -108,6 +108,7 @@ namespace HRMv2.Manager.Employees
                     Avatar = x.Avatar,
                     Sex = x.Sex,
                     Email = x.Email,
+                    UserMezonId = x.UserMezonId,
                     StartWorkingDate = x.StartWorkingDate,
                     JobPositionId = x.JobPositionId,
                     BranchId = x.BranchId,
@@ -241,6 +242,7 @@ namespace HRMv2.Manager.Employees
                     BankAccountNumber = x.BankAccountNumber,
                     BankId = x.BankId,
                     Birthday = x.Birthday ,
+                    UserMezonId = x.UserMezonId,
                     IdCard = x.IdCard,
                     InsuranceStatus = x.InsuranceStatus,
                     IssuedBy = x.IssuedBy,
@@ -1142,6 +1144,7 @@ namespace HRMv2.Manager.Employees
                 BranchCode = branchCode,
                 LevelCode = levelCode,
                 EmailAddress = email,
+                MezonUserId = input.UserMezonId,
                 Sex = input.Sex,
                 Type = input.UserType,
                 PositionCode = jobPosition,
@@ -1986,19 +1989,27 @@ namespace HRMv2.Manager.Employees
                 return employees;
             }
         }
-        public GetEmployeeByEmailDto GetEmployeeByEmail(string email)
+        public Employee GetEmployeeByEmail(string email)
         {
-            return WorkScope.GetAll<Employee>()
-                 .Select(x => new GetEmployeeByEmailDto
-                 {
-                     Email = x.Email,
-                     FullName = x.FullName,
-                     BranchCode = x.Branch.Code,
-                     BranchName = x.Branch.Name,
-                     Status = x.Status
-                 })
+            return WorkScope.GetAll<Employee>()               
                  .Where(s => s.Email.ToLower() == email.ToLower())
                  .FirstOrDefault();
+        }
+
+        public GetEmployeeByUserMezonId GetWorkingEmployeeByUserMezonId(string userMezonId)
+        {
+            return WorkScope.GetAll<Employee>()
+                .Select(x => new GetEmployeeByUserMezonId
+                {
+                    UserMezonId = x.UserMezonId,
+                    Email = x.Email,
+                    FullName = x.FullName,
+                    BranchCode = x.Branch.Code,
+                    BranchName = x.Branch.Name,
+                    Status = x.Status
+                }).Where(s => s.UserMezonId == userMezonId)
+                .Where( s => s.Status == EmployeeStatus.Working || s.Status == EmployeeStatus.MaternityLeave)
+                .FirstOrDefault();
         }
 
         public async void UpdateAllWorkingEmployeeInfoToOtherTools()

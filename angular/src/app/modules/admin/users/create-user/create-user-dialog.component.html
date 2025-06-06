@@ -152,6 +152,29 @@
             ></abp-validation-summary>
           </div>
         </div>
+
+        <div class="form-group row required">
+          <label class="col-md-3 col-form-label" for="userMezonId">
+            {{ "Mezon UserId" | localize }}
+          </label>
+          <div class="col-md-9">
+            <input
+              type="userMezonId"
+              class="form-control"
+              name="userMezonId"
+              id="userMezonId"
+              required
+              maxlength="256"
+              [(ngModel)]="user.userMezonId"
+              #userMezonIdModel="ngModel"
+              #userMezonIdEl
+            />
+            <abp-validation-summary
+              [control]="userMezonIdModel"
+              [controlEl]="userMezonIdEl"
+            ></abp-validation-summary>
+          </div>
+        </div>
         <div class="form-group row mb-0">
           <label class="col-md-3 col-form-label">
             {{ "IsActive" | localize }}
