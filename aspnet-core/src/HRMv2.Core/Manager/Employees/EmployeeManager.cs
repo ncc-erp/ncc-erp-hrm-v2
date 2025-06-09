@@ -2013,7 +2013,7 @@ namespace HRMv2.Manager.Employees
                 .FirstOrDefault();
         }
 
-        public async void UpdateAllWorkingEmployeeInfoToOtherTools()
+        public void UpdateAllWorkingEmployeeInfoToOtherTools()
         {
             var employees = WorkScope.GetAll<Employee>()
                 .Where(x => x.Status == EmployeeStatus.Working)
@@ -2029,7 +2029,8 @@ namespace HRMv2.Manager.Employees
                     WorkingStartDate = x.StartWorkingDate,
                     CurrentAddress = x.CurrentAddress,
                     EmergencyContactName = x.EmergencyContactName,
-                    EmergencyContactPhone = x.EmergencyContactPhone
+                    EmergencyContactPhone = x.EmergencyContactPhone,
+                    MezonUserId = x.UserMezonId
                 })
                 .ToList();
             if (employees == null || employees.Count() == 0) return;
@@ -2040,7 +2041,7 @@ namespace HRMv2.Manager.Employees
                 {
                     Logger.LogDebug($"Start Sync data for user: {employee.EmailAddress}");
                     UpdateEmployeeToOtherTool(employee);
-                    Thread.Sleep(200);
+                    Thread.Sleep(500);
                 }
                 catch (Exception e)
                 {

@@ -39,7 +39,7 @@ namespace HRMv2.Web.Host.Startup.BackgroundWorker
             SyncData();
         }
 
-        private async void SyncData()
+        private void SyncData()
         {
             var strEnable = _settingManager.GetSettingValueForApplication(AppSettingNames.EnableWorkerAutoUpdateAllEmployeeInfoToOtherToolSetting);
             _log.LogInformation("strEnable = " + strEnable);
