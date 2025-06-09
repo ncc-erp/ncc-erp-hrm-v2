@@ -18,5 +18,6 @@ namespace HRMv2.Manager.Employees.Dto
         public string UserTypeName => CommonUtil.GetUserTypeNameVN(UserType);
         public EmployeeStatus Status { get; set; }
         public string StatusName => CommonUtil.GetWorkingStatusName(Status);
+        public string MezonUserId { get; set; }
     }
 }
