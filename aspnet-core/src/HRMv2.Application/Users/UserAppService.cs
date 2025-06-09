@@ -320,6 +320,9 @@ namespace HRMv2.Users
         public async Task UpdateUserMezonId(string email, string userMezonId)
         {
             var user = _workScope.GetAll<User>().Where(x => x.EmailAddress == email).FirstOrDefault();
+            if (user == default)
+                return;
+
             user.UserMezonId = userMezonId;
             await _userManager.UpdateAsync(user);
         }
