@@ -18,8 +18,8 @@ export class UserService  extends BaseApiService{
   updateUserActive(email:string, isActive:boolean): Observable<any> {
     return this.processPut(`UpdateUserActive?email=${email}&&isActive=${isActive}`,{});
   }
-  getUserMezonIdByEmail(email : string): Observable<any> {
-    return this.processGet(`GetUserMezonIdByEmail?email=${email}`);
+  getUserMezonInfoByEmail(email : string): Observable<any> {
+    return this.processGet(`GetUserMezonInfoByEmail?email=${email}`);
   }
 
   updateUserMezonId(email: string, userMezonId: string): Observable<any> {

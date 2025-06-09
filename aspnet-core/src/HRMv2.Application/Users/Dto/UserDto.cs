@@ -53,4 +53,9 @@ namespace HRMv2.Users.Dto
         public int Level { get; set; }
         public int UserType { get; set; }
     }
+    public class UserInfoMezonDto
+    {
+        public string EmailAddress { get; set; }
+        public string MezonUserId { get; set; }
+    }
 }
