@@ -1964,7 +1964,8 @@ namespace HRMv2.Manager.Employees
                     BranchCode = x.Branch.Code,
                     UserType = x.UserType,
                     Status = x.Status,
-                    JobPositionCode = x.JobPosition.Code
+                    JobPositionCode = x.JobPosition.Code,
+                    MezonUserId = x.UserMezonId
                 }).ToList();
             return employees;
         }
