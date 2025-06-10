@@ -479,25 +479,25 @@ namespace HRMv2.Manager.Employees
 
             if (input.Seniority != null )
             {
-                var seniority = input.Seniority.GetDate();
+                var seniorityDate = input.Seniority.GetDate();
 
                 switch (input.Seniority.Comparison)
                 {
                     case SeniorityComparision.Equal:                     
                             query = query
                                 .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
-                                .Where(x => seniority == x.BeStaffDate.Value.Date);
+                                .Where(x => seniorityDate == x.BeStaffDate.Value.Date);
                         break;
 
                     case SeniorityComparision.LessThanOrEqual:                    
                             query = query
-                                .Where(x => (x.BeStaffDate.HasValue && seniority <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
+                                .Where(x => (x.BeStaffDate.HasValue && seniorityDate <= x.BeStaffDate.Value.Date) || x.UserType != UserType.Staff);
                         break;
 
                     case SeniorityComparision.GreaterThanOrEqual:
                             query = query
                                 .Where(x => x.UserType == UserType.Staff && x.BeStaffDate.HasValue)
-                                .Where(x => seniority >= x.BeStaffDate.Value.Date);
+                                .Where(x => seniorityDate >= x.BeStaffDate.Value.Date);
                         break;
                 }
             }
