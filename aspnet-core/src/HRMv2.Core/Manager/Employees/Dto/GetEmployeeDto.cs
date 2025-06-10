@@ -57,13 +57,14 @@ namespace HRMv2.Manager.Employees.Dto
         public string EmergencyContactName { get; set; }
         public string EmergencyContactPhone { get; set; }
 
+        public DateTime SeniorityDate => BeStaffDate.HasValue ? BeStaffDate.Value : StartWorkingDate;
         public DateBetweenDto Seniority
         {
             get
             {
-                if (StartWorkingDate != default && UserType == UserType.Staff)
+                if (UserType == UserType.Staff)
                 {
-                    Period diff = DateTimeUtils.CalRangeBetweenDate(StartWorkingDate);
+                    Period diff = DateTimeUtils.CalRangeBetweenDate(SeniorityDate);
                     return new DateBetweenDto
                     {
                         Days = diff.Days,
@@ -89,9 +90,9 @@ namespace HRMv2.Manager.Employees.Dto
         {
             get
             {
-                if (StartWorkingDate != default && UserType == UserType.Staff && StartWorkingDate < CommonUtil.GetNow())
+                if (UserType == UserType.Staff && SeniorityDate < CommonUtil.GetNow())
                 {
-                    return (CommonUtil.GetNow().Date - StartWorkingDate.Date).TotalDays.ToString() + "d";
+                    return (CommonUtil.GetNow().Date - SeniorityDate.Date).TotalDays.ToString() + "d";
                 }
                 return null;
             }
