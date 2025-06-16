@@ -101,7 +101,7 @@ ngOnInit(): void {
 
   }
 getListPayroll() {
-  this.payRollService.GetPayrollWithStatusDiffExecute().subscribe((res) => {
+  this.payRollService.GetPayrolls().subscribe((res) => {
     this.listPayroll = [
       {
         value: -1,

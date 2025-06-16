@@ -17,7 +17,7 @@ import { MatSelect } from "@angular/material/select";
 import { ReplaySubject, Subject } from "rxjs";
 import { take, takeUntil } from "rxjs/operators";
 import * as _ from "lodash";
-
+import { AppConsts } from "@shared/AppConsts";
 @Component({
   selector: "chart-select",
   templateUrl: "./chart-select.component.html",
@@ -32,6 +32,7 @@ export class ChartSelectComponent {
     @Output() onSelect = new EventEmitter();
     listSelectedId: number[] = [];
     searchText: string = "";
+    APP_CONST = AppConsts;
 
     @ViewChild("multiSelect") multiSelect: MatSelect;
     @ViewChild("inputSearch") inputSearch: ElementRef;
