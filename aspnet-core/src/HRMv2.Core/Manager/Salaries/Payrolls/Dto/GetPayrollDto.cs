@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using HRMv2.Entities;
+using HRMv2.Utils;
 using NccCore.Anotations;
 using System;
 using System.Collections.Generic;
@@ -19,22 +20,6 @@ namespace HRMv2.Manager.Payrolls.Dto
         public PayrollStatus Status { get; set; }
         public int StandardOpentalk { get; set; }
         public double StandardWorkingDay { get; set; }
-        public string StatusName
-        {
-            get
-            {
-                return Status switch
-                {
-                    PayrollStatus.New => "New",
-                    PayrollStatus.PendingKT => "Pending KT",
-                    PayrollStatus.RejectedByKT => "Rejected by KT",
-                    PayrollStatus.PendingCEO => "Pending CEO",
-                    PayrollStatus.ApprovedByCEO => "Approved by CEO",
-                    PayrollStatus.RejectedByCEO => "Rejected by CEO",
-                    PayrollStatus.Executed => "Executed",
-                    _ => "",
-                };
-            }
-        }
+        public string StatusName => CommonUtil.GetPayRollStatusName(Status);
     }
 }
