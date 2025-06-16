@@ -214,6 +214,9 @@ namespace HRMv2.Manager.Employees
                             ContractEndDate = ec.EndDate,
                             UpdatedTime = x.LastModificationTime,
                             UpdatedUser = x.LastModifierUser.FullName,
+                            BeTViecDate = x.BeTViecDate,
+                            BeStaffDate = x.BeStaffDate,
+                            UserMezonId = x.UserMezonId
                         };
             return query;
         }
@@ -1121,6 +1124,9 @@ namespace HRMv2.Manager.Employees
                 worksheet.Cells[rowIndex, 27].Value = employee.IssuedBy;
                 worksheet.Cells[rowIndex, 28].Value = employee.SeniorityDay;
                 worksheet.Cells[rowIndex, 29].Value = employee.AvatarFullPath;
+                worksheet.Cells[rowIndex, 30].Value = employee.BeStaffDate;
+                worksheet.Cells[rowIndex, 31].Value = employee.BeTViecDate;
+                worksheet.Cells[rowIndex, 32].Value = employee.UserMezonId;
                 rowIndex++;
 
             }
@@ -1526,6 +1532,8 @@ namespace HRMv2.Manager.Employees
                         data.Address = worksheet.Cells[row, 25].GetCellValue<string>() ?? "";
                         data.IssuedOn = worksheet.Cells[row, 26].GetCellValue<DateTime?>() ?? null;
                         data.IssuedBy = worksheet.Cells[row, 27].GetCellValue<string>() ?? "";
+                        data.BeStaffDate = worksheet.Cells[row, 30].GetCellValue<DateTime?>() ?? null;
+                        data.BeTViecDate = worksheet.Cells[row, 31].GetCellValue<DateTime?>() ?? null;
                         data.Row = row;
 
                         datas.Add(data);
@@ -1752,8 +1760,9 @@ namespace HRMv2.Manager.Employees
             var importEmails = datas.Select(s => s.Email).ToList();
 
             var dictEmployee = WorkScope.GetAll<Employee>()
-                            .Select(employeeInfo => new { Key = employeeInfo.Email.ToLower(), employeeInfo })
-                                      .ToDictionary(x => x.Key, employeeInfo => employeeInfo);
+                                        .GroupBy(employeeInfo => employeeInfo.Email.ToLower())
+                                        .Select(group => new { Key = group.Key, employeeInfo = group.First() })
+                                        .ToDictionary(x => x.Key, x => x);
 
             foreach (var data in datas)
             {
