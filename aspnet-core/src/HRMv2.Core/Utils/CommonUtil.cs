@@ -626,5 +626,22 @@ namespace HRMv2.Utils
             if (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2)) return true;
             return s1 == s2;
         }
+
+        public static string GetPayRollStatusName(PayrollStatus status)
+        {
+            return status switch
+            {
+                PayrollStatus.New => "New",
+                PayrollStatus.PendingKT => "Pending KT",
+                PayrollStatus.RejectedByKT => "Rejected by KT",
+                PayrollStatus.PendingCEO => "Pending CEO",
+                PayrollStatus.ApprovedByCEO => "Approved by CEO",
+                PayrollStatus.RejectedByCEO => "Rejected by CEO",
+                PayrollStatus.Executed => "Executed",
+                _ => ""
+            };
+        }
+
+
     }
 }

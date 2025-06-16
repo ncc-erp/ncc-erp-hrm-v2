@@ -576,7 +576,7 @@ namespace HRMv2.Manager.Payrolls
         public List<PayrollResultQuery> GetPayrolls()
         {
             return WorkScope.GetAll<Payroll>()
-                .Where(x => x.ApplyMonth >= new DateTime(2026,4,1))
+                .Where(x => x.ApplyMonth >= new DateTime(2025,4,1))
                 .Select(x => new PayrollResultQuery
                 {
                     ApplyDate = x.ApplyMonth,

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMv2.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,24 +16,7 @@ namespace HRMv2.Manager.Salaries.Payrolls.Dto
         public PayrollStatus Status { get; set; }
         public string Name => ApplyDate.ToString("yyyy-MM");
 
-        public string StatusName
-        {
-            get
-            {
-                return Status switch
-                {
-                    PayrollStatus.New => "New",
-                    PayrollStatus.PendingKT => "Pending KT",
-                    PayrollStatus.RejectedByKT => "Rejected by KT",
-                    PayrollStatus.PendingCEO => "Pending CEO",
-                    PayrollStatus.ApprovedByCEO => "Approved by CEO",
-                    PayrollStatus.RejectedByCEO => "Rejected by CEO",
-                    PayrollStatus.Executed => "Executed",
-                    _ => "",
-                };
-            }
-        }
-
+        public string StatusName => CommonUtil.GetPayRollStatusName(Status);
 
     }
 }
