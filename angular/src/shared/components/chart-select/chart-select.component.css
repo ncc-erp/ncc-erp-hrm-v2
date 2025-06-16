@@ -31,6 +31,7 @@
 .mat-option .mat-option-text {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .mat-option .mat-option-text .data-name {
