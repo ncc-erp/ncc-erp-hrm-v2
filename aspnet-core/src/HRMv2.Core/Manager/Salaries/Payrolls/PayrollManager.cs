@@ -573,14 +573,15 @@ namespace HRMv2.Manager.Payrolls
                 .ToList();
         }
 
-        public List<PayrollResultQuery> GetPayrollWithStatusDiffExecuted()
+        public List<PayrollResultQuery> GetPayrolls()
         {
             return WorkScope.GetAll<Payroll>()
-                .Where(x => x.Status != PayrollStatus.Executed)
+                .Where(x => x.ApplyMonth >= new DateTime(2025,4,1))
                 .Select(x => new PayrollResultQuery
                 {
                     ApplyDate = x.ApplyMonth,
-                    Value = x.Id
+                    Value = x.Id,
+                    Status = x.Status
                 })
                 .OrderByDescending(x => x.ApplyDate)
                 .ToList();

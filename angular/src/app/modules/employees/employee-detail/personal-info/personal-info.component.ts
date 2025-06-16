@@ -639,7 +639,7 @@ export class PersonalInfoComponent
      this.userService.getUserMezonIdByEmail(employee.email).subscribe((rs) => {
          const userMezonIdforUser = rs.result;
     
-  if (employee.userMezonId && employee.userMezonId != userMezonIdforUser) {
+  if (userMezonIdforUser != null && employee.userMezonId && employee.userMezonId != userMezonIdforUser) {
     abp.message.confirm(
   'Update Mezon UserId in Employee will update Mezon UserId in User',
   'Are you sure?',

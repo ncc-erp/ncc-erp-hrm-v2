@@ -61,7 +61,7 @@ export class AddMezonTokenComponent extends DialogComponentBase<any> implements 
   }
 
   getListPayroll(){
-    this.payRollService.GetPayrollWithStatusDiffExecute().subscribe((res) => {
+    this.payRollService.GetPayrolls().subscribe((res) => {
       this.listPayroll = res.result;
 
     } )
