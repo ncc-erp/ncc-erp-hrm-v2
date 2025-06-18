@@ -57,6 +57,8 @@ namespace HRMv2.Manager.Employees.Dto
         public DateTime? BeTViecDate { get; set; }
         public DateTime? StartWorkingDate { get; set; }
 
+        public string? UserMezonId { get; set; }
+
     }
     public class InputFileDto
     {

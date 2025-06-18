@@ -121,5 +121,19 @@ namespace HRMv2.Authorization.Users
             await CreateAsync(user);
             return user;
         }
+
+        public async Task<string> UpdateMezonUserAsync(string email, string userMezonId)
+        {
+            var user = await FindByNameOrEmailAsync(email);
+            if (user == null)
+            {
+                Logger.LogInformation("not found user with email " + email);
+                return "User not found";
+            }
+
+            user.UserMezonId = userMezonId;
+            await UpdateAsync(user);
+            return "";
+        }
     }
 }

@@ -1471,6 +1471,7 @@ namespace HRMv2.Manager.Employees
                         data.Address = worksheet.Cells[row, 13].GetCellValue<string>() ?? "";
                         data.IssuedOn = worksheet.Cells[row, 14].GetCellValue<DateTime?>() ?? null;
                         data.IssuedBy = worksheet.Cells[row, 15].GetCellValue<string>() ?? "";
+                        data.UserMezonId = worksheet.Cells[row, 16].GetCellValue<string>() ?? "";
                         data.Row = row;
 
                         datas.Add(data);
@@ -1534,6 +1535,7 @@ namespace HRMv2.Manager.Employees
                         data.IssuedBy = worksheet.Cells[row, 27].GetCellValue<string>() ?? "";
                         data.BeStaffDate = worksheet.Cells[row, 30].GetCellValue<DateTime?>() ?? null;
                         data.BeTViecDate = worksheet.Cells[row, 31].GetCellValue<DateTime?>() ?? null;
+                        data.UserMezonId = worksheet.Cells[row, 32].GetCellValue<string>() ?? "";
                         data.Row = row;
 
                         datas.Add(data);
@@ -1574,6 +1576,8 @@ namespace HRMv2.Manager.Employees
                             .Where(s => importEmails.Contains(s))
                             .Distinct().ToHashSet();
 
+
+
             foreach (var data in datas)
             {
                 var trimmedEmail = data.Email.Trim();
@@ -1609,6 +1613,17 @@ namespace HRMv2.Manager.Employees
                 if (!ValidDataToImport(data, failedList))
                 {
                     continue;
+                }
+
+                if (!string.IsNullOrEmpty(data.UserMezonId))
+                {
+                    var isExistMezonId = WorkScope.GetAll<Employee>()
+                        .Any(x => x.UserMezonId == data.UserMezonId);
+                    if (isExistMezonId)
+                    {
+                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist" });
+                        continue;
+                    }
                 }
 
 
@@ -1764,6 +1779,7 @@ namespace HRMv2.Manager.Employees
                                         .Select(group => new { Key = group.Key, employeeInfo = group.First() })
                                         .ToDictionary(x => x.Key, x => x);
 
+
             foreach (var data in datas)
             {
 
@@ -1778,6 +1794,27 @@ namespace HRMv2.Manager.Employees
                 if (!ValidDataToUpdate(data, failedList))
                 {
                     continue;
+                }
+
+                if(!string.IsNullOrEmpty(data.UserMezonId) && employee.UserMezonId != data.UserMezonId)
+                {
+                    var isExistMezonId = WorkScope.GetAll<Employee>()
+                        .Any(x => x.UserMezonId == data.UserMezonId);
+                    if (isExistMezonId)
+                    {
+                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist in Employees" });
+                        continue;
+                    }
+
+                    var isExistMezonIdInUsers = WorkScope.GetAll<User>()
+                        .Any(x => x.UserMezonId == data.UserMezonId && x.EmailAddress != data.Email);
+
+                    if (isExistMezonIdInUsers)
+                       {
+                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist in Users" });
+                        continue;
+                    }
+
                 }
 
 
@@ -1796,9 +1833,20 @@ namespace HRMv2.Manager.Employees
                 employee.PlaceOfPermanent = string.IsNullOrEmpty(data.PlaceOfPermanent) ? employee.PlaceOfPermanent : data.PlaceOfPermanent;
                 employee.IssuedOn = data.IssuedOn ?? employee.IssuedOn;
                 employee.IssuedBy = string.IsNullOrEmpty(data.IssuedBy) ? employee.IssuedBy : data.IssuedBy;
+                
+                if (!String.IsNullOrEmpty(data.UserMezonId))
+                {
+                    employee.UserMezonId = string.IsNullOrEmpty(data.UserMezonId) ? employee.UserMezonId : data.UserMezonId;
+                    string updateUserMezonId = await _userManager.UpdateMezonUserAsync(data.Email, data.UserMezonId);
+                    if (!String.IsNullOrEmpty(updateUserMezonId))
+                    {
+                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = updateUserMezonId });
+                        continue;
+                    }
+                }
 
                 successList.Add(data.Email);
-
+                
             }
 
             CurrentUnitOfWork.SaveChanges();
