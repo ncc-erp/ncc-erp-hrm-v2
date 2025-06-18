@@ -4163,6 +4163,7 @@ export class CreateUserDto implements ICreateUserDto {
       this.userLevel = data['userLevel'];
       this.userCode = data['userCode'];
       this.userSkills = data['userSkills'];
+      this.userMezonId = data['userMezonId'];
       if (Array.isArray(data['roleNames'])) {
         this.roleNames = [] as any;
         for (let item of data['roleNames']) this.roleNames.push(item);
@@ -4192,7 +4193,7 @@ export class CreateUserDto implements ICreateUserDto {
     data['userLevel'] = this.userLevel;
     data['userCode'] = this.userCode;
     data['userSkills'] = this.userSkills;
-
+    data['userMezonId'] = this.userMezonId;
     if (Array.isArray(this.roleNames)) {
       data['roleNames'] = [];
       for (let item of this.roleNames) data['roleNames'].push(item);
@@ -4224,6 +4225,7 @@ export interface ICreateUserDto {
   userLevel: number | undefined;
   userCode: string | undefined;
   userSkills: any[] | undefined;
+  userMezonId: string | undefined;
 }
 
 export class UserDto implements IUserDto {

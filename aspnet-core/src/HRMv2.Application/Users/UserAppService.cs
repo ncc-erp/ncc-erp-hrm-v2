@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Abp;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
@@ -18,6 +19,7 @@ using HRMv2.Authorization;
 using HRMv2.Authorization.Accounts;
 using HRMv2.Authorization.Roles;
 using HRMv2.Authorization.Users;
+using HRMv2.Entities;
 using HRMv2.NccCore;
 using HRMv2.Roles.Dto;
 using HRMv2.Users.Dto;
@@ -98,6 +100,8 @@ namespace HRMv2.Users
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
+            
+            await CheckUserMezonIdAsync(input.UserMezonId, input.EmailAddress);
 
             var user = ObjectMapper.Map<User>(input);
 
@@ -333,6 +337,23 @@ namespace HRMv2.Users
             .Select(x => x.UserMezonId).FirstOrDefault(); ;
             return userMezonId;
 
+        }
+
+        private async Task CheckUserMezonIdAsync(string userMezonId, string email)
+        {
+            var isExistMezonUserIdOfUser = _workScope.GetAll<User>()
+                .Any(x => x.UserMezonId == userMezonId && x.EmailAddress != email);
+            if (isExistMezonUserIdOfUser)
+            {
+                throw new UserFriendlyException("User with this MezonUserId already exists.");
+            }
+            
+            var isExistMezonUserIdOfEmployee = _workScope.GetAll<Employee>()
+                .Any(x => x.UserMezonId == userMezonId && x.Email != email);
+            if (isExistMezonUserIdOfEmployee)
+            {
+                throw new UserFriendlyException("Employee with this MezonUserId already exists.");
+            }
         }
     }
 }
