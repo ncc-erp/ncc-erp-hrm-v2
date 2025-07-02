@@ -1575,8 +1575,11 @@ namespace HRMv2.Manager.Employees
                             .Select(x => x.Email.ToLower())
                             .Where(s => importEmails.Contains(s))
                             .Distinct().ToHashSet();
-
-
+            
+            var lstMezonUserIds = WorkScope.GetAll<Employee>()
+                .Where(s => !string.IsNullOrEmpty(s.UserMezonId))
+                .Select(s => s.UserMezonId)
+                .ToHashSet();
 
             foreach (var data in datas)
             {
@@ -1617,8 +1620,7 @@ namespace HRMv2.Manager.Employees
 
                 if (!string.IsNullOrEmpty(data.UserMezonId))
                 {
-                    var isExistMezonId = WorkScope.GetAll<Employee>()
-                        .Any(x => x.UserMezonId == data.UserMezonId);
+                    var isExistMezonId = lstMezonUserIds.Any(s => s.Trim().ToLower() == data.UserMezonId.Trim().ToLower());
                     if (isExistMezonId)
                     {
                         failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist" });
@@ -1780,6 +1782,21 @@ namespace HRMv2.Manager.Employees
                                         .ToDictionary(x => x.Key, x => x);
 
 
+            var lstMezonUserIds = dictEmployee.Values
+                .Select(x => x.employeeInfo.UserMezonId)
+                .Where(id => !string.IsNullOrEmpty(id))
+                .ToHashSet();
+            
+            var users = WorkScope.GetAll<User>().ToList();
+            var dictUser = users
+                .Where(u => !string.IsNullOrEmpty(u.EmailAddress))
+                .GroupBy(u => u.EmailAddress, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())                              
+                .ToDictionary(
+                    u => u.EmailAddress.ToLower(),  
+                    u => u                       
+                );
+            
             foreach (var data in datas)
             {
 
@@ -1798,17 +1815,15 @@ namespace HRMv2.Manager.Employees
 
                 if(!string.IsNullOrEmpty(data.UserMezonId) && employee.UserMezonId != data.UserMezonId)
                 {
-                    var isExistMezonId = WorkScope.GetAll<Employee>()
-                        .Any(x => x.UserMezonId == data.UserMezonId);
+                    var isExistMezonId = lstMezonUserIds.Any(s => s == data.UserMezonId);
                     if (isExistMezonId)
                     {
                         failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist in Employees" });
                         continue;
                     }
 
-                    var isExistMezonIdInUsers = WorkScope.GetAll<User>()
-                        .Any(x => x.UserMezonId == data.UserMezonId && x.EmailAddress != data.Email);
-
+                    var isExistMezonIdInUsers = users.Any(u => u.UserMezonId == data.UserMezonId &&
+                                                               !u.EmailAddress.Equals(data.Email, StringComparison.OrdinalIgnoreCase));
                     if (isExistMezonIdInUsers)
                        {
                         failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist in Users" });
@@ -1837,11 +1852,9 @@ namespace HRMv2.Manager.Employees
                 if (!String.IsNullOrEmpty(data.UserMezonId))
                 {
                     employee.UserMezonId = string.IsNullOrEmpty(data.UserMezonId) ? employee.UserMezonId : data.UserMezonId;
-                    string updateUserMezonId = await _userManager.UpdateMezonUserAsync(data.Email, data.UserMezonId);
-                    if (!String.IsNullOrEmpty(updateUserMezonId))
+                    if (dictUser.TryGetValue(data.Email.ToLower(), out var user))
                     {
-                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = updateUserMezonId });
-                        continue;
+                        user.UserMezonId = employee.UserMezonId;
                     }
                 }
 
