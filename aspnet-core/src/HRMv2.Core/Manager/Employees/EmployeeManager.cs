@@ -44,6 +44,7 @@ using System.Threading;
 using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
 using HRMv2.Authorization.Users;
 using HRMv2.Authorization.Roles;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace HRMv2.Manager.Employees
 {
@@ -1433,7 +1434,7 @@ namespace HRMv2.Manager.Employees
                 throw new UserFriendlyException("File null or is not .xlsx file");
             }
         }
-        private async Task<List<UpdateEmployeeFromFileDto>> GetDataUpdateFromFile([FromForm] InputFileDto input)
+        private List<UpdateEmployeeFromFileDto> GetDataUpdateFromFile([FromForm] InputFileDto input)
         {
             var datas = new List<UpdateEmployeeFromFileDto>();
             using (var stream = new MemoryStream())
@@ -1576,59 +1577,25 @@ namespace HRMv2.Manager.Employees
                             .Where(s => importEmails.Contains(s))
                             .Distinct().ToHashSet();
             
-            var lstMezonUserIds = WorkScope.GetAll<Employee>()
+            var hsEmployeeMezonUserIds = WorkScope.GetAll<Employee>()
                 .Where(s => !string.IsNullOrEmpty(s.UserMezonId))
                 .Select(s => s.UserMezonId)
+                .ToList()
+                .Distinct()
                 .ToHashSet();
 
             foreach (var data in datas)
-            {
-                var trimmedEmail = data.Email.Trim();
-
-                if (trimmedEmail.EndsWith("."))
-                {
-                    failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email is invalid" });
-                    continue;
-                }
-                try
-                {
-
-                    var addr = new System.Net.Mail.MailAddress(data.Email);
-                    if (addr.Address != trimmedEmail)
-                    {
-                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email is invalid" });
-                        continue;
-                    }
-
-                }
-                catch
-                {
-                    failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email is invalid" });
-                    continue;
-                }
-
-
-                if (string.IsNullOrEmpty(data.Email) || alreadyExistEmails.Contains(data.Email))
-                {
-                    failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email Already Exist or Null" });
-                    continue;
-                }
-                if (!ValidDataToImport(data, failedList))
+            {                
+                if (!ValidDataToImport(data, failedList, dictBranch, dictLevel, dictBank, dictJobposition, alreadyExistEmails))
                 {
                     continue;
                 }
 
-                if (!string.IsNullOrEmpty(data.UserMezonId))
-                {
-                    var isExistMezonId = lstMezonUserIds.Any(s => s.Trim().ToLower() == data.UserMezonId.Trim().ToLower());
-                    if (isExistMezonId)
-                    {
-                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist" });
-                        continue;
-                    }
+                if (!string.IsNullOrEmpty(data.UserMezonId) && hsEmployeeMezonUserIds.Any(s => s == data.UserMezonId.Trim()))
+                {                   
+                    failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist" });
+                    continue;                   
                 }
-
-
 
                 data.BankId = dictBank.ContainsKey(data.BankCode.ToLower()) ? dictBank[data.BankCode.ToLower()] : null;
                 data.JobPositionId = dictJobposition[data.JobPositionCode.ToLower()];
@@ -1643,14 +1610,12 @@ namespace HRMv2.Manager.Employees
             return new { successList, failedList };
         }
 
-        public bool ValidDataToUpdate(UpdateEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList)
+        public bool ValidDataToUpdate(UpdateEmployeeFromFileDto data, Dictionary<string, long> dicBankCodeToId, List<ResponseFailImportEmployeeDto> failedList)
         {
-            var dictBank = WorkScope.GetAll<Bank>()
-                                    .Select(s => new { Key = s.Code.ToLower(), s.Id })
-                                    .ToDictionary(s => s.Key, s => s.Id);
-            if (!string.IsNullOrEmpty(data.BankCode) && !dictBank.ContainsKey(data.BankCode.ToLower()))
+           
+            if (!string.IsNullOrEmpty(data.BankCode) && !dicBankCodeToId.ContainsKey(data.BankCode.ToLower()))
             {
-                failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = " Can not found Bank" });
+                failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = " Can not found Bank Code " + data.BankCode });
                 return false;
             }
             if (!string.IsNullOrEmpty(data.InsuranceStatusCode) && CommonUtil.GetValueOfInsuranceStatus(data.InsuranceStatusCode) == -1)
@@ -1661,20 +1626,39 @@ namespace HRMv2.Manager.Employees
             return true;
         }
 
-        public bool ValidDataToImport(ImportEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList)
+        public bool ValidDataToImport(ImportEmployeeFromFileDto data, List<ResponseFailImportEmployeeDto> failedList, Dictionary<string, long> dictBranch, Dictionary<string, long> dictLevel, Dictionary<string, long> dictBank, Dictionary<string, long> dictJobposition, HashSet<string> alreadyExistEmails)
         {
-            var dictBranch = WorkScope.GetAll<Branch>()
-                                      .Select(s => new { Key = s.Code.ToLower(), s.Id })
-                                      .ToDictionary(s => s.Key, s => s.Id);
-            var dictLevel = WorkScope.GetAll<Level>()
-                                     .Select(s => new { Key = s.Name.ToLower(), s.Id })
-                                     .ToDictionary(s => s.Key, s => s.Id);
-            var dictBank = WorkScope.GetAll<Bank>()
-                                    .Select(s => new { Key = s.Code.ToLower(), s.Id })
-                                    .ToDictionary(s => s.Key, s => s.Id);
-            var dictJobposition = WorkScope.GetAll<JobPosition>()
-                                           .Select(s => new { Key = s.Code.ToLower(), s.Id })
-                                           .ToDictionary(s => s.Key, s => s.Id);
+            if (string.IsNullOrEmpty(data.Email))
+            {
+                failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email is empty" });
+                return false;
+            }
+            var email = data.Email.Trim();
+
+            try
+            {
+
+                var addr = new System.Net.Mail.MailAddress(data.Email);
+                if (addr.Address != email)
+                {
+                    failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email is invalid" });
+                    return false;
+                }
+
+            }
+            catch
+            {
+                failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email is invalid" });
+                return false;
+            }
+
+
+            if (alreadyExistEmails.Contains(data.Email))
+            {
+                failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "Email Already Exist" });
+                return false;
+            }
+
 
             if (string.IsNullOrEmpty(data.Surname))
             {
@@ -1721,8 +1705,6 @@ namespace HRMv2.Manager.Employees
 
             }
 
-
-
             if (!dictJobposition.ContainsKey(data.JobPositionCode.ToLower()))
             {
                 failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = " Can not found JobPosition" });
@@ -1763,102 +1745,100 @@ namespace HRMv2.Manager.Employees
         }
 
 
-        public async Task<Object> UpdateEmployeeFromFile([FromForm] InputFileDto input)
+        public Object UpdateEmployeeFromFile([FromForm] InputFileDto input)
         {
             ValidImport(input.File);
-            var datas = await GetDataUpdateFromFile(input);
+            var datas = GetDataUpdateFromFile(input);
 
             var failedList = new List<ResponseFailImportEmployeeDto>();
             var successList = new List<string>();
 
             var dictBank = WorkScope.GetAll<Bank>()
-                                   .Select(s => new { Key = s.Code.ToLower(), s.Id })
-                                   .ToDictionary(s => s.Key, s => s.Id);
+                                   .AsNoTracking()                           
+                                   .Select(s => new { s.Code, s.Id })                                   
+                                   .ToList()
+                                   .GroupBy(s => s.Code.ToLower())
+                                   .ToDictionary(s => s.Key, s => s.FirstOrDefault().Id);
+
             var importEmails = datas.Select(s => s.Email).ToList();
 
-            var dictEmployee = WorkScope.GetAll<Employee>()
-                                        .GroupBy(employeeInfo => employeeInfo.Email.ToLower())
-                                        .Select(group => new { Key = group.Key, employeeInfo = group.First() })
-                                        .ToDictionary(x => x.Key, x => x);
+            var employees = WorkScope.GetAll<Employee>()
+                                        .ToList();
+            var dictEmailToEmployee = employees.GroupBy(s => s.Email.ToLower())                                      
+                                        .ToDictionary(x => x.Key, x => x.FirstOrDefault());
+                   
+
+            var dicMezonUserIdToEmployee = employees.Where(s => !String.IsNullOrEmpty(s.UserMezonId))
+                .GroupBy(s => s.UserMezonId.ToLower())
+                .ToDictionary(s => s.Key, s => s.FirstOrDefault());
 
 
-            var lstMezonUserIds = dictEmployee.Values
-                .Select(x => x.employeeInfo.UserMezonId)
-                .Where(id => !string.IsNullOrEmpty(id))
-                .ToHashSet();
-            
             var users = WorkScope.GetAll<User>().ToList();
-            var dictUser = users
-                .Where(u => !string.IsNullOrEmpty(u.EmailAddress))
-                .GroupBy(u => u.EmailAddress, StringComparer.OrdinalIgnoreCase)
-                .Select(g => g.First())                              
-                .ToDictionary(
-                    u => u.EmailAddress.ToLower(),  
-                    u => u                       
-                );
-            
-            foreach (var data in datas)
+
+            var dictEmailToUser = users                
+                .GroupBy(u => u.EmailAddress.ToLower())                               
+                .ToDictionary(u => u.Key, u => u.FirstOrDefault());
+
+           
+            foreach (var dto in datas)
             {
 
 
-                if (string.IsNullOrEmpty(data.Email) || !dictEmployee.ContainsKey(data.Email.ToLower()))
+                if (string.IsNullOrEmpty(dto.Email) || !dictEmailToEmployee.ContainsKey(dto.Email.ToLower()))
                 {
-                    failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = " Can not found employee" });
+                    failedList.Add(new ResponseFailImportEmployeeDto { Row = dto.Row, Email = dto.Email, ReasonFail = " Can not found employee" });
                     continue;
                 }
-                var employee = dictEmployee[data.Email.ToLower()].employeeInfo;
+                var employee = dictEmailToEmployee[dto.Email.ToLower()];
 
-                if (!ValidDataToUpdate(data, failedList))
+                if (!ValidDataToUpdate(dto,  dictBank, failedList))
                 {
                     continue;
                 }
 
-                if(!string.IsNullOrEmpty(data.UserMezonId) && employee.UserMezonId != data.UserMezonId)
+                if(!string.IsNullOrEmpty(dto.UserMezonId))
                 {
-                    var isExistMezonId = lstMezonUserIds.Any(s => s == data.UserMezonId);
-                    if (isExistMezonId)
+                    if (dto.UserMezonId != employee.UserMezonId && dicMezonUserIdToEmployee.ContainsKey(dto.UserMezonId))
                     {
-                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist in Employees" });
+                        failedList.Add(new ResponseFailImportEmployeeDto { Row = dto.Row, Email = dto.Email, ReasonFail = $"MezonUserId already exist in Employee {dicMezonUserIdToEmployee[dto.UserMezonId].Email}" });
                         continue;
                     }
 
-                    var isExistMezonIdInUsers = users.Any(u => u.UserMezonId == data.UserMezonId &&
-                                                               !u.EmailAddress.Equals(data.Email, StringComparison.OrdinalIgnoreCase));
-                    if (isExistMezonIdInUsers)
-                       {
-                        failedList.Add(new ResponseFailImportEmployeeDto { Row = data.Row, Email = data.Email, ReasonFail = "MezonUserId Already Exist in Users" });
+                    var otherUserHaveMezonUserId = users.Where(u => u.UserMezonId == dto.UserMezonId &&
+                                                               !u.EmailAddress.Equals(dto.Email, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+                    if (otherUserHaveMezonUserId != default)
+                    {
+                        failedList.Add(new ResponseFailImportEmployeeDto { Row = dto.Row, Email = dto.Email, ReasonFail = $"MezonUserId already exist in other User {otherUserHaveMezonUserId.EmailAddress}" });
                         continue;
                     }
 
                 }
 
 
-                data.BankId = dictBank.ContainsKey(data.BankCode.ToLower()) ? dictBank[data.BankCode.ToLower()] : null;
-                employee.Phone = string.IsNullOrEmpty(data?.Phone) ? employee.Phone : data?.Phone;
-                employee.Birthday = data.Birthday ?? employee.Birthday;
-                employee.StartWorkingDate = data.StartWorkingDate ?? employee.StartWorkingDate;
-                employee.BeTViecDate = data.BeTViecDate ?? employee.BeTViecDate;
-                employee.BeStaffDate = data.BeStaffDate ?? employee.BeStaffDate;
-                employee.BankId = data.BankId ?? employee.BankId;
-                employee.BankAccountNumber = string.IsNullOrEmpty(data.BankAccountNumber) ? employee.BankAccountNumber : data.BankAccountNumber;
-                employee.TaxCode = string.IsNullOrEmpty(data.TaxCode) ? employee.TaxCode : data.TaxCode;
-                employee.InsuranceStatus = !string.IsNullOrEmpty(data.InsuranceStatusCode) ? data.InsuranceStatus : employee.InsuranceStatus;
-                employee.IdCard = string.IsNullOrEmpty(data.IdCard) ? employee.IdCard : data.IdCard;
-                employee.Address = string.IsNullOrEmpty(data.Address) ? employee.Address : data.Address;
-                employee.PlaceOfPermanent = string.IsNullOrEmpty(data.PlaceOfPermanent) ? employee.PlaceOfPermanent : data.PlaceOfPermanent;
-                employee.IssuedOn = data.IssuedOn ?? employee.IssuedOn;
-                employee.IssuedBy = string.IsNullOrEmpty(data.IssuedBy) ? employee.IssuedBy : data.IssuedBy;
-                
-                if (!String.IsNullOrEmpty(data.UserMezonId))
+                dto.BankId = dictBank.ContainsKey(dto.BankCode.ToLower()) ? dictBank[dto.BankCode.ToLower()] : null;
+                employee.Phone = string.IsNullOrEmpty(dto?.Phone) ? employee.Phone : dto?.Phone;
+                employee.Birthday = dto.Birthday ?? employee.Birthday;
+                employee.StartWorkingDate = dto.StartWorkingDate ?? employee.StartWorkingDate;
+                employee.BeTViecDate = dto.BeTViecDate ?? employee.BeTViecDate;
+                employee.BeStaffDate = dto.BeStaffDate ?? employee.BeStaffDate;
+                employee.BankId = dto.BankId ?? employee.BankId;
+                employee.BankAccountNumber = string.IsNullOrEmpty(dto.BankAccountNumber) ? employee.BankAccountNumber : dto.BankAccountNumber;
+                employee.TaxCode = string.IsNullOrEmpty(dto.TaxCode) ? employee.TaxCode : dto.TaxCode;
+                employee.InsuranceStatus = !string.IsNullOrEmpty(dto.InsuranceStatusCode) ? dto.InsuranceStatus : employee.InsuranceStatus;
+                employee.IdCard = string.IsNullOrEmpty(dto.IdCard) ? employee.IdCard : dto.IdCard;
+                employee.Address = string.IsNullOrEmpty(dto.Address) ? employee.Address : dto.Address;
+                employee.PlaceOfPermanent = string.IsNullOrEmpty(dto.PlaceOfPermanent) ? employee.PlaceOfPermanent : dto.PlaceOfPermanent;
+                employee.IssuedOn = dto.IssuedOn ?? employee.IssuedOn;
+                employee.IssuedBy = string.IsNullOrEmpty(dto.IssuedBy) ? employee.IssuedBy : dto.IssuedBy;
+                employee.UserMezonId = string.IsNullOrEmpty(dto.UserMezonId) ? employee.UserMezonId : dto.UserMezonId;
+
+                if (!String.IsNullOrEmpty(dto.UserMezonId) && dictEmailToUser.ContainsKey(dto.Email.ToLower()))
                 {
-                    employee.UserMezonId = string.IsNullOrEmpty(data.UserMezonId) ? employee.UserMezonId : data.UserMezonId;
-                    if (dictUser.TryGetValue(data.Email.ToLower(), out var user))
-                    {
-                        user.UserMezonId = employee.UserMezonId;
-                    }
+                    dictEmailToUser[dto.Email.ToLower()].UserMezonId = employee.UserMezonId;
                 }
 
-                successList.Add(data.Email);
+                successList.Add(dto.Email);
                 
             }
 

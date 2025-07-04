@@ -431,13 +431,10 @@ namespace HRMv2.Manager.Salaries.Payslips
             foreach (var payslipDetail in payslipDetails)
             {
                 long tokenValue = tokenDefault;
-                if (payslipDetail.Payslip.Salary <=0)
-                {
-                    tokenValue = 0;
-                }else if (payslipDetail.Money <= tokenDefault)
-                {
-                    tokenValue = (long) (payslipDetail.Money);
-                }
+
+                tokenValue = (long)Math.Min(tokenValue, payslipDetail.Money);
+                tokenValue = (long)Math.Min(tokenValue, payslipDetail.Payslip.Salary);
+                tokenValue = Math.Max(tokenValue, 0);
 
                 payslipDetail.Money -= tokenValue;
                 payslipDetail.Payslip.Salary -= tokenValue;
@@ -450,7 +447,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Status = StatusSendToken.Pending,
                         ReferenceId = payslipDetail.Id,
                         PayrollId = payrollId,
-                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("MM-yyyy")} (tiền mặt ăn trưa còn lại: {payslipDetail.Money:N0} VND)"
+                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("MM-yyyy")} là {tokenValue:N0}, tiền mặt ăn trưa còn lại: {payslipDetail.Money:N0} VND"
                     });
                 }    
             }

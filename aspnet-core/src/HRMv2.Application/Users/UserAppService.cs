@@ -101,7 +101,7 @@ namespace HRMv2.Users
         {
             CheckCreatePermission();
             
-            await CheckUserMezonIdAsync(input.UserMezonId, input.EmailAddress);
+            CheckUserMezonIdAsync(input.UserMezonId, input.EmailAddress);
 
             var user = ObjectMapper.Map<User>(input);
 
@@ -339,20 +339,25 @@ namespace HRMv2.Users
 
         }
 
-        private async Task CheckUserMezonIdAsync(string userMezonId, string email)
+        private void CheckUserMezonIdAsync(string userMezonId, string email)
         {
+            if (string.IsNullOrEmpty(userMezonId))
+            {
+                return;
+            }
+            
             var isExistMezonUserIdOfUser = _workScope.GetAll<User>()
-                .Any(x => x.UserMezonId == userMezonId && x.EmailAddress != email);
+                .Any(x => x.UserMezonId == userMezonId);
             if (isExistMezonUserIdOfUser)
             {
-                throw new UserFriendlyException("User with this MezonUserId already exists.");
+                throw new UserFriendlyException($"User with this MezonUserId {userMezonId} already exists.");
             }
             
             var isExistMezonUserIdOfEmployee = _workScope.GetAll<Employee>()
-                .Any(x => x.UserMezonId == userMezonId && x.Email != email);
+                .Any(x => x.UserMezonId == userMezonId && x.Email.ToLower() != email.ToLower());
             if (isExistMezonUserIdOfEmployee)
             {
-                throw new UserFriendlyException("Employee with this MezonUserId already exists.");
+                throw new UserFriendlyException($"Employee with this MezonUserId {userMezonId} already exists.");
             }
         }
     }
