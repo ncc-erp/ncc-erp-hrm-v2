@@ -22,13 +22,15 @@ namespace HRMv2.Manager.CheckIn
                 .Select(x=> new GetUserInfo
                 {
                     Email = x.Email,
-                    FullName = x.FullName,                    
+                    FullName = x.FullName,
+                    MezonUserId = x.UserMezonId,
                 })
                 .Select(x=> new GetUserForCheckInDto
                 {
                     Email = x.Email,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
+                    MezonUserId = x.MezonUserId,
                 })
                 .ToList();
             return listUsers;
