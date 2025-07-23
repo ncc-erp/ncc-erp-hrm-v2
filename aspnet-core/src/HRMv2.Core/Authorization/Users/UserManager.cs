@@ -91,7 +91,8 @@ namespace HRMv2.Authorization.Users
         {
             return await FindByEmailAsync(email);
         }
-        public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName, string userMezonId)
+        
+        public async Task<User> CreateUserAsync(string email, int? tenantId, string name, string surName, string userMezonId, bool isActive = true)
         {
             var userName = email.Split('@')[0];
             var user = new User
@@ -102,7 +103,7 @@ namespace HRMv2.Authorization.Users
                 UserMezonId = userMezonId,
                 Surname = surName,
                 EmailAddress = email.ToLower(),
-                IsActive = true,
+                IsActive = isActive,
                 Roles = new List<UserRole>(),
             };
             user.Password = PasswordHasher.HashPassword(user, User.CreateRandomPassword());

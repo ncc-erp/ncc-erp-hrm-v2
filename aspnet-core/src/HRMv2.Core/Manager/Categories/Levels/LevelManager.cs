@@ -29,7 +29,7 @@ namespace HRMv2.Manager.Categories.Levels
                 Code = x.Code,
                 ShortName = x.ShortName,
                 Color = x.Color,
-            }).OrderBy(x => x.Name);
+            }).OrderBy(x => x.Id);
         }
 
         public List<LevelDto> GetAll()

@@ -55,7 +55,7 @@ export class PersonalInfoComponent
   public contextMenuPosition = { x: '0px', y: '0px' };
   public personalInfo: PersonalInfo;
   public userId: number;
-  public requestId:number;
+  public requestId: number;
   public isEdit = false;
   public userTypeList = [];
   public branchList: SelectOptionDto[] = [];
@@ -65,9 +65,9 @@ export class PersonalInfoComponent
   public bankList: SelectOptionDto[] = [];
   public isAllowWorkingStatus: boolean = true;
   public isAllowBranchStatus: boolean = true;
-  public listIssuedBys : SelectOptionDto[] = [];
+  public listIssuedBys: SelectOptionDto[] = [];
 
-  public employeeId : number
+  public employeeId: number
   public workingStatusList: SelectOptionDto[] = Object.entries(this.APP_ENUM.UserStatus).map(
     (x) => ({ key: x[0], value: x[1] })
   );
@@ -83,13 +83,13 @@ export class PersonalInfoComponent
   public formBuilder: FormBuilder = new FormBuilder();
   public formGroup: FormGroup;
   public isShowSubButtonChangeStatus: boolean = false;
-  public isShowProbation:boolean = false;
-  public isShowBasicSalary:boolean = false;
-  public isShowRealSalary:boolean = false;
+  public isShowProbation: boolean = false;
+  public isShowBasicSalary: boolean = false;
+  public isShowRealSalary: boolean = false;
   public requestUpdateInfoDetail = {} as GetRequestDetailDto;
   public inputToUpdate = {} as RejectChangeInfoDto;
   public isUpdateRequestMode: boolean = false
-  
+
   constructor(
     injector: Injector,
     private employeeService: EmployeeService,
@@ -100,8 +100,8 @@ export class PersonalInfoComponent
     private skilsSerivce: SkillService,
     private levelService: LevelService,
     private bankService: BankService,
-    private warningEmployeeService:WarningEmployeeService,
-    private issuedByService : IssuedByService,
+    private warningEmployeeService: WarningEmployeeService,
+    private issuedByService: IssuedByService,
     private userService: UserService,
   ) {
     super(injector);
@@ -134,7 +134,7 @@ export class PersonalInfoComponent
       this.formGroup.enable()
     }
 
-    if(this.requestId){
+    if (this.requestId) {
       this.isUpdateRequestMode = true;
       this.formGroup.enable();
       this.getRequestDetailById(this.requestId);
@@ -142,86 +142,87 @@ export class PersonalInfoComponent
 
 
   }
-  getTempEmployeeInfo(){
-    if(this.tempEmployeeId){
+  getTempEmployeeInfo() {
+    if (this.tempEmployeeId) {
       this.subscription.push(
-      this.warningEmployeeService.GetTempEmployeeTalentById(this.tempEmployeeId).subscribe(rs=>{
-        this.tempEmployeetalentInfo = rs.result
-        this.formGroup.controls['email'].setValue(this.tempEmployeetalentInfo.nccEmail);
-        this.formGroup.controls['surname'].setValue(this.tempEmployeetalentInfo.fullName.split(" ").slice(0, -1).join(' '));
-        this.formGroup.controls['name'].setValue(this.tempEmployeetalentInfo.fullName.split(" ").slice(-1).join(' '));
-        this.formGroup.controls['phone'].setValue(this.tempEmployeetalentInfo.phone);
-        this.formGroup.controls['userMezonId'].setValue(this.tempEmployeetalentInfo.userMezonId);
-        this.formGroup.controls['userType'].setValue(this.tempEmployeetalentInfo.userType);
-        this.formGroup.controls['branchId'].setValue(this.tempEmployeetalentInfo.branchId);
-        this.formGroup.controls['jobPositionId'].setValue(this.tempEmployeetalentInfo.jobPositionId);
-        this.formGroup.controls['levelId'].setValue(this.tempEmployeetalentInfo.levelId);
-        this.formGroup.controls['status'].setValue(this.APP_ENUM.UserStatus.Working);
-        this.formGroup.controls['salary'].patchValue(this.tempEmployeetalentInfo.salary);
-        this.formGroup.controls['probationPercentage'].patchValue(this.tempEmployeetalentInfo.probationPercentage);
-        this.formGroup.controls['realSalary'].patchValue((this.tempEmployeetalentInfo.salary * this.tempEmployeetalentInfo.probationPercentage) / 100);
-        this.formGroup.controls['sex'].setValue(this.tempEmployeetalentInfo.sex);
-        this.formGroup.controls['birthday'].setValue(this.tempEmployeetalentInfo.dateOfBirth);
-        this.formGroup.controls['skills'].setValue(this.skillList.filter(x =>this.tempEmployeetalentInfo.skillStr.toLowerCase().includes(x.key.toLowerCase())));
-        this.formGroup.controls['contractStartDate'].setValue(this.tempEmployeetalentInfo.onboardDate);
-        this.formGroup.controls['personalEmail'].setValue(this.tempEmployeetalentInfo.email);
-        this.formGroup.controls['currentAddress'].setValue(this.tempEmployeetalentInfo.currentAddress);
-        this.formGroup.controls['emergencyContactName'].setValue(this.tempEmployeetalentInfo.emergencyContactName);
-        this.formGroup.controls['emergencyContactPhone'].setValue(this.tempEmployeetalentInfo.emergencyContactPhone);
-      })
-    )}
+        this.warningEmployeeService.GetTempEmployeeTalentById(this.tempEmployeeId).subscribe(rs => {
+          this.tempEmployeetalentInfo = rs.result
+          this.formGroup.controls['email'].setValue(this.tempEmployeetalentInfo.nccEmail);
+          this.formGroup.controls['surname'].setValue(this.tempEmployeetalentInfo.fullName.split(" ").slice(0, -1).join(' '));
+          this.formGroup.controls['name'].setValue(this.tempEmployeetalentInfo.fullName.split(" ").slice(-1).join(' '));
+          this.formGroup.controls['phone'].setValue(this.tempEmployeetalentInfo.phone);
+          this.formGroup.controls['userMezonId'].setValue(this.tempEmployeetalentInfo.userMezonId);
+          this.formGroup.controls['userType'].setValue(this.tempEmployeetalentInfo.userType);
+          this.formGroup.controls['branchId'].setValue(this.tempEmployeetalentInfo.branchId);
+          this.formGroup.controls['jobPositionId'].setValue(this.tempEmployeetalentInfo.jobPositionId);
+          this.formGroup.controls['levelId'].setValue(this.tempEmployeetalentInfo.levelId);
+          this.formGroup.controls['status'].setValue(this.APP_ENUM.UserStatus.Working);
+          this.formGroup.controls['salary'].patchValue(this.tempEmployeetalentInfo.salary);
+          this.formGroup.controls['probationPercentage'].patchValue(this.tempEmployeetalentInfo.probationPercentage);
+          this.formGroup.controls['realSalary'].patchValue((this.tempEmployeetalentInfo.salary * this.tempEmployeetalentInfo.probationPercentage) / 100);
+          this.formGroup.controls['sex'].setValue(this.tempEmployeetalentInfo.sex);
+          this.formGroup.controls['birthday'].setValue(this.tempEmployeetalentInfo.dateOfBirth);
+          this.formGroup.controls['skills'].setValue(this.skillList.filter(x => this.tempEmployeetalentInfo.skillStr.toLowerCase().includes(x.key.toLowerCase())));
+          this.formGroup.controls['contractStartDate'].setValue(this.tempEmployeetalentInfo.onboardDate);
+          this.formGroup.controls['personalEmail'].setValue(this.tempEmployeetalentInfo.email);
+          this.formGroup.controls['currentAddress'].setValue(this.tempEmployeetalentInfo.currentAddress);
+          this.formGroup.controls['emergencyContactName'].setValue(this.tempEmployeetalentInfo.emergencyContactName);
+          this.formGroup.controls['emergencyContactPhone'].setValue(this.tempEmployeetalentInfo.emergencyContactPhone);
+        })
+      )
+    }
   }
 
-  isShowRecreateBtn(){
+  isShowRecreateBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_ReCreateUserToOtherTool);
   }
-  isShowEditBtn(){
+  isShowEditBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_Edit);
   }
-  isShowUploadAvatarBtn(){
+  isShowUploadAvatarBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_UploadAvatar);
   }
-  isShowChangeBranchBtn(){
-    return this.userId && !this.isUpdateRequestMode && !this.isEdit &&  this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeBranch);
+  isShowChangeBranchBtn() {
+    return this.userId && !this.isUpdateRequestMode && !this.isEdit && this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeBranch);
   }
-  isShowChangeStatusBtn(){
-    return this.userId && !this.isUpdateRequestMode && !this.isEdit &&  this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus);
+  isShowChangeStatusBtn() {
+    return this.userId && !this.isUpdateRequestMode && !this.isEdit && this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus);
   }
-  isShowBackToWorkBtn(){
+  isShowBackToWorkBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus_BackToWork);
   }
-  isShowExtendMaternityLeaveBtn(){
+  isShowExtendMaternityLeaveBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus_ExtendMaternityLeave);
   }
-  isShowExtendPausingBtn(){
+  isShowExtendPausingBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus_ExtendPausing);
   }
-  isShowMaternityLeaveBtn(){
+  isShowMaternityLeaveBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus_MaternityLeave);
   }
-  isShowPauseBtn(){
+  isShowPauseBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus_Pause);
   }
-  isShowQuitBtn(){
+  isShowQuitBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_ChangeWorkingStatus_Quit);
   }
-  isAllowViewTabPersonalInfo(){
+  isAllowViewTabPersonalInfo() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_View);
   }
-  isShowApproveBtn(){
+  isShowApproveBtn() {
     return this.isUpdateRequestMode && this.requestUpdateInfoDetail.requestStatus != APP_ENUMS.RequestUpdateInfoStatus.Approved &&
-    this.isGranted(PERMISSIONS_CONSTANT.WarningEmployee_RequestChangeInfo_DetailRequest_Approve);
+      this.isGranted(PERMISSIONS_CONSTANT.WarningEmployee_RequestChangeInfo_DetailRequest_Approve);
   }
-  isShowRejectBtn(){
+  isShowRejectBtn() {
     return this.isUpdateRequestMode && this.requestUpdateInfoDetail.requestStatus == APP_ENUMS.RequestUpdateInfoStatus.Pending && this.isGranted(PERMISSIONS_CONSTANT.WarningEmployee_RequestChangeInfo_DetailRequest_Reject);
   }
-  isShowSyncDataToOtherTool(){
+  isShowSyncDataToOtherTool() {
     return this.userId && !this.isUpdateRequestMode && !this.isEdit && this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool)
   }
-  isShowQuitJobBtn(){
+  isShowQuitJobBtn() {
     return this.personalInfo.status == APP_ENUMS.UserStatus.Quit && this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_QuitJobUserToOtherTool);
   }
-  isShowEditToOtherToolBtn(){
+  isShowEditToOtherToolBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Employee_EmployeeDetail_TabPersonalInfo_SyncToOtherTool_EditUserToOtherTool)
   }
 
@@ -233,36 +234,36 @@ export class PersonalInfoComponent
 
   dateChangeCurrentContract(event: MatDatepickerInputEvent<Date>) {
     this.employeeId = Number(this.activatedRoute.snapshot.queryParamMap.get('id'));
-    if(  !this.employeeId ){
-    const selectCurrentContractDate = event.value;    
-    this.formGroup.controls['startWorkingDate'].setValue(selectCurrentContractDate);
-    var userType = this.formGroup.controls['userType'].value;
-    if(userType == APP_ENUMS.UserType.Staff){
-      this.formGroup.controls['beStaffDate'].setValue(selectCurrentContractDate);
-      this.formGroup.controls['beTViecDate'].setValue("");
-    }else if(userType == APP_ENUMS.UserType.ProbationaryStaff){
-      this.formGroup.controls['beTViecDate'].setValue(selectCurrentContractDate);
-      this.formGroup.controls['beStaffDate'].setValue("");
+    if (!this.employeeId) {
+      const selectCurrentContractDate = event.value;
+      this.formGroup.controls['startWorkingDate'].setValue(selectCurrentContractDate);
+      var userType = this.formGroup.controls['userType'].value;
+      if (userType == APP_ENUMS.UserType.Staff) {
+        this.formGroup.controls['beStaffDate'].setValue(selectCurrentContractDate);
+        this.formGroup.controls['beTViecDate'].setValue("");
+      } else if (userType == APP_ENUMS.UserType.ProbationaryStaff) {
+        this.formGroup.controls['beTViecDate'].setValue(selectCurrentContractDate);
+        this.formGroup.controls['beStaffDate'].setValue("");
+      }
     }
-    }
-    
+
   }
   onUserTypeChange(selectUserType: any) {
     this.employeeId = Number(this.activatedRoute.snapshot.queryParamMap.get('id'));
-    if(  !this.employeeId ){
-    if (selectUserType.value == APP_ENUMS.UserType.Staff) {
+    if (!this.employeeId) {
+      if (selectUserType.value == APP_ENUMS.UserType.Staff) {
         this.formGroup.controls['beStaffDate'].setValue(this.formGroup.controls['contractStartDate'].value);
         this.formGroup.controls['beTViecDate'].setValue("");
-    } else if (selectUserType.value == APP_ENUMS.UserType.ProbationaryStaff) {
+      } else if (selectUserType.value == APP_ENUMS.UserType.ProbationaryStaff) {
         this.formGroup.controls['beTViecDate'].setValue(this.formGroup.controls['contractStartDate'].value);
         this.formGroup.controls['beStaffDate'].setValue("");
+      }
     }
-    }
-}
+  }
 
-  public getAllIssuedBy(){
+  public getAllIssuedBy() {
     this.subscription.push(
-      this.issuedByService.getAll().subscribe((rs)=>{
+      this.issuedByService.getAll().subscribe((rs) => {
         this.listIssuedBys = rs.result.map((x) => ({ key: x.name, value: x.id }));
       })
     )
@@ -284,9 +285,9 @@ export class PersonalInfoComponent
     );
   }
 
-  getRequestDetailById(id: number){
+  getRequestDetailById(id: number) {
     this.subscription.push(
-      this.warningEmployeeService.getRequestDetailById(id).subscribe((rs)=>{
+      this.warningEmployeeService.getRequestDetailById(id).subscribe((rs) => {
         this.requestUpdateInfoDetail = rs.result;
         this.setValueToUpdateProfile(this.requestUpdateInfoDetail);
       })
@@ -360,23 +361,23 @@ export class PersonalInfoComponent
   }
 
   getEmployeeById(id: number) {
-    if(this.isAllowViewTabPersonalInfo()){
+    if (this.isAllowViewTabPersonalInfo()) {
       this.isLoading = true;
       this.subscription.push(
-      this.employeeService
-        .get(id)
-        .subscribe((rs) => {
+        this.employeeService
+          .get(id)
+          .subscribe((rs) => {
 
-          this.personalInfo = rs.result.employeeInfo;
-          if(!this.requestId){
-            this.setFormValue(rs.result.employeeInfo);
-          }
-          this.isAllowEdit = rs.result.isAllowEdit;
-          this.isAllowBranchStatus = rs.result.isAllowEditBranch;
-          this.isAllowWorkingStatus = rs.result.isAllowEditWorkingStatus;
-          this.isLoading = false;
-        },()=> this.isLoading = false)
-    );
+            this.personalInfo = rs.result.employeeInfo;
+            if (!this.requestId) {
+              this.setFormValue(rs.result.employeeInfo);
+            }
+            this.isAllowEdit = rs.result.isAllowEdit;
+            this.isAllowBranchStatus = rs.result.isAllowEditBranch;
+            this.isAllowWorkingStatus = rs.result.isAllowEditWorkingStatus;
+            this.isLoading = false;
+          }, () => this.isLoading = false)
+      );
     }
   }
 
@@ -421,7 +422,7 @@ export class PersonalInfoComponent
       emergencyContactName: "",
       emergencyContactPhone: ""
     });
-    if(this.isAllowEdit){
+    if (this.isAllowEdit) {
       this.bindSalaryChangeEvent(this.formGroup);
       this.bindProbationPercentageChangeEvent(this.formGroup);
       this.bindUserTypeChangeEvent(this.formGroup)
@@ -439,16 +440,16 @@ export class PersonalInfoComponent
     }
   }
 
-  disableControls(personalInfo: PersonalInfo){
-    if(personalInfo.userType == APP_ENUMS.UserType.ProbationaryStaff) {
+  disableControls(personalInfo: PersonalInfo) {
+    if (personalInfo.userType == APP_ENUMS.UserType.ProbationaryStaff) {
       this.formGroup.controls.realSalary.disable();
     }
   }
 
-  bindSalaryChangeEvent(formGroup:FormGroup){
+  bindSalaryChangeEvent(formGroup: FormGroup) {
     this.subscription.push(
       formGroup.controls.salary.valueChanges.subscribe(rs => {
-      if(formGroup.controls.probationPercentage.value && rs) {
+        if (formGroup.controls.probationPercentage.value && rs) {
           let realSalary = Math.round(this.formGroup.controls.salary.value * (formGroup.controls.probationPercentage.value / 100))
           formGroup.controls.realSalary.setValue(realSalary)
         } else {
@@ -458,7 +459,7 @@ export class PersonalInfoComponent
     )
   }
 
-  bindProbationPercentageChangeEvent(formGroup: FormGroup){
+  bindProbationPercentageChangeEvent(formGroup: FormGroup) {
     this.subscription.push(
       this.formGroup.controls.probationPercentage.valueChanges.subscribe(rs => {
         if (this.formGroup.controls.salary.value && rs) {
@@ -476,15 +477,15 @@ export class PersonalInfoComponent
   bindUserTypeChangeEvent(formGroup: FormGroup) {
     this.subscription.push(
       formGroup.controls.userType.valueChanges.subscribe(rs => {
-        if(rs == APP_ENUMS.UserType.ProbationaryStaff) {
+        if (rs == APP_ENUMS.UserType.ProbationaryStaff) {
           formGroup.controls.realSalary.disable();
           formGroup.controls.realSalary.setValue(0);
-          if(!this.userId) {
+          if (!this.userId) {
             formGroup.controls.probationPercentage.setValue(85);
             return;
           }
         }
-        if(rs != APP_ENUMS.UserType.ProbationaryStaff) {
+        if (rs != APP_ENUMS.UserType.ProbationaryStaff) {
           formGroup.controls.realSalary.setValue(0);
           formGroup.controls.realSalary.enable();
           return;
@@ -537,11 +538,11 @@ export class PersonalInfoComponent
     });
   }
 
-  setValueToUpdateProfile(newInfo){
+  setValueToUpdateProfile(newInfo) {
     this.formGroup.patchValue({
       id: newInfo.id,
-      phone : newInfo.phone,
-      birthday : newInfo.birthday,
+      phone: newInfo.phone,
+      birthday: newInfo.birthday,
       userMezonId: newInfo.userMezonId,
       bankId: newInfo.bankId,
       bankAccountNumber: newInfo.bankAccountNumber,
@@ -550,7 +551,7 @@ export class PersonalInfoComponent
       issuedBy: newInfo.issuedBy,
       placeOfOrigin: newInfo.placeOfPermanent,
       placeOfResidence: newInfo.address,
-      taxCode : newInfo.taxCode,
+      taxCode: newInfo.taxCode,
       currentAddress: newInfo.currentAddress,
       emergencyContactName: newInfo.emergencyContactName,
       emergencyContactPhone: newInfo.emergencyContactPhone,
@@ -576,13 +577,13 @@ export class PersonalInfoComponent
     if (this.isEdit) {
       if (this.userId) {
         this.toggleEdit();
-      } else if(this.tempEmployeeId){
+      } else if (this.tempEmployeeId) {
         this.router.navigate(["app", "warning-for-employee", "temp-employee-talent"]);
       }
       else {
         this.router.navigate(["app", "employees", "list-employee"]);
       }
-    } else if(this.isUpdateRequestMode){
+    } else if (this.isUpdateRequestMode) {
       this.router.navigate(["app", "warning-for-employee", "request-change-info"]);
     }
     else {
@@ -609,7 +610,7 @@ export class PersonalInfoComponent
       remainLeaveDay: this.formGroup.value.remainLeaveDay,
       email: this.formGroup.value.email,
       probationPercentage: this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff ? this.formGroup.value.probationPercentage : 100,
-      salary: this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff ? this.formGroup.value.salary: this.formGroup.value.realSalary,
+      salary: this.formGroup.value.userType == APP_ENUMS.UserType.ProbationaryStaff ? this.formGroup.value.salary : this.formGroup.value.realSalary,
       realSalary: this.isAllowEdit ? this.formGroup.controls.realSalary.value : this.personalInfo.realSalary,
       status: this.formGroup.value.status,
       avatar: this.personalInfo.avatar || "",
@@ -635,36 +636,7 @@ export class PersonalInfoComponent
 
 
     if (this.userId) {
-  
-     this.userService.getUserMezonIdByEmail(employee.email).subscribe((rs) => {
-         const userMezonIdforUser = rs.result;
-    
-  if (userMezonIdforUser != null && employee.userMezonId && employee.userMezonId != userMezonIdforUser) {
-    abp.message.confirm(
-  'Update Mezon UserId in Employee will update Mezon UserId in User',
-  'Are you sure?',
-  (isConfirmed: boolean) => {
-    if (isConfirmed) {
-      this.subscription.push(
-        this.userService.updateUserMezonId(employee.email, employee.userMezonId).subscribe({
-          next: (rs) => {
-            abp.message.success(rs.result);
-            this.update(employee); 
-          },
-          error: (err) => {
-            abp.message.error("Failed to update UserMezonId");
-          }
-        })
-      );
-    }
-  }
-);
-
-  } else {
-    this.update(employee); 
-  }
-});
-
+      this.update(employee);
     } else {
       this.create(employee);
     }
@@ -677,25 +649,26 @@ export class PersonalInfoComponent
       })
       .afterClosed()
       .subscribe((data) => {
-        if (data) {
-          this.subscription.push(
-            this.employeeService
-              .uploadAvatar(data, this.userId.toString())
-              .subscribe((rs) => {
-                this.notify.success("Avatar uploaded");
-                this.getEmployeeById(this.userId);
-                this.onUpdate.emit(true);
-              })
-          );
+        if (!data) {
+          return;
         }
+        this.subscription.push(
+          this.employeeService
+            .uploadAvatar(data, this.userId.toString())
+            .subscribe((rs) => {
+              this.notify.success("Avatar uploaded");
+              this.getEmployeeById(this.userId);
+              this.onUpdate.emit(true);
+            })
+        );
       });
   }
 
 
-  public updateEmployeeToOtherTool(){
+  public updateEmployeeToOtherTool() {
     var input = {
       id: this.userId
-     } as InputToSyncToOtherToolDto;
+    } as InputToSyncToOtherToolDto;
     this.isLoading = true;
     this.employeeService
       .updateEmployeeToOtherTool(input)
@@ -703,7 +676,7 @@ export class PersonalInfoComponent
         this.notify.success("Employee Updated to other tool successful");
         this.getEmployeeById(this.userId)
         this.isLoading = false;
-      },() => this.isLoading = false);
+      }, () => this.isLoading = false);
   }
 
   update(employee: CreateUpdateEmployeeDto) {
@@ -715,7 +688,7 @@ export class PersonalInfoComponent
         this.getEmployeeById(this.userId)
         this.isLoading = false;
         this.isEdit = false;
-      },() => this.isLoading = false);
+      }, () => this.isLoading = false);
   }
 
   create(employee: CreateUpdateEmployeeDto) {
@@ -727,7 +700,7 @@ export class PersonalInfoComponent
         ["app", "employees", "list-employee", "employee-detail", "personal-info"],
         { queryParams: { id: rs.result.id } }
       );
-    },() => this.isLoading = false);
+    }, () => this.isLoading = false);
   }
 
   get employeeTeamList() {
@@ -862,38 +835,38 @@ export class PersonalInfoComponent
     })
   }
 
-  public get isStaff(){
+  public get isStaff() {
     return this.formGroup.controls?.userType.value == APP_ENUMS.UserType.Staff
   }
 
-  public get isProbationaryStaff(){
+  public get isProbationaryStaff() {
     return this.formGroup.controls?.userType.value == APP_ENUMS.UserType.ProbationaryStaff
   }
 
-  public reCreateUserToOtherTool(){
+  public reCreateUserToOtherTool() {
     this.isLoading = true;
     this.subscription.push(
-      this.employeeService.ReCreateEmployeeToOtherTool(this.userId).subscribe((rs)=>{
-          abp.notify.success("Re-create employee successfull");
-          this.isLoading = false;
-      }, ()=> this.isLoading = false)
+      this.employeeService.ReCreateEmployeeToOtherTool(this.userId).subscribe((rs) => {
+        abp.notify.success("Re-create employee successfull");
+        this.isLoading = false;
+      }, () => this.isLoading = false)
     );
   }
 
-  public toQuitJob(){
+  public toQuitJob() {
     var input = {
-     id: this.userId
+      id: this.userId
     } as InputToSyncToOtherToolDto;
     this.isLoading = true;
     this.subscription.push(
-      this.employeeService.quitJobToOtherTool(input).subscribe((rs)=>{
+      this.employeeService.quitJobToOtherTool(input).subscribe((rs) => {
         abp.notify.success("Quit job to other tool successful");
         this.isLoading = false;
-      },()=>this.isLoading = false)
+      }, () => this.isLoading = false)
     )
   }
 
-  public onApprove(){
+  public onApprove() {
     const input: UpdateRequestDetailDto = {
       id: this.formGroup.value.id,
       employeeId: this.userId,
@@ -912,40 +885,40 @@ export class PersonalInfoComponent
       emergencyContactPhone: this.formGroup.value.emergencyContactPhone
     };
     abp.message.confirm("Are you sure to approve request change employee?", "",
-    (rs)=>{
-      if(rs){
-        this.isLoading = true;
-        this.warningEmployeeService.approveRequestUpdateInfo(input).subscribe((rs)=>{
-          abp.notify.success("Approved request successful");
-          this.getRequestDetailById(this.requestId);
-          this.isLoading = false;
-          this.router.navigate(
-            ["app", "employees", "list-employee", "employee-detail", "personal-info"],
-            { queryParams: { id: this.userId } }
-          ).then();
-          this.isUpdateRequestMode = false;
-          this.getEmployeeById(this.userId)
-        },()=> this.isLoading = false)
-      }
-    })
+      (rs) => {
+        if (rs) {
+          this.isLoading = true;
+          this.warningEmployeeService.approveRequestUpdateInfo(input).subscribe((rs) => {
+            abp.notify.success("Approved request successful");
+            this.getRequestDetailById(this.requestId);
+            this.isLoading = false;
+            this.router.navigate(
+              ["app", "employees", "list-employee", "employee-detail", "personal-info"],
+              { queryParams: { id: this.userId } }
+            ).then();
+            this.isUpdateRequestMode = false;
+            this.getEmployeeById(this.userId)
+          }, () => this.isLoading = false)
+        }
+      })
   }
 
-  public onReject(){
+  public onReject() {
     this.inputToUpdate.id = this.requestId;
     abp.message.confirm("Are you sure to reject request change employee?", "",
-    (rs)=>{
-      if(rs){
-        this.isLoading = true;
-        this.warningEmployeeService.rejectRequestUpdateInfo(this.inputToUpdate).subscribe((rs)=>{
-          abp.notify.success("Rejected request successful");
-          this.isLoading = false;
-          this.getRequestDetailById(this.requestId);
-          this.getEmployeeById(this.userId)
-        },()=> this.isLoading = false)
-      }
-    })
+      (rs) => {
+        if (rs) {
+          this.isLoading = true;
+          this.warningEmployeeService.rejectRequestUpdateInfo(this.inputToUpdate).subscribe((rs) => {
+            abp.notify.success("Rejected request successful");
+            this.isLoading = false;
+            this.getRequestDetailById(this.requestId);
+            this.getEmployeeById(this.userId)
+          }, () => this.isLoading = false)
+        }
+      })
   }
-  public onPickIssuedBy(item: string){
+  public onPickIssuedBy(item: string) {
     this.formGroup.controls.issuedBy.setValue(item);
   }
 }
@@ -979,7 +952,7 @@ interface PersonalInfo extends BaseEmployeeDto {
   levelId: number;
   contractCode: string;
   remainLeaveDay: number;
-  personalEmail:string;
+  personalEmail: string;
   currentAddress: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
@@ -991,6 +964,6 @@ interface PersonalSkillDto {
   skillName: string,
 }
 
-interface InputToSyncToOtherToolDto{
+interface InputToSyncToOtherToolDto {
   id: number
 }
