@@ -561,11 +561,25 @@ namespace HRMv2.Manager.Employees
             {
                 OnboardTempEmployee(tempEmployeeId);
             }
+            
+            await CreateUserAsync(entity);                        
             CreateOrUpdateToOtherTool(entity, ActionMode.Create);
             
             return input;
         }
 
+
+        private async Task<User> CreateUserAsync(Employee employee)
+        {
+            return await _userManager.CreateUserAsync(
+                    employee.Email,
+                    employee.TenantId,
+                    CommonUtil.GetNameByFullName(employee.FullName),
+                    CommonUtil.GetSurNameByFullName(employee.FullName),
+                    employee.UserMezonId,
+                    employee.Status == EmployeeStatus.Working || employee.Status == EmployeeStatus.MaternityLeave
+                );
+        }
         public void OnboardTempEmployee(long? id)
         {
             var tempEmployee = WorkScope.GetAll<TempEmployeeTalent>()
@@ -622,17 +636,11 @@ namespace HRMv2.Manager.Employees
             {
                 throw new UserFriendlyException("Be TViec Date must >= Start Working Date");
             }
+
             //them validate, kiem tra nhung truong co thay doi
             var entity = await WorkScope.GetAsync<Employee>(input.Id);
             ObjectMapper.Map(input, entity);
-            if (entity.Status == EmployeeStatus.Working || entity.Status == EmployeeStatus.MaternityLeave)
-            {
-                await _userManager.UpdateUserActiveAsync(input.Email, true);
-            }
-            else
-            {
-                await _userManager.UpdateUserActiveAsync(input.Email, false);
-            }
+            
             var qSCRE = WorkScope.GetAll<SalaryChangeRequestEmployee>()
                          .Where(x => x.EmployeeId == entity.Id);
             var hasOnlyInitial = !qSCRE.Any(x => x.Type != SalaryRequestType.Initial);
@@ -673,9 +681,40 @@ namespace HRMv2.Manager.Employees
             await UpdateEmployeeTeam(entity.Id, input.Teams);
             await UpdateInitBranchHistory(input);
 
+            var user = await _userManager.FindByEmailAsync(input.Email);
+            if (user != null)
+            {
+                user.IsActive = entity.Status == EmployeeStatus.Working || entity.Status == EmployeeStatus.MaternityLeave;
+                user.UserMezonId = entity.UserMezonId;
+                await _userManager.UpdateAsync(user);
+            }
+            else
+            {
+                await CreateUserAsync(entity);
+            }
+            
             CreateOrUpdateToOtherTool(entity, ActionMode.Update);
 
             return input;
+        }
+
+        private void ValidMezonUserIdWhenCreateOrUpdate(string userMezonId, long employeeId)
+        {
+            if (string.IsNullOrWhiteSpace(userMezonId))
+            {
+                return;
+            }
+
+            var duplicateEmails = WorkScope.GetAll<Employee>()
+                .Where(s => s.UserMezonId == userMezonId && s.Id != employeeId)
+                .Select(s => s.Email)
+                .ToList();
+
+            if (duplicateEmails.Any())
+            {
+                throw new UserFriendlyException($"Duplicate MezonUserId in: {duplicateEmails.JoinAsString(", ")}");
+            }
+
         }
 
         public void InitWorkingHistory(CreateUpdateEmployeeDto employee)
@@ -966,6 +1005,8 @@ namespace HRMv2.Manager.Employees
             {
                 throw new UserFriendlyException($"Full name is invalid");
             }
+
+            ValidMezonUserIdWhenCreateOrUpdate(input.UserMezonId, input.Id);
         }
 
         private void ValidUpdate(CreateUpdateEmployeeDto input)
@@ -976,10 +1017,14 @@ namespace HRMv2.Manager.Employees
             {
                 throw new UserFriendlyException($"Email is Already Exist");
             }
+
             if (input.FullName.Split(' ').Length == 1)
             {
                 throw new UserFriendlyException($"Full name is invalid");
             }
+
+            ValidMezonUserIdWhenCreateOrUpdate(input.UserMezonId, input.Id);
+
         }
         private void ValidDelete(long id)
         {

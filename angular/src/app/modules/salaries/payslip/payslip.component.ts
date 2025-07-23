@@ -787,8 +787,8 @@ onSendDirectMessage(payslip: PaySlipDto){
   }
 
   isShowDetachBtn(){
-    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_SplitBenefitbyToken)&& (this.payrollStatus == APP_ENUMS.PayrollStatus.New
-      || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByKT || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByCEO);;
+    return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_SplitBenefitbyToken)
+    && this.payrollStatus != APP_ENUMS.PayrollStatus.Executed
   }
 
   isShowEditBranch(){

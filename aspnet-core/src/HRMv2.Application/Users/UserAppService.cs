@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
@@ -15,7 +14,6 @@ using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
 using HRMv2.Authorization;
-using HRMv2.Authorization.Accounts;
 using HRMv2.Authorization.Roles;
 using HRMv2.Authorization.Users;
 using HRMv2.NccCore;
@@ -60,7 +58,7 @@ namespace HRMv2.Users
             _logInManager = logInManager;
             _workScope = workScope;
         }
-
+       
         [HttpPost]
         [AbpAuthorize(PermissionNames.Admin_User_View)]
         public async Task<GridResult<UserDto>> GetAllPaging(GridParam input)
@@ -315,25 +313,8 @@ namespace HRMv2.Users
         public async Task UpdateUserActive(string email, bool isActive)
         {
             await _userManager.UpdateUserActiveAsync(email, isActive);
-        }
-        [HttpPut]
-        public async Task UpdateUserMezonId(string email, string userMezonId)
-        {
-            var user = _workScope.GetAll<User>().Where(x => x.EmailAddress == email).FirstOrDefault();
-            if (user == default)
-                return;
+        }       
 
-            user.UserMezonId = userMezonId;
-            await _userManager.UpdateAsync(user);
-        }
-        [HttpGet]
-        public async Task<string> GetUserMezonIdByEmail(string email)
-        {
-         var userMezonId = _workScope.GetAll<User>().Where(x => x.EmailAddress == email)
-            .Select(x => x.UserMezonId).FirstOrDefault(); ;
-            return userMezonId;
-
-        }
     }
 }
 

@@ -403,7 +403,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             return result;
         }
 
-        public async Task DetachPayslipWithToken(int tokenDefault, long payrollId,long benefitId)
+        public async Task SplitPayslipDetailByToken(int tokenDefaultValue, long payrollId,long benefitId)
         {
             var payroll = WorkScope.GetAll<Payroll>()
            .Where(x => x.Id == payrollId)
@@ -430,15 +430,11 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             foreach (var payslipDetail in payslipDetails)
             {
-                long tokenValue = tokenDefault;
-                if (payslipDetail.Payslip.Salary <=0)
-                {
-                    tokenValue = 0;
-                }else if (payslipDetail.Money <= tokenDefault)
-                {
-                    tokenValue = (long) (payslipDetail.Money);
-                }
+                long tokenValue = Math.Min(tokenDefaultValue, (long) payslipDetail.Money);
+                tokenValue = Math.Min(tokenValue, (long) payslipDetail.Payslip.Salary);
 
+                tokenValue = Math.Max(tokenValue, 0);
+                
                 payslipDetail.Money -= tokenValue;
                 payslipDetail.Payslip.Salary -= tokenValue;
                 if (tokenValue > 0)
@@ -450,7 +446,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Status = StatusSendToken.Pending,
                         ReferenceId = payslipDetail.Id,
                         PayrollId = payrollId,
-                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("MM-yyyy")} (tiền mặt ăn trưa còn lại: {payslipDetail.Money:N0} VND)"
+                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("MM-yyyy")}: {tokenValue:N0} (tiền mặt ăn trưa: {payslipDetail.Money:N0} VND)"
                     });
                 }    
             }

@@ -62,7 +62,7 @@ namespace HRMv2.APIs.Payslips
         [AbpAuthorize(PermissionNames.Payroll_Payslip_SplitBenefitbyToken)]
         public async Task ChangePayslipWithToken(long payrollId,int mezonToken,long benefitId)
         {
-             await _payslipManager.DetachPayslipWithToken(mezonToken,payrollId,benefitId);
+             await _payslipManager.SplitPayslipDetailByToken(mezonToken,payrollId,benefitId);
         }
         [HttpGet]
         [AbpAuthorize(PermissionNames.Payroll_Payslip_PayslipDetail_TabSalary_View, PermissionNames.Payroll_Payslip_PayslipDetail_TabPayslipPreview_View)]
