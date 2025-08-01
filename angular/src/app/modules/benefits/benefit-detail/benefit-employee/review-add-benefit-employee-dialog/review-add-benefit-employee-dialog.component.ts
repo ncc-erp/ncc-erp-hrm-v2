@@ -43,7 +43,6 @@ export class ReviewAddBenefitEmployeeDialogComponent
       this.benefitService.GetEmployeeBenefits(this.employeeIds)
         .subscribe(rs => {
           this.employeesInfo = rs.result
-          console.log(this.employeesInfo)
         })
     )
   }

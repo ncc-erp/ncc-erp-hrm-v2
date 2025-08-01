@@ -1,14 +1,9 @@
 import { MatDialog } from '@angular/material/dialog';
 import { CalculateResultComponent } from './../payslip-detail/calculate-result/calculate-result.component';
-import { SendMailOneemployeeDto } from '@app/service/model/mail/sendMail.dto';
 import { PaySlipDto, SummaryInfomationDto } from '../../../service/model/payslip/payslip.dto';
 import { PayslipService } from '../../../service/api/payslip/payslip.service';
 import { PagedListingComponentBase, PagedRequestDto } from '@shared/paged-listing-component-base';
-import { Component, OnInit, Injector, ViewChild } from '@angular/core';
-import { UserTypeDto } from '@app/service/model/categories/userType.dto';
-import { LevelDto } from '@app/service/model/categories/level.dto';
-import { BranchDto } from '@app/service/model/categories/branch.dto';
-import { JobPositionDto } from '@app/service/model/categories/jobPosition.dto';
+import { Component, OnInit, Injector, ViewChild, ChangeDetectorRef, NgZone } from '@angular/core';
 import { TeamDto } from '@app/service/model/categories/team.dto';
 import { APP_ENUMS } from '@shared/AppEnums';
 import { BranchService } from '@app/service/api/categories/branch.service';
@@ -28,7 +23,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { finalize, switchMap } from 'rxjs/operators';
 import { AddEmployeeToPayroll } from '@app/service/model/payslip/AddEmployeeToPayroll';
 import { CollectPayslipDto } from '@app/service/model/payslip/CollectPayslipDto';
-import { MailDialogComponent, MailDialogData } from '@app/modules/admin/email-templates/mail-dialog/mail-dialog.component';
 import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { GetInputFilterDto } from '@app/service/model/employee/GetEmployeeExcept.dto';
 import { SignalRAspNetCoreHelper } from '@shared/helpers/SignalRAspNetCoreHelper';
@@ -40,12 +34,12 @@ import { of } from 'rxjs';
 import { PenaltyUserDialogComponent } from './penalty-user-dialog/penalty-user-dialog.component';
 import { SendDirectMessageToUserComponent } from './send-DirectMessage-toUser/send-direct-message-touser.component';
 import { ConfirmTokenDialogComponent } from '@app/modules/mezon-token/confirm-token-dialog-component/confirm-token-dialog-component.component';
-import { result } from '@node_modules/@types/lodash';
 import { ApplyPayrollComponent } from '../pay-roll/apply-payroll/apply-payroll.component';
+import { AppConsts } from '@shared/AppConsts';
 @Component({
   selector: 'app-payslip',
-  templateUrl:'./payslip.component.html',
-  styleUrls: ['./payslip.component.css']
+  templateUrl: './payslip.component.html',
+  styleUrls: ['./payslip.component.css'],
 })
 export class PayslipComponent extends PagedListingComponentBase<any> implements OnInit {
   protected list(request: PagedRequestDto, pageNumber: number, finishedCallback: Function): void {
@@ -60,12 +54,12 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
       jobPositionIds: this.jobPositionIds,
     } as GetInputFilterDto;
 
-        this.subscription.push(this.payslipService.getPayslipEmployeePaging(this.payrollId, input)
-        .pipe(finalize(() => finishedCallback())).subscribe((data) => {
-          this.listPayslips = data.result.items;
-          this.inputExportPayroll = input
-          this.showPaging(data.result, pageNumber);
-        }, () => this.isLoading = false))
+    this.subscription.push(this.payslipService.getPayslipEmployeePaging(this.payrollId, input)
+      .pipe(finalize(() => { finishedCallback(); this.isLoading = false;})).subscribe((data) => {
+        this.listPayslips = data.result.items;
+        this.inputExportPayroll = input
+        this.showPaging(data.result, pageNumber);
+      }, () => this.isLoading = false))
   }
 
   constructor(injector: Injector,
@@ -78,7 +72,8 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
     private userTyService: UserTypeService,
     private positionService: JobPositionService,
     public route: ActivatedRoute,
-    public dialog : MatDialog
+    public dialog: MatDialog,
+    public ngZone: NgZone
   ) {
     super(injector);
   }
@@ -106,9 +101,9 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
   public isCalculating: boolean = false
   private inputExportPayroll: GetInputFilterDto
   public isEditingBranch: boolean = false;
-  public listBranchUpdate : any = [];
-  public listUserTypeUpdate : any;
-  public listLevelUpdate : any;
+  public listBranchUpdate: any = [];
+  public listUserTypeUpdate: any;
+  public listLevelUpdate: any;
   public listJobPostionUpdate: any;
   private calculateResultRef;
   public payrollIds: number[] = [];
@@ -130,18 +125,18 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
       value: 2
     }
   ]
-public mapColorBranch: any
-public mapColorLevel: any
-public mapColorUserType: any
-public mapColorJobPosition : any
-public selectedBranchId : number;
-public selectedLevelId : number;
-public selectedJobPositionId: number;
-public selectedUsertype : number;
-editingIndex: number | null = null;
-public editingField : string;
+  public mapColorBranch: any
+  public mapColorLevel: any
+  public mapColorUserType: any
+  public mapColorJobPosition: any
+  public selectedBranchId: number;
+  public selectedLevelId: number;
+  public selectedJobPositionId: number;
+  public selectedUsertype: number;
+  editingIndex: number | null = null;
+  public editingField: string;
 
-          
+
   public DEFAULT_FILTER = {
     branch: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE,
     team: this.APP_CONST.DEFAULT_ALL_FILTER_VALUE,
@@ -157,6 +152,7 @@ public editingField : string;
   });
 
   ngOnInit(): void {
+    this.addCalSalarySignalR();
     this.pageSizeType = 5;
     this.pageSize = 5;
     this.payrollId = Number(this.route.snapshot.queryParamMap.get('id'));
@@ -174,121 +170,149 @@ public editingField : string;
     this.getSummaryInfo();
 
     this.subscription.push(
-    this.APP_CONST.calSalaryProcess.asObservable().subscribe(rs => {
-      let lastNoti = rs
-      this.calculateProcess = lastNoti?.process ?? ""
-      this.calculateStatus = lastNoti?.status ?? ""
-      if (lastNoti?.status == 'Start') {
-        this.isCalculating = true
-      }
-      if(lastNoti?.status == 'Error' && lastNoti?.message.length>0){
-        if(this.calculateResultRef){
-          this.calculateResultRef.close()
-        }
-        this.dialog.open(CalculateResultComponent, {
-          width: "700px",
-          data: lastNoti?.message
-        })
-        this.isCalculating = false
-        this.APP_CONST.calSalaryProcess.next({})
-      }
+      this.APP_CONST.calSalaryProcess.asObservable().subscribe(rs => {
+        this.ngZone.run(() => {
+          let lastNoti = rs
+          this.calculateProcess = lastNoti?.process ?? ""
+          this.calculateStatus = lastNoti?.status ?? ""
+          if (lastNoti?.status == 'Start') {
+            this.isCalculating = true
+          }
+          if (lastNoti?.status == 'Error' && lastNoti?.message.length > 0) {
+            if (this.calculateResultRef) {
+              this.calculateResultRef.close()
+            }
+            this.dialog.open(CalculateResultComponent, {
+              width: "700px",
+              data: lastNoti?.message
+            })
+            this.isCalculating = false
+            this.APP_CONST.calSalaryProcess.next({})
+          }
 
-      if (lastNoti?.status == 'Done') {
-        this.refresh()
-        this.getSummaryInfo()
-        this.isCalculating = false
-      }
+          if (lastNoti?.status == 'Done') {
+            this.refresh()
+            this.getSummaryInfo()
+            this.isCalculating = false
+          }
+
+        })
+      })
+    );
+
+  }
+
+
+  addCalSalarySignalR() {
+    if (AppConsts.registeredHandlers.has('addCalSalarySignalR')) {
+      return;
+    }
+    AppConsts.registeredHandlers.set('addCalSalarySignalR', true);
+
+    console.log('addCalSalarySignalR()', abp.signalr);
+    SignalRAspNetCoreHelper.initSignalR();
+
+    abp.event.on('abp.signalr.received', (message) => {
+      console.log('abp.notifications.received', message);
+      this.APP_CONST.calSalaryProcess.next(message);
     })
-    )
+
+    abp.event.on('abp.signalr.connected', () => {
+      console.log('abp.signalr.connected', abp.signalr);
+    })
+
+    abp.event.on('abp.signalr.reconnected', () => {
+      console.log('abp.signalr.reconnected');
+    })
+
   }
 
   editInfoPayslip(payslip: any, index: number, field: string) {
     this.editingIndex = index;
     this.editingField = field;
-    this.selectedBranchId = payslip.branchId; 
+    this.selectedBranchId = payslip.branchId;
     this.selectedJobPositionId = payslip.jobPositionId;
     this.selectedLevelId = payslip.levelId;
     this.selectedUsertype = payslip.payslipUserType;
   }
-  
-  saveEdit(index: number,payslip: any) {
-  
-     if(this.selectedBranchId != payslip.branchId)   this.UpdateBranchPayslip(payslip.id)
-     
-     if(this.selectedJobPositionId != payslip.jobPositionId) this.UpdateJobPositionPayslip(payslip.id)
-  
-     if(this.selectedLevelId != payslip.levelId) this.UpdateLevelPayslip(payslip.id)
-  
-     if(this.selectedUsertype != payslip.userType) this.UpdateUserTypePayslip(payslip.id)
-     
-      this.editingIndex = null;
-  
+
+  saveEdit(index: number, payslip: any) {
+
+    if (this.selectedBranchId != payslip.branchId) this.UpdateBranchPayslip(payslip.id)
+
+    if (this.selectedJobPositionId != payslip.jobPositionId) this.UpdateJobPositionPayslip(payslip.id)
+
+    if (this.selectedLevelId != payslip.levelId) this.UpdateLevelPayslip(payslip.id)
+
+    if (this.selectedUsertype != payslip.userType) this.UpdateUserTypePayslip(payslip.id)
+
+    this.editingIndex = null;
+
   }
-  
-  private UpdateBranchPayslip(payslipId){
+
+  private UpdateBranchPayslip(payslipId) {
     const input = {
-      payslipId : payslipId,
-      branchId : this.selectedBranchId
+      payslipId: payslipId,
+      branchId: this.selectedBranchId
     }
-      this.subscription.push(
-        this.payslipService.updateBranchEmployeePayslip(input).subscribe(rs => {
-          this.notify.success("Update Branch Payslip successfull");
-          this.refresh()
-        })
-      )
+    this.subscription.push(
+      this.payslipService.updateBranchEmployeePayslip(input).subscribe(rs => {
+        this.notify.success("Update Branch Payslip successfull");
+        this.refresh()
+      })
+    )
+  }
+
+  private UpdateLevelPayslip(payslipId) {
+    const input = {
+      payslipId: payslipId,
+      levelId: this.selectedLevelId
     }
-  
-    private UpdateLevelPayslip(payslipId){
-      const input = {
-        payslipId : payslipId,
-        levelId : this.selectedLevelId
+    this.subscription.push(
+      this.payslipService.updateLevelEmployeePayslip(input).subscribe(rs => {
+        this.notify.success("Update Level Payslip successfull")
+        this.refresh()
+      })
+    )
+  }
+
+  private UpdateUserTypePayslip(payslipId) {
+    const input = {
+      payslipId: payslipId,
+      userType: this.selectedUsertype
+    }
+    this.subscription.push(
+      this.payslipService.updateUserTypeEmployeePayslip(input).subscribe(rs => {
+        this.notify.success("Update UserType Payslip successfull")
+        this.refresh()
+      })
+    )
+  }
+
+  private UpdateJobPositionPayslip(payslipId) {
+    const input = {
+      payslipId: payslipId,
+      jobPositionId: this.selectedJobPositionId
+    }
+    this.subscription.push(
+      this.payslipService.updateJobPositionEmployeePayslip(input).subscribe(rs => {
+        this.notify.success("Update JobPosition Payslip successfull")
+        this.refresh()
+      })
+    )
+  }
+
+  cancelEdit() {
+    this.editingIndex = null;
+    this.editingField = null;
+  }
+  public OnGetNotPaidInfo() {
+    this.dialog.open(PenaltyUserDialogComponent, {
+      width: "auto",
+      height: "auto",
+      data: {
+        id: this.payrollId,
       }
-        this.subscription.push(
-          this.payslipService.updateLevelEmployeePayslip(input).subscribe(rs => {
-            this.notify.success("Update Level Payslip successfull")
-            this.refresh()
-          })
-        )
-      }
-  
-      private UpdateUserTypePayslip(payslipId){
-        const input = {
-          payslipId : payslipId,
-          userType : this.selectedUsertype
-        }
-          this.subscription.push(
-            this.payslipService.updateUserTypeEmployeePayslip(input).subscribe(rs => {
-              this.notify.success("Update UserType Payslip successfull")
-              this.refresh()
-            })
-          )
-        }
-  
-        private UpdateJobPositionPayslip(payslipId){
-          const input = {
-            payslipId : payslipId,
-            jobPositionId : this.selectedJobPositionId
-          }
-            this.subscription.push(
-              this.payslipService.updateJobPositionEmployeePayslip(input).subscribe(rs => {
-                this.notify.success("Update JobPosition Payslip successfull")
-                this.refresh()
-              })
-            )
-          }
-    
-          cancelEdit() {
-            this.editingIndex = null;
-            this.editingField = null;
-          }
-  public OnGetNotPaidInfo()
-  {
-    this.dialog.open(PenaltyUserDialogComponent,{
-      width:"auto",
-      height:"auto",
-      data:{
-        id:this.payrollId,      
-      }      
     })
   }
 
@@ -321,13 +345,13 @@ public editingField : string;
         } as AddEmployeeToPayroll
         this.subscription.push(
           this.payslipService.AddEmployeeToPayroll(input).subscribe((rs) => {
-            if(rs.result.errorList != null && rs.result.errorList.length > 0){
+            if (rs.result.errorList != null && rs.result.errorList.length > 0) {
               this.dialog.open(CalculateResultComponent,
                 {
                   width: "700px",
                   data: rs.result.errorList
                 })
-                return
+              return
             }
             abp.message.success("Add employee succesful");
             this.refresh()
@@ -337,21 +361,9 @@ public editingField : string;
       }
     })
   }
-  public calculateAllSalary() {
-    this.isLoading = true;
-    let payload: CollectPayslipDto = {
-      payrollId: this.payrollId,
-      employeeIds: null
-    }
 
 
-    this.subscription.push(
-      this.payslipService.CalculateSalaryForAllPayslip(payload).subscribe(rs => {
-        this.isLoading = false;
-        this.refresh();
-      })
-    )
-  }
+
   public getTeams(listTeams) {
     return listTeams.map((team) => {
       return team.teamName
@@ -390,7 +402,7 @@ public editingField : string;
         acc[item.name] = item.color;
         return acc;
       }, {});
-      
+
       this.userTypeList = this.mapToFilter(rs.result, true)
     }))
   }
@@ -401,7 +413,7 @@ public editingField : string;
         acc[item.name] = item.color;
         return acc;
       }, {});
-      
+
       this.userLevelList = this.mapToFilter(rs.result, true)
     }))
   }
@@ -412,7 +424,7 @@ public editingField : string;
         acc[item.name] = item.color;
         return acc;
       }, {});
-      
+
       this.branchList = this.mapToFilter(rs.result, true)
     }))
   }
@@ -429,7 +441,7 @@ public editingField : string;
         acc[item.name] = item.color;
         return acc;
       }, {});
-      
+
       this.positionList = this.mapToFilter(rs.result, true)
     }))
   }
@@ -441,7 +453,7 @@ public editingField : string;
     }
     this.subscription.push(
       this.payrollService.changeStatus(input).subscribe((rs) => {
-        abp.message.success(`Change status successful`+ `<p style="margin-top: 10px;word-wrap: normal;font-weight: 400;font-size: 20px;color: #dc3545;">${rs.result}</p>`);
+        abp.message.success(`Change status successful` + `<p style="margin-top: 10px;word-wrap: normal;font-weight: 400;font-size: 20px;color: #dc3545;">${rs.result}</p>`);
         this.refresh();
         this.getPayrollById();
       })
@@ -467,13 +479,16 @@ public editingField : string;
   }
 
   public viewCalculateProcess() {
-    this.calculateResultRef = this.dialog.open(CalculateResultDialogComponent, {
-      width: "60vw",
-      height: "82vh",
-      data: {
-        payrollApplyMonth: this.payroll.applyMonth
-      }
+    this.ngZone.run(() => {
+      this.calculateResultRef = this.dialog.open(CalculateResultDialogComponent, {
+        width: "60vw",
+        height: "82vh",
+        data: {
+          payrollApplyMonth: this.payroll.applyMonth
+        }
+      });
     })
+
   }
 
   public onCollectEmployeeData(employeeId: number) {
@@ -489,18 +504,7 @@ public editingField : string;
     }))
   }
 
-  public onCalculateEmployeeSalary(payslip: PaySlipDto) {
-    this.isLoading = true;
-    const payload: CollectPayslipDto = {
-      payrollId: this.payroll.id,
-      employeeIds: [payslip.id]
-    }
-    this.subscription.push(this.payslipService.CalculateSalaryForOnePayslip(payload).subscribe(rs => {
-      this.isLoading = false;
-      abp.message.success(`Employee ${payslip.fullName} salary calculated`)
-      this.refresh()
-    }))
-  }
+
   onDeletePayslip(payslip: PaySlipDto) {
     this.confirmDelete(`Delete payslip of <strong>${payslip.fullName}</strong>`, () => {
       this.subscription.push(
@@ -534,16 +538,16 @@ public editingField : string;
         }
       })
   }
-onSendDirectMessage(payslip: PaySlipDto){
-  this.dialog.open(SendDirectMessageToUserComponent,
-    {
-      width: "600px",
-      data: {
-        payslipId: payslip.id,
-        email: payslip.email
-      }
-    })
-}
+  onSendDirectMessage(payslip: PaySlipDto) {
+    this.dialog.open(SendDirectMessageToUserComponent,
+      {
+        width: "600px",
+        data: {
+          payslipId: payslip.id,
+          email: payslip.email
+        }
+      })
+  }
   onSendMailAll() {
     this.dialog.open(ConfirmMailDialogComponent, {
       width: "600px",
@@ -553,8 +557,8 @@ onSendDirectMessage(payslip: PaySlipDto){
       }
     })
   }
-  onSendDirectMessageToAllUer(){
-    this.dialog.open(SendDirectMessageToUserComponent,{
+  onSendDirectMessageToAllUer() {
+    this.dialog.open(SendDirectMessageToUserComponent, {
       width: "600px",
       disableClose: true,
       data: {
@@ -563,27 +567,27 @@ onSendDirectMessage(payslip: PaySlipDto){
     })
   }
 
-  onGetPayrollApplyUpdate(payslip){
+  onGetPayrollApplyUpdate(payslip) {
 
-    this.dialog.open(ApplyPayrollComponent,{
+    this.dialog.open(ApplyPayrollComponent, {
       width: "400px",
       disableClose: true,
-      
+
       data: {
         payslip: payslip,
         payrollId: this.payrollId,
-        selectedBrandId : this.selectedBranchId,
-        selectedLevelId : this.selectedLevelId,
-        selectedJobPositionId : this.selectedJobPositionId,
-        selectedUsertype : this.selectedUsertype,
+        selectedBrandId: this.selectedBranchId,
+        selectedLevelId: this.selectedLevelId,
+        selectedJobPositionId: this.selectedJobPositionId,
+        selectedUsertype: this.selectedUsertype,
         selectedBranchName: this.branchList.find(x => x.value == this.selectedBranchId)?.key || '',
         selectedLevelName: this.userLevelList.find(x => x.value == this.selectedLevelId)?.key || '',
         selectedJobPositionName: this.positionList.find(x => x.value == this.selectedJobPositionId)?.key || '',
         selecteUserTypeName: this.userTypeList.find(x => x.value == this.selectedUsertype)?.key || ''
 
       }
-    
-    
+
+
     }).afterClosed().subscribe((rs) => {
       if (rs) {
         this.refresh()
@@ -612,27 +616,27 @@ onSendDirectMessage(payslip: PaySlipDto){
         let api2 = this.payrollService.CreateFinfastOutcomeEntry(this.payrollId)
 
         this.subscription.push(
-        api1.pipe(
-          switchMap(rs => {
-            if (rs.result.failList.length > 0) {
-              let message = `${rs.result.failList.join("<br/>")}`
-              abp.message.error(message, "Send to finfast error", {isHTML:true})
-              return of(null);
-            } else {
-              abp.notify.success("Created finfast outcomeEntry")
-              return api2;
-            }
-          })
-        ).subscribe(rs2 => {
-        }))
+          api1.pipe(
+            switchMap(rs => {
+              if (rs.result.failList.length > 0) {
+                let message = `${rs.result.failList.join("<br/>")}`
+                abp.message.error(message, "Send to finfast error", { isHTML: true })
+                return of(null);
+              } else {
+                abp.notify.success("Created finfast outcomeEntry")
+                return api2;
+              }
+            })
+          ).subscribe(rs2 => {
+          }))
       }
     }, { isHTML: true }
     )
   }
 
-  public exportTechcombank(){
+  public exportTechcombank() {
     this.subscription.push(
-      this.payslipService.exportTechcombank(this.payrollId).subscribe(rs=>{
+      this.payslipService.exportTechcombank(this.payrollId).subscribe(rs => {
         const file = new Blob([this.convertFile(atob(rs.result.base64))], {
           type: "application/vnd.ms-excel;charset=utf-8"
         });
@@ -641,9 +645,9 @@ onSendDirectMessage(payslip: PaySlipDto){
     )
   }
 
-  public exportPayroll(){
+  public exportPayroll() {
     this.subscription.push(
-      this.payslipService.exportPayroll(this.payrollId, this.inputExportPayroll).subscribe(rs=>{
+      this.payslipService.exportPayroll(this.payrollId, this.inputExportPayroll).subscribe(rs => {
         const file = new Blob([this.convertFile(atob(rs.result.base64))], {
           type: "application/vnd.ms-excel;charset=utf-8"
         });
@@ -652,9 +656,9 @@ onSendDirectMessage(payslip: PaySlipDto){
     )
   }
 
-  public exportPayrollIncludeLastMonth(){
+  public exportPayrollIncludeLastMonth() {
     this.subscription.push(
-      this.payslipService.ExportPayrollIncludeLastMonth(this.payrollId).subscribe(rs=>{
+      this.payslipService.ExportPayrollIncludeLastMonth(this.payrollId).subscribe(rs => {
         const file = new Blob([this.convertFile(atob(rs.result.base64))], {
           type: "application/vnd.ms-excel;charset=utf-8"
         });
@@ -663,9 +667,9 @@ onSendDirectMessage(payslip: PaySlipDto){
     )
   }
 
-  public exportOutsideTech(){
+  public exportOutsideTech() {
     this.subscription.push(
-      this.payslipService.exportOutsideTech(this.payrollId).subscribe(rs=>{
+      this.payslipService.exportOutsideTech(this.payrollId).subscribe(rs => {
         const file = new Blob([this.convertFile(atob(rs.result.base64))], {
           type: "application/vnd.ms-excel;charset=utf-8"
         });
@@ -674,14 +678,14 @@ onSendDirectMessage(payslip: PaySlipDto){
     )
   }
 
-  public onImportEmployeeRemainLeaveDays(){
-    let dl = this.dialog.open(ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent,{
+  public onImportEmployeeRemainLeaveDays() {
+    let dl = this.dialog.open(ImportEmployeeRemainLeaveDaysAfterCalculatingSalaryComponent, {
       data: this.payrollId
     });
-    dl.afterClosed().subscribe((rs)=>{
-     if(rs){
-      this.refresh();
-     }
+    dl.afterClosed().subscribe((rs) => {
+      if (rs) {
+        this.refresh();
+      }
     })
 
   }
@@ -697,16 +701,16 @@ onSendDirectMessage(payslip: PaySlipDto){
   }
 
   navigateToFilteredPage() {
-  const filterItems = [{
-    propertyName: 'statusToken',
-    value: 0,
-    comparision: 0
-  }];
-  this.payrollIds = [this.payrollId]
-  const url = `/app/list-mezon-token/list-mezon-token?pageNumber=1&pageSize=20&searchText=&payrollIds=${encodeURIComponent(JSON.stringify(this.payrollIds))}&filterItems=${encodeURIComponent(JSON.stringify(filterItems))}`;
-  
-  this.router.navigateByUrl(url);
-}
+    const filterItems = [{
+      propertyName: 'statusToken',
+      value: 0,
+      comparision: 0
+    }];
+    this.payrollIds = [this.payrollId]
+    const url = `/app/list-mezon-token/list-mezon-token?pageNumber=1&pageSize=20&searchText=&payrollIds=${encodeURIComponent(JSON.stringify(this.payrollIds))}&filterItems=${encodeURIComponent(JSON.stringify(filterItems))}`;
+
+    this.router.navigateByUrl(url);
+  }
 
 
   isShowCalculateSalaryBtn() {
@@ -732,7 +736,7 @@ onSendDirectMessage(payslip: PaySlipDto){
   }
   isShowSendToFinfastBtn() {
     return this.payrollStatus != APP_ENUMS.PayrollStatus.ApprovedByCEO ||
-    this.payrollStatus != APP_ENUMS.PayrollStatus.Executed
+      this.payrollStatus != APP_ENUMS.PayrollStatus.Executed
   }
   isShowSendToAccountantBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_SendToAccountant) && (this.payrollStatus == APP_ENUMS.PayrollStatus.New || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByKT);
@@ -747,7 +751,7 @@ onSendDirectMessage(payslip: PaySlipDto){
     return this.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_ApproveByKT) && this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByKT;
   }
   isShowRejectByCEOBtn() {
-    return this.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_RejectByCEO) && (this.payrollStatus == APP_ENUMS.PayrollStatus.PendingCEO ||  this.payrollStatus == APP_ENUMS.PayrollStatus.ApprovedByCEO);
+    return this.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_RejectByCEO) && (this.payrollStatus == APP_ENUMS.PayrollStatus.PendingCEO || this.payrollStatus == APP_ENUMS.PayrollStatus.ApprovedByCEO);
   }
   isShowApproveByCEOBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_ApproveByCEO) && (this.payrollStatus == APP_ENUMS.PayrollStatus.PendingCEO || this.payrollStatus == APP_ENUMS.PayrollStatus.RejectedByCEO);
@@ -764,74 +768,74 @@ onSendDirectMessage(payslip: PaySlipDto){
   isShowActions() {
     return this.payrollStatus != APP_ENUMS.PayrollStatus.Executed
   }
-  isShowDownloadTemplateBtn(){
+  isShowDownloadTemplateBtn() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_DownloadTemplateUpdateRemainLeaveDaysAfter);
   }
-  isShowUpdateRemainLeaveDaysAndDownloadTemplateBtn(){
+  isShowUpdateRemainLeaveDaysAndDownloadTemplateBtn() {
     return this.payrollStatus != APP_ENUMS.PayrollStatus.Executed && (this.isShowDownloadTemplateBtn() || this.isShowUpdateRemainLeaveDaysBtn());
   }
-  isShowUpdateRemainLeaveDaysBtn(){
+  isShowUpdateRemainLeaveDaysBtn() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_UpdateRemainLeaveDaysAfter);
   }
-  isShowExportPayrollIncludeLastMonth(){
+  isShowExportPayrollIncludeLastMonth() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_ExportPayrollIncludeLastMonth);
   }
-  isShowExportPayrollBtn(){
+  isShowExportPayrollBtn() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_ExportPayroll);
   }
-  isShowExportOutsideTech(){
+  isShowExportOutsideTech() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_ExportOutsideTech);
   }
-  isShowExportTechcombank(){
+  isShowExportTechcombank() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_ExportTechcombank);
   }
 
-  isShowDetachBtn(){
+  isShowDetachBtn() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_SplitBenefitbyToken)
-    && this.payrollStatus != APP_ENUMS.PayrollStatus.Executed
+      && this.payrollStatus != APP_ENUMS.PayrollStatus.Executed
   }
 
-  isShowEditBranch(){
+  isShowEditBranch() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditBranch);
   }
-  isShowEditLevel(){
+  isShowEditLevel() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditLevel);
   }
-  isShowEditJobPosition(){
+  isShowEditJobPosition() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditJobPosition);
   }
-  isShowEditUserType(){
+  isShowEditUserType() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditUserType);
   }
-  isShowEditBranchToListPayroll(){
+  isShowEditBranchToListPayroll() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditBranchToListPayroll);
   }
-  isShowEditUserTypeToListPayroll(){
+  isShowEditUserTypeToListPayroll() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditUserTypeToListPayroll);
   }
-  isShowtEditLevelToListPayroll(){
+  isShowtEditLevelToListPayroll() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditLevelToListPayroll);
   }
-  isShowEditJobPositionToListPayroll(){
+  isShowEditJobPositionToListPayroll() {
     return this.permission.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_PayslipDetail_EditJobPositionToListPayroll);
   }
   isCheckUpdateBranch(branchId: any) {
-    if(this.selectedBranchId != branchId ) {
+    if (this.selectedBranchId != branchId) {
       return true
     }
   }
   isCheckUpdateLevel(levelId: any) {
-    if(this.selectedLevelId != levelId) {
+    if (this.selectedLevelId != levelId) {
       return true
     }
   }
   isCheckUpdateJobPostion(jobPositionId: any) {
-    if(this.selectedJobPositionId != jobPositionId) {
+    if (this.selectedJobPositionId != jobPositionId) {
       return true
     }
   }
   isCheckUpdateUserType(userType: any) {
-    if(this.selectedUsertype != userType) {
+    if (this.selectedUsertype != userType) {
       return true
     }
   }

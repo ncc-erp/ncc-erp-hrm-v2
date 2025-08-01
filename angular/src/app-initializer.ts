@@ -28,7 +28,7 @@ export class AppInitializer {
         platformBrowserDynamic()
           .bootstrapModule(AppModule)
           .then(success => console.log(`Bootstrap success`))
-          .catch(err => console.error(err));
+          //.catch(err => console.error(err));
         AppConsts.appBaseHref = this.getBaseHref();
         const appBaseUrl = this.getDocumentOrigin() + AppConsts.appBaseHref;
         this.getApplicationConfig(appBaseUrl, () => {

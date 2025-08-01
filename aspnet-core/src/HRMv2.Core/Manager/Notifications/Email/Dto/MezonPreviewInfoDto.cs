@@ -16,6 +16,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public string BodyMessage { get; set; }
         public long? CurrentUserLoginId { get; set; }
         public string MezonUsername { get; set; }
+        public string MezonUserId { get; set; }
         public int? TenantId { get; set; }
         public InputMezonDM InputMezonDM => JsonConvert.DeserializeObject<InputMezonDM>(BodyMessage);
 
