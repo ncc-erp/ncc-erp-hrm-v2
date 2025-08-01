@@ -164,14 +164,18 @@ namespace HRMv2.Authorization
 
                     if (user == null)
                     {
-                        return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidUserNameOrEmailAddress, tenant, user);
+                        var errorMessage = type == TypeLoginOuth2.Mezon ?
+                            $"Login fail. Not found MezonUserId {userMezonId} in HRM. Please contact HR" :
+                            $"Login fail. Not found email {emailAddress} in HRM. Please contact HR";
+
+                        throw new UserFriendlyException(errorMessage);
                     }
 
                     if (type == TypeLoginOuth2.Mezon 
                         && emailAddress.ToLower().Contains("@ncc.asia") 
                         && emailAddress.ToLower() != user.EmailAddress.ToLower())
                     {
-                        throw new UserFriendlyException($"Login lỗi do nhầm thông tin, Mezon email {emailAddress} != AbpUser email {user.EmailAddress} => Liên hệ HR để update đúng thông tin");
+                        throw new UserFriendlyException($"Login fail. Email of your Mezon account {emailAddress} and email in HRM {user.EmailAddress} are not the same. Please contact HR to update");
                     }
                         
                     if (await UserManager.IsLockedOutAsync(user))
@@ -185,7 +189,7 @@ namespace HRMv2.Authorization
                             return new AbpLoginResult<Tenant, User>(AbpLoginResultType.LockedOut, tenant, user);
                         }
                     }
-
+                    
                     await UserManager.ResetAccessFailedCountAsync(user);
                     return await CreateLoginResultAsync(user, tenant);
                 }

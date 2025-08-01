@@ -73,7 +73,7 @@ export class EmployeeListComponent extends PagedListingComponentBase<GetEmployee
   }
 
   public onFilter(filterItem: FilterDto): void {
-    this.listEmployeeComp.onFilter(filterItem)
+    this.listEmployeeComp && this.listEmployeeComp.onFilter(filterItem)
   }
 
   public onMultiFilterWithCondition(teamsFilterInput: TeamsFilterInputDto): void {

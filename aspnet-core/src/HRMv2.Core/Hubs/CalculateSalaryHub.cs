@@ -1,5 +1,6 @@
 ﻿using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Dependency;
+using Abp.RealTime;
 using Abp.Runtime.Session;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.SignalR;
@@ -13,20 +14,27 @@ namespace HRMv2.Hubs
 {
     public class CalculateSalaryHub: AbpHubBase, ISingletonDependency
     {
-
         public CalculateSalaryHub()
         {
         }
 
+        public void Register()
+        {
+            Logger.Info("A client Register" + Context.ConnectionId);
+        }
+        
         public void SendMessage(Object message)
         {
             try
             {
                 if (Clients == null)
                 {
+                    Logger.Info("Clients null");
                     return;
                 }
-                Clients.All.SendAsync("getMessage", message);
+                //Clients.All.SendAsync("getMessage", message);
+                Clients.All.SendAsync("getNotification", message);
+                Logger.Info("sent getMessage to Clients.All");
             }
             catch (Exception e)
             {
@@ -38,13 +46,13 @@ namespace HRMv2.Hubs
         public async override Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
-            Logger.Debug("A client connected to MyChatHub: " + Context.ConnectionId);
+            Logger.Info($"A client connected to CalculateSalaryHub, ConnectionId: {Context.ConnectionId}, UserIdentifier: {Context.UserIdentifier}");
         }
 
         public async override Task OnDisconnectedAsync(Exception exception)
         {
             await base.OnDisconnectedAsync(exception);
-            Logger.Debug("A client disconnected from MyChatHub: " + Context.ConnectionId);
+            Logger.Info($"A client disconnected to CalculateSalaryHub, ConnectionId: {Context.ConnectionId}, UserIdentifier: {Context.UserIdentifier}");
         }
     }
 }

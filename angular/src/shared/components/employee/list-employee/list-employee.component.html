@@ -10,28 +10,33 @@
                                     (change)="selectAll($event.checked)">
                                 </mat-checkbox>
                             </th>
-                            <th *ngIf="columnList[0].isShow" style="width: 50px;">
-                                #
-                            </th>
-                            <th class="pointer" *ngIf="columnList[1].isShow" (click)="onSortChange('email')">
-                                {{columnList[1].displayName}}
+                            <th style="width: 50px;">#</th>
+                            <th class="pointer" (click)="onSortChange('email')">
+                                Employee
                                 <sortable [name]="'email'" [sortProperty]="sortProperty"
                                     [sortDirection]="sortDirection"></sortable>
                             </th>
-                            <th *ngIf="columnList[1].isShow">
-                                {{columnList[2].displayName}}
+                            <th style="width: 170px;" (click)="onSortChange('userMezonId')">
+                                MezonUserId
+                                <sortable [name]="'userMezonId'" [sortProperty]="sortProperty"
+                                    [sortDirection]="sortDirection"></sortable>
                             </th>
-                            <th  style="width: 120px;" (click)="onSortChange('birthday')" *ngIf="columnList[2].isShow">{{columnList[3].displayName}}
+
+                            <!-- <th style="width: 170px;">MezonUserId</th> -->
+                            <th>Phone</th>                            
+                            <th style="width: 120px;" (click)="onSortChange('birthday')">
+                                Birthday
                                 <sortable [name]="'birthday'" [sortProperty]="sortProperty"
                                 [sortDirection]="sortDirection"></sortable>
                             </th>
-                            <th *ngIf="columnList[3].isShow">{{columnList[4].displayName}}</th>
-                            <th *ngIf="columnList[4].isShow">{{columnList[5].displayName}}</th>
-                            <th  style="width: 120px; white-space: nowrap;" *ngIf="columnList[5].isShow">
-                                {{columnList[5].displayName}} 
+                            <th>Status</th>
+                            <th>Teams</th>
+                            <th style="width: 120px; white-space: nowrap;">
+                                Seniority
                             </th>
 
-                            <th (click)="onSortChange('updatedTime')" style="width: 155px;" *ngIf="columnList[6].isShow">{{columnList[7].displayName}}
+                            <th (click)="onSortChange('updatedTime')" style="width: 155px;">
+                                Updated At
                                 <sortable [name]="'updatedTime'" [sortProperty]="sortProperty"
                                 [sortDirection]="sortDirection"></sortable>
                             </th>
@@ -53,8 +58,8 @@
                                     (change)="onEmployeeSelect(employee)">
                                 </mat-checkbox>
                             </td>
-                            <td class="text-center" *ngIf="columnList[0].isShow">{{(pageNumber-1)*pageSize+i+1}}</td>
-                            <td *ngIf="columnList[1].isShow">
+                            <td class="text-center" >{{(pageNumber-1)*pageSize+i+1}}</td>
+                            <td>
                                 <app-user-info 
                                     [isAllowAvatarRouting]="isAllowRoutingDetail()"
                                     [isAllowRouting]="isAllowRoutingDetail()"   
@@ -63,17 +68,17 @@
                                     [userData]="employee">
                                 </app-user-info>
                             </td>
-
-                            <td class="text-center" >{{employee.phone}}</td>
+                            <td>{{employee.userMezonId}}</td>
+                            <td class="text-center" >{{employee.phone}}</td>                           
                             <td class="text-center" >{{employee.birthday | DMYDateFormat}}</td>
-                            <td class="text-center" *ngIf="columnList[2].isShow"><span
+                            <td class="text-center" ><span
                                     [ngClass]="employee.status | userStatus: true">
                                     {{employee.status | userStatus}}
                                 </span></td>
-                            <td innerHtml="{{employee.teams | team}}" *ngIf="columnList[3].isShow"></td>
-                            <td class="text-center" *ngIf="columnList[4].isShow" [innerHTML]="employee.countSeniority">
+                            <td innerHtml="{{employee.teams | team}}" ></td>
+                            <td class="text-right" [innerHTML]="employee.countSeniority">
                             </td>
-                            <td class="text-center" *ngIf="columnList[5].isShow">
+                            <td class="text-center" >
                                 <div>{{employee.updatedTime |dmyHmDateFormat}}</div>
                                 <div *ngIf="employee.updatedUser">by <strong>{{employee.updatedUser}}</strong></div>
                             </td>
