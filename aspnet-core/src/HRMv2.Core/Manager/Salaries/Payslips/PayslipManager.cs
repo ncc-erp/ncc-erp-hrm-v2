@@ -57,8 +57,7 @@ using Amazon.S3.Model;
 using System.Linq.Expressions;
 using HRMv2.BackgroundJob.SendDirectMessage;
 using HRMv2.Manager.Salaries.Payrolls.Dto;
-
-
+using System.Threading;
 
 namespace HRMv2.Manager.Salaries.Payslips
 {
@@ -221,6 +220,7 @@ namespace HRMv2.Manager.Salaries.Payslips
         {
             var query = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId)
+                .OrderBy(s => s.Salary)
                 .Select(x => new GetPayslipEmployeeDto
                 {
                     Id = x.Id,
@@ -1328,7 +1328,10 @@ namespace HRMv2.Manager.Salaries.Payslips
                 result.ErrorList.Add(new GenerateErrorDto { Message = "Already added Calculate Salary to Background Job" });
                 return result;
             }
+            
             _backgroundJobManager.Enqueue<CalculateSalaryBackgroundJob, CollectPayslipDto>(input, BackgroundJobPriority.High, TimeSpan.FromSeconds(0));
+            _calculateSalaryHub.SendMessage(new { Message = "Added CalculateSalary to BackgroundJob", Process = "", Status = "Added CalculateSalary to BackgroundJob" });
+
             return result;
         }
 
@@ -1356,7 +1359,8 @@ namespace HRMv2.Manager.Salaries.Payslips
                         ErrorList = new List<GenerateErrorDto>() { new GenerateErrorDto { Message = "Is Running => stop" } },
                     };
                 }
-                calculatingSalaryInfoDto.IsRuning = true;
+                calculatingSalaryInfoDto.IsRuning = true;               
+
                 return GeneratePayslips(input);
             }
             catch (Exception e)
@@ -3123,6 +3127,7 @@ namespace HRMv2.Manager.Salaries.Payslips
                     PayrollYear = s.Payroll.ApplyMonth.Year.ToString(),
                     SalaryLink = domain + $"app/payslip-confirm?id={s.Id}",
                     MezonUsername = s.Employee.Email.Split("@")[0],
+                    MezonUserId = s.Employee.UserMezonId,
                     ComplainDeadline = s.ComplainDeadline.HasValue
               ? s.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ")
               : "..."

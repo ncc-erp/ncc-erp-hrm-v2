@@ -228,7 +228,7 @@ namespace HRMv2.Manager.MezonTokens
 
         public async Task<AuthResponse> SendToken(InputSendMezonToken input)
         {
-            var tokenEntity = await WorkScope.GetAll<MezonToken>()
+            var mezonToken = await WorkScope.GetAll<MezonToken>()
                 .Where(x => x.Id == input.MezonTokenId)
                 .Select(x => new
                 {
@@ -236,25 +236,26 @@ namespace HRMv2.Manager.MezonTokens
                     x.Note,
                     x.Status,
                     x.SentToEmployeeAt,
-                    Email = x.Employee.Email
+                    Email = x.Employee.Email,
+                    x.Employee.UserMezonId
                 })
                 .FirstOrDefaultAsync();
 
-            if (tokenEntity == null)
+            if (mezonToken == null)
             {
                 throw new UserFriendlyException("Mezon Token doesn't exist");
             }
 
             var url = MezonTokenConstant.UrlSendToken;
-            var userName = tokenEntity.Email.Split("@")[0];
+            var userName = mezonToken.Email.Split("@")[0];
 
             var sendTokenDto = new SendTokenDto
             {
                 sender_id = MezonTokenConstant.ApplicationId,
                 sender_name = MezonTokenConstant.Name,
-                amount = tokenEntity.Amount,
-                receiver_id = userName,
-                note = tokenEntity.Note,
+                amount = mezonToken.Amount,
+                receiver_id = mezonToken.UserMezonId,
+                note = mezonToken.Note,
             };
 
             if (string.IsNullOrEmpty(input.TokenBot))

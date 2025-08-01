@@ -21,51 +21,11 @@ import { UpdateEmployeeFromFileComponent } from '@app/modules/employees/employee
   ]
 })
 export class ListEmployeeComponent extends PagedListingComponentBase<GetEmployeeDto> implements OnInit {
-  public columnList = [
-    {
-      name: "Stt",
-      displayName: "#",
-      isShow: true
-    },
-    {
-      name: "Employee",
-      displayName: "Employee",
-      isShow: true
-    },
-    {
-      name: "Phone",
-      displayName: "Phone",
-      isShow: true
-    },
-    {
-      name: "Birthday",
-      displayName: "Birthday",
-      isShow: true
-    },
-    {
-      name: "Status",
-      displayName: "Status",
-      isShow: true
-    },
-    {
-      name: "Team",
-      displayName: "Teams",
-      isShow: true
-    },
-    {
-      name: "Seniority",
-      displayName: "Seniority",
-      isShow: true
-    },
-    {
-      name: "UpdatedTime",
-      displayName: "Updated time",
-      isShow: true
-    }
-  ]
-  public addedEmployeeIds: number[] = []
   @Input() employeeList: GetEmployeeDto[] = []
   @Input() isOnDialog: boolean
+
+  public addedEmployeeIds: number[] = []
+ 
   public selectedEmployees: GetEmployeeDto[] = []
   public allSelected: boolean = false;
   public dataMultiFilter: any = {};

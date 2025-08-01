@@ -9,23 +9,28 @@ namespace HRMv2.Manager.Notifications.SendMezonDM.Dto
     {
         [JsonProperty(PropertyName = "content")]
         [JsonConverter(typeof(ContentJsonConverter))]
-        public ContentMezonDM Content { get; set; }
+        public MezonDMContent Content { get; set; }
 
         [JsonProperty(PropertyName = "attachments")]
         public List<Attachment> Attachments { get; set; }
     }
 
+
     [JsonObject]
-    public class ContentMezonDM
+    public class MezonDMContent
     {
         [JsonProperty(PropertyName = "t")]
         public string Text { get; set; }
-        [JsonProperty(PropertyName = "lk")]
-        public List<StartEnd> Link => MezonDMUtil.GetListIndexOfLinks(Text);
+
+        [JsonProperty(PropertyName = "mk")]
+        public List<MK_Link> MK => MezonDMUtil.GetListIndexOfLinks(Text);
     }
 
-    public class StartEnd
+    public class MK_Link
     {
+        [JsonProperty(PropertyName = "type")]
+        public string Type { get; set; }
+
         [JsonProperty(PropertyName = "s")]
         public int Start { get; set; }
         [JsonProperty(PropertyName = "e")]

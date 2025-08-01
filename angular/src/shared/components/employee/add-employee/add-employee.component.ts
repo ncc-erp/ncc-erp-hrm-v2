@@ -27,7 +27,7 @@ export class AddEmployeeComponent implements OnInit {
   }
 
   public onFilter(filterItem: FilterDto): void {
-    this.listEmployeeComp.onFilter(filterItem)
+    this.listEmployeeComp && this.listEmployeeComp.onFilter(filterItem)
   }
 
   onSearchEnter(searchText: string) {

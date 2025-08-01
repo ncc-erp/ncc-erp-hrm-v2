@@ -1,7 +1,7 @@
 <div id="employee-info">
     <div class="row w-100">
         <div class="d-flex w-100">
-            <div class="text-center mr-3 ml-4 avatar">
+            <div class="text-center avatar">
                 <img *ngIf="!isAllowAvatarRouting " [src]="getAvatar(user)" class="rounded-circle mt-1" onError="this.src='assets/img/men.png'" 
                     alt="avatar">
                 <a *ngIf="isAllowAvatarRouting "  [routerLink]="['/app','employees','list-employee','employee-detail','personal-info']" [queryParams]="{id:user.id}">

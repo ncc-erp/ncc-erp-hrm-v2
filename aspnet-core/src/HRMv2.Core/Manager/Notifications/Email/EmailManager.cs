@@ -320,7 +320,7 @@ namespace HRMv2.Manager.Notifications.Email
                 case NotifyTemplateEnum.MezonDMLinkToPreviewPayslip:
                     return GetDataForMezonDMLinkToPreviewPayslip(id);
                 case NotifyTemplateEnum.MezonDMSendToken:
-                    return GetDataForSendTokenMezonDm(id);
+                    return GetDataForSendMezonToken(id);
                 default:
                     return null;
             }
@@ -838,6 +838,7 @@ namespace HRMv2.Manager.Notifications.Email
                 PayrollYear = payslip.Payroll.ApplyMonth.Year.ToString(),
                 SalaryLink = hrmv2Uri + $"app/payslip-confirm?id={payslip.Id}",
                 MezonUsername = payslip.Employee.Email.Split("@")[0],
+                MezonUserId = payslip.Employee.UserMezonId,
                 ComplainDeadline = payslip.ComplainDeadline.HasValue
               ? payslip.ComplainDeadline.Value.ToString("HH:mm dd/MM/yyyy ")
               : "..."
@@ -849,7 +850,7 @@ namespace HRMv2.Manager.Notifications.Email
             };
         }
 
-        private ResultTemplateEmail<InputNotiSendTokenDMTemplateDto> GetDataForSendTokenMezonDm(long? mezonTokenId)
+        private ResultTemplateEmail<InputNotiSendTokenDMTemplateDto> GetDataForSendMezonToken(long? mezonTokenId)
         {
             if(mezonTokenId == null)
             {
@@ -867,7 +868,8 @@ namespace HRMv2.Manager.Notifications.Email
                     x.Amount,
                     x.Employee.FullName,
                     x.Employee.Email,
-                    x.Note
+                    x.Note,
+                    x.Employee.UserMezonId
                 })
                 .FirstOrDefault();
 
@@ -875,7 +877,8 @@ namespace HRMv2.Manager.Notifications.Email
             {
                 EmployeeFullName = mezonToken.FullName,
                 Amount = mezonToken.Amount.ToString(),
-                MezonUsername = mezonToken.Email.Split("@")[0],
+                MezonUsername = mezonToken.Email,       
+                MezonUserId = mezonToken.UserMezonId,
                 Note = mezonToken.Note
             };
 
@@ -945,6 +948,7 @@ namespace HRMv2.Manager.Notifications.Email
 
             var bodyMessage = typeOfTemplate.GetProperty(nameof(MezonPreviewInfoDto.BodyMessage)).GetValue(template) as string;
             var mezonUsername = typeOfData.GetProperty(nameof(MezonPreviewInfoDto.MezonUsername)).GetValue(data) as string;
+            var mezonUserId = typeOfData.GetProperty(nameof(MezonPreviewInfoDto.MezonUserId)).GetValue(data) as string;
 
 
             var properties = typeOfData.GetProperties().Select(s => s.Name).ToArray();
@@ -959,6 +963,7 @@ namespace HRMv2.Manager.Notifications.Email
             {
                 BodyMessage = bodyMessage,
                 MezonUsername = mezonUsername,
+                MezonUserId = mezonUserId,
             };
         }
 

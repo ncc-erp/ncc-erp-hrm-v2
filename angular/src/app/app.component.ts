@@ -1,8 +1,5 @@
 import { Component, Injector, OnInit, Renderer2 } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
-import { AppConsts } from '@shared/AppConsts';
-import { SignalRAspNetCoreHelper } from '@shared/helpers/SignalRAspNetCoreHelper';
-//import { SignalRAspNetCoreHelper } from '@shared/helpers/SignalRAspNetCoreHelper';
 import { LayoutStoreService } from '@shared/layout/layout-store.service';
 
 @Component({
@@ -20,7 +17,6 @@ export class AppComponent extends AppComponentBase implements OnInit {
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'sidebar-mini');
-    this.addCalSalarySignalR();
     abp.event.on('abp.notifications.received', (userNotification) => {
       abp.notifications.showUiNotifyForUserNotification(userNotification);
 
@@ -43,16 +39,5 @@ export class AppComponent extends AppComponentBase implements OnInit {
 
   toggleSidebar(): void {
     this._layoutStore.setSidebarExpanded(!this.sidebarExpanded);
-  }
-
-  addCalSalarySignalR(){
-    SignalRAspNetCoreHelper.initSignalR(() => {
-      abp.signalr.startConnection(abp.appPath + 'signalr-calculateSalaryHub', function (connection) {
-        connection.on('getMessage', function (message) {
-          AppConsts.calSalaryProcess.next(message)
-        });
-      })
-        .then()
-    });
   }
 }

@@ -13,6 +13,7 @@ export class AppConsts {
     static enableLoginGoogle: boolean
     static enableNormalLogin: boolean;
     static calSalaryProcess =  new BehaviorSubject<any>({})
+    static registeredHandlers = new Map();
     static readonly userManagement = {
         defaultAdminUserName: 'admin'
     };
