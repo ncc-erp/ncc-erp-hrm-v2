@@ -12,7 +12,6 @@ using HRMv2.Authorization.Users;
 using HRMv2.MultiTenancy;
 using Abp.UI;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
 using Abp.Extensions;
 using System;
 using Newtonsoft.Json;
@@ -21,13 +20,11 @@ using Google.Apis.Auth;
 using System.Linq;
 using HRMv2.Manager.Employees;
 using static HRMv2.Constants.Enum.HRMEnum;
-using System.Collections.Generic;
 using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.Extensions.Configuration;
 using HRMv2.WebServices;
 using Microsoft.Extensions.Logging;
 using HRMv2.NccCore;
-using HRMv2.Entities;
 
 namespace HRMv2.Authorization
 {
@@ -96,7 +93,7 @@ namespace HRMv2.Authorization
             return result;
         }
 
-        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncInternalNoPass(TypeLoginOuth2 type,string token, string tenancyName, bool shouldLockout,AuthOauth2Mezon mezonOauthResult)
+        public async Task<AbpLoginResult<Tenant, User>> LoginAsyncInternalNoPass(TypeLoginOuth2 type, string token, string tenancyName, bool shouldLockout, AuthOauth2Mezon mezonOauthResult)
         {
             Logger.LogInformation("LoginAsyncInternalNoPass");
             try
@@ -115,77 +112,84 @@ namespace HRMv2.Authorization
                         throw new ArgumentNullException(nameof(token));
                     }
                     GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(token);
-                     emailAddress = payload.Email;
-                    Logger.LogInformation("Payload: " + JsonConvert.SerializeObject(payload));
+                    emailAddress = payload.Email;
+                    Logger.LogInformation("LoginAsyncInternalNoPass Payload: " + JsonConvert.SerializeObject(payload));
                     // checking
-                     clientAppId = await SettingManager.GetSettingValueAsync(AppSettingNames.GoogleClientId);//get clientAppId from setting
-                     Logger.LogInformation("ClientAppId: " + clientAppId);
-                     correctAudience = payload.AudienceAsList.Any(s => s == clientAppId);
-                     correctIssuer = payload.Issuer == "accounts.google.com" || payload.Issuer == "https://accounts.google.com";
-                     correctExpriryTime = payload.ExpirationTimeSeconds != null || payload.ExpirationTimeSeconds > 0;
-                }else if(type == TypeLoginOuth2.Mezon)
+                    clientAppId = await SettingManager.GetSettingValueAsync(AppSettingNames.GoogleClientId);//get clientAppId from setting
+                    Logger.LogInformation("ClientAppId: " + clientAppId);
+                    correctAudience = payload.AudienceAsList.Any(s => s == clientAppId);
+                    correctIssuer = payload.Issuer == "accounts.google.com" || payload.Issuer == "https://accounts.google.com";
+                    correctExpriryTime = payload.ExpirationTimeSeconds.HasValue && payload.ExpirationTimeSeconds > 0;
+                }
+                else if (type == TypeLoginOuth2.Mezon)
                 {
+                    Logger.LogInformation("LoginAsyncInternalNoPass mezonOauthResult: " + JsonConvert.SerializeObject(mezonOauthResult));
                     emailAddress = mezonOauthResult.sub;
-                    userMezonId = mezonOauthResult.user_id ;
+                    userMezonId = mezonOauthResult.user_id;
                     clientAppId = _configuration.GetValue<string>("Oauth2Mezon:Client_Id");
                     correctAudience = mezonOauthResult.aud.Any(s => s == clientAppId);
-                    correctIssuer =  mezonOauthResult.iss == "https://oauth2.mezon.ai";
-                    correctExpriryTime = mezonOauthResult.auth_time != null || mezonOauthResult.auth_time > 0;
+                    correctIssuer = mezonOauthResult.iss == "https://oauth2.mezon.ai";
+                    correctExpriryTime = mezonOauthResult.auth_time > 0;
                 }
-                
+
                 Tenant tenant = null;
-
-                Logger.LogInformation("correctAudience: " + correctAudience + ", correctIssuer: " + correctIssuer + ", correctExpriryTime: " + correctExpriryTime);
-                if (correctAudience && correctIssuer && correctExpriryTime)
+               
+                //Get and check tenant
+                using (UnitOfWorkManager.Current.SetTenantId(null))
                 {
-                    //Get and check tenant
-                    using (UnitOfWorkManager.Current.SetTenantId(null))
+                    if (!MultiTenancyConfig.IsEnabled)
                     {
-                        if (!MultiTenancyConfig.IsEnabled)
+                        tenant = await GetDefaultTenantAsync();
+                    }
+                    else if (!string.IsNullOrWhiteSpace(tenancyName))
+                    {
+                        tenant = await TenantRepository.FirstOrDefaultAsync(t => t.TenancyName == tenancyName);
+                        if (tenant == null)
                         {
-                            tenant = await GetDefaultTenantAsync();
+                            return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidTenancyName);
                         }
-                        else if (!string.IsNullOrWhiteSpace(tenancyName))
-                        {
-                            tenant = await TenantRepository.FirstOrDefaultAsync(t => t.TenancyName == tenancyName);
-                            if (tenant == null)
-                            {
-                                return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidTenancyName);
-                            }
 
-                            if (!tenant.IsActive)
-                            {
-                                return new AbpLoginResult<Tenant, User>(AbpLoginResultType.TenantIsNotActive, tenant);
-                            }
+                        if (!tenant.IsActive)
+                        {
+                            return new AbpLoginResult<Tenant, User>(AbpLoginResultType.TenantIsNotActive, tenant);
                         }
                     }
-                    var tenantId = tenant == null ? (int?)null : tenant.Id;
-                    using (UnitOfWorkManager.Current.SetTenantId(tenantId))
-                    {
-                        await UserManager.InitializeOptionsAsync(tenantId);
+                }
+                var tenantId = tenant == null ? (int?)null : tenant.Id;
+                using (UnitOfWorkManager.Current.SetTenantId(tenantId))
+                {
+                    await UserManager.InitializeOptionsAsync(tenantId);
 
-                        var user = await GetOrCreateUserAsync(emailAddress,userMezonId, tenantId);
+                    var user = type == TypeLoginOuth2.Mezon ? GetUserByMezonUserId(userMezonId): await UserManager.FindByEmailAsync(emailAddress);                        
+
+                    if (user == null)
+                    {
+                        return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidUserNameOrEmailAddress, tenant, user);
+                    }
+
+                    if (type == TypeLoginOuth2.Mezon 
+                        && emailAddress.ToLower().Contains("@ncc.asia") 
+                        && emailAddress.ToLower() != user.EmailAddress.ToLower())
+                    {
+                        throw new UserFriendlyException($"Login lỗi do nhầm thông tin, Mezon email {emailAddress} != AbpUser email {user.EmailAddress} => Liên hệ HR để update đúng thông tin");
+                    }
                         
-                        if (await UserManager.IsLockedOutAsync(user))
+                    if (await UserManager.IsLockedOutAsync(user))
+                    {
+                        return new AbpLoginResult<Tenant, User>(AbpLoginResultType.LockedOut, tenant, user);
+                    }
+                    if (shouldLockout)
+                    {
+                        if (await TryLockOutAsync(tenantId, user.Id))
                         {
                             return new AbpLoginResult<Tenant, User>(AbpLoginResultType.LockedOut, tenant, user);
                         }
-                        if (shouldLockout)
-                        {
-                            if (await TryLockOutAsync(tenantId, user.Id))
-                            {
-                                return new AbpLoginResult<Tenant, User>(AbpLoginResultType.LockedOut, tenant, user);
-                            }
-                        }
-
-                        await UserManager.ResetAccessFailedCountAsync(user);
-                        return await CreateLoginResultAsync(user, tenant);
                     }
+
+                    await UserManager.ResetAccessFailedCountAsync(user);
+                    return await CreateLoginResultAsync(user, tenant);
                 }
-                else
-                {
-                    return new AbpLoginResult<Tenant, User>(AbpLoginResultType.InvalidUserNameOrEmailAddress, null);
-                }
+               
             }
             catch (InvalidJwtException e)
             {
@@ -193,6 +197,18 @@ namespace HRMv2.Authorization
             }
         }
 
+        private User GetUserByMezonUserId(string mezonUserId)
+        {            
+            if (string.IsNullOrEmpty(mezonUserId))
+            {
+                throw new UserFriendlyException("MezonUserId null or empty");
+            }
+            return _workScope.GetAll<User>()
+                .Where(x => x.UserMezonId == mezonUserId)
+                .FirstOrDefault();
+        }
+
+        [Obsolete("This method is deprecated. Dont use it")]        
         private async Task<User> GetOrCreateUserAsync(string email,string userMezonId, int? tenantId)
         {
             var user = _workScope.GetAll<User>().FirstOrDefault(x => x.UserMezonId == userMezonId);

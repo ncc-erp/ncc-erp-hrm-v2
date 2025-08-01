@@ -73,6 +73,7 @@
             <!-- <span class="data-type-label">{{
               getDataTypeLabel(data.dataType)
             }}</span> -->
+            <span [ngClass]="APP_CONST.payRollStatus[data.statusName]">{{data.statusName}}</span>
             <span class="data-name" *ngIf="data.dataType != null">{{
               truncateNameOnMatOption(data.dataType, 70)
             }}</span>
