@@ -170,27 +170,26 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
     this.getSummaryInfo();
 
     this.subscription.push(
-      this.APP_CONST.calSalaryProcess.asObservable().subscribe(rs => {
+      this.APP_CONST.calSalaryProcess.asObservable().subscribe(message => {
         this.ngZone.run(() => {
-          let lastNoti = rs
-          this.calculateProcess = lastNoti?.process ?? ""
-          this.calculateStatus = lastNoti?.status ?? ""
-          if (lastNoti?.status == 'Start') {
+          this.calculateProcess = message?.process ?? ""
+          this.calculateStatus = message?.status ?? ""
+          if (message?.status != undefined) {
             this.isCalculating = true
           }
-          if (lastNoti?.status == 'Error' && lastNoti?.message.length > 0) {
+          if (message?.status == 'Error' && message?.message.length > 0) {
             if (this.calculateResultRef) {
               this.calculateResultRef.close()
             }
             this.dialog.open(CalculateResultComponent, {
               width: "700px",
-              data: lastNoti?.message
+              data: message?.message
             })
             this.isCalculating = false
             this.APP_CONST.calSalaryProcess.next({})
           }
 
-          if (lastNoti?.status == 'Done') {
+          if (message?.status == 'Done') {
             this.refresh()
             this.getSummaryInfo()
             this.isCalculating = false
