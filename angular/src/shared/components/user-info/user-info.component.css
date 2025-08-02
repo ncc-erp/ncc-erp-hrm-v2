@@ -42,4 +42,6 @@ a{
   max-width: 100%;
   min-width: 55px;
   width: 55px;
+  margin-left: 13px;
+  margin-right: 8px;
 }

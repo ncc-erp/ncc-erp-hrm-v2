@@ -32,10 +32,7 @@ namespace HRMv2.Manager.Notifications.SendMezonDM
         {
            
             var url = _settingManager.GetSettingValueForApplication(AppSettingNames.MezonClanWebhookURL);
-
-            var message = input.BodyMessage;
-            InputMezonDM inputMezonDM = JsonConvert.DeserializeObject<InputMezonDM>(message);            
-            _mezonWebService.SendDirectMessageToUser(inputMezonDM,url,input.MezonUsername);
+            _mezonWebService.SendDirectMessageToUser(input.InputMezonDM, url, input.MezonUserId);
         }
 
         

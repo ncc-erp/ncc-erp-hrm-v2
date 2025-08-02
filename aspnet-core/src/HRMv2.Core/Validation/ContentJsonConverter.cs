@@ -13,7 +13,7 @@ namespace HRMv2.Validation
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (value is ContentMezonDM content)
+            if (value is MezonDMContent content)
             {
                 var contentJson = JsonConvert.SerializeObject(content);
                 writer.WriteValue(contentJson);
@@ -33,12 +33,12 @@ namespace HRMv2.Validation
             if (reader.TokenType == JsonToken.StartObject)
             {
                 var jsonObject = JObject.Load(reader);
-                return jsonObject.ToObject<ContentMezonDM>();
+                return jsonObject.ToObject<MezonDMContent>();
             }
             if (reader.TokenType == JsonToken.String)
             {
                 var jsonString = reader.Value.ToString();
-                return JsonConvert.DeserializeObject<ContentMezonDM>(jsonString);
+                return JsonConvert.DeserializeObject<MezonDMContent>(jsonString);
             }
             throw new JsonSerializationException("Unexpected token type: " + reader.TokenType);
 
@@ -46,7 +46,7 @@ namespace HRMv2.Validation
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(ContentMezonDM).IsAssignableFrom(objectType);
+            return typeof(MezonDMContent).IsAssignableFrom(objectType);
         }
     }
 }

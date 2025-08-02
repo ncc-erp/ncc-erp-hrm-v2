@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Dependency;
 using HRMv2.Configuration;
+using HRMv2.Hubs;
 using HRMv2.Manager.Categories;
 using HRMv2.Manager.Categories.Branchs.Dto;
 using HRMv2.Manager.Categories.JobPositions;
@@ -28,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HRMv2.APIs.Publics
@@ -44,6 +46,7 @@ namespace HRMv2.APIs.Publics
         private readonly LevelManager _levelManager;
         private readonly JobPositionManager _jobPositionManager;
         private readonly BranchManager _branchManager;
+        private readonly CalculateSalaryHub _calculateSalaryHub;
 
         public PublicAppService(EmployeeManager employeeManager, IConfiguration configuration,
             PunishmentFundManager punishmentFundsManager,
@@ -53,7 +56,8 @@ namespace HRMv2.APIs.Publics
             UserTypeManager userTypeManager,
             LevelManager levelManager,
             JobPositionManager jobPositionManager,
-            BranchManager branchManager
+            BranchManager branchManager,
+            CalculateSalaryHub calculateSalaryHub
             )
         {
             _employeeManager = employeeManager;
@@ -66,7 +70,24 @@ namespace HRMv2.APIs.Publics
             _levelManager = levelManager;
             _jobPositionManager = jobPositionManager;
             _branchManager = branchManager;
+            _calculateSalaryHub = calculateSalaryHub;
         }
+
+        [HttpGet]
+        public string StartSendMessageSignalRForTest()
+        {
+            _calculateSalaryHub.SendMessage(new { Message = "Start testing signalR", Process = "testing signalR", Status = "Start" });
+            Thread.Sleep(1000);
+
+            _calculateSalaryHub.SendMessage(new { Message = "Message 1", Process = "Process 1", Status = "Status 1" });
+            Thread.Sleep(1000);
+
+            _calculateSalaryHub.SendMessage(new { Message = "Message 2", Process = "Process 2", Status = "Done" });
+            Thread.Sleep(1000);
+            return "done";
+        }
+
+
 
         [HttpGet]
         public List<EmployeeHasBirthdayInMonthDto> GetEmployeesBirthdayInMonth(int month)
