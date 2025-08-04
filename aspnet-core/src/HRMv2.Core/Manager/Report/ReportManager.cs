@@ -142,9 +142,9 @@ namespace HRMv2.Manager.Report
             return result;
         }
 
-        public async Task<ResultReportSalary> GetAllPaging(InputMultiFilterReportSalaryPagingDto input)
+        public ResultReportSalary GetAllPaging(InputMultiFilterReportSalaryPagingDto input)
         {
-            if(input.PayrollIds.Count > 0)
+            if(input.PayrollIds == null || input.PayrollIds.Count <= 0)
             {
                 throw new UserFriendlyException("You must select at least one payroll.");
             }
@@ -216,7 +216,7 @@ namespace HRMv2.Manager.Report
             input.GridParam.MaxResultCount = int.MaxValue;
             input.GridParam.SkipCount = 0;
 
-            var reportData = await GetAllPaging(input);
+            var reportData = GetAllPaging(input);
             var reportSalarys = reportData.Result.Items;
             var worksheet = package.Workbook.Worksheets[0];
             var rowIndex = 2;
