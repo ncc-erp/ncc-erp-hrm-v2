@@ -209,6 +209,7 @@ namespace HRMv2.Authorization
             }
             return _workScope.GetAll<User>()
                 .Where(x => x.UserMezonId == mezonUserId)
+                .Where(s => s.EmailAddress.Contains("@ncc.asia"))                
                 .FirstOrDefault();
         }
 
