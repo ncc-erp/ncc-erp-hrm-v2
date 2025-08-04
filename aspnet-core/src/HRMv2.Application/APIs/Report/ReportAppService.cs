@@ -25,9 +25,9 @@ namespace HRMv2.APIs.Report
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Report_Salary_View)]
-        public async  Task<ResultReportSalary> GetListReportSalary(InputMultiFilterReportSalaryPagingDto input)
+        public ResultReportSalary GetListReportSalary(InputMultiFilterReportSalaryPagingDto input)
         {
-            return await _reportManager.GetAllPaging(input);
+            return _reportManager.GetAllPaging(input);
         }
 
         [HttpPost]

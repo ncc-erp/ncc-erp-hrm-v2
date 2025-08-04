@@ -64,6 +64,8 @@ namespace HRMv2.Users
         public async Task<GridResult<UserDto>> GetAllPaging(GridParam input)
         {
             var quser = from u in _workScope.GetAll<User>()
+                        .OrderByDescending(u => u.IsActive)
+                        .ThenBy(u => u.UserMezonId)
                         select new UserDto
                         {
                             Id = u.Id,
