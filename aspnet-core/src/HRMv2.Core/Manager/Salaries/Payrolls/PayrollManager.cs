@@ -279,7 +279,7 @@ namespace HRMv2.Manager.Payrolls
                 var enity = new PunishmentFund();
                 enity.Amount = amount;
                 enity.Date = new DateTime(payrollApplyDate.Year, payrollApplyDate.Month, DateTime.DaysInMonth(payrollApplyDate.Year, payrollApplyDate.Month));
-                enity.Note = "Insert punishment fund from payroll";
+                enity.Note = $"Insert punishment fund from payroll {payrollApplyDate.Month} - {payrollApplyDate.Year}";
                 WorkScope.InsertAndGetId<PunishmentFund>(enity);
             }
             CurrentUnitOfWork.SaveChanges();
