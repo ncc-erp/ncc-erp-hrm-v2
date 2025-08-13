@@ -106,6 +106,11 @@ namespace HRMv2.Configuration
                     BaseAddress = _appConfiguration.GetValue<string>("TalentService:BaseAddress"),
                     SecurityCode = _appConfiguration.GetValue<string>("TalentService:SecurityCode")
                 },
+                VoucherService = new SettingDto
+                {
+                    BaseAddress = _appConfiguration.GetValue<string>("VoucherService:BaseAddress"),
+                    SecurityCode = _appConfiguration.GetValue<string>("VoucherService:SecurityCode")
+                },
                 KomuService = new KomuSettingDto
                 {
                     BaseAddress = _appConfiguration.GetValue<string>("KomuService:BaseAddress"),

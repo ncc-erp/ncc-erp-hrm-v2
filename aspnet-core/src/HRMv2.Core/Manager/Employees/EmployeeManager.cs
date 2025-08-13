@@ -44,6 +44,7 @@ using System.Threading;
 using DateTimeUtils = NccCore.Uitls.DateTimeUtils;
 using HRMv2.Authorization.Users;
 using HRMv2.Authorization.Roles;
+using HRMv2.WebServices.Voucher;
 
 namespace HRMv2.Manager.Employees
 {
@@ -52,6 +53,7 @@ namespace HRMv2.Manager.Employees
         private readonly ContractManager _contractManager;
         private readonly ProjectService _projectService;
         private readonly TimesheetWebService _timesheetService;
+        private readonly VoucherWebService _voucherWebService;
         private readonly TalentWebService _talentWebService;
         private readonly IMSWebService _IMSWebService;
         private readonly SalaryRequestManager _salaryRequestManager;
@@ -74,8 +76,7 @@ namespace HRMv2.Manager.Employees
             TalentWebService talentWebService,
             IWorkScope workScope,
             SalaryRequestManager salaryRequestManager,
-            BenefitManager benefitManager,
-            UserTypeManager userTypeManager,
+            VoucherWebService voucherWebService,
             ChangeEmployeeWorkingStatusManager changeEmployeeWorkingStatusManager,
             IBackgroundJobManager backgroundJobManager,
             IRepository<BackgroundJobInfo, long> storeJob,
@@ -97,6 +98,7 @@ namespace HRMv2.Manager.Employees
             _storeJob = storeJob;
             Logger = log;
             _userManager = userManager;
+            _voucherWebService = voucherWebService;
         }
         public IQueryable<GetEmployeeDto> QueryAllEmployee()
         {
@@ -1244,6 +1246,8 @@ namespace HRMv2.Manager.Employees
             _IMSWebService.CreateIMSUser(input);
 
             _talentWebService.CreateTalentUser(input);
+
+            _voucherWebService.CreateUser(input);
         }
 
 
@@ -1256,6 +1260,8 @@ namespace HRMv2.Manager.Employees
             _IMSWebService.UpdateIMSUser(input);
 
             _talentWebService.UpdateTalentUser(input);
+
+            _voucherWebService.UpdateUser(input);
         }
 
         private void UpdateEmployeeStatusToOtherTool(CreateUpdateEmployeeDto input)

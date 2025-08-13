@@ -17,6 +17,7 @@ namespace HRMv2.Configuration.Dto
         public SettingDto TimesheetService { get; set; }
         public SettingDto IMSService { get; set; }
         public SettingDto TalentService { get; set; }
+        public SettingDto VoucherService { get; set; }
         public KomuSettingDto KomuService { get; set; }
         public SettingDto HRMService { get; set; }
         public MezonSettingDto MezonService { get; set; }

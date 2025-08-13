@@ -102,7 +102,7 @@ namespace HRMv2.Web.Host.Startup
                 )
             );
             RegisterFileService(services);
-
+            LoadMezonTokenConfig();
             services.Configure<TimesheetConfig>(_appConfiguration.GetSection("TimesheetService"));
             HRMv2Consts.EnableBackgroundJobExecution = _appConfiguration.GetValue<bool?>("App:EnableBackgroundJobExecution") ?? true ;
             HRMv2Consts.HRM_Uri = _appConfiguration.GetValue<string>("App:ClientRootAddress");
@@ -155,12 +155,12 @@ namespace HRMv2.Web.Host.Startup
                 options.SwaggerDoc(_apiVersion, new OpenApiInfo
                 {
                     Version = _apiVersion,
-                    Title = "HRMv2 API",
-                    Description = "HRMv2",
+                    Title = "HRM API",
+                    Description = "HRM",
                     // uncomment if needed TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact
                     {
-                        Name = "HRMv2",
+                        Name = "HRM",
                         Email = string.Empty,
                         Url = new Uri("https://twitter.com/aspboilerplate"),
                     },
@@ -203,7 +203,7 @@ namespace HRMv2.Web.Host.Startup
 
         private void RegisterFileService(IServiceCollection services)
         {
-            LoadMezonTokenConfig();
+           
             LoadUploadFileConfig();
             if (UploadFileConstant.UploadFileProvider == UploadFileConstant.AmazoneS3)
             {

@@ -4,6 +4,7 @@ using HRMv2.WebServices.Komu;
 using HRMv2.WebServices.Mezon;
 using HRMv2.WebServices.Project;
 using HRMv2.WebServices.Timesheet;
+using HRMv2.WebServices.Voucher;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -52,6 +53,12 @@ namespace HRMv2.WebServices
             {
                 option.BaseAddress = new Uri(_appConfiguration.GetValue<string>("KomuService:BaseAddress", "http://localhost:4200/"));
                 option.DefaultRequestHeaders.Add("X-Secret-Key", _appConfiguration.GetValue<string>("KomuService:SecurityCode", "SecurityCode"));
+            });
+
+            services.AddHttpClient<VoucherWebService>(option =>
+            {
+                option.BaseAddress = new Uri(_appConfiguration.GetValue<string>("VoucherService:BaseAddress", "http://localhost:4200/"));
+                option.DefaultRequestHeaders.Add("X-Secret-Key", _appConfiguration.GetValue<string>("VoucherService:SecurityCode", "SecurityCode"));
             });
 
             services.AddHttpClient<MezonWebService>(option => {});
