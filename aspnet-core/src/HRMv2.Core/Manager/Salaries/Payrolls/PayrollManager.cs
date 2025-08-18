@@ -236,11 +236,7 @@ namespace HRMv2.Manager.Payrolls
 
             foreach (var payslip in ListPayslip)
             {
-                var employee = WorkScope.GetAll<Employee>()
-                    .Where(x => x.Id == payslip.EmployeeId)
-                    .FirstOrDefault();
-
-                employee.RemainLeaveDay = payslip.RemainLeaveDayAfter;
+                payslip.Employee.RemainLeaveDay = payslip.RemainLeaveDayAfter;
             }
 
             DeActivePunishmentBonusRefund(payroll.ApplyMonth.Year, payroll.ApplyMonth.Month);
@@ -554,10 +550,11 @@ namespace HRMv2.Manager.Payrolls
                     if (isDebtValid)
                     {
                         debt.Status = DebtStatus.Done;
-                        WorkScope.UpdateAsync(debt);
                     }
                 }
             }
+
+            CurrentUnitOfWork.SaveChanges();
         }
 
         public List<PayrollResultQuery> GetPayrollWithStatusExecuted()
