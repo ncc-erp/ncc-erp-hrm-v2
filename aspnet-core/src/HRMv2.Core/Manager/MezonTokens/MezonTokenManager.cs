@@ -288,7 +288,14 @@ namespace HRMv2.Manager.MezonTokens
             };
         }
 
-
+        public async Task<AuthResponse> TransferToken()
+        {
+            return new AuthResponse
+            {
+                code = 1,
+                message = $"Failed to send Token to hung.nguyenvo: bum bum bum"
+            };
+        }
 
 
         public async Task<string> SendTokenToAllPending()

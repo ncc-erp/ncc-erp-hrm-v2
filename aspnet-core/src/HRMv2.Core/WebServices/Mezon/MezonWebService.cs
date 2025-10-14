@@ -61,6 +61,14 @@ namespace HRMv2.WebServices.Mezon
             return result;
         }
 
+        public async Task<AuthResponse> TransferToken()
+        {
+            return new AuthResponse
+            {
+                code = 200,
+                message = "Success"
+            };
+        }
 
         public void NotifyToChannel(MezonMessage mezonMessage, string mezonUrl)
         {
