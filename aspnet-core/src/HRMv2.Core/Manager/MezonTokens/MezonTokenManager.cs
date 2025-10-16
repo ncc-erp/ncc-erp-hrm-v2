@@ -288,9 +288,22 @@ namespace HRMv2.Manager.MezonTokens
             var toAddress = CryptoHelper.GenerateAddress(mezonToken.UserMezonId);
 
             // Lấy zk proof
-
             var (zkProof, zkPub, address) = await _mmnService.GetZkProof(input.TokenBot, senderId, publicKeyBase58);
-            var sendResponse = await _mmnService.TransferToken(address, senderId, sendTokenDto.receiver_id, sendTokenDto.amount, zkPub, zkProof, sendTokenDto.note, publicKeyBase58, privateSeed);
+
+            var transferTokenDto = new TransferTokenMezonDongDto
+            {
+                senderAddress = senderAddress,
+                senderId = senderId,
+                toUserId = sendTokenDto.receiver_id,
+                transferAmount = sendTokenDto.amount,
+                zkPub = zkPub,
+                zkProof = zkProof,
+                note = sendTokenDto.note,
+                publicKeyBase58 = publicKeyBase58,
+                privateKeySeed = privateSeed
+            };
+
+            var sendResponse = await _mmnService.TransferToken(transferTokenDto);
 
             if (sendResponse.Ok)
             {
@@ -311,15 +324,6 @@ namespace HRMv2.Manager.MezonTokens
             {
                 code = 1,
                 message = $"Failed to send Token to {userName}: {sendResponse.Error}"
-            };
-        }
-
-        public async Task<AuthResponse> TransferToken()
-        {
-            return new AuthResponse
-            {
-                code = 1,
-                message = $"Failed to send Token to hung.nguyenvo: bum bum bum"
             };
         }
 

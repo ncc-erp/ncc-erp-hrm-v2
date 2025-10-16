@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Amazon.S3.Model.Internal.MarshallTransformations;
 using HRMv2.Constants;
+using HRMv2.Manager.MezonTokens.Dto;
 using Mmn;
 using MmnDotNetSdk;
 using MmnDotNetSdk.Models;
@@ -90,40 +91,40 @@ namespace HRMv2.MMN
             var resp = await _client.NodeClient.CheckHealthAsync();
             return resp.Status.ToString();
         }
-        public async Task<MmnDotNetSdk.Models.AddTxResponse> TransferToken(string senderAddress, string senderId, string toUserId, double transferAmount, string zkPub, string zkProof, string note, string publicKeyBase58, byte[] privateKeySeed)
+        public async Task<MmnDotNetSdk.Models.AddTxResponse> TransferToken(TransferTokenMezonDongDto transferTokenDto)
         {
             try
             {
-                var toAddress = CryptoHelper.GenerateAddress(toUserId.ToString());
+                var toAddress = CryptoHelper.GenerateAddress(transferTokenDto.toUserId.ToString());
 
-                var fromAccount = await _client.NodeClient.GetAccountAsync(senderAddress);
+                var fromAccount = await _client.NodeClient.GetAccountAsync(transferTokenDto.senderAddress);
                 var nextNonce = fromAccount.Nonce + 1;
 
-                var amount = BigInteger.Parse(transferAmount.ToString());
+                var amount = BigInteger.Parse(transferTokenDto.transferAmount.ToString());
                 var amountToDecimal = ValidationHelper.AmountToDecimal(amount);
 
                 var extraInfo = new Dictionary<string, string>
                 {
                     ["type"] = "transfer",
-                    ["UserSenderId"] = senderId.ToString(),
-                    ["UserReceiverId"] = toUserId.ToString()
+                    ["UserSenderId"] = transferTokenDto.senderId.ToString(),
+                    ["UserReceiverId"] = transferTokenDto.toUserId.ToString()
                 };
 
                 var unsigned = CryptoHelper.BuildTransferTx(
                     (int)TxType.Transfer,
-                    senderAddress,
+                    transferTokenDto.senderAddress,
                     toAddress,
                     amountToDecimal,
                     nextNonce,
                     (ulong)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                    note,
+                    transferTokenDto.note,
                     extraInfo,
-                    zkProof,
-                    zkPub);
+                    transferTokenDto.zkProof,
+                    transferTokenDto.zkPub);
 
                 //Load publicKey
-                var fromPublicKeyBytes = CryptoHelper.Base58Decode(publicKeyBase58);
-                var signedRaw = CryptoHelper.SignTx(unsigned, fromPublicKeyBytes, privateKeySeed);
+                var fromPublicKeyBytes = CryptoHelper.Base58Decode(transferTokenDto.publicKeyBase58);
+                var signedRaw = CryptoHelper.SignTx(unsigned, fromPublicKeyBytes, transferTokenDto.privateKeySeed);
 
                 var res = await _client.NodeClient.AddTxAsync(signedRaw);
 
