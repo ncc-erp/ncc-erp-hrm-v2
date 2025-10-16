@@ -67,5 +67,11 @@ namespace MmnDotNetSdk.Utils
                 throw new ValidationException($"Unable to deserialize extra info: {ex.Message}");
             }
         }
+
+        public static BigInteger AmountToDecimal(BigInteger amount)
+        {
+            var multiplier = BigInteger.Pow(10, Constants.NativeDecimal);
+            return amount * multiplier;
+        }
     }
 }

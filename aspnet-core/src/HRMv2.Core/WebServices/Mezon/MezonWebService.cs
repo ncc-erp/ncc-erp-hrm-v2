@@ -41,11 +41,13 @@ namespace HRMv2.WebServices.Mezon
         {
             var url = MezonTokenConstant.UrlAuthenticate;
             var tokenApplication = MezonTokenConstant.ApplicationToken;
+            var appId = MezonTokenConstant.ApplicationId;
 
             var authData = await PostAsync<AuthData>(url, new
             {
                 account = new Acount
                 {
+                    appid = appId,
                     token = tokenApplication
                 }
             });
@@ -61,14 +63,6 @@ namespace HRMv2.WebServices.Mezon
             return result;
         }
 
-        public async Task<AuthResponse> TransferToken()
-        {
-            return new AuthResponse
-            {
-                code = 200,
-                message = "Success"
-            };
-        }
 
         public void NotifyToChannel(MezonMessage mezonMessage, string mezonUrl)
         {

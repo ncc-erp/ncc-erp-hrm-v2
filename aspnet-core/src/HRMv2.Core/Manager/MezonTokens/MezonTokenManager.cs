@@ -13,6 +13,7 @@ using HRMv2.Manager.Report.Dto;
 using HRMv2.Manager.Salaries.Dto;
 using HRMv2.Manager.Salaries.Payrolls.Dto;
 using HRMv2.Manager.Salaries.Payslips.Dto;
+using HRMv2.MMN;
 using HRMv2.NccCore;
 using HRMv2.Net.MimeTypes;
 using HRMv2.WebServices.Mezon;
@@ -20,6 +21,7 @@ using HRMv2.WebServices.Mezon.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
+using MmnDotNetSdk.Utils;
 using NccCore.Extension;
 using NccCore.Paging;
 using NccCore.Uitls;
@@ -29,6 +31,7 @@ using System.Collections.Generic;
 using System.Formats.Asn1;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using static HRMv2.Constants.Enum.HRMEnum;
@@ -42,16 +45,19 @@ namespace HRMv2.Manager.MezonTokens
         private readonly IConfiguration _configuration;
         private readonly SendMezonDMService _sendDMService;
         private readonly EmailManager _emailManager;
+        private readonly MmnService _mmnService;
         public MezonTokenManager(IWorkScope workScope,MezonWebService mezonWebService,
             BackgroundJobManager backgroundJobManager,IConfiguration configuration
             ,SendMezonDMService sendDMService,
-            EmailManager emailManager) : base(workScope)
+            EmailManager emailManager,
+            MmnService mmnService) : base(workScope)
         {
             _mezonWebService = mezonWebService;
             _backgroundJobManager = backgroundJobManager;
             _configuration = configuration;
             _sendDMService = sendDMService;
             _emailManager = emailManager;
+            _mmnService = mmnService;
         }
         public async Task<ResultMezonToken> GetAllPaging(InputMezonToken input)
         {
@@ -228,6 +234,10 @@ namespace HRMv2.Manager.MezonTokens
 
         public async Task<AuthResponse> SendToken(InputSendMezonToken input)
         {
+            var senderId = MezonTokenConstant.ApplicationId;
+            var senderAddress = CryptoHelper.GenerateAddress(senderId);
+            var botAccount = await _mmnService.GetAmount(senderAddress);
+
             var mezonToken = await WorkScope.GetAll<MezonToken>()
                 .Where(x => x.Id == input.MezonTokenId)
                 .Select(x => new
@@ -246,7 +256,6 @@ namespace HRMv2.Manager.MezonTokens
                 throw new UserFriendlyException("Mezon Token doesn't exist");
             }
 
-            var url = MezonTokenConstant.UrlSendToken;
             var userName = mezonToken.Email.Split("@")[0];
 
             var sendTokenDto = new SendTokenDto
@@ -257,16 +266,33 @@ namespace HRMv2.Manager.MezonTokens
                 receiver_id = mezonToken.UserMezonId,
                 note = mezonToken.Note,
             };
+            var amount = BigInteger.Parse(sendTokenDto.amount.ToString());
+            var amountToDecimal = ValidationHelper.AmountToDecimal(amount);
+            if (botAccount.Balance.CompareTo(amountToDecimal) < 0)
+            {
+                return new AuthResponse
+                {
+                    code = 1,
+                    message = $"Failed to send Token to {userName}: Not enough balance in bot account"
+                };
+            }
 
             if (string.IsNullOrEmpty(input.TokenBot))
             {
                 var tokenResponse = await _mezonWebService.GetAuthDataMezon();
                 input.TokenBot = tokenResponse.token;
             }
+            // Lấy key pair từ config 
+            var privateKeyHex = MezonTokenConstant.MmnKeyPair;
+            var (publicKeyBase58, privateSeed) = _mmnService.LoadKeyPair(privateKeyHex);
+            var toAddress = CryptoHelper.GenerateAddress(mezonToken.UserMezonId);
 
-            var sendResponse = await _mezonWebService.SendToken(sendTokenDto, url, input.TokenBot);
+            // Lấy zk proof
 
-            if (string.IsNullOrEmpty(sendResponse.message))
+            var (zkProof, zkPub, address) = await _mmnService.GetZkProof(input.TokenBot, senderId, publicKeyBase58);
+            var sendResponse = await _mmnService.TransferToken(address, senderId, sendTokenDto.receiver_id, sendTokenDto.amount, zkPub, zkProof, sendTokenDto.note, publicKeyBase58, privateSeed);
+
+            if (sendResponse.Ok)
             {
                 var entityToUpdate = await WorkScope.GetAsync<MezonToken>(input.MezonTokenId);
                 entityToUpdate.SentToEmployeeAt = DateTimeUtils.GetNow();
@@ -284,7 +310,7 @@ namespace HRMv2.Manager.MezonTokens
             return new AuthResponse
             {
                 code = 1,
-                message = $"Failed to send Token to {userName}: {sendResponse.message}"
+                message = $"Failed to send Token to {userName}: {sendResponse.Error}"
             };
         }
 
