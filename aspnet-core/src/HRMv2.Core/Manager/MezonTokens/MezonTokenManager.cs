@@ -46,6 +46,8 @@ namespace HRMv2.Manager.MezonTokens
         private readonly SendMezonDMService _sendDMService;
         private readonly EmailManager _emailManager;
         private readonly MmnService _mmnService;
+        private static readonly Queue<InputSendMezonToken> _tokenQueue = new();
+
         public MezonTokenManager(IWorkScope workScope, MezonWebService mezonWebService,
             BackgroundJobManager backgroundJobManager, IConfiguration configuration
             , SendMezonDMService sendDMService,
@@ -283,31 +285,37 @@ namespace HRMv2.Manager.MezonTokens
             };
         }
 
-
         public async Task<string> SendTokenToAllPending()
         {
-
             var authData = await _mezonWebService.GetAuthDataMezon();
-            var input = WorkScope.GetAll<MezonToken>()
+
+            var pendingTokens = await WorkScope.GetAll<MezonToken>()
                 .Where(x => x.Status == StatusSendToken.Pending)
                 .Select(x => new InputSendMezonToken
                 {
                     MezonTokenId = x.Id,
                     TokenBot = authData.token
                 })
-                .ToList();
+                .ToListAsync();
 
-            var delaySendToken = 0;
+            foreach (var token in pendingTokens)
+                _tokenQueue.Enqueue(token);
 
-            foreach (var item in input)
+            await ProcessTokenQueue();
+
+            return $"Đã chuyển thành công {pendingTokens.Count} token.";
+        }
+
+        private async Task ProcessTokenQueue()
+        {
+            while (_tokenQueue.Any())
             {
-                Console.WriteLine($"Enqueue sending token job for MezonTokenId: {item.MezonTokenId} with delay {delaySendToken} seconds");
-                _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
-                delaySendToken += 3;
+                var job = _tokenQueue.Dequeue();
+                var result = await SendToken(job);
+                await Task.Delay(TimeSpan.FromSeconds(3));
             }
 
-
-            return $"Started sending token to {input.Count} users.";
         }
+
     }
 }
