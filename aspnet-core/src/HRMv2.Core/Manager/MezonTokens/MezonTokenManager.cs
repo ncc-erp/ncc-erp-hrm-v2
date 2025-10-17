@@ -46,9 +46,9 @@ namespace HRMv2.Manager.MezonTokens
         private readonly SendMezonDMService _sendDMService;
         private readonly EmailManager _emailManager;
         private readonly MmnService _mmnService;
-        public MezonTokenManager(IWorkScope workScope,MezonWebService mezonWebService,
-            BackgroundJobManager backgroundJobManager,IConfiguration configuration
-            ,SendMezonDMService sendDMService,
+        public MezonTokenManager(IWorkScope workScope, MezonWebService mezonWebService,
+            BackgroundJobManager backgroundJobManager, IConfiguration configuration
+            , SendMezonDMService sendDMService,
             EmailManager emailManager,
             MmnService mmnService) : base(workScope)
         {
@@ -66,10 +66,10 @@ namespace HRMv2.Manager.MezonTokens
 
             if (input.PayrollIds != null && input.PayrollIds.Any())
             {
-                query = query.Where(x => (x.PayrollId == null && input.PayrollIds.Contains(-1)) || 
+                query = query.Where(x => (x.PayrollId == null && input.PayrollIds.Contains(-1)) ||
                  (x.PayrollId != null && input.PayrollIds.Contains(x.PayrollId.Value)));
             }
-           
+
 
 
             var queryFilter = query.ApplySearchAndFilter(input.GridParam);
@@ -78,7 +78,7 @@ namespace HRMv2.Manager.MezonTokens
 
             var totalCount = queryFilter.Count();
 
-            var pagedResult =await queryFilter.TakePage(input.GridParam).ToListAsync();
+            var pagedResult = await queryFilter.TakePage(input.GridParam).ToListAsync();
             return new ResultMezonToken
             {
                 Result = new GridResult<MezonTokenDto>(pagedResult, totalCount),
@@ -113,11 +113,11 @@ namespace HRMv2.Manager.MezonTokens
                           Name = x.Employee.Level.Name,
                           Color = x.Employee.Level.Color
                       },
-                     JobPositionInfo = new BadgeInfoDto
-                     {
-                         Name = x.Employee.JobPosition.Name,
-                         Color = x.Employee.JobPosition.Color
-                     },
+                      JobPositionInfo = new BadgeInfoDto
+                      {
+                          Name = x.Employee.JobPosition.Name,
+                          Color = x.Employee.JobPosition.Color
+                      },
                       ReferenceId = x.ReferenceId,
                       PayrollId = x.PayrollId,
                       PayrollApplyMonth = x.Payroll != null ? x.Payroll.ApplyMonth : null
@@ -127,7 +127,7 @@ namespace HRMv2.Manager.MezonTokens
         public async Task<MezonTokenDto> Create(MezonTokenDto input)
         {
             var entity = ObjectMapper.Map<MezonToken>(input);
-            entity.Status =StatusSendToken.Pending;
+            entity.Status = StatusSendToken.Pending;
             input.Id = await WorkScope.InsertAndGetIdAsync(entity);
             return input;
         }
@@ -196,7 +196,7 @@ namespace HRMv2.Manager.MezonTokens
 
                     string fileBase64 = Convert.ToBase64String(template.GetAsByteArray());
 
-                    return  new FileBase64Dto
+                    return new FileBase64Dto
                     {
                         FileName = "MezonToken",
                         FileType = MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet,
@@ -213,13 +213,13 @@ namespace HRMv2.Manager.MezonTokens
 
             foreach (var mezonToken in data)
             {
-                onboardMezonTokenSheet.Cells[onboardRowIndex, 1].Value = onboardRowIndex -1 ;
+                onboardMezonTokenSheet.Cells[onboardRowIndex, 1].Value = onboardRowIndex - 1;
                 onboardMezonTokenSheet.Cells[onboardRowIndex, 2].Value = mezonToken.EmailAddress;
                 onboardMezonTokenSheet.Cells[onboardRowIndex, 3].Value = mezonToken.Amount;
                 onboardMezonTokenSheet.Cells[onboardRowIndex, 4].Value = mezonToken.Note;
                 onboardMezonTokenSheet.Cells[onboardRowIndex, 5].Value = mezonToken.Status;
                 onboardMezonTokenSheet.Cells[onboardRowIndex, 6].Value = mezonToken.SentAt;
-               
+
                 onboardRowIndex++;
             }
 
@@ -331,7 +331,7 @@ namespace HRMv2.Manager.MezonTokens
         public async Task<string> SendTokenToAllPending()
         {
 
-            var authData =await _mezonWebService.GetAuthDataMezon();
+            var authData = await _mezonWebService.GetAuthDataMezon();
             var input = WorkScope.GetAll<MezonToken>()
                 .Where(x => x.Status == StatusSendToken.Pending)
                 .Select(x => new InputSendMezonToken
@@ -343,12 +343,14 @@ namespace HRMv2.Manager.MezonTokens
 
             var delaySendToken = 0;
 
-            foreach(var item in input)
+            foreach (var item in input)
             {
+                Console.WriteLine($"Enqueue sending token job for MezonTokenId: {item.MezonTokenId} with delay {delaySendToken} seconds");
                 _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
                 delaySendToken += 3;
             }
-           
+
+
             return $"Started sending token to {input.Count} users.";
         }
     }

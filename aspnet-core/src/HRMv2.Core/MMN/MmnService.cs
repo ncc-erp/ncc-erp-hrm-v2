@@ -91,14 +91,15 @@ namespace HRMv2.MMN
             var resp = await _client.NodeClient.CheckHealthAsync();
             return resp.Status.ToString();
         }
+
         public async Task<MmnDotNetSdk.Models.AddTxResponse> TransferToken(TransferTokenMezonDongDto transferTokenDto)
         {
             try
             {
                 var toAddress = CryptoHelper.GenerateAddress(transferTokenDto.toUserId.ToString());
 
-                var fromAccount = await _client.NodeClient.GetAccountAsync(transferTokenDto.senderAddress);
-                var nextNonce = fromAccount.Nonce + 1;
+                var currentNonce = await _client.NodeClient.GetCurrentNonceAsync(transferTokenDto.senderAddress, "pending");
+                var nextNonce = currentNonce + 1;
 
                 var amount = BigInteger.Parse(transferTokenDto.transferAmount.ToString());
                 var amountToDecimal = ValidationHelper.AmountToDecimal(amount);
