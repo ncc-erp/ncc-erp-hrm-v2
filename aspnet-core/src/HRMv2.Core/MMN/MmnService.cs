@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Amazon.S3.Model.Internal.MarshallTransformations;
 using HRMv2.Constants;
+using HRMv2.Entities;
 using HRMv2.Manager.MezonTokens.Dto;
 using Mmn;
 using MmnDotNetSdk;
@@ -28,8 +29,8 @@ namespace HRMv2.MMN
         {
             var config = new Config
             {
-                Endpoint = "http://172.16.100.180:9001",
-                ZkProveEndpoint = "https://dev-mmn.nccsoft.vn/zk-api"
+                Endpoint = MmnConstant.NodeEndpoint,
+                ZkProveEndpoint = MmnConstant.ZkProveEndpoint
             };
             _client = new MmnClient(config);
         }
@@ -92,40 +93,49 @@ namespace HRMv2.MMN
             return resp.Status.ToString();
         }
 
-        public async Task<MmnDotNetSdk.Models.AddTxResponse> TransferToken(TransferTokenMezonDongDto transferTokenDto)
+        public async Task<MmnDotNetSdk.Models.AddTxResponse> TransferToken(SendTokenDto sendTokenDto, InputSendMezonToken input)
         {
             try
             {
-                var toAddress = CryptoHelper.GenerateAddress(transferTokenDto.toUserId.ToString());
+                var senderId = MezonTokenConstant.ApplicationId;
+                var senderAddress = CryptoHelper.GenerateAddress(senderId);
+                var botAccount = await this.GetAmount(senderAddress);
+                var toAddress = CryptoHelper.GenerateAddress(sendTokenDto.receiver_id.ToString());
 
-                var currentNonce = await _client.NodeClient.GetCurrentNonceAsync(transferTokenDto.senderAddress, "pending");
+                var currentNonce = await _client.NodeClient.GetCurrentNonceAsync(senderAddress, "pending");
                 var nextNonce = currentNonce + 1;
 
-                var amount = BigInteger.Parse(transferTokenDto.transferAmount.ToString());
+                var amount = BigInteger.Parse(sendTokenDto.amount.ToString());
                 var amountToDecimal = ValidationHelper.AmountToDecimal(amount);
 
                 var extraInfo = new Dictionary<string, string>
                 {
-                    ["type"] = "transfer",
-                    ["UserSenderId"] = transferTokenDto.senderId.ToString(),
-                    ["UserReceiverId"] = transferTokenDto.toUserId.ToString()
+                    ["type"] = MmnConstant.HRMTransferType,
+                    ["UserSenderId"] = senderId.ToString(),
+                    ["UserReceiverId"] = sendTokenDto.receiver_id.ToString()
                 };
+                // Lấy key pair từ config 
+                var privateKeyHex = MezonTokenConstant.MmnKeyPair;
+                var (publicKeyBase58, privateKeySeed) = this.LoadKeyPair(privateKeyHex);
+
+                // Lấy zk proof
+                var (zkProof, zkPub, address) = await GetZkProof(input.TokenBot, senderId, publicKeyBase58);
 
                 var unsigned = CryptoHelper.BuildTransferTx(
                     (int)TxType.Transfer,
-                    transferTokenDto.senderAddress,
+                    senderAddress,
                     toAddress,
                     amountToDecimal,
                     nextNonce,
                     (ulong)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                    transferTokenDto.note,
+                    sendTokenDto.note,
                     extraInfo,
-                    transferTokenDto.zkProof,
-                    transferTokenDto.zkPub);
+                    zkProof,
+                    zkPub);
 
                 //Load publicKey
-                var fromPublicKeyBytes = CryptoHelper.Base58Decode(transferTokenDto.publicKeyBase58);
-                var signedRaw = CryptoHelper.SignTx(unsigned, fromPublicKeyBytes, transferTokenDto.privateKeySeed);
+                var fromPublicKeyBytes = CryptoHelper.Base58Decode(publicKeyBase58);
+                var signedRaw = CryptoHelper.SignTx(unsigned, fromPublicKeyBytes, privateKeySeed);
 
                 var res = await _client.NodeClient.AddTxAsync(signedRaw);
 

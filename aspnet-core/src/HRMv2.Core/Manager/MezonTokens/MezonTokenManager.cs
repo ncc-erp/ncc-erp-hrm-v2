@@ -234,83 +234,38 @@ namespace HRMv2.Manager.MezonTokens
 
         public async Task<AuthResponse> SendToken(InputSendMezonToken input)
         {
-            var senderId = MezonTokenConstant.ApplicationId;
-            var senderAddress = CryptoHelper.GenerateAddress(senderId);
-            var botAccount = await _mmnService.GetAmount(senderAddress);
+
 
             var mezonToken = await WorkScope.GetAll<MezonToken>()
-                .Where(x => x.Id == input.MezonTokenId)
-                .Select(x => new
-                {
-                    x.Amount,
-                    x.Note,
-                    x.Status,
-                    x.SentToEmployeeAt,
-                    Email = x.Employee.Email,
-                    x.Employee.UserMezonId
-                })
-                .FirstOrDefaultAsync();
+            .Include(x => x.Employee)
+            .FirstOrDefaultAsync(x => x.Id == input.MezonTokenId);
 
-            if (mezonToken == null)
-            {
-                throw new UserFriendlyException("Mezon Token doesn't exist");
-            }
 
-            var userName = mezonToken.Email.Split("@")[0];
+            var userName = mezonToken.Employee.Email.Split("@")[0];
 
             var sendTokenDto = new SendTokenDto
             {
                 sender_id = MezonTokenConstant.ApplicationId,
                 sender_name = MezonTokenConstant.Name,
                 amount = mezonToken.Amount,
-                receiver_id = mezonToken.UserMezonId,
+                receiver_id = mezonToken.Employee.UserMezonId,
                 note = mezonToken.Note,
             };
-            var amount = BigInteger.Parse(sendTokenDto.amount.ToString());
-            var amountToDecimal = ValidationHelper.AmountToDecimal(amount);
-            if (botAccount.Balance.CompareTo(amountToDecimal) < 0)
-            {
-                return new AuthResponse
-                {
-                    code = 1,
-                    message = $"Failed to send Token to {userName}: Not enough balance in bot account"
-                };
-            }
 
             if (string.IsNullOrEmpty(input.TokenBot))
             {
                 var tokenResponse = await _mezonWebService.GetAuthDataMezon();
                 input.TokenBot = tokenResponse.token;
             }
-            // Lấy key pair từ config 
-            var privateKeyHex = MezonTokenConstant.MmnKeyPair;
-            var (publicKeyBase58, privateSeed) = _mmnService.LoadKeyPair(privateKeyHex);
-            var toAddress = CryptoHelper.GenerateAddress(mezonToken.UserMezonId);
 
-            // Lấy zk proof
-            var (zkProof, zkPub, address) = await _mmnService.GetZkProof(input.TokenBot, senderId, publicKeyBase58);
-
-            var transferTokenDto = new TransferTokenMezonDongDto
-            {
-                senderAddress = senderAddress,
-                senderId = senderId,
-                toUserId = sendTokenDto.receiver_id,
-                transferAmount = sendTokenDto.amount,
-                zkPub = zkPub,
-                zkProof = zkProof,
-                note = sendTokenDto.note,
-                publicKeyBase58 = publicKeyBase58,
-                privateKeySeed = privateSeed
-            };
-
-            var sendResponse = await _mmnService.TransferToken(transferTokenDto);
+            var sendResponse = await _mmnService.TransferToken(sendTokenDto, input);
 
             if (sendResponse.Ok)
             {
-                var entityToUpdate = await WorkScope.GetAsync<MezonToken>(input.MezonTokenId);
-                entityToUpdate.SentToEmployeeAt = DateTimeUtils.GetNow();
-                entityToUpdate.Status = StatusSendToken.SentToEmployee;
-                await WorkScope.UpdateAsync(entityToUpdate);
+                mezonToken.SentToEmployeeAt = DateTimeUtils.GetNow();
+                mezonToken.Status = StatusSendToken.SentToEmployee;
+                mezonToken.Note = $"{mezonToken.Note}\n MmnTxn: {sendResponse.TxHash}";
+                await WorkScope.UpdateAsync(mezonToken);
 
                 SendNotiDM(input.MezonTokenId);
                 return new AuthResponse
@@ -323,7 +278,8 @@ namespace HRMv2.Manager.MezonTokens
             return new AuthResponse
             {
                 code = 1,
-                message = $"Failed to send Token to {userName}: {sendResponse.Error}"
+                //message = $"Failed to send Token to {userName}: {sendResponse.Error}"
+                message = ""
             };
         }
 

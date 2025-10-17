@@ -15,4 +15,12 @@ namespace HRMv2.Constants
         public static string UrlAuthenticate { get; set; }
         public static string MmnKeyPair { get; set; }
     }
+
+    public class MmnConstant
+    {
+        public static string NodeEndpoint { get; set; }
+        public static string ZkProveEndpoint { get; set; }
+        public static string HRMTransferType { get; } = "HRMTransfer";
+    }
+
 }
