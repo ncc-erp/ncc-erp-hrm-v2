@@ -280,12 +280,11 @@ namespace HRMv2.Manager.MezonTokens
             return new AuthResponse
             {
                 code = 1,
-                //message = $"Failed to send Token to {userName}: {sendResponse.Error}"
-                message = ""
+                message = $"Failed to send Token to {userName} because BotHRM has run out of tokens."
             };
         }
 
-        public async Task<string> SendTokenToAllPending()
+        public async Task<AuthResponse> SendTokenToAllPending()
         {
             var authData = await _mezonWebService.GetAuthDataMezon();
 
@@ -301,19 +300,38 @@ namespace HRMv2.Manager.MezonTokens
             foreach (var token in pendingTokens)
                 _tokenQueue.Enqueue(token);
 
-            await ProcessTokenQueue();
-
-            return $"Đã chuyển thành công {pendingTokens.Count} token.";
+            return await ProcessTokenQueue();
         }
 
-        private async Task ProcessTokenQueue()
+        private async Task<AuthResponse> ProcessTokenQueue()
         {
+            if( !_tokenQueue.Any())
+            {
+                return new AuthResponse
+                {
+                    code = 1,
+                    message = "No pending tokens to send."
+                };
+            }
             while (_tokenQueue.Any())
             {
                 var job = _tokenQueue.Dequeue();
-                var result = await SendToken(job);
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                var res = await SendToken(job);
+                if(res.code == 1)
+                {
+                    return new AuthResponse
+                    {
+                        code = 1,
+                        message = res.message
+                    };
+                }
+                await Task.Delay(TimeSpan.FromSeconds(0.1));
             }
+            return new AuthResponse
+            {
+                code = 0,
+                message = "All pending tokens have been sent successfully."
+            };
 
         }
 
