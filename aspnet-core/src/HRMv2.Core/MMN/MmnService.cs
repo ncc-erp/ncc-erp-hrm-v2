@@ -93,33 +93,33 @@ namespace HRMv2.MMN
             return resp.Status.ToString();
         }
 
-        public async Task<MmnDotNetSdk.Models.AddTxResponse> TransferToken(SendTokenDto sendTokenDto, InputSendMezonToken input)
+        public async Task<MmnDotNetSdk.Models.AddTxResponse> TransferToken(MmnTransferTokenDto mmnTransferTokenDto)
         {
             try
             {
-                var senderId = MezonTokenConstant.ApplicationId;
+                var senderId = MezonTokenConstant.BotId;
                 var senderAddress = CryptoHelper.GenerateAddress(senderId);
                 var botAccount = await this.GetAmount(senderAddress);
-                var toAddress = CryptoHelper.GenerateAddress(sendTokenDto.receiver_id.ToString());
+                var toAddress = CryptoHelper.GenerateAddress(mmnTransferTokenDto.receiver_id.ToString());
 
                 var currentNonce = await _client.NodeClient.GetCurrentNonceAsync(senderAddress, "pending");
                 var nextNonce = currentNonce + 1;
 
-                var amount = BigInteger.Parse(sendTokenDto.amount.ToString());
+                var amount = BigInteger.Parse(mmnTransferTokenDto.amount.ToString());
                 var amountToDecimal = ValidationHelper.AmountToDecimal(amount);
 
                 var extraInfo = new Dictionary<string, string>
                 {
                     ["type"] = MmnConstant.HRMTransferType,
                     ["UserSenderId"] = senderId.ToString(),
-                    ["UserReceiverId"] = sendTokenDto.receiver_id.ToString()
+                    ["UserReceiverId"] = mmnTransferTokenDto.receiver_id.ToString()
                 };
                 // Lấy key pair từ config 
                 var privateKeyHex = MezonTokenConstant.MmnKeyPair;
                 var (publicKeyBase58, privateKeySeed) = this.LoadKeyPair(privateKeyHex);
 
                 // Lấy zk proof
-                var (zkProof, zkPub, address) = await GetZkProof(input.TokenBot, senderId, publicKeyBase58);
+                var (zkProof, zkPub, address) = await GetZkProof(mmnTransferTokenDto.JwtTokenBot, senderId, publicKeyBase58);
 
                 var unsigned = CryptoHelper.BuildTransferTx(
                     (int)TxType.Transfer,
@@ -128,7 +128,7 @@ namespace HRMv2.MMN
                     amountToDecimal,
                     nextNonce,
                     (ulong)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                    sendTokenDto.note,
+                    mmnTransferTokenDto.note,
                     extraInfo,
                     zkProof,
                     zkPub);

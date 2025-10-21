@@ -238,36 +238,45 @@ namespace HRMv2.Manager.MezonTokens
         {
 
 
-            var mezonToken = await WorkScope.GetAll<MezonToken>()
-            .Include(x => x.Employee)
-            .FirstOrDefaultAsync(x => x.Id == input.MezonTokenId);
-
-
-            var userName = mezonToken.Employee.Email.Split("@")[0];
-
-            var sendTokenDto = new SendTokenDto
+            var mezonTokenInfo = await WorkScope.GetAll<MezonToken>()
+            .Select(s => new
             {
-                sender_id = MezonTokenConstant.ApplicationId,
-                sender_name = MezonTokenConstant.Name,
-                amount = mezonToken.Amount,
-                receiver_id = mezonToken.Employee.UserMezonId,
-                note = mezonToken.Note,
-            };
+                MezonToken = s,
+                Email = s.Employee.Email,
+                UserMezonId = s.Employee.UserMezonId
+            })
+            .FirstOrDefaultAsync(x => x.MezonToken.Id == input.MezonTokenId);
 
-            if (string.IsNullOrEmpty(input.TokenBot))
+            if (mezonTokenInfo == null)
             {
-                var tokenResponse = await _mezonWebService.GetAuthDataMezon();
-                input.TokenBot = tokenResponse.token;
+                throw new UserFriendlyException("Mezon Token doesn't exist");
             }
 
-            var sendResponse = await _mmnService.TransferToken(sendTokenDto, input);
+
+            var userName = mezonTokenInfo.Email.Split("@")[0];
+
+            var mmnTransferTokenDto = new MmnTransferTokenDto
+            {
+                sender_id = MezonTokenConstant.BotId,
+                amount = mezonTokenInfo.MezonToken.Amount,
+                receiver_id = mezonTokenInfo.UserMezonId,
+                note = mezonTokenInfo.MezonToken.Note,
+            };
+
+            if (string.IsNullOrEmpty(mmnTransferTokenDto.JwtTokenBot))
+            {
+                var tokenResponse = await _mezonWebService.GetAuthDataMezon();
+                mmnTransferTokenDto.JwtTokenBot = tokenResponse.token;
+            }
+
+            var sendResponse = await _mmnService.TransferToken(mmnTransferTokenDto);
 
             if (sendResponse.Ok)
             {
-                mezonToken.SentToEmployeeAt = DateTimeUtils.GetNow();
-                mezonToken.Status = StatusSendToken.SentToEmployee;
-                mezonToken.Note = $"{mezonToken.Note}\n MmnTxn: {sendResponse.TxHash}";
-                await WorkScope.UpdateAsync(mezonToken);
+                mezonTokenInfo.MezonToken.SentToEmployeeAt = DateTimeUtils.GetNow();
+                mezonTokenInfo.MezonToken.Status = StatusSendToken.SentToEmployee;
+                mezonTokenInfo.MezonToken.Note = $"{mezonTokenInfo.MezonToken.Note}\n MmnTxn: {sendResponse.TxHash}";
+                await WorkScope.UpdateAsync(mezonTokenInfo.MezonToken);
 
                 SendNotiDM(input.MezonTokenId);
                 return new AuthResponse
@@ -284,56 +293,29 @@ namespace HRMv2.Manager.MezonTokens
             };
         }
 
-        public async Task<AuthResponse> SendTokenToAllPending()
+        public async Task<string> SendTokenToAllPending()
         {
-            var authData = await _mezonWebService.GetAuthDataMezon();
 
-            var pendingTokens = await WorkScope.GetAll<MezonToken>()
+            var authData = await _mezonWebService.GetAuthDataMezon();
+            var input = WorkScope.GetAll<MezonToken>()
                 .Where(x => x.Status == StatusSendToken.Pending)
                 .Select(x => new InputSendMezonToken
                 {
                     MezonTokenId = x.Id,
-                    TokenBot = authData.token
+                    JwtTokenBot = authData.token
                 })
-                .ToListAsync();
+                .ToList();
 
-            foreach (var token in pendingTokens)
-                _tokenQueue.Enqueue(token);
+            var delaySendToken = 0;
 
-            return await ProcessTokenQueue();
-        }
-
-        private async Task<AuthResponse> ProcessTokenQueue()
-        {
-            if( !_tokenQueue.Any())
+            foreach (var item in input)
             {
-                return new AuthResponse
-                {
-                    code = 1,
-                    message = "No pending tokens to send."
-                };
+                _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
+                delaySendToken += 3;
             }
-            while (_tokenQueue.Any())
-            {
-                var job = _tokenQueue.Dequeue();
-                var res = await SendToken(job);
-                if(res.code == 1)
-                {
-                    return new AuthResponse
-                    {
-                        code = 1,
-                        message = res.message
-                    };
-                }
-                await Task.Delay(TimeSpan.FromSeconds(0.1));
-            }
-            return new AuthResponse
-            {
-                code = 0,
-                message = "All pending tokens have been sent successfully."
-            };
 
+
+            return $"Started sending token to {input.Count} users.";
         }
-
     }
 }

@@ -16,7 +16,6 @@ namespace HRMv2
             Configuration.Authorization.Providers.Add<HRMv2AuthorizationProvider>();
             Configuration.MultiTenancy.IsEnabled = HRMv2Consts.MultiTenancyEnabled;
             Configuration.MultiTenancy.TenantIdResolveKey = "Abp-TenantId";
-            Configuration.BackgroundJobs.IsJobExecutionEnabled = true;
 
 
 

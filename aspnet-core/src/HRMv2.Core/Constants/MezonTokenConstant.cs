@@ -8,10 +8,8 @@ namespace HRMv2.Constants
 {
     public class MezonTokenConstant
     {
-        public static string ApplicationToken { get; set; }
-        public static string ApplicationId {  get; set; }
-        public static string Name { get; set; }
-        //public static string UrlSendToken { get; set; }
+        public static string BotToken { get; set; }
+        public static string BotId {  get; set; }
         public static string UrlAuthenticate { get; set; }
         public static string MmnKeyPair { get; set; }
     }
