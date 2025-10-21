@@ -242,8 +242,8 @@ namespace HRMv2.Manager.MezonTokens
             .Select(s => new
             {
                 MezonToken = s,
-                Email = s.Employee.Email,
-                UserMezonId = s.Employee.UserMezonId
+                s.Employee.Email,
+                s.Employee.UserMezonId
             })
             .FirstOrDefaultAsync(x => x.MezonToken.Id == input.MezonTokenId);
 
@@ -269,13 +269,13 @@ namespace HRMv2.Manager.MezonTokens
                 mmnTransferTokenDto.JwtTokenBot = tokenResponse.token;
             }
 
-            var sendResponse = await _mmnService.TransferToken(mmnTransferTokenDto);
+            var response = await _mmnService.TransferToken(mmnTransferTokenDto);
 
-            if (sendResponse.Ok)
+            if (response.Ok)
             {
                 mezonTokenInfo.MezonToken.SentToEmployeeAt = DateTimeUtils.GetNow();
                 mezonTokenInfo.MezonToken.Status = StatusSendToken.SentToEmployee;
-                mezonTokenInfo.MezonToken.Note = $"{mezonTokenInfo.MezonToken.Note}\n MmnTxn: {sendResponse.TxHash}";
+                mezonTokenInfo.MezonToken.Note = $"{mezonTokenInfo.MezonToken.Note}\n MmnTxn: {response.TxHash}";
                 await WorkScope.UpdateAsync(mezonTokenInfo.MezonToken);
 
                 SendNotiDM(input.MezonTokenId);
