@@ -235,14 +235,9 @@ getListPayroll() {
       this.subscription.push(
         this.mezonTokenService.sentAllMezonTokenPending().subscribe({
           next: (rs) => {
-            if (rs.result.code == 0) {
-              abp.message.success(rs.result.message);
-              this.refresh();
-            } 
-            else{
-              abp.message.error(rs.result.message);
-              this.refresh();
-            }
+             if (rs.result) {           
+              abp.message.success(rs.result);
+             }
           }
         })
       );
