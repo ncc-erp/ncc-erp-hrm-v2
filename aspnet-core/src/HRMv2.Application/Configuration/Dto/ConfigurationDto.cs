@@ -26,9 +26,8 @@ namespace HRMv2.Configuration.Dto
 
     public class BotHRMSetting
     {
-        public string NameBot { get; set; }
-        public string ApplicationId { get; set; }
-        public string ApplicationToken { get; set; }
+        public string BotId { get; set; }
+        public string BotToken { get; set; }
         public string UrlSentToken { get; set; }
         public string UrlAuthenticate { get; set; }
     }

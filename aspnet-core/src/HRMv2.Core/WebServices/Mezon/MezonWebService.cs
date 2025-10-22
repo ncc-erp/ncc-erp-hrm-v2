@@ -40,19 +40,21 @@ namespace HRMv2.WebServices.Mezon
         public async Task<AuthData> GetAuthDataMezon()
         {
             var url = MezonTokenConstant.UrlAuthenticate;
-            var tokenApplication = MezonTokenConstant.ApplicationToken;
+            var tokenApplication = MezonTokenConstant.BotToken;
+            var appId = MezonTokenConstant.BotId;
 
             var authData = await PostAsync<AuthData>(url, new
             {
                 account = new Acount
                 {
+                    appid = appId,
                     token = tokenApplication
                 }
             });
             return authData;
         }
 
-        public async Task<AuthResponse> SendToken(SendTokenDto input, string url,string token)
+        public async Task<AuthResponse> SendToken(MmnTransferTokenDto input, string url,string token)
         {
             SetAuthorizationToken(token);
 

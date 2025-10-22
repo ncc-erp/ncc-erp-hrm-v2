@@ -133,9 +133,8 @@ namespace HRMv2.Configuration
                 },
                BotHRM = new BotHRMSetting
                {
-                   NameBot = _appConfiguration.GetValue<string>("BotHRM:Name"),
-                   ApplicationToken = _appConfiguration.GetValue<string>("BotHRM:Application_Token"),
-                   ApplicationId = _appConfiguration.GetValue<string>("BotHRM:Application_Id"),
+                   BotId = _appConfiguration.GetValue<string>("BotHRM:Bot_Token"),
+                   BotToken = _appConfiguration.GetValue<string>("BotHRM:Bot_Id"),
                    UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate"),
                    UrlSentToken = _appConfiguration.GetValue<string>("BotHRM:Url_Sent_Token"),
                }
