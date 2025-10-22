@@ -41,7 +41,6 @@ namespace HRMv2.Web.Host.Startup
 
         private readonly IConfigurationRoot _appConfiguration;
         private readonly IWebHostEnvironment _hostingEnvironment;
-
         public Startup(IWebHostEnvironment env)
         {
             _hostingEnvironment = env;
@@ -264,13 +263,14 @@ namespace HRMv2.Web.Host.Startup
             MezonTokenConstant.BotToken = _appConfiguration.GetValue<string>("BotHRM:Bot_Token"); ;
             MezonTokenConstant.BotId = _appConfiguration.GetValue<string>("BotHRM:Bot_Id"); ;
             MezonTokenConstant.UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate"); ;
-            MezonTokenConstant.MmnKeyPair = _appConfiguration.GetValue<string>("BotHRM:MmnKeyPair");
 
         }
         private void LoadMmnConfig()
         {
             MmnConstant.NodeEndpoint = _appConfiguration.GetValue<string>("Mmn:NodeEndpoint");
             MmnConstant.ZkProveEndpoint = _appConfiguration.GetValue<string>("Mmn:ZkProveEndpoint");
+            var (_, privateKey) = MmnDotNetSdk.Utils.CryptoHelper.GenerateEd25519KeyPair();
+            MmnConstant.EphemeralMmnKeyPair = Convert.ToHexString(privateKey);
         }
         
     }
