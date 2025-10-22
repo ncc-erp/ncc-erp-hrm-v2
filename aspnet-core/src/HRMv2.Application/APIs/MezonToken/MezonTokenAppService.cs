@@ -76,6 +76,5 @@ namespace HRMv2.APIs.PayrollToken
         {
           return await _mezonTokneManager.SendTokenToAllPending();
         }
-
     }
 }

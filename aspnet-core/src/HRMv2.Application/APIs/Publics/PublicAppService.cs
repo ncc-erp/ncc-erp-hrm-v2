@@ -16,10 +16,13 @@ using HRMv2.Manager.Debts.Dto;
 using HRMv2.Manager.Employees;
 using HRMv2.Manager.Employees.Dto;
 using HRMv2.Manager.Home;
+using HRMv2.Manager.MezonTokens;
 using HRMv2.Manager.PunishmentFunds;
 using HRMv2.Manager.PunishmentFunds.Dto;
+using HRMv2.MMN;
 using HRMv2.NCC;
 using HRMv2.WebServices.Dto;
+using HRMv2.WebServices.Mezon;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -47,7 +50,7 @@ namespace HRMv2.APIs.Publics
         private readonly JobPositionManager _jobPositionManager;
         private readonly BranchManager _branchManager;
         private readonly CalculateSalaryHub _calculateSalaryHub;
-
+        private readonly MmnService _mmnService;
         public PublicAppService(EmployeeManager employeeManager, IConfiguration configuration,
             PunishmentFundManager punishmentFundsManager,
             HomePageManager homePageManager,
@@ -57,7 +60,8 @@ namespace HRMv2.APIs.Publics
             LevelManager levelManager,
             JobPositionManager jobPositionManager,
             BranchManager branchManager,
-            CalculateSalaryHub calculateSalaryHub
+            CalculateSalaryHub calculateSalaryHub,
+            MmnService mmnService
             )
         {
             _employeeManager = employeeManager;
@@ -71,6 +75,7 @@ namespace HRMv2.APIs.Publics
             _jobPositionManager = jobPositionManager;
             _branchManager = branchManager;
             _calculateSalaryHub = calculateSalaryHub;
+            _mmnService = mmnService;
         }
 
         [HttpGet]
@@ -252,6 +257,17 @@ namespace HRMv2.APIs.Publics
         public List<BranchPublicDto> GetAllBranch()
         {
             return _branchManager.GetAllPublic();
+        }
+        //[HttpPost]
+        //public (byte[] publicKey, byte[] privateKey) SaveKeyPair()
+        //{
+        //    return _mmnService.SaveKeyPair();
+        //}
+
+        [HttpGet]
+        public async Task<string> GetMmnHealthCheck()
+        {
+            return await _mmnService.CheckHealthClient();
         }
     }
 }
