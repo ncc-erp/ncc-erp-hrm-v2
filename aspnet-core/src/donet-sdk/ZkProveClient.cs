@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MmnDotNetSdk.Models;
 
 namespace MmnDotNetSdk
 {
@@ -73,5 +74,31 @@ namespace MmnDotNetSdk
 
             return proveResp;
         }
+        
+        public async Task<HealthCheckResponse> HealthCheckAsync()
+        {
+            var url = $"{_endpoint}/health/check";
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain, */*");
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Health check failed: {(int)response.StatusCode} {response.ReasonPhrase} - {errorBody}");
+            }
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var health = JsonSerializer.Deserialize<HealthCheckResponse>(responseBody, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return health ?? new HealthCheckResponse();
+        }
+        
     }
 }

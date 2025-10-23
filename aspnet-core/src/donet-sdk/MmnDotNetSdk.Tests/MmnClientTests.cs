@@ -156,6 +156,36 @@ namespace MmnDotNetSdk.Tests
         }
 
         [Fact]
+        public async Task TestClient_ZkHealthCheck()
+        {
+            try
+            {
+                var resp = await _client.ZkProveClient.HealthCheckAsync();
+
+                Assert.NotNull(resp);
+                Assert.NotNull(resp.Status);
+                Assert.NotEmpty(resp.Status);
+                Assert.NotNull(resp.Message);
+                Assert.NotEmpty(resp.Message);
+                Assert.NotNull(resp.Version);
+                Assert.NotEmpty(resp.Version);
+                Assert.True(resp.Timestamp > 0);
+
+                Console.WriteLine($"ZK Health Check - Status: {resp.Status}");
+                Console.WriteLine($"ZK Health Check - Message: {resp.Message}");
+                Console.WriteLine($"ZK Health Check - Version: {resp.Version}");
+                Console.WriteLine($"ZK Health Check - Timestamp: {resp.Timestamp}");
+
+                Assert.Equal("healthy", resp.Status);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+                Console.WriteLine($"ZK health check failed (endpoint may not be available): {ex.Message}");
+            }
+        }
+
+        [Fact]
         public async Task TestClient_SendTokenZk()
         {
             try
