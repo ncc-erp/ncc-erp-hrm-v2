@@ -272,12 +272,5 @@ namespace HRMv2.APIs.Publics
             return await _mmnService.CheckHealthClient();
         }
 
-        [HttpGet]
-        public async Task<MmnDotNetSdk.Models.Account> GetAccountBalance()
-        {
-            var senderId = MezonTokenConstant.BotId;
-            var senderAddress = CryptoHelper.GenerateAddress(senderId);
-            return await _mmnService.GetAmount(senderAddress);
-        }
     }
 }
