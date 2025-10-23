@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Net.Mail;
 using Abp.Runtime.Session;
 using AutoMapper.Configuration;
 using HRMv2.Authorization;
 using HRMv2.Configuration.Dto;
+using HRMv2.Constants;
 using HRMv2.Manager.Notifications.NotifyToChannel;
 using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
 using HRMv2.WebServices;
@@ -17,6 +17,7 @@ using HRMv2.WebServices.Timesheet;
 using HRMv2.WebServices.Timesheet.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace HRMv2.Configuration
 {
@@ -136,7 +137,12 @@ namespace HRMv2.Configuration
                    BotId = _appConfiguration.GetValue<string>("BotHRM:Bot_Token"),
                    BotToken = _appConfiguration.GetValue<string>("BotHRM:Bot_Id"),
                    UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate"),
-                   UrlSentToken = _appConfiguration.GetValue<string>("BotHRM:Url_Sent_Token"),
+                   EmpheralMmnKeyPair = MezonTokenConstant.EphemeralMmnKeyPair
+               },
+               MmnSetting = new MmnSetting
+               {
+                   NodeEndpoint = _appConfiguration.GetValue<string>("Mmn:NodeEndpoint"),
+                   ZkProveEndpoint = _appConfiguration.GetValue<string>("Mmn:ZkProveEndpoint"),
                }
 
             };

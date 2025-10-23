@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Dependency;
 using HRMv2.Configuration;
+using HRMv2.Constants;
 using HRMv2.Hubs;
 using HRMv2.Manager.Categories;
 using HRMv2.Manager.Categories.Branchs.Dto;
@@ -26,6 +27,7 @@ using HRMv2.WebServices.Mezon;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using MmnDotNetSdk.Utils;
 using NccCore.Paging;
 using NccCore.Uitls;
 using System;
@@ -268,6 +270,14 @@ namespace HRMv2.APIs.Publics
         public async Task<string> GetMmnHealthCheck()
         {
             return await _mmnService.CheckHealthClient();
+        }
+
+        [HttpGet]
+        public async Task<MmnDotNetSdk.Models.Account> GetAccountBalance()
+        {
+            var senderId = MezonTokenConstant.BotId;
+            var senderAddress = CryptoHelper.GenerateAddress(senderId);
+            return await _mmnService.GetAmount(senderAddress);
         }
     }
 }

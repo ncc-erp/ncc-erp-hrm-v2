@@ -262,15 +262,15 @@ namespace HRMv2.Web.Host.Startup
         {
             MezonTokenConstant.BotToken = _appConfiguration.GetValue<string>("BotHRM:Bot_Token"); ;
             MezonTokenConstant.BotId = _appConfiguration.GetValue<string>("BotHRM:Bot_Id"); ;
-            MezonTokenConstant.UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate"); ;
+            MezonTokenConstant.UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate");
+            var (_, privateKey) = MmnDotNetSdk.Utils.CryptoHelper.GenerateEd25519KeyPair();
+            MezonTokenConstant.EphemeralMmnKeyPair = Convert.ToHexString(privateKey);
 
         }
         private void LoadMmnConfig()
         {
             MmnConstant.NodeEndpoint = _appConfiguration.GetValue<string>("Mmn:NodeEndpoint");
             MmnConstant.ZkProveEndpoint = _appConfiguration.GetValue<string>("Mmn:ZkProveEndpoint");
-            var (_, privateKey) = MmnDotNetSdk.Utils.CryptoHelper.GenerateEd25519KeyPair();
-            MmnConstant.EphemeralMmnKeyPair = Convert.ToHexString(privateKey);
         }
         
     }

@@ -115,7 +115,7 @@ namespace HRMv2.MMN
                     ["UserReceiverId"] = mmnTransferTokenDto.receiver_id.ToString()
                 };
                 // Lấy key pair từ config 
-                var privateKeyHex = MmnConstant.EphemeralMmnKeyPair;
+                var privateKeyHex = MezonTokenConstant.EphemeralMmnKeyPair;
                 var (publicKeyBase58, privateKeySeed) = this.LoadKeyPair(privateKeyHex);
 
                 // Lấy zk proof
