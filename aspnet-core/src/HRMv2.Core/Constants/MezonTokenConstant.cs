@@ -11,7 +11,8 @@ namespace HRMv2.Constants
         public static string BotToken { get; set; }
         public static string BotId {  get; set; }
         public static string UrlAuthenticate { get; set; }
-        public static string MmnKeyPair { get; set; }
+        public static string EphemeralMmnKeyPair { get; set; }
+
     }
 
     public class MmnConstant
@@ -19,6 +20,7 @@ namespace HRMv2.Constants
         public static string NodeEndpoint { get; set; }
         public static string ZkProveEndpoint { get; set; }
         public static string HRMTransferType { get; } = "HRMTransfer";
+
     }
 
 }
