@@ -12,15 +12,21 @@ export interface ConfigurationDto {
     hrmService: SettingDto,
     oauth2Mezon: Oauth2Mezon,
     botHRM: BotHRMSetting,
+    mmnSetting: mmnSetting,
 }
 
 export interface BotHRMSetting{
-    nameBot: string,
-    applicationToken: string,
-    applicationId: string,
+    botToken: string,
+    botId: string,
     urlAuthenticate: string,
-    urlSentToken: string,
+    empheralMmnKeyPair: string,
 }
+
+export interface mmnSetting{
+    nodeEndpoint: string,
+    zkProveEndpoint: string,
+}
+
 export interface Oauth2Mezon{
     client_Id: string,
     client_Secret: string,

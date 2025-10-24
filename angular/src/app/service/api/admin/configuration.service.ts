@@ -56,6 +56,9 @@ export class ConfigurationService extends BaseApiService {
   public checkConnectToIMS():Observable<ApiResponseDto<GetConnectResultDto>> {
     return this.processGet("CheckConnectToIMS")
   }
+  public checkConnectToMmnService():Observable<ApiResponseDto<GetConnectResultDto>> {
+    return this.processGet("checkConnectToMmnService")
+  }
   public getNotifySettings():Observable<ApiResponseDto<NotifyChannelDto>> {
     return this.processGet("GetNotifySettings")
   }
