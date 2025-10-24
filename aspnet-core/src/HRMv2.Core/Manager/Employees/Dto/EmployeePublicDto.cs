@@ -13,5 +13,6 @@ namespace HRMv2.Manager.Employees.Dto
         public string JobPositionCode { get; set; }
         public UserType UserType { get; set; }
         public EmployeeStatus Status { get; set; }
+        public string MezonUserId { get; set; }
     }
 }
