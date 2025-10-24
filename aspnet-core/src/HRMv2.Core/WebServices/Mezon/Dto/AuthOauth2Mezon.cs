@@ -20,6 +20,7 @@ namespace HRMv2.WebServices.Mezon.Dto
 
     public class Acount
     {
+        public string appid { get; set; }
         public string token { get; set; }
     }
 }

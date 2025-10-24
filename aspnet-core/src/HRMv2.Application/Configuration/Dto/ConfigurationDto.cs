@@ -22,15 +22,21 @@ namespace HRMv2.Configuration.Dto
         public MezonSettingDto MezonService { get; set; }
         public Oauth2Mezon Oauth2Mezon { get; set; }
         public BotHRMSetting BotHRM { get; set; }
+        public MmnSetting MmnSetting { get; set; }
     }
 
     public class BotHRMSetting
     {
-        public string NameBot { get; set; }
-        public string ApplicationId { get; set; }
-        public string ApplicationToken { get; set; }
-        public string UrlSentToken { get; set; }
+        public string BotId { get; set; }
+        public string BotToken { get; set; }
         public string UrlAuthenticate { get; set; }
+        public string EmpheralMmnKeyPair { get; set; }
+    }
+
+    public class MmnSetting
+    {
+        public string NodeEndpoint { get; set; }
+        public string ZkProveEndpoint { get; set; }
     }
     public class Oauth2Mezon
     {

@@ -37,7 +37,7 @@ namespace HRMv2.BackgroundJob.SentToken
             using (uow.SetTenantId(args.TenantId))
             {
                 _mezonTokenManager.SendToken(args).GetAwaiter().GetResult();
-                //uow.SaveChanges();
+                uow.SaveChanges();
             }
         }
     }
