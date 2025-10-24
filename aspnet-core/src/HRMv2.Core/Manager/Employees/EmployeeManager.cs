@@ -2031,6 +2031,7 @@ namespace HRMv2.Manager.Employees
                     UserType = x.UserType,
                     Status = x.Status,
                     JobPositionCode = x.JobPosition.Code,
+                    MezonUserId = x.UserMezonId
                 }).ToList();
                 return employees;
             }
