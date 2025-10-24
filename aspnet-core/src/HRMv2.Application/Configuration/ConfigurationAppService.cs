@@ -7,6 +7,7 @@ using HRMv2.Configuration.Dto;
 using HRMv2.Constants;
 using HRMv2.Manager.Notifications.NotifyToChannel;
 using HRMv2.Manager.Notifications.NotifyToChannel.Dto;
+using HRMv2.MMN;
 using HRMv2.WebServices;
 using HRMv2.WebServices.Dto;
 using HRMv2.WebServices.Finfast;
@@ -31,13 +32,15 @@ namespace HRMv2.Configuration
         private readonly IMSWebService _imsWebService;
         private readonly FinfastWebService _finfastWebService;
         private readonly NotificationService _notificationService;
+        private readonly MmnService _mmnService;
         public ConfigurationAppService(Microsoft.Extensions.Configuration.IConfiguration appConfiguration,
             TimesheetWebService timesheetWebService,
             TalentWebService talentWebService,
             ProjectService projectService,
             IMSWebService imsWebService,
             FinfastWebService finfastWebService,
-            NotificationService notificationService)
+            NotificationService notificationService,
+            MmnService mmnService)
         {
             _appConfiguration = appConfiguration;
             _timesheetWebService = timesheetWebService;
@@ -46,7 +49,7 @@ namespace HRMv2.Configuration
             _imsWebService = imsWebService;
             _finfastWebService = finfastWebService;
             _notificationService = notificationService;
-
+            _mmnService = mmnService;
         }
         public async Task ChangeUiTheme(ChangeUiThemeInput input)
         {
@@ -235,6 +238,12 @@ namespace HRMv2.Configuration
        {
            return _imsWebService.CheckConnectToIMS();
        }
+
+        [HttpGet]
+        public Task<GetResultConnectDto> CheckConnectToMmnService()
+        {
+            return _mmnService.CheckHealthMmnClient();
+        }
 
         [HttpGet] 
         public async Task<NotifyToChannelDto> GetNotifySettings()

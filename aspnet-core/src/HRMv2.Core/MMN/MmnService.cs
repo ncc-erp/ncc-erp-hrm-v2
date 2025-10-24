@@ -3,6 +3,7 @@ using Amazon.S3.Model.Internal.MarshallTransformations;
 using HRMv2.Constants;
 using HRMv2.Entities;
 using HRMv2.Manager.MezonTokens.Dto;
+using HRMv2.WebServices.Dto;
 using Mmn;
 using MmnDotNetSdk;
 using MmnDotNetSdk.Models;
@@ -150,6 +151,32 @@ namespace HRMv2.MMN
                     Error = ex.Message
                 };
             }
+        }
+        public async Task<GetResultConnectDto> CheckHealthMmnClient()
+        {
+            var client = new MmnClient(new MmnDotNetSdk.Models.Config
+            {
+                Endpoint = MmnConstant.NodeEndpoint,
+                ZkProveEndpoint = MmnConstant.ZkProveEndpoint
+            });
+            try
+            {
+                var resp = await client.NodeClient.CheckHealthAsync();
+                var respZk = await client.ZkProveClient.HealthCheckAsync();
+            }
+            catch
+            {
+                return new GetResultConnectDto
+                {
+                    IsConnected = false,
+                    Message = "Can not connect to MMNService"
+                };
+            }
+            return new GetResultConnectDto
+            {
+                IsConnected = true,
+                Message = "Connected"
+            };
         }
     }
 }

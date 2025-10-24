@@ -672,6 +672,29 @@
           <div class="row">
             <div class="col-md-11 row">
               <div class="title">MMN Setting</div>
+              <div class="ml-3 mt-2">
+                <div *ngIf="!mmnServiceConnectResult.message"><i class="fa fa-spinner fa-spin d-line mr-2"></i>Is
+                  connecting ...</div>
+                <div *ngIf="mmnServiceConnectResult?.isConnected" class="text-success"><i
+                    class="fa-solid fa-check mr-2"></i> Connected</div>
+                <div class="message" *ngIf="mmnServiceConnectResult?.isConnected == false" class="text-danger"
+                  [matTooltip]="mmnServiceConnectResult?.message"><i class="fa-solid fa-x mr-2"></i>Fail connected</div>
+              </div>
+            </div>
+
+            <div class="my-1 col-md-1 ml-2">
+              <div class="text-right">
+                <button mat-icon-button [matMenuTriggerFor]="headerMenu1" (click)="$event.stopPropagation()"
+                  class="header-dropdown-mat-icon-button pl-4">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #headerMenu1="matMenu">
+                  <button mat-menu-item (click)="checkConnectToMmnService()">
+                    <mat-icon>refresh</mat-icon>
+                    <span>Check connect</span>
+                  </button>
+                </mat-menu>
+              </div>
             </div>
           </div>
         </div>

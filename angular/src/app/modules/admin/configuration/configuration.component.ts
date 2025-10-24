@@ -30,6 +30,7 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
   public  imsConnectResult: GetConnectResultDto = {} as GetConnectResultDto;
   public  projectConnectResult: GetConnectResultDto = {} as GetConnectResultDto;
   public  finfastConnectResult: GetConnectResultDto = {} as GetConnectResultDto;
+  public  mmnServiceConnectResult: GetConnectResultDto = {} as GetConnectResultDto;
   constructor(injector: Injector, private configService: ConfigurationService) {
     super(injector)
   }
@@ -49,6 +50,7 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
     this.checkConnectToTalent();
     this.checkConnectToIMS();
     this.checkConnectToProject();
+    this.checkConnectToMmnService();
   }
 
   isShowHRMSettingView(){
@@ -141,6 +143,13 @@ export class ConfigurationComponent extends AppComponentBase implements OnInit {
     this.talentConnectResult = {} as GetConnectResultDto;
     this.configService.checkConnectToTalent().subscribe((rs)=>{
       this.talentConnectResult = rs.result;
+    })
+  }
+
+  public checkConnectToMmnService(){
+    this.mmnServiceConnectResult =  {} as GetConnectResultDto;
+    this.configService.checkConnectToMmnService().subscribe((rs)=>{
+      this.mmnServiceConnectResult = rs.result;
     })
   }
 
