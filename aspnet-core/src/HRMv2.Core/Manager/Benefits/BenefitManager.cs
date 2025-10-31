@@ -131,7 +131,7 @@ namespace HRMv2.Manager.Categories.Benefits
                     var entity = new BenefitEmployee
                     {
                         EmployeeId = employeeId,
-                        StartDate = input.StartDate ?? dicEmployeeIdToStartDate[employeeId],
+                        StartDate = input.StartDate != null ? (DateTime)input.StartDate : dicEmployeeIdToStartDate[employeeId],
                         EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null,
                         BenefitId = input.BenefitId,
                         LastModificationTime = DateTimeUtils.GetNow(),
