@@ -111,12 +111,17 @@ namespace HRMv2.Manager.Categories.Benefits
                 });
         }
 
-        public async Task<AddEmployeeToBenefitDto> AddEmployeeToBenefit(AddEmployeeToBenefitDto input)
+        private List<long> GetEmployeeIdsByBenefitId(long benefitId)
         {
-            var currentEmployeeIds = QueryAllBenefitEmployee()
-                .Where(x => x.BenefitId == input.BenefitId)
+            return WorkScope.GetAll<BenefitEmployee>()
+                .Where(x => x.BenefitId == benefitId)
                 .Select(x => x.EmployeeId)
                 .ToList();
+        }
+
+        public async Task<AddEmployeeToBenefitDto> AddEmployeeToBenefit(AddEmployeeToBenefitDto input)
+        {
+            var currentEmployeeIds = GetEmployeeIdsByBenefitId(input.BenefitId);
 
             var dicEmployeeIdToStartDate = WorkScope.GetAll<Employee>()
                 .Where(x => input.ListEmployeeId.Contains(x.Id))
@@ -179,9 +184,7 @@ namespace HRMv2.Manager.Categories.Benefits
 
         public async Task<QuickAddEmployeeDto> QuickAddEmployee(QuickAddEmployeeDto input)
         {
-            var currentEmployeeIds = QueryAllBenefitEmployee()
-                .Where(x => x.BenefitId == input.BenefitId)
-                .Select(x => x.EmployeeId);
+            var currentEmployeeIds = GetEmployeeIdsByBenefitId(input.BenefitId);
             if (currentEmployeeIds.Contains(input.EmployeeId))
             {
                 throw new UserFriendlyException("Employee is already exist in Benenefit");
