@@ -111,17 +111,22 @@ namespace HRMv2.Manager.Categories.Benefits
                 });
         }
 
+        private List<long> GetEmployeeIdsByBenefitId(long benefitId)
+        {
+            return WorkScope.GetAll<BenefitEmployee>()
+                .Where(x => x.BenefitId == benefitId)
+                .Select(x => x.EmployeeId)
+                .ToList();
+        }
+
         public async Task<AddEmployeeToBenefitDto> AddEmployeeToBenefit(AddEmployeeToBenefitDto input)
         {
-            var currentEmployeeIds = QueryAllBenefitEmployee()
-                .Where(x => x.BenefitId == input.BenefitId)
-                .Select(x => x.Id)
-                .ToList();
+            var currentEmployeeIds = GetEmployeeIdsByBenefitId(input.BenefitId);
 
             var dicEmployeeIdToStartDate = WorkScope.GetAll<Employee>()
-                        .Where(x => input.ListEmployeeId.Contains(x.Id))
-                        .Select(x => new { x.Id, x.StartWorkingDate.Date })
-                        .ToDictionary(x => x.Id, x => x.Date);
+                .Where(x => input.ListEmployeeId.Contains(x.Id))
+                .Select(x => new { x.Id, x.StartWorkingDate.Date })
+                .ToDictionary(x => x.Id, x => x.Date);
 
             var listToInsert = new List<BenefitEmployee>();
             foreach (var employeeId in input.ListEmployeeId)
@@ -140,6 +145,7 @@ namespace HRMv2.Manager.Categories.Benefits
                     listToInsert.Add(entity);
                 }
             }
+
             await WorkScope.InsertRangeAsync(listToInsert);
             return input;
         }
@@ -178,9 +184,7 @@ namespace HRMv2.Manager.Categories.Benefits
 
         public async Task<QuickAddEmployeeDto> QuickAddEmployee(QuickAddEmployeeDto input)
         {
-            var currentEmployeeIds = QueryAllBenefitEmployee()
-                .Where(x => x.BenefitId == input.BenefitId)
-                .Select(x => x.EmployeeId);
+            var currentEmployeeIds = GetEmployeeIdsByBenefitId(input.BenefitId);
             if (currentEmployeeIds.Contains(input.EmployeeId))
             {
                 throw new UserFriendlyException("Employee is already exist in Benenefit");
