@@ -115,13 +115,13 @@ namespace HRMv2.Manager.Categories.Benefits
         {
             var currentEmployeeIds = QueryAllBenefitEmployee()
                 .Where(x => x.BenefitId == input.BenefitId)
-                .Select(x => x.Id)
+                .Select(x => x.EmployeeId)
                 .ToList();
 
             var dicEmployeeIdToStartDate = WorkScope.GetAll<Employee>()
-                        .Where(x => input.ListEmployeeId.Contains(x.Id))
-                        .Select(x => new { x.Id, x.StartWorkingDate.Date })
-                        .ToDictionary(x => x.Id, x => x.Date);
+                .Where(x => input.ListEmployeeId.Contains(x.Id))
+                .Select(x => new { x.Id, x.StartWorkingDate.Date })
+                .ToDictionary(x => x.Id, x => x.Date);
 
             var listToInsert = new List<BenefitEmployee>();
             foreach (var employeeId in input.ListEmployeeId)
@@ -131,7 +131,7 @@ namespace HRMv2.Manager.Categories.Benefits
                     var entity = new BenefitEmployee
                     {
                         EmployeeId = employeeId,
-                        StartDate = input.StartDate != null ? (DateTime)input.StartDate : dicEmployeeIdToStartDate[employeeId],
+                        StartDate = input.StartDate ?? dicEmployeeIdToStartDate[employeeId],
                         EndDate = input.EndDate.HasValue ? (DateTime)input.EndDate : null,
                         BenefitId = input.BenefitId,
                         LastModificationTime = DateTimeUtils.GetNow(),
@@ -140,6 +140,7 @@ namespace HRMv2.Manager.Categories.Benefits
                     listToInsert.Add(entity);
                 }
             }
+
             await WorkScope.InsertRangeAsync(listToInsert);
             return input;
         }
