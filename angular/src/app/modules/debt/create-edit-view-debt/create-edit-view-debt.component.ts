@@ -104,7 +104,8 @@ export class CreateEditViewDebtComponent extends AppComponentBase
         interest: this.debt.interest,
         principal: this.debt.money,
         interestRate: this.debt.interestRate,
-        employeeId: employeeParam ? Number(employeeParam): null
+        employeeId: employeeParam ? Number(employeeParam): null,
+        currency: ''
       });
       if (employeeParam) {
         this.formGroup.controls.employeeId.disable()
@@ -134,10 +135,14 @@ export class CreateEditViewDebtComponent extends AppComponentBase
       paymentType: new FormControl(null , { validators: Validators.required }),
       note: new FormControl(""),
       principal: new FormControl(null, { validators: Validators.compose([Validators.required, Validators.min(1)]) }),
+      currency: new FormControl('', {}),
     }, {
       validators: [this.checkDates]
     });
 
+  }
+  get currency() {
+    return this.formGroup.get("currency");
   }
   get startDate() {
     return this.formGroup.get("startDate");
@@ -181,6 +186,7 @@ export class CreateEditViewDebtComponent extends AppComponentBase
           principal: this.debt.money,
           interestRate: this.debt.interestRate,
           note: this.debt.note,
+          currency: (this.debt as any).currency || '',
           startDate: moment(this.debt.startDate).toISOString(),
           endDate: moment(this.debt.endDate).toISOString(),
         });
@@ -236,6 +242,8 @@ export class CreateEditViewDebtComponent extends AppComponentBase
     this.interestRate.setValue(debt.interestRate);
     this.interest.setValue(debt.interest || this.calculateInterest());
     this.status.setValue(debt.debtStatus)
+    // set currency if present on debt
+    if ((debt as any).currency) this.currency.setValue((debt as any).currency);
   }
 
   filterEmployees(event) {
@@ -334,6 +342,8 @@ export class CreateEditViewDebtComponent extends AppComponentBase
     this.debt.note = this.note.value;
     this.debt.startDate = this.formatDateYMD(this.startDate.value);
     this.debt.endDate = this.formatDateYMD(this.endDate.value);
+  // include currency from form into debt payload (backend may ignore if not supported)
+  (this.debt as any).currency = this.currency.value;
     this.isLoading = true;
     if (this.debt.id) {
       this.subscription.push(this.debtService.update(this.debt).pipe(finalize(() => this.onCompletedCall())).subscribe((rs) => {
