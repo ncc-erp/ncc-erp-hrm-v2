@@ -16,11 +16,11 @@ namespace HRMv2.Manager.Debts.Dto
         public long? EmployeeId { get; set; }
         public double InterestRate { get; set; }
         public double Money { get; set; }
+        public string Currency { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Note { get; set; }
         public DebtPaymentType PaymentType { get; set; }
         public DebtStatus DebtStatus { get; set; }
-
     }
 }

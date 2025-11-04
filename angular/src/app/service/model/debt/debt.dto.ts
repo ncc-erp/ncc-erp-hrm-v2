@@ -27,8 +27,9 @@ export interface DebtDto {
     endDate: string,
     note: string,
     paymentType: EPaymentType,
-    debtStatus: EDebtStatus
-    interest: number
+    debtStatus: EDebtStatus,
+    currency: string,
+    interest: number,
     totalPaid: number,
     creationTime: string,
     creatorUser:string,
