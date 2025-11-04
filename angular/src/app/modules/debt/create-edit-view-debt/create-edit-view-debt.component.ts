@@ -104,7 +104,8 @@ export class CreateEditViewDebtComponent extends AppComponentBase
         interest: this.debt.interest,
         principal: this.debt.money,
         interestRate: this.debt.interestRate,
-        employeeId: employeeParam ? Number(employeeParam): null
+        employeeId: employeeParam ? Number(employeeParam) : null,
+        currency: ''
       });
       if (employeeParam) {
         this.formGroup.controls.employeeId.disable()
@@ -131,13 +132,17 @@ export class CreateEditViewDebtComponent extends AppComponentBase
       interestRate: new FormControl(null, { validators: Validators.required }),
       interest: new FormControl(0, { validators: Validators.required }),
       status: new FormControl("", { validators: Validators.required }),
-      paymentType: new FormControl(null , { validators: Validators.required }),
+      paymentType: new FormControl(null, { validators: Validators.required }),
       note: new FormControl(""),
       principal: new FormControl(null, { validators: Validators.compose([Validators.required, Validators.min(1)]) }),
+      currency: new FormControl('', {}),
     }, {
       validators: [this.checkDates]
     });
 
+  }
+  get currency() {
+    return this.formGroup.get("currency");
   }
   get startDate() {
     return this.formGroup.get("startDate");
@@ -181,16 +186,17 @@ export class CreateEditViewDebtComponent extends AppComponentBase
           principal: this.debt.money,
           interestRate: this.debt.interestRate,
           note: this.debt.note,
+          currency: (this.debt as any).currency || '',
           startDate: moment(this.debt.startDate).toISOString(),
           endDate: moment(this.debt.endDate).toISOString(),
         });
         this.listBreadCrumb = [
-          ...this.initListBreadCrumb, 
-          { 
-            name: `#${this.debt.id} ${this.debt.fullName} vay ${formatCurrency(this.debt.money, this.locale, "", "VND", ".0")} VND - ${PAYMENT_METHOD[this.debt.paymentType].key}` 
-          }, 
+          ...this.initListBreadCrumb,
           {
-            name: `<span class="ml-2 badge badge-pill ${this.debt.debtStatus == EDebtStatus.Done?"bg-danger":"bg-success"}">${this.debt.debtStatus == EDebtStatus.Done?"Done":"Inprogress"}</span>`
+            name: `#${this.debt.id} ${this.debt.fullName} vay ${formatCurrency(this.debt.money, this.locale, "", "VND", ".0")} VND - ${PAYMENT_METHOD[this.debt.paymentType].key}`
+          },
+          {
+            name: `<span class="ml-2 badge badge-pill ${this.debt.debtStatus == EDebtStatus.Done ? "bg-danger" : "bg-success"}">${this.debt.debtStatus == EDebtStatus.Done ? "Done" : "Inprogress"}</span>`
           }
         ]
 
@@ -235,7 +241,8 @@ export class CreateEditViewDebtComponent extends AppComponentBase
     this.paymentType.setValue(debt.paymentType);
     this.interestRate.setValue(debt.interestRate);
     this.interest.setValue(debt.interest || this.calculateInterest());
-    this.status.setValue(debt.debtStatus)
+    this.status.setValue(debt.debtStatus);
+    this.currency.setValue(debt.currency);
   }
 
   filterEmployees(event) {
@@ -334,6 +341,7 @@ export class CreateEditViewDebtComponent extends AppComponentBase
     this.debt.note = this.note.value;
     this.debt.startDate = this.formatDateYMD(this.startDate.value);
     this.debt.endDate = this.formatDateYMD(this.endDate.value);
+    this.debt.currency = this.currency.value;
     this.isLoading = true;
     if (this.debt.id) {
       this.subscription.push(this.debtService.update(this.debt).pipe(finalize(() => this.onCompletedCall())).subscribe((rs) => {
@@ -351,7 +359,7 @@ export class CreateEditViewDebtComponent extends AppComponentBase
   }
   onDone() {
     abp.message.confirm("Change status to done ?", "", (rs) => {
-      if(rs) {
+      if (rs) {
         this.subscription.push(
           this.debtService
             .setDone(this.debt.id)
@@ -398,18 +406,18 @@ export class CreateEditViewDebtComponent extends AppComponentBase
         })
     );
   }
-  isShowEditBtn(){
+  isShowEditBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Debt_DebtDetail_Edit);
   }
 
-  isShowDeleteBtn(){
+  isShowDeleteBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Debt_DebtDetail_Delete);
   }
 
-  isShowSetDoneBtn(){
+  isShowSetDoneBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Debt_DebtDetail_SetDone);
   }
-  isShowGeneratePaymentPlanBtn(){
+  isShowGeneratePaymentPlanBtn() {
     return this.isGranted(PERMISSIONS_CONSTANT.Debt_DebtDetail_GeneratePaymentPlan);
   }
 
@@ -418,7 +426,7 @@ export class CreateEditViewDebtComponent extends AppComponentBase
   }
 
   isDisableGeneratePaymentPlan() {
-    return (this.debtPlanList.length>0) || (!this.isEdit && this.debtPlanList.length < 0) || this.isLoading
+    return (this.debtPlanList.length > 0) || (!this.isEdit && this.debtPlanList.length < 0) || this.isLoading
   }
 
   onCompletedCall() {

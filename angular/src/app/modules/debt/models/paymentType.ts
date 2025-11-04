@@ -28,11 +28,11 @@ export interface PaymentType {
 
 export const PAYMENT_METHOD = {
     [EPaymentType.TienMat]:{
-        key: 'Tiền mặt',
+        key: 'Không trừ vào lương',
         value: EPaymentType.TienMat
     },
     [EPaymentType.TruLuong]:{
-        key: 'Trừ lương',
+        key: 'Trừ vào lương hàng tháng',
         value: EPaymentType.TruLuong
     }
 }
