@@ -49,6 +49,7 @@ export interface DebtCreateDto{
     startDate: string,
     endDate: string,
     note: string,
+    currency: string,
     paymentType: EPaymentType,
     debtStatus: EDebtStatus,
     interest: number

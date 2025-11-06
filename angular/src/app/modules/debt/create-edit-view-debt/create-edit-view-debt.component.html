@@ -244,6 +244,23 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row form-group">
+                                        <label class="col-3 col-form-label">Currency</label>
+                                        <div class="col-8 d-flex align-items-center">
+                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                                <div class="w-100">
+                                                    <mat-form-field appearance="outline" class="common-input" style="height:120px;">
+                                                        <input matInput type="text" name="currency" formControlName="currency" #currencyEl style="height:100%;" />
+                                                    </mat-form-field>
+                                                    <abp-validation-summary [control]="currency" [controlEl]="currencyEl">
+                                                    </abp-validation-summary>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                                <div class="text-read" style="min-height:120px">{{debt.currency}}</div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-lg-6 col-md-12 form-control-right">
                                     <div class="row form-group">
