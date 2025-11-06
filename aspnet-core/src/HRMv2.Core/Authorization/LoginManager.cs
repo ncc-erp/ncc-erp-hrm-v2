@@ -171,12 +171,12 @@ namespace HRMv2.Authorization
                         throw new UserFriendlyException(errorMessage);
                     }
 
-                    if (type == TypeLoginOuth2.Mezon 
-                        && emailAddress.ToLower().Contains("@ncc.asia") 
-                        && emailAddress.ToLower() != user.EmailAddress.ToLower())
-                    {
-                        throw new UserFriendlyException($"Login fail. Email of your Mezon account {emailAddress} and email in HRM {user.EmailAddress} are not the same. Please contact HR to update");
-                    }
+                    //if (type == TypeLoginOuth2.Mezon 
+                    //    && emailAddress.ToLower().Contains("@ncc.asia") 
+                    //    && emailAddress.ToLower() != user.EmailAddress.ToLower())
+                    //{
+                    //    throw new UserFriendlyException($"Login fail. Email of your Mezon account {emailAddress} and email in HRM {user.EmailAddress} are not the same. Please contact HR to update");
+                    //}
                         
                     if (await UserManager.IsLockedOutAsync(user))
                     {
@@ -209,7 +209,7 @@ namespace HRMv2.Authorization
             }
             return _workScope.GetAll<User>()
                 .Where(x => x.UserMezonId == mezonUserId)
-                //.Where(s => s.EmailAddress.Contains("@ncc.asia"))         
+                //.Where(s => s.EmailAddress.Contains("@ncc.asia"))
                 .FirstOrDefault();
         }
 
