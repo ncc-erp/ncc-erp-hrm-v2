@@ -19,6 +19,8 @@ namespace HRMv2.Entities
         [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; }
         public long BranchId { get; set; }
+        [ForeignKey(nameof(BranchId))]
+        public Branch Branch { get; set; }
         public UserType UserType { get; set; }
         public long LevelId { get; set; }
         public long JobPositionId { get; set; }
