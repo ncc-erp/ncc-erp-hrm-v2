@@ -551,6 +551,10 @@ namespace HRMv2.Utils
         {
             return $"Chi Bảng lương tháng {payrollApplyMonth.Month}/{payrollApplyMonth.Year}";
         }
+        public static string GenerateFinFastOutcomeEntryNameWithMezonToken(DateTime payrollApplyMonth)
+        {
+            return $"Chi token ăn trưa tháng {payrollApplyMonth.Month}/{payrollApplyMonth.Year}";
+        }
 
         public static List<KeyValueDto> GetEnumKeyValueList<TEnum>() where TEnum : Enum
         {
