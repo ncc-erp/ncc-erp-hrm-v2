@@ -429,15 +429,10 @@ namespace HRMv2.Manager.Payrolls
 
         public object ValidCreateFinfastOutcomeEntry(long payrollId)
         {
-            var branchIds = WorkScope.GetAll<Payslip>()
+            var listBranchCode = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId)
-                .Select(x => x.BranchId)
+                .Select(x => x.Branch.Code)
                 .Distinct()
-                .ToList();
-
-            var listBranchCode = WorkScope.GetAll<Branch>()
-                .Where(x => branchIds.Contains(x.Id))
-                .Select(x => x.Code)
                 .ToList();
 
             var payrolApplyMonth = WorkScope.GetAll<Payroll>()
@@ -445,10 +440,12 @@ namespace HRMv2.Manager.Payrolls
                 .Select(x => x.ApplyMonth)
                 .FirstOrDefault();
 
+            
             var input = new InputValidCreateFinfastOucome
             {
                 BranchCodes = listBranchCode,
-                PayrollName = CommonUtil.GenerateFinfastOutcomeEntryName(payrolApplyMonth)
+                PayrollName = CommonUtil.GenerateFinfastOutcomeEntryName(payrolApplyMonth),
+                MezonDPayrollName = CommonUtil.GenerateFinFastOutcomeEntryNameWithMezonToken(payrolApplyMonth)
             };
 
             var failList = _finfastService.ValidCreateFinfastOutcomeEntry(input) ?? new List<string>();
