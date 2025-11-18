@@ -374,19 +374,6 @@ namespace HRMv2.Manager.Payrolls
         // TODO: CreateFinfastOutcomeEntry_Test1() [can't test result]
         public void CreateFinfastOutcomeEntry(long payrollId)
         {
-            var pendingMezonTokenCount = WorkScope.GetAll<MezonToken>()
-                .Where(s => s.PayrollId == payrollId)
-                .Where(s => s.Status == StatusSendToken.Pending)
-                .Select(s => s.Id)
-                .Count();
-
-            if (pendingMezonTokenCount > 0)
-            {
-                throw new UserFriendlyException($"Send to Finfast fail because there are {pendingMezonTokenCount} pending Mezon Token in this payroll.");
-
-            }
-
-            
             var payslips = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId)
                 .Where(s => s.Salary > 0)
@@ -398,7 +385,6 @@ namespace HRMv2.Manager.Payrolls
 
                 })
                 .ToList();
-                      
 
             var mezonTokenDetails = WorkScope.GetAll<MezonToken>()
                 .Where(s => s.PayrollId == payrollId)
@@ -439,7 +425,6 @@ namespace HRMv2.Manager.Payrolls
                 .Where(x => x.Id == payrollId)
                 .Select(x => x.ApplyMonth)
                 .FirstOrDefault();
-
             
             var input = new InputValidCreateFinfastOucome
             {
@@ -449,6 +434,17 @@ namespace HRMv2.Manager.Payrolls
             };
 
             var failList = _finfastService.ValidCreateFinfastOutcomeEntry(input) ?? new List<string>();
+
+            var pendingMezonTokenCount = WorkScope.GetAll<MezonToken>()
+                .Where(s => s.PayrollId == payrollId)
+                .Where(s => s.Status == StatusSendToken.Pending)
+                .Select(s => s.Id)
+                .Count();
+
+            if (pendingMezonTokenCount > 0)
+            {
+                failList.Add($"Mezon Token: Vẫn còn <strong>{pendingMezonTokenCount} request ở trạng thái Pending</strong>");
+            }
 
             return new
             {
