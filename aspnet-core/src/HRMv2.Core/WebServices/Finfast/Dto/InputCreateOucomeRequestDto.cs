@@ -10,6 +10,8 @@ namespace HRMv2.WebServices.Finfast.Dto
     {
         public string Name { get; set; }
         public List<OutcomingEntryDetailDto> Details { get; set; }
+        public string MezonTokenName { get; set; }
+        public List<OutcomingEntryDetailDto> MezonTokenDetails { get; set; }
     }
     public class OutcomingEntryDetailDto
     {

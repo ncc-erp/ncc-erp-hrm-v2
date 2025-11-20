@@ -7,6 +7,7 @@ using HRMv2.Authorization.Roles;
 using HRMv2.Authorization.Users;
 using HRMv2.Configuration;
 using HRMv2.Constants;
+using HRMv2.Constants.Enum;
 using HRMv2.Entities;
 using HRMv2.Manager.Debts;
 using HRMv2.Manager.Notifications.Email;
@@ -373,33 +374,40 @@ namespace HRMv2.Manager.Payrolls
         // TODO: CreateFinfastOutcomeEntry_Test1() [can't test result]
         public void CreateFinfastOutcomeEntry(long payrollId)
         {
-            var ListPayslip = WorkScope.GetAll<Payslip>()
-                .Include(x => x.Employee)
-                .Include(x => x.Payroll)
+            var payslips = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId)
+                .Where(s => s.Salary > 0)
+                .Select(s => new OutcomingEntryDetailDto
+                {
+                    BranchCode = s.Branch.Code,
+                    Name = s.Employee.Email,
+                    UnitPrice = s.Salary
+
+                })
                 .ToList();
 
-            List<OutcomingEntryDetailDto> listOutcomeDetail = new();
-            var listBranch = WorkScope.GetAll<Branch>()
-             .ToList();
-
-            foreach (var payslip in ListPayslip)
-            {
-                var branch = listBranch.Where(x => x.Id == payslip.BranchId).FirstOrDefault();
-                var detail = new OutcomingEntryDetailDto
+            var mezonTokenDetails = WorkScope.GetAll<MezonToken>()
+                .Where(s => s.PayrollId == payrollId)
+                .Where(s => s.Status == StatusSendToken.SentToEmployee)
+                .Where(s => s.Amount > 0)
+                .Select(s => new OutcomingEntryDetailDto
                 {
-                    BranchCode = branch.Code,
-                    UnitPrice = payslip.Salary >= 0 ? payslip.Salary : 0,
-                    Name = $"{payslip.Employee.Email.Split("@")[0]}({branch.Code})",
-                };
-                listOutcomeDetail.Add(detail);
-            }
-            var payrollApplyMonth = ListPayslip.Select(x => x.Payroll.ApplyMonth).FirstOrDefault();
+                    Name = s.Employee.Email,
+                    BranchCode = s.Employee.Branch.Code,
+                    UnitPrice = s.Amount
+                }).ToList();
+
+            var payrollApplyMonth = WorkScope.GetAll<Payroll>()
+               .Where(s => s.Id == payrollId)
+               .Select(x => x.ApplyMonth)
+               .FirstOrDefault();
 
             var dto = new InputCreateOucomeRequestDto
             {
                 Name = CommonUtil.GenerateFinfastOutcomeEntryName(payrollApplyMonth),
-                Details = listOutcomeDetail
+                Details = payslips,
+                MezonTokenName = CommonUtil.GenerateFinFastOutcomeEntryNameWithMezonToken(payrollApplyMonth),
+                MezonTokenDetails = mezonTokenDetails
             };
 
             _finfastService.CreatOutcomeRequest(dto);
@@ -407,26 +415,38 @@ namespace HRMv2.Manager.Payrolls
 
         public object ValidCreateFinfastOutcomeEntry(long payrollId)
         {
-            var branchIds = WorkScope.GetAll<Payslip>()
-                .Where(x => x.PayrollId == payrollId)
-                .Select(x => x.BranchId)
-                .Distinct()
-                .ToList();
+            var pendingMezonTokenCount = WorkScope.GetAll<MezonToken>()
+                .Where(s => s.PayrollId == payrollId)
+                .Where(s => s.Status == StatusSendToken.Pending)
+                .Select(s => s.Id)
+                .Count();
 
-            var listBranchCode = WorkScope.GetAll<Branch>()
-                .Where(x => branchIds.Contains(x.Id))
-                .Select(x => x.Code)
+            if (pendingMezonTokenCount > 0)
+            {
+                return new 
+                {
+                    FailList = new List<string> { $"Mezon Token: Vẫn còn <strong>{pendingMezonTokenCount} request ở trạng thái Pending</strong>" },
+                    SuccessCount = 0
+                };
+            }
+
+
+            var listBranchCode = WorkScope.GetAll<Payslip>()
+                .Where(x => x.PayrollId == payrollId)
+                .Select(x => x.Branch.Code)
+                .Distinct()
                 .ToList();
 
             var payrolApplyMonth = WorkScope.GetAll<Payroll>()
                 .Where(x => x.Id == payrollId)
                 .Select(x => x.ApplyMonth)
                 .FirstOrDefault();
-
+            
             var input = new InputValidCreateFinfastOucome
             {
                 BranchCodes = listBranchCode,
-                PayrollName = CommonUtil.GenerateFinfastOutcomeEntryName(payrolApplyMonth)
+                PayrollName = CommonUtil.GenerateFinfastOutcomeEntryName(payrolApplyMonth),
+                MezonDPayrollName = CommonUtil.GenerateFinFastOutcomeEntryNameWithMezonToken(payrolApplyMonth)
             };
 
             var failList = _finfastService.ValidCreateFinfastOutcomeEntry(input) ?? new List<string>();
