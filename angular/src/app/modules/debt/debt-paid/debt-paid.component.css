@@ -40,8 +40,9 @@ td,th{
 }
 
 .col-paymentType{
-    width: 100px;
+    width: 120px;
 }
+
 .col-paymentType .mat-form-field{
     width: 120px;
 }
