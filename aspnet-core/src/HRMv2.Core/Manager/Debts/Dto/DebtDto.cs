@@ -16,6 +16,7 @@ namespace HRMv2.Manager.Debts.Dto
         public long? EmployeeId { get; set; }
         public double InterestRate { get; set; }
         public double Money { get; set; }
+        public string Currency { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Note { get; set; }
@@ -29,6 +30,5 @@ namespace HRMv2.Manager.Debts.Dto
         public string IdCard { get; set; }
         public string IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
-
     }
 }

@@ -3,6 +3,7 @@ using System;
 using HRMv2.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HRMv2.Migrations
 {
     [DbContext(typeof(HRMv2DbContext))]
-    partial class HRMv2DbContextModelSnapshot : ModelSnapshot
+    [Migration("20251103164815_add_currency_column_deb_table")]
+    partial class add_currency_column_deb_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

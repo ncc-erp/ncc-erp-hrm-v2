@@ -97,6 +97,7 @@ namespace HRMv2.Manager.Debts
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     Money = x.Money,
+                    Currency = x.Currency, 
                     PaymentType = x.PaymentType,
                     Note = x.Note,
                     TotalPaid = totalPaid.ContainsKey(x.Id) ? totalPaid[x.Id] : 0,
