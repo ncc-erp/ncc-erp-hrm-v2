@@ -415,6 +415,22 @@ namespace HRMv2.Manager.Payrolls
 
         public object ValidCreateFinfastOutcomeEntry(long payrollId)
         {
+            var pendingMezonTokenCount = WorkScope.GetAll<MezonToken>()
+                .Where(s => s.PayrollId == payrollId)
+                .Where(s => s.Status == StatusSendToken.Pending)
+                .Select(s => s.Id)
+                .Count();
+
+            if (pendingMezonTokenCount > 0)
+            {
+                return new 
+                {
+                    FailList = new List<string> { $"Mezon Token: Vẫn còn <strong>{pendingMezonTokenCount} request ở trạng thái Pending</strong>" },
+                    SuccessCount = 0
+                };
+            }
+
+
             var listBranchCode = WorkScope.GetAll<Payslip>()
                 .Where(x => x.PayrollId == payrollId)
                 .Select(x => x.Branch.Code)
@@ -434,17 +450,6 @@ namespace HRMv2.Manager.Payrolls
             };
 
             var failList = _finfastService.ValidCreateFinfastOutcomeEntry(input) ?? new List<string>();
-
-            var pendingMezonTokenCount = WorkScope.GetAll<MezonToken>()
-                .Where(s => s.PayrollId == payrollId)
-                .Where(s => s.Status == StatusSendToken.Pending)
-                .Select(s => s.Id)
-                .Count();
-
-            if (pendingMezonTokenCount > 0)
-            {
-                failList.Add($"Mezon Token: Vẫn còn <strong>{pendingMezonTokenCount} request ở trạng thái Pending</strong>");
-            }
 
             return new
             {
