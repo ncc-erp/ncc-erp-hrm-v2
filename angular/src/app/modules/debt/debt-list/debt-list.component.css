@@ -129,3 +129,19 @@ app-user-info:hover a {
     word-break: break-all;
     text-align: left !important;
 }
+
+.debt-page .content-wrapper,
+.debt-page .content,
+.debt-page .container-fluid,
+.debt-page .row,
+.debt-page .card,
+.debt-page .card-body {
+    padding-bottom: 1px !important;
+    margin-bottom: 1px !important;
+}
+
+.debt-page {
+    padding-bottom: 1px !important;
+    margin-bottom: 1px !important;
+}
+

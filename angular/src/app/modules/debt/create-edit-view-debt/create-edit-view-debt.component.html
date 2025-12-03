@@ -56,12 +56,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-12 form-control-right">
+                                <div class="col-lg-3 col-md-12 form-control-right">
                                     <div class="row form-group" [ngClass]="isAllowEditDebt() && isEdit?'required':''">
-                                        <label class="col-3 col-form-label">
-                                            Principal (VND)
+                                        <label class="col-3 col-form-label principal-label">
+                                            Principal
                                         </label>
-                                        <div class="col-8 d-flex justify-content-start align-items-center">
+                                        <div class="col-8 d-flex justify-content-start align-items-center principal-input">
                                             <ng-container *ngIf="isAllowEditDebt() && isEdit">
                                                 <div class="w-100">
                                                     <mat-form-field appearance="outline" class="common-input">
@@ -79,6 +79,24 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-lg-3 col-md-12 form-control-right">
+                                    <div class="row form-group" [ngClass]="isAllowEditDebt() && isEdit?'required':''">
+                                        <label class="col-3 col-form-label">
+                                            Currency
+                                        </label>
+                                        <div class="col-4 d-flex justify-content-start align-items-center">
+                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                                <mat-form-field appearance="outline" class="common-input w-100">
+                                                    <input matInput placeholder="Currency" type="text" formControlName="currency" #currencyEl>
+                                                </mat-form-field>
+                                            </ng-container>
+
+                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                                <span>{{ debt.currency }}</span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>                                
                             </div>
                             <div class="row d-flex justify-content-around">
                                 <div class="col-lg-6 col-md-12">
@@ -169,7 +187,7 @@
                                 <div class="col-lg-6 col-md-12 form-control-right">
                                     <div class="row form-group">
                                         <label class="col-3 col-form-label">
-                                            Interest (VND)
+                                            Interest
                                         </label>
                                         <div class="col-8 d-flex align-items-center justify-content-start">
                                             <strong>
@@ -242,23 +260,6 @@
                                                 *ngIf="debt.updatedUser">by
                                                 <strong>{{debt.updatedUser}}</strong></span>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="row form-group">
-                                        <label class="col-3 col-form-label">Currency</label>
-                                        <div class="col-8 d-flex align-items-center">
-                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
-                                                <div class="w-100">
-                                                    <mat-form-field appearance="outline" class="common-input" style="height:120px;">
-                                                        <input matInput type="text" name="currency" formControlName="currency" #currencyEl style="height:100%;" />
-                                                    </mat-form-field>
-                                                    <abp-validation-summary [control]="currency" [controlEl]="currencyEl">
-                                                    </abp-validation-summary>
-                                                </div>
-                                            </ng-container>
-                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
-                                                <div class="text-read" style="min-height:120px">{{debt.currency}}</div>
-                                            </ng-container>
                                         </div>
                                     </div>
                                 </div>

@@ -311,7 +311,7 @@ namespace HRMv2.Manager.MezonTokens
             foreach (var item in input)
             {
                 _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
-                delaySendToken += 3;
+                delaySendToken += 1;
             }
 
 
