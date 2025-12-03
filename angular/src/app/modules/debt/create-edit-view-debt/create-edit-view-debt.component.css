@@ -54,3 +54,23 @@
     word-wrap: break-word;
     white-space: pre-line;
 }
+@media (min-width: 1400px) {
+
+    .principal-label {
+        padding-left: 36px; 
+        white-space: nowrap;
+    }
+
+    .principal-input {
+        padding-left: 123px; 
+        white-space: nowrap;
+        position: relative;
+    }
+
+    .principal-input .w-100,
+    .principal-input .mat-form-field {
+        width: calc(100% + 116px);
+        box-sizing: content-box;
+    }
+}
+
