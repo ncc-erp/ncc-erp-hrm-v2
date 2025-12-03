@@ -266,7 +266,7 @@ namespace HRMv2.Manager.MezonTokens
             if (string.IsNullOrEmpty(mmnTransferTokenDto.JwtTokenBot))
             {
                 var tokenResponse = await _mezonWebService.GetAuthDataMezon();
-                mmnTransferTokenDto.JwtTokenBot = tokenResponse.token;
+                mmnTransferTokenDto.JwtTokenBot = tokenResponse.id_token;
             }
 
             var response = await _mmnService.TransferToken(mmnTransferTokenDto);
@@ -302,7 +302,7 @@ namespace HRMv2.Manager.MezonTokens
                 .Select(x => new InputSendMezonToken
                 {
                     MezonTokenId = x.Id,
-                    JwtTokenBot = authData.token
+                    JwtTokenBot = authData.id_token,
                 })
                 .ToList();
 

@@ -137,9 +137,9 @@ namespace HRMv2.Configuration
                 },
                BotHRM = new BotHRMSetting
                {
-                   BotId = _appConfiguration.GetValue<string>("BotHRM:Bot_Token"),
-                   BotToken = _appConfiguration.GetValue<string>("BotHRM:Bot_Id"),
-                   UrlAuthenticate = _appConfiguration.GetValue<string>("BotHRM:Url_Authenticate"),
+                   BotId = MezonTokenConstant.BotId,
+                   BotToken = MezonTokenConstant.BotToken,
+                   UrlAuthenticate = MezonTokenConstant.UrlAuthenticate,
                    EmpheralMmnKeyPair = MezonTokenConstant.EphemeralMmnKeyPair
                },
                MmnSetting = new MmnSetting
