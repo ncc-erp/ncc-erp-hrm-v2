@@ -11,6 +11,7 @@ namespace HRMv2.WebServices.Mezon.Dto
         public string token { get; set; }
         public string refresh_token { get; set; }
         public string user_id { get; set; }
+        public string id_token { get; set; }
 
     }  
 
