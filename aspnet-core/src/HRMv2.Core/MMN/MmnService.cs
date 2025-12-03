@@ -1,31 +1,24 @@
 ﻿using Abp.Dependency;
 using Amazon.S3.Model.Internal.MarshallTransformations;
 using HRMv2.Constants;
-using HRMv2.Entities;
 using HRMv2.Manager.MezonTokens.Dto;
 using HRMv2.WebServices.Dto;
+using Microsoft.Extensions.Logging;
 using Mmn;
 using MmnDotNetSdk;
 using MmnDotNetSdk.Models;
 using MmnDotNetSdk.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Principal;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 namespace HRMv2.MMN
 {
     public class MmnService : ISingletonDependency
     {
         private readonly MmnClient _client;
-
+        protected readonly ILogger<MmnService> Logger;
         public MmnService()
         {
             var config = new Config
@@ -34,6 +27,7 @@ namespace HRMv2.MMN
                 ZkProveEndpoint = MmnConstant.ZkProveEndpoint
             };
             _client = new MmnClient(config);
+            Logger = IocManager.Instance.Resolve<ILogger<MmnService>>();
         }
 
         public async Task<Account> GetAmount(string address)
@@ -144,6 +138,7 @@ namespace HRMv2.MMN
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex.Message);
                 return new MmnDotNetSdk.Models.AddTxResponse
                 {
                     Ok = false,
