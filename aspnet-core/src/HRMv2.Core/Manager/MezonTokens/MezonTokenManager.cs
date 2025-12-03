@@ -306,16 +306,18 @@ namespace HRMv2.Manager.MezonTokens
                 })
                 .ToList();
 
-            var delaySendToken = 0;
+            var delaymilliseconds = 0;
 
             foreach (var item in input)
             {
-                _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromSeconds(delaySendToken));
-                delaySendToken += 1;
+                _backgroundJobManager.Enqueue<SendMezonTokenBackgroundJob, InputSendMezonToken>(item, BackgroundJobPriority.High, TimeSpan.FromMilliseconds(delaymilliseconds));
+                delaymilliseconds += 100;
             }
 
+            var s = $"Started sending token to {input.Count} users.";
+            Logger.Info(s);
 
-            return $"Started sending token to {input.Count} users.";
+            return s;
         }
     }
 }
