@@ -289,7 +289,7 @@ namespace HRMv2.Manager.MezonTokens
             return new AuthResponse
             {
                 code = 1,
-                message = $"Failed to send Token to {userName} because BotHRM has run out of tokens."
+                message = $"Failed to send Token to {userName} error: {response.Error}"
             };
         }
 
