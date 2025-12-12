@@ -221,7 +221,15 @@
                       class="col-money text-right"
                       *ngIf="columnList[2].isShow"
                     >
-                      {{ debt.money | currency: "VND":"" }}
+                      <div>
+                        <strong>{{ debt.money | currency: "VND":""}}</strong>
+                      </div>
+                      <div
+                      *ngIf="debt.currency"
+                      [style.color]="debtService.getColorByCurrency(debt.currency)"
+                      >
+                        <strong>{{ debt.currency }}</strong>
+                      </div>
                     </td>
                     <td class="text-center" *ngIf="columnList[3].isShow">
                       {{ debt.interestRate }}

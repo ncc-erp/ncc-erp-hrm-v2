@@ -17,6 +17,7 @@
             new DefaultSettingsCreator(_context).Create();
             new HostLevelCreator(_context).Create();
             new HostEmailTemplateCreator(_context).Create();
+            new HostDebtCurrencyUpdater(_context).Update();
 
             _context.SaveChanges();
         }
