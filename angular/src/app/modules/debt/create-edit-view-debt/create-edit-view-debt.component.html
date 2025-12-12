@@ -85,13 +85,13 @@
                                             Currency
                                         </label>
                                         <div class="col-4 d-flex justify-content-start align-items-center">
-                                            <ng-container *ngIf="isAllowEditDebt() && isEdit">
+                                            <ng-container *ngIf="isEdit">
                                                 <mat-form-field appearance="outline" class="common-input w-100">
                                                     <input matInput placeholder="Currency" type="text" formControlName="currency" #currencyEl>
                                                 </mat-form-field>
                                             </ng-container>
 
-                                            <ng-container *ngIf="!isAllowEditDebt() || !isEdit">
+                                            <ng-container *ngIf="!isEdit">
                                                 <span>{{ debt.currency }}</span>
                                             </ng-container>
                                         </div>
