@@ -46,4 +46,23 @@ export class DebtService extends BaseApiService {
   public getDebtTemplate(debtId: number):Observable<ApiResponseDto<any>>{
     return this.processGet(`GetDebtTemplate?debtId=${debtId}`);
   }
+
+  getColorByCurrency(code: string) {
+    switch (code) {
+      case 'VND':
+        return 'black';
+      case 'USD':
+        return 'blue';
+      case 'GBP':
+        return 'rgb(246, 117, 168)';
+      case 'EURO':
+        return 'orange';
+      case 'BATH':
+        return 'rgb(23, 162, 184)';
+      case 'YEN':
+        return 'rgb(66, 3, 44)';
+      default:
+        return '#8758FF';
+    }
+  }
 }

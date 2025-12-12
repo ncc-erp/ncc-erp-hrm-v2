@@ -18,7 +18,7 @@ namespace HRMv2.Entities
         public Employee Employee { get; set; }
         public double InterestRate { get; set; }
         public double Money { get; set; }
-        public string Currency { get; set; }
+        public string? Currency { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Note { get; set; }

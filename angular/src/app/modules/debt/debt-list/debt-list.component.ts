@@ -54,7 +54,7 @@ export class DebtListComponent extends PagedListingComponentBase<DebtDto> implem
     private branchService: BranchService,
     private teamService: TeamService,
     private levelService: LevelService,
-    private debtService: DebtService,
+    public debtService: DebtService,
     private layoutStoreService: LayoutStoreService
   ) {
     super(injector);
