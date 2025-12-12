@@ -40,6 +40,7 @@ namespace HRMv2.EntityFrameworkCore.Seed
                 new TenantRoleAndUserBuilder(context, id).Create();
                 new TenantLevelBuilder(context, id).Create();
                 new TenantEmailTemplateBuilder(context, id).Create();
+                new DebtCurrencyFixed(context, id).Fixed();
             }
         }
 
