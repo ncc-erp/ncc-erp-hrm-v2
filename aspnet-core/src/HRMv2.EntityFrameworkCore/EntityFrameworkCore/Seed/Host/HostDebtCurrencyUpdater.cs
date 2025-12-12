@@ -4,22 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRMv2.EntityFrameworkCore.Seed.Tenants
+namespace HRMv2.EntityFrameworkCore.Seed.Host
 {
-    public class DebtCurrencyFixed
+    public class HostDebtCurrencyUpdater
     {
         private readonly HRMv2DbContext _context;
-        private readonly int _tenantId;
-        public DebtCurrencyFixed(HRMv2DbContext context, int tenantId)
+        public HostDebtCurrencyUpdater(HRMv2DbContext context)
         {
             _context = context;
-            _tenantId = tenantId;
         }
 
-        public void Fixed()
+        public void Update()
         {
             var debts = _context.Debts
-                .Where(d => d.TenantId == _tenantId && d.Currency == null)
+                .Where(d => d.Currency == null)
                 .ToList();
 
             if (!debts.Any())
@@ -28,7 +26,7 @@ namespace HRMv2.EntityFrameworkCore.Seed.Tenants
             foreach (var debt in debts)
             {
                 debt.Currency = "VND";
-            }    
+            }
 
             _context.SaveChanges();
         }
