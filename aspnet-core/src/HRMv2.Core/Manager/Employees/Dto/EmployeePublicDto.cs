@@ -1,4 +1,6 @@
-﻿using static HRMv2.Constants.Enum.HRMEnum;
+﻿using HRMv2.Utils;
+using System.Text.Json.Serialization;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.Manager.Employees.Dto
 {
@@ -6,7 +8,10 @@ namespace HRMv2.Manager.Employees.Dto
     {
         public string Email { get; set; }
         public string FullName { get; set; }
-        public string Avatar { get; set; }
+        public string Avatar => FileUtil.FullFilePath(OriginalAvatar);
+
+        [JsonIgnore]
+        public string OriginalAvatar { get; set; }
         public Sex Sex { get; set; }
         public string LevelCode {get; set;}
         public string BranchCode { get; set; }
