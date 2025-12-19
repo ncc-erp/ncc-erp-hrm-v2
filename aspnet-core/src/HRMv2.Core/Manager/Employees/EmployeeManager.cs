@@ -2022,9 +2022,9 @@ namespace HRMv2.Manager.Employees
                 var employees = WorkScope.GetAll<Employee>()
                 .Select(x => new EmployeePublicDto
                 {
-                    Email = x.Email,
+                    Email = x.Email, 
                     FullName = x.FullName,
-                    Avatar = x.Avatar,
+                    OriginalAvatar = x.Avatar,
                     Sex = x.Sex,
                     LevelCode = x.Level.Code,
                     BranchCode = x.Branch.Code,
