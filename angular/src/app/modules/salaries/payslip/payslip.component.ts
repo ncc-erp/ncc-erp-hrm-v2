@@ -840,14 +840,6 @@ export class PayslipComponent extends PagedListingComponentBase<any> implements 
   }
   public columnList = [
     {
-      name: "no",
-      displayName: "#",
-      isShow: true,
-      sortable: false,
-      className: "",
-      width: 50
-    },
-    {
       name: "email",
       displayName: "Employee",
       isShow: true,

@@ -142,6 +142,14 @@
                         <table class="table table-striped" [busy]="isLoading">
                             <thead>
                                 <tr>
+                                    <th>
+                                        <toggle-column
+                                        [columnList]="columnList"
+                                        (columnToggle)="columnList = $event"
+                                        [tableName]="'payslipTable'"
+                                        >
+                                        </toggle-column>
+                                    </th>
                                     <ng-container *ngFor="let column of columnList">
                                         <th [ngStyle]="{'width': column.width + 'px'}" *ngIf="column.isShow && !column.sortable">{{column.displayName}}
                                             <span *ngIf="column.allowExpan == true" class="ml-2" >
@@ -155,14 +163,7 @@
                                             [sortDirection]="sortDirection"></sortable>
                                         </th>
                                     </ng-container>
-                                    <th>
-                                        <toggle-column
-                                        [columnList]="columnList"
-                                        (columnToggle)="$event"
-                                        [tableName]="'payslipTable'"
-                                        >
-                                        </toggle-column>
-                                    </th>
+                                    <th> Action </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -173,10 +174,10 @@
                                     currentPage: pageNumber,
                                     totalItems: totalItems
                                 };let i = index">
-                                    <td class="text-center align-middle" *ngIf="columnList[0].isShow">
+                                    <td class="text-center align-middle">
                                         <p>{{(pageNumber-1)*pageSize + i + 1}}</p>
                                     </td>
-                                    <td class="text-center align-middle" style="min-width: 350px" *ngIf="columnList[1].isShow">
+                                    <td class="text-center align-middle" style="min-width: 350px" *ngIf="columnList[0].isShow">
                                         <app-user-info
                                         class="w-100"
                                         [isAllowAvatarRouting]="isAllowViewTabPersonalInfo()"
@@ -216,13 +217,13 @@
                                                 </mat-form-field>
                                             </div>
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[2].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[1].isShow">
                                         <b>{{payslip.normalSalary | moneyFormat}}</b>
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[3].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[2].isShow">
                                         <b>{{payslip.realSalary | moneyFormat}}</b>
                                     </td>
-                                    <td class="text-center align-middle pointer" *ngIf="columnList[4].isShow" [tippy]="inputSalary">
+                                    <td class="text-center align-middle pointer" *ngIf="columnList[3].isShow" [tippy]="inputSalary">
                                         <div *ngFor="let salary of payslip.listInputSalary">
                                             <span class="mr-1">{{salary.salary | moneyFormat}}</span>
                                         </div>
@@ -234,31 +235,31 @@
                                             </div>
                                          </ng-template>
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[5].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[4].isShow">
                                         {{payslip.normalDay}} / {{payslip.standardNormalDay}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[6].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[5].isShow">
                                         {{payslip.otHour}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[7].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[6].isShow">
                                         {{payslip.offDay}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[8].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[7].isShow">
                                         {{payslip.opentalkCount}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[9].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[8].isShow">
                                         {{payslip.leaveDayBefore}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[10].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[9].isShow">
                                         {{payslip.addedLeaveDay}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[11].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[10].isShow">
                                         {{payslip.refundLeaveDay}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[12].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[11].isShow">
                                         {{payslip.remainLeaveDays}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[13].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[12].isShow">
                                         <ng-container *ngIf="editingIndex === i && editingField === 'branch' && isShowEditBranch(); else showBranch">
                                           <mat-form-field appearance="outline">
                                             <mat-select [(ngModel)]="selectedBranchId" name="branchId_{{i}}">
@@ -294,7 +295,7 @@
                                       </td>
                                       
                        
-                                    <td class="text-center align-middle" *ngIf="columnList[14].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[13].isShow">
                                        
                                         <ng-container *ngIf="editingIndex === i && editingField === 'userType' && isShowEditUserType();  else showBranch">
                                             <mat-form-field appearance="outline">
@@ -330,7 +331,7 @@
                                           </ng-template>
 
                                     </td>
-                                    <td class="text-center text-white align-middle" *ngIf="columnList[15].isShow">
+                                    <td class="text-center text-white align-middle" *ngIf="columnList[14].isShow">
 
                                         <ng-container *ngIf="editingIndex === i && editingField === 'jobPosition'  && isShowEditJobPosition(); else showBranch">
                                             <mat-form-field appearance="outline">
@@ -366,7 +367,7 @@
                                           </ng-template>
                                        
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[16].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[15].isShow">
 
                                         <ng-container *ngIf="editingIndex === i && editingField === 'level'  && isShowEditLevel(); else showBranch">
                                             <mat-form-field appearance="outline">
@@ -402,28 +403,28 @@
                                           </ng-template>
                                        
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[17].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[16].isShow">
                                             <div>{{payslip.bankInfo.bankAccountNumber}}</div>
                                             <div>{{payslip.bankInfo.bankName}}</div>
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[18].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[17].isShow">
                                         <span>{{getTeams(payslip.teams)}}</span>
                                     </td>
 
-                                    <td class="text-center align-middle" [ngClass]="columnList[19].className" *ngIf="columnList[19].isShow">
+                                    <td class="text-center align-middle" [ngClass]="columnList[18].className" *ngIf="columnList[18].isShow">
                                         {{payslip.otSalary | moneyFormat}}
                                     </td>
 
-                                    <td class="text-center align-middle" *ngIf="columnList[20].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[19].isShow">
                                         {{payslip.totalBonus | moneyFormat}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[21].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[20].isShow">
                                         {{payslip.totalPunishment | moneyFormat}}
                                     </td>
-                                    <td class="text-center align-middle" *ngIf="columnList[22].isShow">
+                                    <td class="text-center align-middle" *ngIf="columnList[21].isShow">
                                         {{payslip.totalDebt | moneyFormat}}
                                     </td>
-                                    <td class="align-middle text-center modify-time" *ngIf="columnList[23].isShow">
+                                    <td class="align-middle text-center modify-time" *ngIf="columnList[22].isShow">
                                         <div>{{payslip.updatedTime | dmyHmDateFormat}}
                                             <p class="m-0" *ngIf="payslip.updatedUserName">by
                                                 <strong>{{payslip.updatedUserName}}</strong>
@@ -431,8 +432,8 @@
                                         </div>
                                     </td>
 
-                                    <td class="align-middle pointer min-text" *ngIf="columnList[24].isShow" [tippy]="tpl">
-                                        <div [ngClass]="!columnList[24].expanded ? 'text-ellipsis' : ''"
+                                    <td class="align-middle pointer min-text" *ngIf="columnList[23].isShow" [tippy]="tpl">
+                                        <div [ngClass]="!columnList[23].expanded ? 'text-ellipsis' : ''"
                                          *ngFor="let benefit of payslip.listBenefit">
                                          <span class="mr-1">{{benefit.money | moneyFormat}}</span>:
                                          <span>{{benefit.note}}</span>
@@ -445,7 +446,7 @@
                                         </ng-template>
                                     </td>
 
-                                    <td class="align-middle pointer min-text" *ngIf="columnList[25].isShow" style="white-space: pre-line;"
+                                    <td class="align-middle pointer min-text" *ngIf="columnList[24].isShow" style="white-space: pre-line;"
                                      [tippy]="complainTpl" >
                                         <div *ngIf="payslip.confirmStatus == APP_ENUM.PayslipConfirmStatus.ConfirmRight" class="text-success confirm-status">
                                                 <i class="fa-regular fa-circle-check mr-1"></i>
@@ -459,7 +460,7 @@
                                                 Confirm wrong
                                             </strong>
                                     </div>
-                                        <div [ngClass]="!columnList[25].expanded ? 'text-ellipsis' : ''" *ngIf="payslip.confirmStatus == APP_ENUM.PayslipConfirmStatus.ConfirmWrong" >
+                                        <div [ngClass]="!columnList[24].expanded ? 'text-ellipsis' : ''" *ngIf="payslip.confirmStatus == APP_ENUM.PayslipConfirmStatus.ConfirmWrong" >
                                             {{payslip.complainNote}}
                                         </div>
                                         <ng-template #complainTpl let-hide >
