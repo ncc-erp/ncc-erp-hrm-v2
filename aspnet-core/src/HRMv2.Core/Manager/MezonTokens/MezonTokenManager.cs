@@ -261,6 +261,7 @@ namespace HRMv2.Manager.MezonTokens
                 amount = mezonTokenInfo.MezonToken.Amount,
                 receiver_id = mezonTokenInfo.UserMezonId,
                 note = mezonTokenInfo.MezonToken.Note,
+                JwtTokenBot = input.JwtTokenBot
             };
 
             if (string.IsNullOrEmpty(mmnTransferTokenDto.JwtTokenBot))
