@@ -13,7 +13,6 @@ using static HRMv2.Manager.Timesheet.Dto.InpuReviewInternFromTSDto;
 
 namespace HRMv2.APIs.Timesheet
 {
-    [AbpAuthorize]
     public class TimesheetAppService: HRMv2AppServiceBase
     {
         private readonly TimesheetManager _timesheetManager;
@@ -23,7 +22,6 @@ namespace HRMv2.APIs.Timesheet
         }
 
         [HttpPost]
-        [AbpAllowAnonymous]
         [NccAuthentication]
 
         public async Task UpdateAvatarFromTimesheet (AvatarDto input)
@@ -31,43 +29,39 @@ namespace HRMv2.APIs.Timesheet
             await _timesheetManager.UpdateAvatarFromTimesheet(input);
         }
 
-        [AbpAllowAnonymous]
         [NccAuthentication]
         public Task ReviewInternFromTimesheet(InputCreateRequestHrmv2Dto input)
         {
           return _timesheetManager.ReviewInternFromTimesheet(input);
         }
 
-        [AbpAllowAnonymous]
+        [NccAuthentication]
         [HttpGet]
         public GetUserInfoByEmailDto GetUserInfoByEmail(string email)
         {
             return  _timesheetManager.GetUserInfoByEmail(email);
         }
-        [AbpAllowAnonymous]
+
+        [NccAuthentication]
         [HttpGet]
         public List<ItemInfoDto> GetAllBanks()
         {
             return  _timesheetManager.GetAllBanks();
         }
 
-        [AbpAllowAnonymous]
+        [NccAuthentication]
         [HttpGet]
         public GetInfoToUPDateProfile GetInfoToUpdate(string email)
         {
             return _timesheetManager.GetInfoToUpdate(email);
         }
 
-        [AbpAllowAnonymous]
+        [NccAuthentication]
         [HttpPost]
         public async Task<ResultUpdateInfo> CreateRequestUpdateUserInfo(UpdateUserInfoDto input)
         {
             return await _timesheetManager.CreateRequestUpdateUserInfo(input);
         }
-
-
-
-
 
 
 
