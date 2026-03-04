@@ -752,6 +752,29 @@ namespace HRMv2.Manager.Salaries.Payslips
             return $"Updated PayslipDetail, not found PunishmentEmployee";
 
         }
+        public async Task<string> UpdatePayslipDetailBenefit(UpdatePayslipDetailDto input)
+        {
+            if (input.Money < 0)
+                throw new UserFriendlyException("The amount of benefit money cannot be less than zero");
+
+            var payslipDetailExt = WorkScope.GetAll<PayslipDetail>()
+                .Where(s => s.Id == input.Id)
+                .Select(s => new
+                {
+                    PayslipDetail = s,
+                    s.Payslip.EmployeeId
+                }).FirstOrDefault();
+
+            if (payslipDetailExt == default)
+                throw new UserFriendlyException("Not found PayslipDetail Id = " + input.Id);
+
+            payslipDetailExt.PayslipDetail.Note = input.Note;
+            payslipDetailExt.PayslipDetail.Money = Math.Abs(input.Money);
+
+            await WorkScope.UpdateAsync(payslipDetailExt.PayslipDetail);
+
+            return $"Updated PayslipDetail";
+        }
 
         public async Task<string> CreatePayslipDetailBonus(CreatePayslipBonusDto input)
         {
