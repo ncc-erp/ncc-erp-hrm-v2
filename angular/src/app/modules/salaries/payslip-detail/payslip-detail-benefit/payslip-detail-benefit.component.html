@@ -7,18 +7,42 @@
                         <th>#</th>   
                         <th>Note</th>
                         <th>Money</th>
+                        <th>Action</th>
                     </thead>
                     <tbody>
                         <tr *ngFor="let benefit of listPayslipDetailBenefits; let i = index;">
                             <td class="text-center align-middle">{{i+1}}</td>
                             <td class="align-middle">
                                 <div class="my-2"
-                                    style="word-wrap: break-word; white-space: pre-line; min-width: 300px;">
-                                    {{benefit.note}}</div>
+                                    style="word-wrap: break-word; white-space: pre-line; min-width: 300px;"
+                                    *ngIf="!benefit.createMode">
+                                    {{benefit.note}}
+                                </div>
+                                <div *ngIf="benefit.createMode && isEditing">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <textarea cdkTextareaAutosize #autosize="cdkTextareaAutosize" name="note" rows="2" matInput [(ngModel)]="benefit.note"></textarea>
+                                    </mat-form-field>
+                                </div>
                             </td>
                             <td class="text-right align-middle my-2">
-                                <div >{{benefit.money
+                                <b *ngIf="!benefit.createMode">{{benefit.money
                                     |number:'1.0':'en-US'}}
+                                </b>
+                                <mat-form-field class="w-100 center-flex" appearance="outline"
+                                    *ngIf="benefit.createMode" required>
+                                    <input matInput name="money" [(ngModel)]="benefit.money" placeholder="enter money*"
+                                        [allowNegativeNumbers]="false" mask="separator" thousandSeparator="," min=0
+                                        #money="ngModel" #moneyInput required>
+                                </mat-form-field>
+                            </td>
+                            <td class="text-center align-middle">
+                                <div *ngIf="!benefit.createMode && isShowActions()" >
+                                    <app-edit-button [isDisable]="benefit.createMode || isEditing" (update)="onUpdate(benefit)"
+                                        *ngIf="isShowEditBenefit()">   
+                                    </app-edit-button>
+                                </div>
+                                <div *ngIf="benefit.createMode">
+                                    <app-save-cancel-button [isDisable]="!benefit.money" (save)="onSave(benefit)" (cancel)="onCancel(benefit)"></app-save-cancel-button>
                                 </div>
                             </td>
                         </tr>

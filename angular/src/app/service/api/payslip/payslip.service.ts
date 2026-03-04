@@ -83,6 +83,10 @@ export class PayslipService extends BaseApiService {
     return this.processPut(`UpdatePayslipDetailBonus`, input)
   }
 
+  public UpdatePayslipDetailBenefit(input: UpdatePayslipDetailDto): Observable<ApiResponseDto<string>> {
+    return this.processPut(`UpdatePayslipDetailBenefit`, input)
+  }
+
   public DeletePayslipDetail(id: number): Observable<ApiResponseDto<number>> {
     return this.processDelete(`DeletePayslipDetail?id=${id}`);
   }

@@ -208,6 +208,13 @@ namespace HRMv2.APIs.Payslips
             return updateinput;
         }
 
+        [HttpPut]
+        [AbpAuthorize(PermissionNames.Payroll_Payslip_UpdatePayslipDetail)]
+        public async Task<string> UpdatePayslipDetailBenefit(UpdatePayslipDetailDto input)
+        {
+            return await _payslipManager.UpdatePayslipDetailBenefit(input);
+        }
+
         [HttpGet]
         [AbpAuthorize(PermissionNames.Payroll_Payslip_UpdatePayslipDetail)]
         public GetPayslipInfoBeforeUpdateDto GetPayslipBeforeUpdateInfo(long payslipId)
