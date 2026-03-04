@@ -37,9 +37,13 @@
                             </td>
                             <td class="text-center align-middle">
                                 <div *ngIf="!benefit.createMode && isShowActions()" >
-                                    <app-edit-button [isDisable]="benefit.createMode || isEditing" (update)="onUpdate(benefit)"
-                                        *ngIf="isShowEditBenefit()">   
-                                    </app-edit-button>
+                                    <button
+                                        *ngIf="isShowEditBenefit()"
+                                        class="btn btn-primary btn-sm mr-2"
+                                        [disabled]="benefit.createMode || isEditing"
+                                        (click)="onUpdate(benefit)">
+                                        <i class="fa-solid fa-pen-to-square mr-1"></i>Edit
+                                    </button>
                                 </div>
                                 <div *ngIf="benefit.createMode">
                                     <app-save-cancel-button [isDisable]="!benefit.money" (save)="onSave(benefit)" (cancel)="onCancel(benefit)"></app-save-cancel-button>
