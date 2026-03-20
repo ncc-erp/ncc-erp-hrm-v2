@@ -456,6 +456,43 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         }
 
+        public async Task SplitPayslipDetailByTokenForOnePayslip(long payslipId, long benefitId, int tokenDefaultValue)
+        {
+            var detail = WorkScope.GetAll<PayslipDetail>()
+                .Include(x => x.Payslip)
+                .ThenInclude(p => p.Payroll)
+                .FirstOrDefault(x => x.PayslipId == payslipId
+                                    && x.ReferenceId == benefitId
+                                    && !x.Payslip.IsDeleted);
+
+            if (detail == null)
+                throw new UserFriendlyException($"PayslipDetail not found for payslipId={payslipId}, benefitId={benefitId}");
+            if (detail.Payslip.Payroll.Status == PayrollStatus.Executed)
+                throw new UserFriendlyException($"The PayrollId {detail.Payslip.PayrollId} is Executed");
+
+            long tokenValue = Math.Min(tokenDefaultValue, (long)detail.Money);
+            tokenValue = Math.Min(tokenValue, (long)detail.Payslip.Salary);
+            tokenValue = Math.Max(tokenValue, 0);
+
+            if (tokenValue == 0)
+                throw new UserFriendlyException($"Insufficient remaining balance to split token");
+
+            detail.Money -= tokenValue;
+            detail.Payslip.Salary -= tokenValue;
+
+            var token = new MezonToken
+            {
+                EmployeeId = detail.Payslip.EmployeeId,
+                Amount = tokenValue,
+                Status = StatusSendToken.Pending,
+                ReferenceId = detail.Id,
+                PayrollId = detail.Payslip.PayrollId,
+                Note = $"Token ăn trưa tháng {detail.Payslip.Payroll.ApplyMonth.ToString("MM-yyyy")}: {tokenValue:N0} (tiền mặt ăn trưa: {detail.Money:N0} VND)"
+            };
+
+            await WorkScope.InsertAsync(token);
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
 
         public List<ExportPayrollIncludeLastMonthDto> GetPayslipByPayrollId(long payrollId)
         {
@@ -751,6 +788,29 @@ namespace HRMv2.Manager.Salaries.Payslips
 
             return $"Updated PayslipDetail, not found PunishmentEmployee";
 
+        }
+        public async Task<string> UpdatePayslipDetailBenefit(UpdatePayslipDetailDto input)
+        {
+            if (input.Money < 0)
+                throw new UserFriendlyException("The amount of benefit money cannot be less than zero");
+
+            var payslipDetailExt = WorkScope.GetAll<PayslipDetail>()
+                .Where(s => s.Id == input.Id)
+                .Select(s => new
+                {
+                    PayslipDetail = s,
+                    s.Payslip.EmployeeId
+                }).FirstOrDefault();
+
+            if (payslipDetailExt == default)
+                throw new UserFriendlyException("Not found PayslipDetail Id = " + input.Id);
+
+            payslipDetailExt.PayslipDetail.Note = input.Note;
+            payslipDetailExt.PayslipDetail.Money = Math.Abs(input.Money);
+
+            await WorkScope.UpdateAsync(payslipDetailExt.PayslipDetail);
+
+            return $"Updated PayslipDetail";
         }
 
         public async Task<string> CreatePayslipDetailBonus(CreatePayslipBonusDto input)

@@ -12,6 +12,7 @@ import { PERMISSIONS_CONSTANT } from '@app/permission/permission';
 import { startWithTap } from '@shared/helpers/observerHelper';
 import { finalize } from 'rxjs/operators'
 import { EditPayslipDetailDialogComponent } from './edit-payslip-detail-dialog/edit-payslip-detail-dialog.component';
+import { ConfirmTokenDialogComponent } from '@app/modules/mezon-token/confirm-token-dialog-component/confirm-token-dialog-component.component';
 @Component({
   selector: 'app-payslip-detail-salary',
   templateUrl: './payslip-detail-salary.component.html',
@@ -158,6 +159,21 @@ export class PayslipDetailSalaryComponent extends AppComponentBase implements On
     })
   }
 
+  openSplitBenefitDialog() {
+    this.dialog.open(ConfirmTokenDialogComponent, {
+      width: "400px",
+      data: {
+        payrollId: this.payrollId,
+        payslipId: this.payslipId
+      }
+    }).afterClosed().subscribe(res => {
+      if (res) {
+        this.getPayslipDetail();
+        this.getPayslipResult();
+      }
+    })
+  }
+
   getPayslipResult() {
     this.subscription.push(
       this.payslipService.getPayslipResult(this.payslipId).subscribe((rs) => {
@@ -209,6 +225,11 @@ export class PayslipDetailSalaryComponent extends AppComponentBase implements On
 
   isShowActions(){
     return this.payrollStatus != APP_ENUMS.PayrollStatus.Executed
+  }
+
+  isShowSplitBenefitBtn() {
+    return this.isGranted(PERMISSIONS_CONSTANT.Payroll_Payslip_SplitBenefitbyToken)
+      && this.payrollStatus != APP_ENUMS.PayrollStatus.Executed;
   }
 }
 

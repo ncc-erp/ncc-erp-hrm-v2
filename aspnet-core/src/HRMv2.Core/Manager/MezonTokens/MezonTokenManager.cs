@@ -51,7 +51,7 @@ namespace HRMv2.Manager.MezonTokens
         public MezonTokenManager(IWorkScope workScope, MezonWebService mezonWebService,
             BackgroundJobManager backgroundJobManager, IConfiguration configuration
             , SendMezonDMService sendDMService,
-            EmailManager emailManager,
+            EmailManager emailManager, 
             MmnService mmnService) : base(workScope)
         {
             _mezonWebService = mezonWebService;
@@ -132,6 +132,21 @@ namespace HRMv2.Manager.MezonTokens
             entity.Status = StatusSendToken.Pending;
             input.Id = await WorkScope.InsertAndGetIdAsync(entity);
             return input;
+        }
+
+        public async Task CreateManyMezonToken(AddTokenToMultipleUserDto input)
+        {
+            var entities = input.EmployeeIds.Select(id => new MezonToken
+            {
+                EmployeeId = id,
+                Amount = input.Amount,
+                Note = input.Note,
+                PayrollId = input.PayrollId,
+                ReferenceId = input.ReferenceId ?? 0,
+                Status = StatusSendToken.Pending,
+            }).ToList();
+
+            await WorkScope.InsertRangeAsync(entities);
         }
 
         public async Task DeleteMezonTokenById(long mezonTokenId)
@@ -234,7 +249,7 @@ namespace HRMv2.Manager.MezonTokens
             _sendDMService.SendDMToUser(sendContent);
         }
 
-        public async Task<AuthResponse> SendToken(InputSendMezonToken input)
+       public async Task<AuthResponse> SendToken(InputSendMezonToken input)
         {
 
 

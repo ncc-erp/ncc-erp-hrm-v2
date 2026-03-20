@@ -11,6 +11,7 @@ import { TippyModule } from '@ngneat/helipopper';
 import { TippyProps } from '@ngneat/helipopper/lib/tippy.types';
 
 import { AddMezonTokenComponent } from './add-mezon-token/add-mezon-token.component';
+import { AddMultiMezonTokenComponent } from './add-multi-mezon-token/add-multi-mezon-token.component';
 export const customeTooltipVariation: Partial<TippyProps> = {
   theme: 'light',
   arrow: true,
@@ -24,7 +25,8 @@ export const customeTooltipVariation: Partial<TippyProps> = {
 
     MezonTokenComponent,
     ConfirmTokenDialogComponent,
-    AddMezonTokenComponent
+    AddMezonTokenComponent,
+    AddMultiMezonTokenComponent
 ]   ,
   imports: [
     FormsModule,
