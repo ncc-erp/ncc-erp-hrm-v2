@@ -193,11 +193,11 @@ export class PayslipService extends BaseApiService {
     return this.processGet(`GetStatusEmployeeToComplain?payslipId=${payslipId}`)
   } 
 
-  public changePayslipWithToken(payrollId: any , mezonToken: any,benefitId: any): Observable<any>{
+  public changePayslipWithToken(payrollId: any , mezonToken: any, benefitId: any): Observable<any>{
     return this.processPost(`ChangePayslipWithToken?payrollId=${payrollId}&mezonToken=${mezonToken}&benefitId=${benefitId}`,"")
   }
 
-  public changePayslipWithTokenForOnePayslip(payslipId: any, benefitId: any, mezonToken: any): Observable<any> {
+  public changePayslipWithTokenForOnePayslip(payslipId: any, mezonToken: any, benefitId: any): Observable<any> {
     return this.processPost(
       `ChangeOnePayslipWithToken?payslipId=${payslipId}&benefitId=${benefitId}&mezonToken=${mezonToken}`,
       ""
