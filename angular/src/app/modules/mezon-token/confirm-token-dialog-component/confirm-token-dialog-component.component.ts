@@ -69,8 +69,9 @@ public getBenefitActive() {
       this.isLoading = true; 
      this._mezonToken = Number(this._mezonToken) || 0;
       this.subscription.push(
-        this.payslipService
-          .changePayslipWithToken(this.data.payrollId, this._mezonToken, this.selectedBenefit)
+        (this.data?.payslipId
+          ? this.payslipService.changePayslipWithTokenForOnePayslip(this.data.payslipId, this.selectedBenefit, this._mezonToken)
+          : this.payslipService.changePayslipWithToken(this.data.payrollId, this._mezonToken, this.selectedBenefit))
           .subscribe({
             next: (rs) => {
               this.isLoading = false; 
