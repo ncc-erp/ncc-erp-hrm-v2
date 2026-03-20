@@ -7,7 +7,7 @@
 
 
             <div class="row">
-                <div class="col-4 ">
+                <div class="col-2 ">
                     <app-search [placeholder]="'Search by Email or Note'" [seachText]="searchText"
                         (onSearch)="onSearchEnter($event)"></app-search>
                 </div>
@@ -27,19 +27,24 @@
                              [dropdownData]="listPayroll">
             </chart-select>
                   </div>
-                <div class="d-flex justify-content-end gap-2 col-4" >
-                    <button class="btn btn-primary mr-2" (click)="onExport()" *ngIf="isShowExportBtn()">
-                        Export
-                    </button>
-                    <button class="btn btn-primary  mr-2 " (click)="openAddMezonToken()" *ngIf="isShowAddBtn()">
-                        Add
-                    </button>
-                    <button class="btn btn-success" (click)="SentAllMezonToken()" *ngIf="isShowSentTokenAllBtn()">
-                        Send All Pending
-                    </button>
-                    <button *ngIf="isShowDeleteAllBtn()" class="btn btn-danger" (click)="deleteAllPending()" style="margin-left: 10px;">
-                        Delete All Pending
-                    </button>
+                <div class="d-flex justify-content-end gap-2 col-6">
+                        <button class="btn btn-primary mr-2" (click)="onExport()" *ngIf="isShowExportBtn()">
+                            Export
+                        </button>
+                        <button class="btn btn-success mr-2" (click)="openAddMezonToken()" *ngIf="isShowAddBtn()">
+                            <i class="fa-solid fa-plus mr-1"></i>
+                            Add
+                        </button>
+                        <button class="btn btn-primary mr-2" (click)="openAddMultiMezonToken()" *ngIf="isShowAddBtn()">
+                            <i class="fa-solid fa-plus mr-1"></i>
+                            Multi Add
+                        </button>
+                        <button class="btn btn-success" (click)="SentAllMezonToken()" *ngIf="isShowSentTokenAllBtn()">
+                            Send All Pending
+                        </button>
+                        <button *ngIf="isShowDeleteAllBtn()" class="btn btn-danger" (click)="deleteAllPending()" style="margin-left: 10px;">
+                            Delete All Pending
+                        </button>
                 </div>
                 
                 

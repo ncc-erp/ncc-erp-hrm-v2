@@ -50,6 +50,14 @@ namespace HRMv2.APIs.PayrollToken
         {
             return await _mezonTokneManager.Create(input);
         }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Mezon_Token_Create)]
+        public async Task BulkCreateMezonToken(AddTokenToMultipleUserDto input)
+        {
+            await _mezonTokneManager.CreateManyMezonToken(input);
+        }
+
         [HttpPut]
         [AbpAuthorize(PermissionNames.Mezon_Token_Edit)]
         public async Task<MezonTokenDto> EditMezonToken(MezonTokenDto input)

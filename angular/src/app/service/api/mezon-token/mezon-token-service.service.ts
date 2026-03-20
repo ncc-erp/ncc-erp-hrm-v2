@@ -48,4 +48,8 @@ export class MezonTokenServiceService extends BaseApiService {
   public GetListMezonToken(input: any): Observable<ApiResponseDto<any>> {
     return this.processPost(`GetListMezonToken`,input);
   }
+
+  public createMany(input: any): Observable<ApiResponseDto<any>> {
+    return this.processPost(`BulkCreateMezonToken`, input);
+  }
 }

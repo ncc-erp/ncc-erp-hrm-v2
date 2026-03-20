@@ -12,6 +12,7 @@ import { AddMezonTokenComponent } from '../add-mezon-token/add-mezon-token.compo
 import { MatDialog } from '@angular/material/dialog';
 import { PayRollService } from '@app/service/api/pay-roll/pay-roll.service';
 import * as FileSaver from 'file-saver';
+import { AddMultiMezonTokenComponent } from '../add-multi-mezon-token/add-multi-mezon-token.component';
 
 @Component({
   selector: 'app-mezon-token',
@@ -180,6 +181,20 @@ getListPayroll() {
       })
       dia.afterClosed().subscribe((rs)=>{
         if(rs){
+          this.refresh();
+        }
+      })
+    }
+
+    openAddMultiMezonToken() {
+      const dia = this.dialog.open(AddMultiMezonTokenComponent, {
+        data: {
+          title : 'Send Token To Multiple Users',
+        },
+        width: "700px"
+      })
+      dia.afterClosed().subscribe((rs) => {
+        if(rs) {
           this.refresh();
         }
       })
