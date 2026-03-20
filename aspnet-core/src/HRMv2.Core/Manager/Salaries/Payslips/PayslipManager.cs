@@ -403,7 +403,7 @@ namespace HRMv2.Manager.Salaries.Payslips
             return result;
         }
 
-        public async Task SplitPayslipDetailByToken(int tokenDefaultValue, long payrollId,long benefitId)
+        public async Task SplitPayslipDetailByToken(long payrollId, int tokenDefaultValue,long benefitId)
         {
             var payroll = WorkScope.GetAll<Payroll>()
            .Where(x => x.Id == payrollId)
@@ -456,7 +456,7 @@ namespace HRMv2.Manager.Salaries.Payslips
 
         }
 
-        public async Task SplitPayslipDetailByTokenForOnePayslip(long payslipId, long benefitId, int tokenDefaultValue)
+        public async Task SplitPayslipDetailByTokenForOnePayslip(long payslipId, int tokenDefaultValue, long benefitId)
         {
             var detail = WorkScope.GetAll<PayslipDetail>()
                 .Include(x => x.Payslip)
