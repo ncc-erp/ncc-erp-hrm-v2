@@ -50,6 +50,6 @@ export class MezonTokenServiceService extends BaseApiService {
   }
 
   public createMany(input: any): Observable<ApiResponseDto<any>> {
-    return this.processPost(`CreateManyMezonToken`, input);
+    return this.processPost(`BulkCreateMezonToken`, input);
   }
 }

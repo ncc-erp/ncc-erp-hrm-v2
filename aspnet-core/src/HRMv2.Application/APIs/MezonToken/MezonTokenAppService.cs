@@ -53,7 +53,7 @@ namespace HRMv2.APIs.PayrollToken
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Mezon_Token_Create)]
-        public async Task CreateManyMezonToken(AddTokenToMultipleUserDto input)
+        public async Task BulkCreateMezonToken(AddTokenToMultipleUserDto input)
         {
             await _mezonTokneManager.CreateManyMezonToken(input);
         }
