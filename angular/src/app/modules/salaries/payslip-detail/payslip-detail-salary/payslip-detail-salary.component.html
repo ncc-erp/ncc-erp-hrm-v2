@@ -2,7 +2,8 @@
     <div *ngIf="isShowActions()">
         <button *ngIf="isShowCollectAndReCalculateSalaryBtn" class="btn btn-primary mr-2" (click)="collectEmployeePayslip()">Collect & Re-Calculate Salary</button>
         <button *ngIf="isShowReCalculateSalaryBtn()" class="btn btn-success mr-2" (click)="reCalculateSalary()">Re-Calculate Salary</button>
-        <button style="background-color:red" class="btn btn-success" (click)="UpdatePayslipInfo()">Update Payslip</button>
+        <button style="background-color:red" class="btn btn-success mr-2" (click)="UpdatePayslipInfo()">Update Payslip</button>
+        <button *ngIf="isShowSplitBenefitBtn()" class="btn btn-primary mr-2" (click)="openSplitBenefitDialog()">Split Benefit By Token</button>
     </div>
     <hr>
     <div class="row">
