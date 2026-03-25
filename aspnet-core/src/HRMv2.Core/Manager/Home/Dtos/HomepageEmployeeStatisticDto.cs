@@ -8,6 +8,7 @@ namespace HRMv2.Manager.Home.Dtos
 
     public class HomepageEmployeeStatisticDto
     {
+        public long? BranchId { get; set; }
         public string BranchName { get; set; }
         /// <summary>
         /// Total employee working on end date
