@@ -197,8 +197,10 @@ export class HomeComponent extends AppComponentBase implements OnInit {
     userType: number | null,
     action: string,
     title: string,
-    branchName: string
+    branchName: string,
+    value: number
   ) {
+    if (value === 0) return;
     const input: EmployeePopupInputDto = {
       startDate: this.filterFromDate,
       endDate: this.filterToDate,
@@ -213,7 +215,8 @@ export class HomeComponent extends AppComponentBase implements OnInit {
             listInfo: rs.result,
             action: action,
             branchName: branchName,
-            title: title
+            title: title,
+            dateHeader: "Working Date"
           },
           minWidth: "50%",
           autoFocus: false,

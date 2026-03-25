@@ -10,5 +10,6 @@ namespace HRMv2.Manager.Home.Dtos
     public class HomepageEmployeePopupDto : BaseEmployeeDto
     {
         public DateTime DateAt { get; set; }
+        public long EmployeeId { get; set; }
     }
 }

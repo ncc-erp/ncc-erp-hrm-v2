@@ -76,6 +76,7 @@ namespace HRMv2.Manager.Home
 
             var result = empWorkingHistories.Select(s => new HomepageEmployeePopupDto
             {
+                EmployeeId = s.EmployeeId,
                 DateAt = s.DateAt,
                 Status = s.LastStatus,
                 Id = s.EmployeeId,
