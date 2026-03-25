@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
 import { ApiResponseDto } from '../../model/common.dto';
 import { BaseApiService } from '../base-api.service';
-import { HomepageEmployeeStatisticDto, EmployeeDataFromChartDetailDto } from '../../model/homepage/HomepageEmployeeStatistic.dto'
+import { HomepageEmployeeStatisticDto, EmployeeDataFromChartDetailDto, LastEmployeeWorkingHistoryDto, EmployeePopupInputDto } from '../../model/homepage/HomepageEmployeeStatistic.dto'
 import { DisplayCircleChartDto,ResultCircleChartDto,ResultChartDto,DisplayLineChartDto } from '@app/service/model/chart-settings/chart.dto';
 
 @Injectable({
@@ -11,6 +11,9 @@ import { DisplayCircleChartDto,ResultCircleChartDto,ResultChartDto,DisplayLineCh
 export class HomePageService extends BaseApiService {
   changeUrl() {
     return 'Home';
+  }
+  GetAllEmployeePopup(input: EmployeePopupInputDto): Observable<ApiResponseDto<LastEmployeeWorkingHistoryDto[]>> {
+    return this.processPost(`GetAllEmployeePopup`, input)
   }
   GetAllWorkingHistory(startDate: string, endDate: string): Observable<ApiResponseDto<HomepageEmployeeStatisticDto[]> > {
     return this.processGet(`GetAllWorkingHistory?startDate=${startDate}&endDate=${endDate}`)
