@@ -59,6 +59,41 @@ namespace HRMv2.Manager.Home
 
         }
 
+        public List<HomepageEmployeePopupDto> GetAllEmployeePopup(DateTime startDate, DateTime endDate, long? branchId, UserType? userType)
+        {
+            var empWorkingHistories = _workingHistoryManager.GetLastEmployeeWorkingHistories(startDate, endDate)
+                .Where(s => s.LastStatus == EmployeeStatus.Working);
+
+            if (branchId.HasValue && branchId.Value > 0)
+            {
+                empWorkingHistories = empWorkingHistories.Where(s => s.BranchId == branchId.Value);
+            }
+
+            if (userType.HasValue)
+            {
+                empWorkingHistories = empWorkingHistories.Where(s => s.UserType == userType.Value);
+            }
+
+            var result = empWorkingHistories.Select(s => new HomepageEmployeePopupDto
+            {
+                EmployeeId = s.EmployeeId,
+                DateAt = s.DateAt,
+                Status = s.LastStatus,
+                Id = s.EmployeeId,
+                Avatar = s.Avatar,
+                Email = s.Email,
+                Sex = s.Sex,
+                BranchId = s.BranchId,
+                FullName = s.FullName,
+                BranchInfo = s.BranchInfo,
+                LevelInfo = s.LevelInfo,
+                JobPositionInfo = s.JobPositionInfo
+            }).ToList();
+
+            return result;
+        }
+
+
         public List<LastEmployeeWorkingHistoryDto> GetLastEmployeeWorkingHistories(DateTime startDate, DateTime endDate)
         {
             return _workingHistoryManager.GetLastEmployeeWorkingHistories(startDate, endDate);
@@ -94,7 +129,7 @@ namespace HRMv2.Manager.Home
                 TViecCount = qWorkingHistories.Where(s => s.UserType == UserType.ProbationaryStaff).Count(),
                 VendorCount = qWorkingHistories.Where(s => s.UserType == UserType.Vendor).Count(),
 
-
+                BranchId = branchId,
                 BranchName = branchName,
             };
 

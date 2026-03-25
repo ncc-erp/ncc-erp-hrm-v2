@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static HRMv2.Constants.Enum.HRMEnum;
 
 namespace HRMv2.APIs.Home
 {
@@ -31,6 +32,12 @@ namespace HRMv2.APIs.Home
         public List<HomepageEmployeeStatisticDto> GetAllWorkingHistory(DateTime startDate, DateTime endDate)
         {
             return _homePageManager.GetAllEmployeeWorkingHistoryByTimeSpan(startDate, endDate);
+        }
+
+        [HttpPost]
+        public List<HomepageEmployeePopupDto> GetAllEmployeePopup(HomepageEmployeePopupInputDto input)
+        {
+            return _homePageManager.GetAllEmployeePopup(input.StartDate, input.EndDate, input.BranchId, input.UserType);
         }
 
         [HttpPost]

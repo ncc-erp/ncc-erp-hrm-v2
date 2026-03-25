@@ -61,20 +61,68 @@
           </td>
           <td
             [ngClass]="getTextBold(item.branchName)"
-            class="text-bold blue-td"
+            class="text-bold blue-td hyperlink"
+            (click)="showEmployeePopup(
+              item.branchId ?? null,
+              null,
+              'đang làm việc trong',
+              'Danh sách toàn bộ nhân viên',
+              item.branchName,
+              item.employeeTotal
+            )"
           >
             {{ getValueOrNone(item.employeeTotal) }}
           </td>
-          <td [ngClass]="getTextBold(item.branchName)" class="yellow-td">
+          <td 
+            [ngClass]="getTextBold(item.branchName)"
+            class="yellow-td hyperlink"
+            (click)="showEmployeePopup(
+              item.branchId ?? null,
+              APP_ENUM.UserType.Internship,
+              'đang làm việc trong',
+              'Danh sách Intern',
+              item.branchName,
+              item.internCount
+            )">
             {{ getValueOrNone(item.internCount) }}
           </td>
-          <td class="yellow-td" [ngClass]="getTextBold(item.branchName)">
+          <td
+           class="yellow-td hyperlink" 
+           [ngClass]="getTextBold(item.branchName)"
+           (click)="showEmployeePopup(
+              item.branchId ?? null,
+              APP_ENUM.UserType.Staff,
+              'đang làm việc trong',
+              'Danh sách Staff',
+              item.branchName,
+              item.staffCount
+           )">
             {{ getValueOrNone(item.staffCount) }}
           </td>
-          <td class="yellow-td" [ngClass]="getTextBold(item.branchName)">
+          <td 
+            class="yellow-td hyperlink" 
+            [ngClass]="getTextBold(item.branchName)"
+            (click)="showEmployeePopup(
+              item.branchId ?? null,
+              APP_ENUM.UserType.Collaborators,
+              'đang làm việc trong',
+              'Danh sách CTV',
+              item.branchName,
+              item.ctvCount
+            )">
             {{ getValueOrNone(item.ctvCount) }}
           </td>
-          <td class="yellow-td" [ngClass]="getTextBold(item.branchName)">
+          <td 
+            class="yellow-td hyperlink" 
+            [ngClass]="getTextBold(item.branchName)"
+            (click)="showEmployeePopup(
+              item.branchId ?? null,
+              APP_ENUM.UserType.ProbationaryStaff,
+              'đang làm việc trong',
+              'Danh sách T.Việc',
+              item.branchName,
+              item.tViecCount
+            )">
             {{ getValueOrNone(item.tViecCount) }}
           </td>
           <td

@@ -4,6 +4,7 @@ import { KeyValueDto } from "../common.dto";
 import { EmployeeTeamDto } from "@shared/dto/user-infoDto";
 
 export class HomepageEmployeeStatisticDto {
+    branchId: number | null;
     branchName: string;
     employeeTotal: number;
     internCount: number;
@@ -70,4 +71,11 @@ export class InputChartDetailDto
   chartDataType: ChartDataType;
   startDate: Date;
   endDate: Date;
+}
+
+export interface EmployeePopupInputDto {
+  startDate: string;
+  endDate: string;
+  branchId: number | null;
+  userType: number | null;
 }
