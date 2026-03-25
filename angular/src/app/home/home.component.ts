@@ -19,6 +19,7 @@ import {
   HomepageEmployeeStatisticDto,
   LastEmployeeWorkingHistoryDto,
 } from "../../app/service/model/homepage/HomepageEmployeeStatistic.dto";
+import { EmployeePopupInputDto } from "../../app/service/model/homepage/HomepageEmployeeStatistic.dto";
 import { MatDialog } from "@angular/material/dialog";
 import { APP_CONSTANT } from "../permission/api.constant";
 import {
@@ -189,6 +190,37 @@ export class HomeComponent extends AppComponentBase implements OnInit {
         restoreFocus: false,
       });
     }
+  }
+
+  showEmployeePopup(
+    branchId: number | null,
+    userType: number | null,
+    action: string,
+    title: string,
+    branchName: string
+  ) {
+    const input: EmployeePopupInputDto = {
+      startDate: this.filterFromDate,
+      endDate: this.filterToDate,
+      branchId,
+      userType
+    }
+    this.homePageService.GetAllEmployeePopup(input)
+    .subscribe(rs => {
+      if (rs.success && rs.result?.length) {
+        this.dialog.open(ListInfoComponent, {
+          data: {
+            listInfo: rs.result,
+            action: action,
+            branchName: branchName,
+            title: title
+          },
+          minWidth: "50%",
+          autoFocus: false,
+          restoreFocus: false,
+        });
+      }
+    });
   }
   onCircleChartSelect(ids: number[]) {
     if (!this.isDefault) {
