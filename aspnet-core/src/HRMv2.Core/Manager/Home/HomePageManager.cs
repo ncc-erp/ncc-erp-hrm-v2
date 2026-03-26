@@ -87,7 +87,8 @@ namespace HRMv2.Manager.Home
                 FullName = s.FullName,
                 BranchInfo = s.BranchInfo,
                 LevelInfo = s.LevelInfo,
-                JobPositionInfo = s.JobPositionInfo
+                JobPositionInfo = s.JobPositionInfo,
+                UserType = s.UserType
             }).ToList();
 
             return result;
