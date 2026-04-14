@@ -745,6 +745,30 @@ namespace HRMv2.Manager.Notifications.Email
                 })
                 .ToList();
 
+            var mezonTokenRaw = WorkScope.GetAll<MezonToken>()
+                .Where(x => x.EmployeeId == payslip.EmployeeId && x.PayrollId == payslip.PayrollId)
+                .Select(x => new
+                {
+                    x.Amount,
+                    x.Note,
+                    x.ReferenceId
+                })
+                .ToList();
+
+            var mezonTokenDtos = mezonTokenRaw
+                .Select(t =>
+                {
+                    var displayName = t.Note;
+                    return new { t.Amount, DisplayName = displayName };
+                })
+                .GroupBy(x => x.DisplayName)
+                .Select(g => new MezonTokenEmailDto
+                {
+                    Note = g.Key,
+                    Amount = g.Sum(x => x.Amount)
+                })
+                .ToList();
+
             var hrmv2Uri = HRMv2Consts.HRM_Uri;
 
             var result = new InputPayslipMailTemplate
@@ -766,6 +790,7 @@ namespace HRMv2.Manager.Notifications.Email
                 SendToEmail = payslip.Employee.Email,
                 ListPayslipDetail = payslipdetails,
                 ListPayslipSalary = payslipSalaries,
+                ListMezonToken = mezonTokenDtos,
                 ConfirmUrl = hrmv2Uri + $"app/confirm-mail?id={payslip.Id}",
                 ComplainUrl = hrmv2Uri + $"app/complain-mail?id={payslip.Id}",
                 ComplainDeadline = payslip.ComplainDeadline.HasValue

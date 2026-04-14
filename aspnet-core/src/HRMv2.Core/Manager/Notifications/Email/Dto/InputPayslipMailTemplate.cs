@@ -36,9 +36,11 @@ namespace HRMv2.Manager.Notifications.Email.Dto
 
         public List<PayslipDetailEmailDto> ListPayslipDetail { get; set; }
         public List<PayslipSalaryEmailDto> ListPayslipSalary { get; set; }
+        public List<MezonTokenEmailDto> ListMezonToken { get; set; }
         public string Subject => $"[NCC][{EmployeeFullName}] THÔNG BÁO CHI TIẾT LƯƠNG THÁNG {PayrollMonth}/{PayrollYear}";
         public string TotalBonus => CommonUtil.FormatDisplayMoney(CommonUtil.RoundMoneyVND(ListPayslipDetail.Where(x=> x.Money > 0).Sum(x => x.Money)));
         public string TotalMinus => CommonUtil.FormatDisplayMoney(CommonUtil.RoundMoneyVND(ListPayslipDetail.Where(x => x.Money < 0).Sum(x => x.Money)));
+        public string TotalMezonToken => CommonUtil.FormatDisplayMoney(CommonUtil.RoundMoneyVND(ListMezonToken?.Sum(x => x.Amount) ?? 0));
 
         public string PayslipSalaries => "<table style='width:100%;border-collapse: collapse;'><tbody>"+string.Join("", ListPayslipSalary.Select(s =>
         @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width:75%;border-width:0;vertical-align:top"">" + s.Note
@@ -52,6 +54,18 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 75%;border-width:0;vertical-align:top"">" + s.Note
             + @"</td><td style=""height:50px;font-size:14pt;border-width:0;width: 25%;vertical-align:top;text-align:right; color: hsl(357deg 85% 52%)""><strong>"
             + s.FormatMoney + "&nbsp;VND</strong></td></tr>"))+ "</tbody></table>";
+        public string PayslipTokenBonuses => (ListMezonToken == null || ListMezonToken.Count == 0)
+            ? ""
+            : "<table style='width:100%;border-collapse: collapse;'><tbody>" + string.Join("", ListMezonToken.Select(s =>
+            @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 75%;border-width:0;vertical-align:top"">" + s.Note
+                + @":</td><td style=""height:50px;font-size:14pt;border-width:0;width: 25%;vertical-align:top;text-align:right;""><strong>"
+                + s.FormatAmount + "&nbsp;<span style='color:#1e3a8a'>MZD</span></strong></td></tr>")) + "</tbody></table>";
+        public string TotalMezonTokenInBonus => (ListMezonToken == null || ListMezonToken.Count == 0)
+            ? ""
+            : $"{TotalMezonToken}";
+        public string TotalMezonTokenInNet => (ListMezonToken == null || ListMezonToken.Count == 0)
+            ? ""
+            : $"{TotalMezonToken}";
 
     }
 
@@ -73,6 +87,13 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public string FormatDate => DateTimeUtils.ToString(Date);
         public string FormatMoney => CommonUtil.FormatDisplayMoney(Money);
 
+    }
+
+    public class MezonTokenEmailDto
+    {
+        public long Amount { get; set; }
+        public string Note { get; set; }
+        public string FormatAmount => CommonUtil.FormatDisplayMoney(Amount);
     }
 
 
