@@ -120,6 +120,7 @@ namespace HRMv2.Manager.MezonTokens
                           Name = x.Employee.JobPosition.Name,
                           Color = x.Employee.JobPosition.Color
                       },
+                      UserType = x.Employee.UserType,
                       ReferenceId = x.ReferenceId,
                       PayrollId = x.PayrollId,
                       PayrollApplyMonth = x.Payroll != null ? x.Payroll.ApplyMonth : null
