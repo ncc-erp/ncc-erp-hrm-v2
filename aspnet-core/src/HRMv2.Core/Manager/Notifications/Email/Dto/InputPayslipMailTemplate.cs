@@ -60,13 +60,6 @@ namespace HRMv2.Manager.Notifications.Email.Dto
             @"<tr style=""height:50px;font-size:14pt""><td style=""height:50px;width: 75%;border-width:0;vertical-align:top"">" + s.Note
                 + @":</td><td style=""height:50px;font-size:14pt;border-width:0;width: 25%;vertical-align:top;text-align:right;""><strong>"
                 + s.FormatAmount + "&nbsp;<span style='color:#1e3a8a'>MZD</span></strong></td></tr>")) + "</tbody></table>";
-        public string TotalMezonTokenInBonus => (ListMezonToken == null || ListMezonToken.Count == 0)
-            ? ""
-            : $"{TotalMezonToken}";
-        public string TotalMezonTokenInNet => (ListMezonToken == null || ListMezonToken.Count == 0)
-            ? ""
-            : $"{TotalMezonToken}";
-
     }
 
     public class PayslipDetailEmailDto
