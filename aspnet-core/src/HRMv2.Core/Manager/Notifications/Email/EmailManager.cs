@@ -754,6 +754,11 @@ namespace HRMv2.Manager.Notifications.Email
                 })
                 .ToList();
 
+            var actualOpentalk = Math.Min(payslip.Payroll.OpenTalk, payslip.OpentalkCount);
+            var missingOpentalk = Math.Max(payslip.Payroll.OpenTalk - payslip.OpentalkCount, 0);
+            var payslipTotalWorkingDay = payslip.NormalDay + actualOpentalk * 0.5;
+            var payslipOffDays = payslip.OffDay + missingOpentalk * 0.5;
+
             var hrmv2Uri = HRMv2Consts.HRM_Uri;
 
             var result = new InputPayslipMailTemplate
@@ -766,11 +771,12 @@ namespace HRMv2.Manager.Notifications.Email
                 PayslipOpentalk = payslip.OpentalkCount.ToString(),
                 PayrollWorkingDay = payslip.Payroll.NormalWorkingDay.ToString(),
                 PayrollOpentalkCount = payslip.Payroll.OpenTalk.ToString(),
+                PayslipTotalWorkingDay = payslipTotalWorkingDay.ToString(),
                 PayslipRemainLeaveDayBefore = payslip.RemainLeaveDayBefore.ToString(),
                 PayslipAddedLeaveDay = payslip.AddedLeaveDay.ToString(),
                 PayslipRemainLeaveDayAfter = payslip.RemainLeaveDayAfter.ToString(),
                 PayslipRefundDays = payslip.RefundLeaveDay.ToString(),
-                PayslipOffDays = payslip.OffDay.ToString(),
+                PayslipOffDays = payslipOffDays.ToString(),
                 TotalRealSalary = CommonUtil.FormatDisplayMoney(payslip.Salary),
                 SendToEmail = payslip.Employee.Email,
                 ListPayslipDetail = payslipdetails,

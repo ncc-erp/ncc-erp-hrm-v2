@@ -291,7 +291,7 @@ namespace HRMv2.Manager.MezonTokens
             {
                 mezonTokenInfo.MezonToken.SentToEmployeeAt = DateTimeUtils.GetNow();
                 mezonTokenInfo.MezonToken.Status = StatusSendToken.SentToEmployee;
-                mezonTokenInfo.MezonToken.Note = $"{mezonTokenInfo.MezonToken.Note}\n MmnTxn: {response.TxHash}";
+                //mezonTokenInfo.MezonToken.Note = $"{mezonTokenInfo.MezonToken.Note}\n MmnTxn: {response.TxHash}";
                 await WorkScope.UpdateAsync(mezonTokenInfo.MezonToken);
 
                 SendNotiDM(input.MezonTokenId);
