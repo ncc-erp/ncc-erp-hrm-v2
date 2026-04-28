@@ -19,6 +19,7 @@ namespace HRMv2.Manager.Notifications.Email.Dto
         public string PayslipWorkingDay { get; set; }
         public string PayslipOpentalk { get; set; }
         public string PayslipOTHour { get; set; }
+        public string PayslipTotalWorkingDay { get; set; }
         public string PayslipRemainLeaveDayBefore { get; set; }
         public string PayslipRemainLeaveDayAfter { get; set; }
         public string PayslipAddedLeaveDay { get; set; }
