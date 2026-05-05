@@ -446,7 +446,8 @@ namespace HRMv2.Manager.Salaries.Payslips
                         Status = StatusSendToken.Pending,
                         ReferenceId = payslipDetail.Id,
                         PayrollId = payrollId,
-                        Note = $"Token ăn trưa tháng {payroll.ApplyMonth.ToString("MM-yyyy")}: {tokenValue:N0} (tiền mặt ăn trưa: {payslipDetail.Money:N0} VND)"
+                        Note = $"Tích lũy nội bộ"
+                        // Note luôn là Tích lũy nội bộ
                     });
                 }    
             }
@@ -487,7 +488,8 @@ namespace HRMv2.Manager.Salaries.Payslips
                 Status = StatusSendToken.Pending,
                 ReferenceId = detail.Id,
                 PayrollId = detail.Payslip.PayrollId,
-                Note = $"Token ăn trưa tháng {detail.Payslip.Payroll.ApplyMonth.ToString("MM-yyyy")}: {tokenValue:N0} (tiền mặt ăn trưa: {detail.Money:N0} VND)"
+                Note = $"Tích luỹ nội bộ"
+                // Note luôn là tích lũy nội bộ
             };
 
             await WorkScope.InsertAsync(token);
