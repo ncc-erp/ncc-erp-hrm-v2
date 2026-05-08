@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { TokenService, LogService, UtilsService } from 'abp-ng2-module';
 import { AppConsts } from '@shared/AppConsts';
-import { UrlHelper } from '@shared/helpers/UrlHelper';
 import {
     AuthenticateModel,
     AuthenticateResultModel,
@@ -94,12 +93,38 @@ export class AppAuthService {
             abp.appPath
         );
 
-        let initialUrl = UrlHelper.initialUrl;
-        if (initialUrl.indexOf('/login') > 0) {
-            initialUrl = AppConsts.appBaseUrl;
+        location.href = this.getRedirectUrlAfterLogin();
+    }
+
+    private getRedirectUrlAfterLogin(): string {
+        const returnUrl = this.getReturnUrlFromLocalStorage()
+
+        this.removeReturnUrlFromStorage();
+
+        if (this.isValidReturnUrl(returnUrl)) {
+            return returnUrl;
         }
 
-        location.href = initialUrl;
+        return AppConsts.appBaseUrl;
+    }
+
+    private getReturnUrlFromLocalStorage(): string {
+        try {
+            return localStorage.getItem('returnUrl');
+        } catch {
+            return null;
+        }
+    }
+
+    private removeReturnUrlFromStorage(): void {
+        try {
+            localStorage.removeItem('returnUrl');
+        } catch {
+        }
+    }
+
+    private isValidReturnUrl(returnUrl: string): boolean {
+        return !!returnUrl && returnUrl.startsWith('/app');
     }
 
     private clear(): void {
