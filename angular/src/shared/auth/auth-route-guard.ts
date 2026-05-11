@@ -20,6 +20,7 @@ export class AppRouteGuard implements CanActivate, CanActivateChild {
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
         if (!this._sessionService.user) {
+            this.storeReturnUrl(state.url);
             this._router.navigate(['/account/login']);
             return false;
         }
@@ -49,5 +50,17 @@ export class AppRouteGuard implements CanActivate, CanActivateChild {
             return '/app/admin/users';
         }
         return '/app/not-have-access';
+    }
+
+    private storeReturnUrl(returnUrl: string): void {
+        if (!returnUrl || !returnUrl.startsWith('/app')) {
+            return;
+        }
+
+        try {
+            localStorage.setItem('returnUrl', returnUrl);
+        } catch {
+            return null;
+        }
     }
 }
